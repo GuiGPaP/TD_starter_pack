@@ -1,0 +1,5 @@
+_tmp_*
+__pycache__
+*.pyc
+.env
+*.toe.bak
