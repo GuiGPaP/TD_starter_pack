@@ -36,21 +36,23 @@ input (initial state) ──┐
 ### Setup Pattern
 
 ```python
+base = op('/project1/base1')
+
 # 1. Create processing chain
-glsl = parent.create(glslTOP, 'sim')
+glsl = base.create(glslTOP, 'sim')
 glsl.viewer = True
-null_out = parent.create(nullTOP, 'null_out')
+null_out = base.create(nullTOP, 'null_out')
 null_out.viewer = True
 null_out.nodeX = 200
 null_out.inputConnectors[0].connect(glsl)
 
 # 2. Create feedback (reference null_out)
-feedback = parent.create(feedbackTOP, 'feedback')
+feedback = base.create(feedbackTOP, 'feedback')
 feedback.viewer = True
 feedback.par.top = 'null_out'  # Relative path
 
 # 3. Create initial state (black for "empty")
-const_init = parent.create(constantTOP, 'const_init')
+const_init = base.create(constantTOP, 'const_init')
 const_init.viewer = True
 const_init.par.colorr = 0
 const_init.par.colorg = 0

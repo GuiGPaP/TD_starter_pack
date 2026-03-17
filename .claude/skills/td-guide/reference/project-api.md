@@ -25,6 +25,7 @@ This project exposes TouchDesigner functionality through an MCP web server. The 
 
 When other endpoints are too limited, `execute_python_script` runs arbitrary Python inside TD. It provides:
 - `op`, `ops`, `td`, `project` in the namespace
+- **`parent`** — injected as a **string path** (e.g., `"/project1"`), NOT an OP object. `parent.create(...)` will crash. Use `op('/project1/base1').create(...)` instead.
 - stdout/stderr capture
 - Auto-extraction of the last expression as `result`
 

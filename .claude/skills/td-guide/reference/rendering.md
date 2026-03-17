@@ -19,19 +19,21 @@
 - Material (optional, default assigned if none)
 
 ```python
+base = op('/project1/base1')
+
 # Minimal setup
-cam = parent.create(cameraCOMP, 'cam1')
+cam = base.create(cameraCOMP, 'cam1')
 cam.viewer = True
 
-light = parent.create(lightCOMP, 'light1')
+light = base.create(lightCOMP, 'light1')
 light.viewer = True
 light.nodeX = 200
 
-geo = parent.create(geometryCOMP, 'geo1')
+geo = base.create(geometryCOMP, 'geo1')
 geo.viewer = True
 geo.nodeX = 400
 
-render = parent.create(renderTOP, 'render1')
+render = base.create(renderTOP, 'render1')
 render.viewer = True
 render.nodeX = 600
 
@@ -47,7 +49,7 @@ render.par.lights = 'light1'
 ### Create Camera
 
 ```python
-cam = parent.create(cameraCOMP, 'cam1')
+cam = base.create(cameraCOMP, 'cam1')  # base = op('/project1/base1')
 cam.viewer = True
 ```
 
@@ -93,7 +95,7 @@ cam.par.orthowidth = 4
 ### Create Light
 
 ```python
-light = parent.create(lightCOMP, 'light1')
+light = base.create(lightCOMP, 'light1')  # base = op('/project1/base1')
 light.viewer = True
 light.par.tx, light.par.ty, light.par.tz = 5, 5, 5
 ```
@@ -113,7 +115,7 @@ light.par.tx, light.par.ty, light.par.tz = 5, 5, 5
 ### Ambient Light
 
 ```python
-ambient = parent.create(ambientlightCOMP, 'ambient1')
+ambient = base.create(ambientlightCOMP, 'ambient1')
 ambient.viewer = True
 ambient.par.dimmer = 0.2
 ```
@@ -145,7 +147,7 @@ mat_sop.par.mat = '../pbr1'  # Relative path to parent
 ### PBR MAT
 
 ```python
-pbr = parent.create(pbrMAT, 'pbr1')
+pbr = base.create(pbrMAT, 'pbr1')
 pbr.par.basecolorr = 0.8
 pbr.par.basecolorg = 0.2
 pbr.par.basecolorb = 0.2
@@ -156,7 +158,7 @@ pbr.par.roughness = 0.5     # 0=smooth, 1=rough
 ### Phong MAT
 
 ```python
-phong = parent.create(phongMAT, 'phong1')
+phong = base.create(phongMAT, 'phong1')
 phong.par.diffr, phong.par.diffg, phong.par.diffb = 0.7, 0.7, 0.7
 phong.par.specr, phong.par.specg, phong.par.specb = 0.3, 0.3, 0.3
 phong.par.shine = 24
@@ -165,7 +167,7 @@ phong.par.shine = 24
 ### Constant MAT (No Lighting)
 
 ```python
-const = parent.create(constantMAT, 'const1')
+const = base.create(constantMAT, 'const1')
 const.par.colorr, const.par.colorg, const.par.colorb = 1, 0, 0
 ```
 

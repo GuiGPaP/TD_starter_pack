@@ -37,30 +37,67 @@ These files contain essential patterns for operator creation, layout, error hand
 
 ---
 
-## Operator Creation — Direct TD Python API
+## MCP Runtime: `execute_python_script` Namespace
+
+When running Python via the MCP `execute_python_script` tool, the namespace provides:
+- `op` — `td.op` (callable: `op('/project1/base1')`)
+- `ops` — `td.ops`
+- `td` — the `td` module
+- `project` — `td.project`
+- **`parent`** — **a string path** (e.g., `"/project1"`), NOT an OP object
+
+**CRITICAL:** `parent.create(...)` will crash. Always resolve to an OP first:
+
+```python
+base = op('/project1/base1')  # ← OP object, supports .create()
+```
+
+---
+
+## Operator Creation — via execute_python_script
 
 ### Create Operators
 
 ```python
-# Create an operator and set viewer=True (matches UI default)
-new_op = parent.create(gridSOP, 'grid1')
+base = op('/project1/base1')
+
+# Create an operator — use create_td_node MCP tool for simple cases,
+# or execute_python_script when you need viewer/layout control:
+new_op = base.create(gridSOP, 'grid1')
 new_op.viewer = True
+```
+
+**Positioning:** For operators without docked DATs (most SOPs, CHOPs, etc.), direct assignment is fine:
+
+```python
 new_op.nodeX = 0
 new_op.nodeY = 0
+```
+
+**For GLSL TOP/MAT** (which have docked DATs like `_pixel`, `_vertex`), move the main op and its docked children together:
+
+```python
+def move_with_docked(target, x, y):
+    dx, dy = x - target.nodeX, y - target.nodeY
+    target.nodeX, target.nodeY = x, y
+    for d in target.docked:
+        d.nodeX += dx
+        d.nodeY += dy
+
+move_with_docked(glsl_op, 400, 0)
 ```
 
 ### Connect Operators
 
 ```python
-# Single connection
 op('noise1').inputConnectors[0].connect(op('sphere1'))
 ```
 
 ### Chain and Layout
 
 ```python
-# Connect a chain of operators and space them 200px apart
-ops_list = [op('grid1'), op('noise1'), op('null1')]
+base = op('/project1/base1')
+ops_list = [base.op('grid1'), base.op('noise1'), base.op('null1')]
 for i in range(1, len(ops_list)):
     ops_list[i].inputConnectors[0].connect(ops_list[i-1])
     ops_list[i].nodeX = ops_list[i-1].nodeX + 200
@@ -70,7 +107,6 @@ for i in range(1, len(ops_list)):
 ### Check Errors
 
 ```python
-# Check errors on a node (recurse into children)
 err = op('/project1/base1').errors(recurse=True)
 print(err)
 ```
@@ -95,8 +131,10 @@ print(params)  # ['radx', 'rady', 'radz']
 ## Geometry COMP Pattern
 
 ```python
+base = op('/project1/base1')
+
 # Create Geometry COMP, remove default torus, add In/Out
-geo = parent.create(geometryCOMP, 'geo1')
+geo = base.create(geometryCOMP, 'geo1')
 geo.viewer = True
 for child in geo.children:
     child.destroy()
@@ -110,7 +148,7 @@ out_sop.render = True
 out_sop.inputConnectors[0].connect(in_sop)
 
 # Connect external SOP to Geometry COMP input
-geo.inputConnectors[0].connect(op('null1'))
+geo.inputConnectors[0].connect(base.op('null1'))
 ```
 
 **Rules:**

@@ -88,10 +88,12 @@ When encountering an unfamiliar operator family:
 
 ## Data Conversion Examples
 
+All examples assume `base = op('/project1/base1')` — the container where operators are created.
+
 ### SOP to CHOP
 
 ```python
-sop2chop = parent.create(soptoCHOP, 'sopto1')
+sop2chop = base.create(soptoCHOP, 'sopto1')
 sop2chop.viewer = True
 sop2chop.par.sop = 'null1'
 # Generates channels: tx, ty, tz, nx, ny, nz, etc.
@@ -100,7 +102,7 @@ sop2chop.par.sop = 'null1'
 ### CHOP to SOP
 
 ```python
-chop2sop = parent.create(choptoSOP, 'chopto1')
+chop2sop = base.create(choptoSOP, 'chopto1')
 chop2sop.viewer = True
 chop2sop.par.chop = 'null_chop'
 ```
@@ -108,7 +110,7 @@ chop2sop.par.chop = 'null_chop'
 ### CHOP to POP
 
 ```python
-chop2pop = parent.create(choptoPOP, 'choptopop1')
+chop2pop = base.create(choptoPOP, 'choptopop1')
 chop2pop.viewer = True
 chop2pop.par.chop = 'null_chop'
 ```
@@ -116,7 +118,7 @@ chop2pop.par.chop = 'null_chop'
 ### SOP to POP
 
 ```python
-sop2pop = parent.create(soptoPOP, 'soptopop1')
+sop2pop = base.create(soptoPOP, 'soptopop1')
 sop2pop.viewer = True
 sop2pop.par.sop = op('null1')  # Requires op() reference, not string
 ```
@@ -128,7 +130,7 @@ SOP points alone don't render - they need primitives.
 **Solution**: Convert to particles:
 
 ```python
-convert = parent.create(convertSOP, 'convert1')
+convert = base.create(convertSOP, 'convert1')
 convert.viewer = True
 convert.par.totype = 'particlesperpoint'
 convert.inputConnectors[0].connect(point_sop)

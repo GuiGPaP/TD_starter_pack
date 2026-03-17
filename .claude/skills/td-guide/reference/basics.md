@@ -17,35 +17,53 @@ OpenGL (right-handed): Y-up, Z toward camera, SRT order default.
 
 ---
 
+## MCP Runtime Note
+
+In `execute_python_script`, the namespace provides `op`, `ops`, `td`, `project`. **`parent` is a string path, not an OP.** Always resolve containers explicitly:
+
+```python
+base = op('/project1/base1')  # OP object — supports .create(), .children, etc.
+```
+
+---
+
 ## Basic Operations
 
 ### Create Operator
 
 ```python
+base = op('/project1/base1')
+
 # Create and position an operator
-new_op = parent.create(glslTOP, 'glsl1')
+new_op = base.create(glslTOP, 'glsl1')
 new_op.viewer = True
-new_op.nodeX = 0
-new_op.nodeY = 0
 ```
 
 **Why `viewer = True`:** Matches UI-created operator behavior. Without it, operators appear collapsed.
 
 **Name auto-increment:** If an operator with the same name exists, TD automatically increments the number (e.g., `null1` → `null2`). Always check the returned operator's `.name` if you need the actual name.
 
-**Docked operators:** GLSL TOP/MAT create associated DATs (_pixel, _vertex, etc.). When moving operators, iterate over `.docked` to move them together:
+### Positioning Operators
+
+**Simple operators** (no docked DATs): direct assignment is fine.
 
 ```python
-# Move operator and its docked DATs together
-def move_op(target, x, y):
-    dx = x - target.nodeX
-    dy = y - target.nodeY
-    target.nodeX = x
-    target.nodeY = y
+new_op.nodeX = 0
+new_op.nodeY = 0
+```
+
+**GLSL TOP/MAT and Script SOP** create associated docked DATs (`_pixel`, `_vertex`, etc.). Setting `nodeX`/`nodeY` on the main op does NOT move docked operators. Always move them together:
+
+```python
+def move_with_docked(target, x, y):
+    dx, dy = x - target.nodeX, y - target.nodeY
+    target.nodeX, target.nodeY = x, y
     for d in target.docked:
         d.nodeX += dx
         d.nodeY += dy
 ```
+
+Use `move_with_docked()` whenever moving GLSL TOP, GLSL MAT, or Script SOP operators.
 
 ### Connect
 

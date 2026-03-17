@@ -13,8 +13,10 @@
 ## Geometry COMP Pattern (SOP and POP)
 
 ```python
+base = op('/project1/base1')
+
 # Create Geometry COMP, remove default torus, set up In/Out
-geo = parent.create(geometryCOMP, 'geo1')
+geo = base.create(geometryCOMP, 'geo1')
 geo.viewer = True
 geo.nodeX = 400
 geo.nodeY = 0
@@ -43,17 +45,19 @@ For POP family, replace `inSOP`/`outSOP` with `inPOP`/`outPOP`.
 ## Setup Pattern (Full Example)
 
 ```python
+base = op('/project1/base1')
+
 # 1. Create shape at parent level
-box = parent.create(boxPOP, 'box1')
+box = base.create(boxPOP, 'box1')
 box.viewer = True
 
-null_box = parent.create(nullPOP, 'null_box')
+null_box = base.create(nullPOP, 'null_box')
 null_box.viewer = True
 null_box.nodeX = 200
 null_box.inputConnectors[0].connect(box)
 
 # 2. Create Geometry COMP with In/Out
-geo = parent.create(geometryCOMP, 'geo1')
+geo = base.create(geometryCOMP, 'geo1')
 geo.viewer = True
 geo.nodeX = 400
 for child in geo.children:
@@ -102,10 +106,12 @@ choptopop1.par.chop = '../null1'  # WRONG!
 **Solution**: Prepare shapes at parent level, pass via In/Out, use relative paths.
 
 ```python
+base = op('/project1/base1')
+
 # GOOD: shape at parent level
-box = parent.create(boxPOP, 'box1')
+box = base.create(boxPOP, 'box1')
 box.viewer = True
-null_box = parent.create(nullPOP, 'null_box')
+null_box = base.create(nullPOP, 'null_box')
 null_box.viewer = True
 null_box.nodeX = 200
 null_box.inputConnectors[0].connect(box)
@@ -124,8 +130,10 @@ Geometry COMP supports instancing to render multiple copies efficiently. The `in
 ### Basic Example (CHOP)
 
 ```python
+base = op('/project1/base1')
+
 # 1. Create points → Null SOP → SOP to CHOP
-sop2chop = parent.create(soptoCHOP, 'sopto1')
+sop2chop = base.create(soptoCHOP, 'sopto1')
 sop2chop.viewer = True
 sop2chop.par.sop = 'null1'
 
