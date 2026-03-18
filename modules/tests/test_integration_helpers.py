@@ -105,6 +105,14 @@ class TestRouteExistence:
         op_ids = {r.operation_id for r in routes}
         assert "configure_instancing" in op_ids
 
+    def test_get_dat_text_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_dat_text" in {r.operation_id for r in routes}
+
+    def test_set_dat_text_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "set_dat_text" in {r.operation_id for r in routes}
+
 
 # ── End-to-end tests ──────────────────────────────────────────────
 
@@ -177,3 +185,30 @@ class TestEndToEnd:
         result = integration_router.route_request("POST", "/api/td/helpers/instancing", {}, body)
         assert result["success"] is True
         assert result["data"]["instanceOp"] == "particles"
+
+    def test_get_dat_text_end_to_end(self, integration_router, mock_td):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/text1"
+        dat.name = "text1"
+        dat.text = "print('hello')"
+        mock_td.op.return_value = dat
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/dat-text", {"nodePath": "/project1/text1"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["text"] == "print('hello')"
+
+    def test_set_dat_text_end_to_end(self, integration_router, mock_td):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/text1"
+        dat.name = "text1"
+        dat.text = ""
+        mock_td.op.return_value = dat
+
+        body = json.dumps({"nodePath": "/project1/text1", "text": "print('world')"})
+        result = integration_router.route_request("PUT", "/api/nodes/dat-text", {}, body)
+        assert result["success"] is True
+        assert result["data"]["length"] == len("print('world')")

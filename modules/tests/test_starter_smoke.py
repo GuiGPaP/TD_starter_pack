@@ -181,3 +181,43 @@ class TestStateVerification:
         assert errors["success"] is True
         assert errors["data"]["errorCount"] == 0
         assert errors["data"]["hasErrors"] is False
+
+
+# ── 5. DAT Text Workflow ─────────────────────────────────────────────
+
+
+class TestDatTextWorkflow:
+    def test_get_dat_text_success(self, starter):
+        """Create a textDAT, set content, read it back."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "print('hello')")
+        result = svc.get_dat_text("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["text"] == "print('hello')"
+
+    def test_get_dat_text_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_dat_text("/nonexistent")
+        assert result["success"] is False
+
+    def test_get_dat_text_no_text_attr(self, starter):
+        """A baseCOMP has no .text → should fail."""
+        svc, _graph, _base = starter
+        result = svc.get_dat_text("/project1/base1")
+        assert result["success"] is False
+
+    def test_set_dat_text_success(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        result = svc.set_dat_text("/project1/base1/script1", "print('hello')")
+        assert result["success"] is True
+        assert result["data"]["length"] == len("print('hello')")
+        # Verify round-trip
+        read = svc.get_dat_text("/project1/base1/script1")
+        assert read["data"]["text"] == "print('hello')"
+
+    def test_set_dat_text_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.set_dat_text("/nonexistent", "code")
+        assert result["success"] is False
