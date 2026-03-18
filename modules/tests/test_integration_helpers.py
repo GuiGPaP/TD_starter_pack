@@ -113,6 +113,10 @@ class TestRouteExistence:
         routes = extract_routes(_load_schema())
         assert "set_dat_text" in {r.operation_id for r in routes}
 
+    def test_lint_dat_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "lint_dat" in {r.operation_id for r in routes}
+
 
 # ── End-to-end tests ──────────────────────────────────────────────
 
@@ -212,3 +216,20 @@ class TestEndToEnd:
         result = integration_router.route_request("PUT", "/api/nodes/dat-text", {}, body)
         assert result["success"] is True
         assert result["data"]["length"] == len("print('world')")
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_lint_dat_end_to_end(self, _mock_which, mock_run, integration_router, mock_td):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "import os\n"
+        mock_td.op.return_value = dat
+
+        mock_run.return_value = MagicMock(returncode=0, stdout="[]", stderr="")
+
+        body = json.dumps({"nodePath": "/project1/script1"})
+        result = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body)
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 0

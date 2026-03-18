@@ -207,6 +207,11 @@ def set_dat_text(body=None):  # noqa: E501
     return 'do some magic!'
 
 
+def lint_dat(body=None):  # noqa: E501
+    """Lint DAT code with ruff"""
+    return 'do some magic!'
+
+
 def update_node(body=None):  # noqa: E501
     """Update node properties
 

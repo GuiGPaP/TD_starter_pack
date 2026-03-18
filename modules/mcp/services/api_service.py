@@ -7,7 +7,13 @@ import contextlib
 import importlib
 import inspect
 import io
+import json
+import os
 import pydoc
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
 from typing import Any, Protocol
 
 import td
@@ -55,6 +61,7 @@ class IApiService(Protocol):
     ) -> Result: ...
     def get_dat_text(self, node_path: str) -> Result: ...
     def set_dat_text(self, node_path: str, text: str) -> Result: ...
+    def lint_dat(self, node_path: str, fix: bool = ...) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -612,6 +619,109 @@ class TouchDesignerApiService(IApiService):
             return error_result(f"Node has no .text attribute: {node_path}")
         node.text = text
         return success_result({"path": node.path, "name": node.name, "length": len(text)})
+
+    def lint_dat(self, node_path: str, fix: bool = False) -> Result:
+        """Lint the .text content of a DAT operator using ruff"""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        ruff = self._find_ruff()
+        if ruff is None:
+            return error_result(
+                "ruff not found. Install it with 'uv add ruff' or ensure it is on PATH."
+            )
+
+        code = node.text
+        project_root = Path(__file__).resolve().parents[3]
+
+        fd, tmp_path = tempfile.mkstemp(suffix=".py")
+        try:
+            os.write(fd, code.encode("utf-8"))
+            os.close(fd)
+            fd = -1  # mark as already closed
+
+            cmd = [ruff, "check", "--output-format", "json"]
+            if fix:
+                cmd.append("--fix")
+            cmd.append(tmp_path)
+
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(project_root),
+                    timeout=30,
+                )
+            except subprocess.TimeoutExpired:
+                return error_result("ruff timed out after 30s")
+
+            if proc.returncode >= 2 or (proc.returncode == 1 and not proc.stdout.strip()):
+                stderr_msg = proc.stderr.strip() if proc.stderr else "unknown error"
+                return error_result(f"ruff failed (exit {proc.returncode}): {stderr_msg}")
+
+            try:
+                raw_diagnostics = json.loads(proc.stdout) if proc.stdout.strip() else []
+            except json.JSONDecodeError:
+                return error_result(f"ruff returned invalid JSON: {proc.stdout[:200]}")
+
+            diagnostics = [
+                {
+                    "code": d.get("code"),
+                    "message": d.get("message", ""),
+                    "line": d.get("location", {}).get("row"),
+                    "column": d.get("location", {}).get("column"),
+                    "endLine": d.get("end_location", {}).get("row"),
+                    "endColumn": d.get("end_location", {}).get("column"),
+                    "fixable": d.get("fix") is not None,
+                }
+                for d in raw_diagnostics
+            ]
+
+            result_data: dict[str, Any] = {
+                "path": node.path,
+                "name": node.name,
+                "diagnosticCount": len(diagnostics),
+                "diagnostics": diagnostics,
+            }
+
+            if fix:
+                with open(tmp_path, encoding="utf-8") as f:
+                    fixed_code = f.read()
+                if fixed_code != code:
+                    node.text = fixed_code
+                    result_data["fixed"] = True
+                    result_data["fixedText"] = fixed_code
+                else:
+                    result_data["fixed"] = False
+
+            return success_result(result_data)
+
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
+
+    def _find_ruff(self) -> str | None:
+        """Locate the ruff binary on PATH or in the project .venv."""
+        found = shutil.which("ruff")
+        if found:
+            return found
+
+        project_root = Path(__file__).resolve().parents[3]
+        if os.name == "nt":
+            candidate = project_root / ".venv" / "Scripts" / "ruff.exe"
+        else:
+            candidate = project_root / ".venv" / "bin" / "ruff"
+
+        if candidate.is_file():
+            return str(candidate)
+
+        return None
 
     def configure_instancing(
         self,

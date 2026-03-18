@@ -6,6 +6,7 @@ No ``@patch`` on td_helpers — the real helpers execute against the fake graph.
 from __future__ import annotations
 
 import importlib
+import json
 import sys
 from unittest.mock import MagicMock
 
@@ -221,3 +222,85 @@ class TestDatTextWorkflow:
         svc, _graph, _base = starter
         result = svc.set_dat_text("/nonexistent", "code")
         assert result["success"] is False
+
+
+# ── 6. Lint DAT Workflow ──────────────────────────────────────────────
+
+
+class TestLintDatWorkflow:
+    def _get_svc_module(self):
+        return sys.modules["mcp.services.api_service"]
+
+    def test_lint_clean_code(self, starter, monkeypatch):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
+        svc_mod = self._get_svc_module()
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=0, stdout="[]", stderr=""),
+        )
+
+        result = svc.lint_dat("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 0
+        assert result["data"]["diagnostics"] == []
+
+    def test_lint_with_errors(self, starter, monkeypatch):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "import os\n")
+
+        diag_json = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
+
+        monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
+        svc_mod = self._get_svc_module()
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=1, stdout=diag_json, stderr=""),
+        )
+
+        result = svc.lint_dat("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 1
+        d = result["data"]["diagnostics"][0]
+        assert d["code"] == "F401"
+        assert d["fixable"] is True
+
+    def test_lint_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.lint_dat("/nonexistent")
+        assert result["success"] is False
+
+    def test_lint_no_text_attr(self, starter):
+        svc, _graph, _base = starter
+        result = svc.lint_dat("/project1/base1")
+        assert result["success"] is False
+
+    def test_ruff_not_found(self, starter, monkeypatch):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        svc_mod = self._get_svc_module()
+        monkeypatch.setattr(svc_mod.shutil, "which", lambda _name: None)
+        # Ensure .venv candidate doesn't exist
+        monkeypatch.setattr(svc_mod.Path, "is_file", lambda _self: False)
+
+        result = svc.lint_dat("/project1/base1/script1")
+        assert result["success"] is False
+        assert "ruff not found" in result["error"]
