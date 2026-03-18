@@ -350,8 +350,7 @@ class TestLintDatWorkflow:
                 with open(tmp, "w", encoding="utf-8") as f:
                     f.write("x=1\n")  # os import removed
                 return MagicMock(returncode=1, stdout=fix_diag, stderr="")
-            else:
-                return MagicMock(returncode=1, stdout=remaining_diag, stderr="")
+            return MagicMock(returncode=1, stdout=remaining_diag, stderr="")
 
         monkeypatch.setattr(svc_mod.subprocess, "run", mock_run)
 
@@ -388,8 +387,7 @@ class TestLintDatWorkflow:
                 with open(tmp, "w", encoding="utf-8") as f:
                     f.write("")  # all code removed by fix
                 return MagicMock(returncode=1, stdout=fix_diag, stderr="")
-            else:
-                return MagicMock(returncode=0, stdout="[]", stderr="")
+            return MagicMock(returncode=0, stdout="[]", stderr="")
 
         monkeypatch.setattr(svc_mod.subprocess, "run", mock_run)
 
@@ -426,8 +424,7 @@ class TestLintDatWorkflow:
                 with open(tmp, "w", encoding="utf-8") as f:
                     f.write("")  # fixed: removed import
                 return MagicMock(returncode=1, stdout=fix_diag, stderr="")
-            else:
-                return MagicMock(returncode=0, stdout="[]", stderr="")
+            return MagicMock(returncode=0, stdout="[]", stderr="")
 
         monkeypatch.setattr(svc_mod.subprocess, "run", mock_run)
 
@@ -1040,7 +1037,6 @@ class _MockExtension:
 
     def run(self):
         """Runs the extension."""
-        pass
 
 
 class TestGetCompExtensions:

@@ -392,9 +392,8 @@ class TouchDesignerApiService(IApiService):
         if td.op(node_path) is None:
             log_message(f"Node deleted successfully: {node_path}", LogLevel.DEBUG)
             return success_result({"deleted": True, "node": node_info})
-        else:
-            log_message(f"Failed to verify node deletion: {node_path}", LogLevel.WARNING)
-            return error_result(f"Failed to delete node: {node_path}")
+        log_message(f"Failed to verify node deletion: {node_path}", LogLevel.WARNING)
+        return error_result(f"Failed to delete node: {node_path}")
 
     def exec_node_method(self, node_path: str, method: str, args: list, kwargs: dict) -> Result:
         """Call method on the specified node"""
@@ -583,15 +582,13 @@ class TouchDesignerApiService(IApiService):
                 LogLevel.DEBUG,
             )
             return success_result(result)
-        else:
-            log_message(
-                f"No properties were updated. Failed: {failed_properties}",
-                LogLevel.WARNING,
-            )
-            if failed_properties:
-                return error_result("Failed to update any properties")
-            else:
-                return error_result("No matching properties to update")
+        log_message(
+            f"No properties were updated. Failed: {failed_properties}",
+            LogLevel.WARNING,
+        )
+        if failed_properties:
+            return error_result("Failed to update any properties")
+        return error_result("No matching properties to update")
 
     def create_geometry_comp(
         self,
@@ -1406,10 +1403,7 @@ class TouchDesignerApiService(IApiService):
             return result
 
         if isinstance(result, (list, tuple)):
-            processed_list = []
-            for item in result:
-                processed_list.append(self._process_item(item))
-            return processed_list
+            return [self._process_item(item) for item in result]
 
         if isinstance(result, dict):
             processed_dict = {}

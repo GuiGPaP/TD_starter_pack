@@ -44,9 +44,8 @@ def load_schema(schema_path: str | None = None) -> dict[str, Any]:
     if openapi_schema:
         log_message("Using preloaded OpenAPI schema", LogLevel.DEBUG)
         return openapi_schema
-    else:
-        log_message("OpenAPI schema not available", LogLevel.ERROR)
-        return {"paths": {}}
+    log_message("OpenAPI schema not available", LogLevel.ERROR)
+    return {"paths": {}}
 
 
 def extract_routes(schema: dict[str, Any] | None = None) -> list[RouteDefinition]:
@@ -143,8 +142,7 @@ def match_route(method: str, path: str, routes: list[RouteDefinition]) -> RouteM
                     path_params[param_name] = param_value
                     match = True
                     break
-                else:
-                    path_params[param_name] = path_part
+                path_params[param_name] = path_part
             elif pattern_part != path_part:
                 match = False
                 break

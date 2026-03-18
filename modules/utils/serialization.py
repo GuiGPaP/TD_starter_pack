@@ -18,8 +18,7 @@ def safe_serialize(obj: Any) -> Any:
             elif not obj.success and obj.error is not None:
                 result_dict["error"] = str(obj.error)
             return result_dict
-        else:
-            return str(obj)
+        return str(obj)
 
     if isinstance(obj, (int, float, bool, str)):
         return obj

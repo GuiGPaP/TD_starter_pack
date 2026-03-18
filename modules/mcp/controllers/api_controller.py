@@ -387,14 +387,13 @@ class APIControllerOpenAPI(IController):
         """
         if error_category == ErrorCategory.NOT_FOUND:
             return 404
-        elif error_category == ErrorCategory.PERMISSION:
+        if error_category == ErrorCategory.PERMISSION:
             return 403
-        elif error_category == ErrorCategory.VALIDATION:
+        if error_category == ErrorCategory.VALIDATION:
             return 400
-        elif error_category == ErrorCategory.EXTERNAL:
+        if error_category == ErrorCategory.EXTERNAL:
             return 502
-        else:
-            return 500
+        return 500
 
     def _get_status_reason_for_error(self, error_category) -> str:
         """
@@ -408,14 +407,13 @@ class APIControllerOpenAPI(IController):
         """
         if error_category == ErrorCategory.NOT_FOUND:
             return "Not Found"
-        elif error_category == ErrorCategory.PERMISSION:
+        if error_category == ErrorCategory.PERMISSION:
             return "Forbidden"
-        elif error_category == ErrorCategory.VALIDATION:
+        if error_category == ErrorCategory.VALIDATION:
             return "Bad Request"
-        elif error_category == ErrorCategory.EXTERNAL:
+        if error_category == ErrorCategory.EXTERNAL:
             return "Bad Gateway"
-        else:
-            return "Internal Server Error"
+        return "Internal Server Error"
 
     def register_handlers(self) -> None:
         """Register all generated handlers automatically"""
