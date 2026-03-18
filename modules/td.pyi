@@ -83,6 +83,15 @@ class OP:
     outputConnectors: list[Any]
     inputs: list[OP]
     outputs: list[OP]
+    # CHOP attributes (available on all OPs for duck-typing compatibility)
+    numChans: int
+    numSamples: int
+    sampleRate: float
+    # DAT attributes
+    numRows: int
+    numCols: int
+    # COMP attributes
+    extensions: list[Any]
 
     def parent(self, *args: Any) -> OP | None: ...
     def pars(self, pattern: str = ...) -> list[Par]: ...
@@ -94,6 +103,8 @@ class OP:
         depth: int | None = None,
     ) -> list[OP]: ...
     def errors(self, recurse: bool = False) -> str: ...
+    def chan(self, index: int | str) -> Channel | None: ...
+    def __getitem__(self, key: Any) -> Any: ...
 
 class COMP(OP):
     extensions: list[Any]
