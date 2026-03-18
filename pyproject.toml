@@ -59,6 +59,7 @@ include = ["modules"]
 exclude = [
   "modules/td_server/openapi_server",
   "modules/mcp/controllers/generated_handlers.py",
+  "modules/tests",
 ]
 typeCheckingMode = "basic"
 reportMissingImports = "warning"
