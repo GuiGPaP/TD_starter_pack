@@ -8,13 +8,56 @@ class _App:
     osName: str
     osVersion: str
 
-class _Par:
+class Par:
     name: str
     val: Any
+    label: str
+    style: str
+    default: Any
+    min: float
+    max: float
+    clampMin: bool
+    clampMax: bool
+    menuNames: list[str]
+    menuLabels: list[str]
+    isOP: bool
+    readOnly: bool
+    page: Page
     def eval(self) -> Any: ...
 
+class Page:
+    name: str
+    pars: list[Par]
+
+class ParGroup:
+    name: str
+    def __getattr__(self, name: str) -> Par: ...
+
 class _ParCollection:
-    def __getattr__(self, name: str) -> _Par: ...
+    def __getattr__(self, name: str) -> Par: ...
+
+class Cell:
+    val: str
+    row: int
+    col: int
+
+class Channel:
+    name: str
+    vals: list[float]
+
+class Matrix:
+    def __init__(self, *args: Any) -> None: ...
+    def __mul__(self, other: Matrix) -> Matrix: ...
+
+class Position:
+    x: float
+    y: float
+    z: float
+
+class Vector:
+    x: float
+    y: float
+    z: float
 
 class OP:
     valid: bool
@@ -24,8 +67,25 @@ class OP:
     OPType: str
     text: str
     par: _ParCollection
+    type: str
+    subType: str
+    family: str
+    ext: Any
+    nodeX: int
+    nodeY: int
+    nodeWidth: int
+    nodeHeight: int
+    viewer: bool
+    display: bool
+    render: bool
+    docked: list[OP]
+    inputConnectors: list[Any]
+    outputConnectors: list[Any]
+    inputs: list[OP]
+    outputs: list[OP]
 
-    def pars(self, pattern: str) -> list[_Par]: ...
+    def parent(self, *args: Any) -> OP | None: ...
+    def pars(self, pattern: str = ...) -> list[Par]: ...
     def create(self, node_type: str, node_name: str | None = None) -> OP | None: ...
     def destroy(self) -> None: ...
     def findChildren(
@@ -34,6 +94,23 @@ class OP:
         depth: int | None = None,
     ) -> list[OP]: ...
     def errors(self, recurse: bool = False) -> str: ...
+
+class COMP(OP):
+    extensions: list[Any]
+
+class SOP(OP): ...
+class TOP(OP): ...
+
+class CHOP(OP):
+    numChans: int
+    numSamples: int
+    sampleRate: float
+    def chan(self, index: int | str) -> Channel | None: ...
+
+class DAT(OP):
+    text: str
+    numRows: int
+    numCols: int
 
 class _OpFunc:
     me: OP | None
