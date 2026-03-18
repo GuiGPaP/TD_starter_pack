@@ -3,3 +3,14 @@ __pycache__
 *.pyc
 .env
 *.toe.bak
+
+# Python tooling
+.venv/
+.ruff_cache/
+.pyright/
+.pytest_cache/
+htmlcov/
+.coverage
+*.egg-info/
+dist/
+build/
