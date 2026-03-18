@@ -1,5 +1,4 @@
 _tmp_*
-_mcp_server/
 .mcp.json
 __pycache__
 *.pyc
