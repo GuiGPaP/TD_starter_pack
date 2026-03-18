@@ -69,6 +69,31 @@ class IApiService(Protocol):
         recursive: bool = ...,
         purpose: str = ...,
     ) -> Result: ...
+    def get_node_parameter_schema(
+        self, node_path: str, pattern: str = ...
+    ) -> Result: ...
+    def complete_op_paths(
+        self, context_node_path: str, prefix: str = ..., limit: int = ...
+    ) -> Result: ...
+    def get_chop_channels(
+        self,
+        node_path: str,
+        pattern: str = ...,
+        include_stats: bool = ...,
+        limit: int = ...,
+    ) -> Result: ...
+    def get_dat_table_info(
+        self,
+        node_path: str,
+        max_preview_rows: int = ...,
+        max_cell_chars: int = ...,
+    ) -> Result: ...
+    def get_comp_extensions(
+        self,
+        comp_path: str,
+        include_docs: bool = ...,
+        max_methods: int = ...,
+    ) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -754,6 +779,337 @@ class TouchDesignerApiService(IApiService):
                 os.close(fd)
             with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
+
+    @staticmethod
+    def _safe_par_value(par, mode: str = "eval"):
+        """Safely read a par's current or default value.
+
+        Returns the value as a JSON-friendly type (converts td.OP → path str).
+        """
+        try:
+            val = par.eval() if mode == "eval" else par.default
+            if hasattr(td, "OP") and isinstance(val, td.OP):
+                return val.path
+            return val
+        except Exception:
+            return None
+
+    def get_node_parameter_schema(self, node_path: str, pattern: str = "*") -> Result:
+        """Return parameter schema metadata for a node."""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+
+        import fnmatch as _fnmatch
+
+        parameters = []
+        for par in node.pars(pattern):
+            if not _fnmatch.fnmatch(par.name, pattern):
+                continue
+            parameters.append(
+                {
+                    "name": par.name,
+                    "label": getattr(par, "label", par.name),
+                    "style": getattr(par, "style", ""),
+                    "default": self._safe_par_value(par, "default"),
+                    "val": self._safe_par_value(par, "eval"),
+                    "min": getattr(par, "min", None),
+                    "max": getattr(par, "max", None),
+                    "clampMin": getattr(par, "clampMin", False),
+                    "clampMax": getattr(par, "clampMax", False),
+                    "menuNames": list(getattr(par, "menuNames", ())),
+                    "menuLabels": list(getattr(par, "menuLabels", ())),
+                    "isOP": getattr(par, "isOP", False),
+                    "readOnly": getattr(par, "readOnly", False),
+                    "page": getattr(par, "page", ""),
+                }
+            )
+
+        return success_result(
+            {
+                "nodePath": node.path,
+                "opType": node.OPType,
+                "count": len(parameters),
+                "parameters": parameters,
+            }
+        )
+
+    def complete_op_paths(
+        self, context_node_path: str, prefix: str = "*", limit: int = 50
+    ) -> Result:
+        """Resolve op('...') style paths from a context node."""
+        context = td.op(context_node_path)
+        if context is None or not context.valid:
+            return error_result(f"Context node not found: {context_node_path}")
+
+        import fnmatch as _fnmatch
+
+        matches = []
+        note = None
+
+        def _collect(search_node, name_pattern, rel_prefix=""):
+            """Find children matching name_pattern under search_node."""
+            if search_node is None or not search_node.valid:
+                return
+            children = search_node.findChildren(name="*", depth=1)
+            for child in children:
+                if _fnmatch.fnmatch(child.name, name_pattern):
+                    rel_ref = f"{rel_prefix}{child.name}" if rel_prefix else child.name
+                    matches.append(
+                        {
+                            "path": child.path,
+                            "name": child.name,
+                            "opType": child.OPType,
+                            "family": getattr(child, "family", ""),
+                            "relativeRef": rel_ref,
+                        }
+                    )
+
+        if prefix.startswith("/"):
+            # Absolute path
+            parts = prefix.rstrip("/").rsplit("/", 1)
+            if len(parts) == 2:
+                parent_path, last_seg = parts
+                parent_path = parent_path or "/"
+                parent_node = td.op(parent_path)
+                if parent_node is None or not parent_node.valid:
+                    return error_result(f"Parent not found: {parent_path}")
+                name_pat = f"{last_seg}*" if "*" not in last_seg else last_seg
+                _collect(parent_node, name_pat, f"{parent_path}/")
+            else:
+                # Single segment like "/project1"
+                exact = td.op(prefix)
+                if exact is not None and exact.valid:
+                    matches.append(
+                        {
+                            "path": exact.path,
+                            "name": exact.name,
+                            "opType": exact.OPType,
+                            "family": getattr(exact, "family", ""),
+                            "relativeRef": prefix,
+                        }
+                    )
+        elif prefix.startswith("./"):
+            # Child of context
+            remainder = prefix[2:]
+            is_comp = hasattr(context, "children")
+            search_node = context if is_comp else context.parent()
+            if not is_comp:
+                note = "context is not a COMP, searched siblings instead"
+            if "/" in remainder:
+                # Multi-level: ./sub/foo
+                segments = remainder.split("/")
+                for seg in segments[:-1]:
+                    if search_node is None:
+                        break
+                    found = None
+                    for child in search_node.findChildren(name=seg, depth=1):
+                        if child.name == seg:
+                            found = child
+                            break
+                    search_node = found
+                last_seg = segments[-1]
+            else:
+                last_seg = remainder
+            name_pat = f"{last_seg}*" if last_seg and "*" not in last_seg else (last_seg or "*")
+            _collect(search_node, name_pat, "./")
+        elif prefix.startswith("../"):
+            # Sibling of parent
+            remainder = prefix[3:]
+            parent = context.parent()
+            if parent is not None:
+                grandparent = parent.parent()
+                search_node = grandparent
+            else:
+                search_node = None
+            name_pat = f"{remainder}*" if remainder and "*" not in remainder else (remainder or "*")
+            _collect(search_node, name_pat, "../")
+        elif "/" in prefix:
+            # Relative multi-level: sub/foo
+            segments = prefix.split("/")
+            search_node = context.parent()
+            for seg in segments[:-1]:
+                if search_node is None:
+                    break
+                found = None
+                for child in search_node.findChildren(name=seg, depth=1):
+                    if child.name == seg:
+                        found = child
+                        break
+                search_node = found
+            last_seg = segments[-1]
+            name_pat = f"{last_seg}*" if "*" not in last_seg else last_seg
+            rel_prefix = "/".join(segments[:-1]) + "/"
+            _collect(search_node, name_pat, rel_prefix)
+        else:
+            # Simple name — search siblings and children
+            name_pat = f"{prefix}*" if prefix != "*" and "*" not in prefix else prefix
+            parent = context.parent()
+            if parent is not None:
+                _collect(parent, name_pat)
+
+        truncated = len(matches) > limit
+        matches = matches[:limit]
+
+        result_data: dict = {
+            "contextNodePath": context.path,
+            "prefix": prefix,
+            "count": len(matches),
+            "truncated": truncated,
+            "matches": matches,
+        }
+        if note:
+            result_data["note"] = note
+
+        return success_result(result_data)
+
+    def get_chop_channels(
+        self,
+        node_path: str,
+        pattern: str = "*",
+        include_stats: bool = False,
+        limit: int = 100,
+    ) -> Result:
+        """Return channel info for a CHOP node."""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "numChans"):
+            return error_result(f"Not a CHOP: {node_path}")
+
+        import fnmatch as _fnmatch
+
+        channels = []
+        for i in range(node.numChans):
+            ch = node.chan(i)
+            if ch is None:
+                continue
+            if not _fnmatch.fnmatch(ch.name, pattern):
+                continue
+            entry: dict = {"name": ch.name}
+            if include_stats:
+                vals = ch.vals
+                entry["minVal"] = min(vals) if vals else 0.0
+                entry["maxVal"] = max(vals) if vals else 0.0
+                entry["avgVal"] = sum(vals) / len(vals) if vals else 0.0
+            channels.append(entry)
+
+        truncated = len(channels) > limit
+        channels = channels[:limit]
+
+        return success_result(
+            {
+                "nodePath": node.path,
+                "numChannels": node.numChans,
+                "numSamples": getattr(node, "numSamples", 0),
+                "sampleRate": getattr(node, "sampleRate", 0),
+                "channels": channels,
+                "truncated": truncated,
+            }
+        )
+
+    def get_dat_table_info(
+        self,
+        node_path: str,
+        max_preview_rows: int = 6,
+        max_cell_chars: int = 200,
+    ) -> Result:
+        """Return dimensions and a sample of a table DAT's content."""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "numRows"):
+            return error_result(f"Not a table DAT: {node_path}")
+
+        num_rows = node.numRows
+        num_cols = node.numCols
+        max_cols = 50
+
+        sample_data = []
+        truncated_cells = False
+        rows_to_read = min(num_rows, max_preview_rows)
+        cols_to_read = min(num_cols, max_cols)
+
+        for r in range(rows_to_read):
+            row = []
+            for c in range(cols_to_read):
+                cell = node[r, c]
+                val = str(cell.val) if cell is not None else ""
+                if len(val) > max_cell_chars:
+                    val = val[:max_cell_chars] + "..."
+                    truncated_cells = True
+                row.append(val)
+            sample_data.append(row)
+
+        return success_result(
+            {
+                "nodePath": node.path,
+                "numRows": num_rows,
+                "numCols": num_cols,
+                "sampleData": sample_data,
+                "truncatedRows": num_rows > max_preview_rows,
+                "truncatedCols": num_cols > max_cols,
+                "truncatedCells": truncated_cells,
+            }
+        )
+
+    def get_comp_extensions(
+        self,
+        comp_path: str,
+        include_docs: bool = False,
+        max_methods: int = 50,
+    ) -> Result:
+        """Return extension info for a COMP."""
+        comp = td.op(comp_path)
+        if comp is None or not comp.valid:
+            return error_result(f"Node not found: {comp_path}")
+        if not hasattr(comp, "extensions"):
+            return error_result(f"Not a COMP or no extensions: {comp_path}")
+
+        extensions_list = []
+        for ext in comp.extensions:
+            ext_name = type(ext).__name__
+            methods = []
+            properties = []
+
+            members = inspect.getmembers(ext)
+            method_count = 0
+            for member_name, member_obj in members:
+                if member_name.startswith("_"):
+                    continue
+                if callable(member_obj):
+                    method_count += 1
+                    if len(methods) < max_methods:
+                        entry: dict = {"name": member_name}
+                        try:
+                            entry["signature"] = str(inspect.signature(member_obj))
+                        except (ValueError, TypeError):
+                            entry["signature"] = "(...)"
+                        if include_docs:
+                            doc = inspect.getdoc(member_obj) or ""
+                            entry["doc"] = doc[:500] if len(doc) > 500 else doc
+                        methods.append(entry)
+                else:
+                    properties.append(
+                        {"name": member_name, "type": type(member_obj).__name__}
+                    )
+
+            extensions_list.append(
+                {
+                    "name": ext_name,
+                    "methodCount": method_count,
+                    "propertyCount": len(properties),
+                    "methods": methods,
+                    "properties": properties,
+                }
+            )
+
+        return success_result(
+            {
+                "compPath": comp.path,
+                "extensions": extensions_list,
+            }
+        )
 
     def _find_text_dats(
         self,

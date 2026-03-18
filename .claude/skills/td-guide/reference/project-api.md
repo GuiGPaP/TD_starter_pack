@@ -21,6 +21,15 @@ This project exposes TouchDesigner functionality through an MCP web server. The 
 | Look up TD Python classes | `get_td_classes` | Lists all members of the `td` module |
 | Get class/module details | `get_td_class_details` | Introspects methods and properties of a td class |
 | Get Python help text | `get_td_module_help` | Returns `pydoc.render_doc()` output for a module/class |
+| Get parameter schema (type, range, menu) | `get_node_parameter_schema` | Returns name, style, default, min/max, menuNames/menuLabels, isOP, readOnly for each par |
+| Complete op() path references | `complete_op_paths` | Resolves relative/absolute op('...') forms from a context node, returns matching paths |
+| List CHOP channels | `get_chop_channels` | Returns channel names, sample rate, optional min/max/avg stats |
+| Preview table DAT content | `get_dat_table_info` | Returns dimensions + sample rows (raw cells, no type inference) |
+| List COMP extensions | `get_comp_extensions` | Returns extension classes with method signatures and properties |
+| Read DAT text | `get_dat_text` | Returns the .text content of a DAT operator |
+| Write DAT text | `set_dat_text` | Writes .text content to a DAT operator |
+| Lint DAT code | `lint_dat` | Runs ruff on DAT .text, optional fix/dry-run with diff |
+| Discover DAT candidates | `discover_dat_candidates` | Classifies DATs under a parent by kind (python/glsl/text/data) |
 
 ## Usage Notes
 
@@ -96,3 +105,59 @@ modules/
 ```
 
 The `TouchDesignerApiService` class implements all endpoints. It's instantiated as a singleton `api_service` at module level.
+
+## Semantic Introspection Tools
+
+These tools expose TD runtime state so Claude stops guessing parameter names, operator paths, and data structures.
+
+### `get_node_parameter_schema` — Parameter Discovery
+
+```
+nodePath: "/project1/noise1"
+pattern: "instance*"          # Optional glob filter (default "*")
+```
+
+Returns for each parameter: `name`, `label`, `style` (Float/Int/Menu/…), `default`, `val`, `min`, `max`, `clampMin`, `clampMax`, `menuNames`, `menuLabels`, `isOP`, `readOnly`, `page`.
+
+**Use before** setting parameters — eliminates guessing param names and valid ranges.
+
+### `complete_op_paths` — Operator Path Completion
+
+```
+contextNodePath: "/project1/base1/script1"
+prefix: "noise"               # or "./sub", "../foo", "/project1/geo*"
+limit: 50                     # Max results (default 50)
+```
+
+Resolves `op('...')` forms as TD would: sibling by name, `./child`, `../parent_sibling`, absolute `/path`, multi-level `sub/foo`. Returns `{path, name, opType, family, relativeRef}` per match.
+
+### `get_chop_channels` — CHOP Channel Inspection
+
+```
+nodePath: "/project1/noise1"
+pattern: "t*"                 # Optional channel name filter
+includeStats: true            # Add min/max/avg per channel
+limit: 100                    # Max channels (default 100)
+```
+
+Returns `numChannels`, `numSamples`, `sampleRate`, and channel list. With `includeStats=true`, each channel adds `minVal`, `maxVal`, `avgVal`.
+
+### `get_dat_table_info` — Table DAT Preview
+
+```
+nodePath: "/project1/table1"
+maxPreviewRows: 6             # First N rows (default 6)
+maxCellChars: 200             # Truncate cells (default 200)
+```
+
+Returns `numRows`, `numCols`, raw `sampleData` (no header/type inference), and truncation flags.
+
+### `get_comp_extensions` — COMP Extension Discovery
+
+```
+compPath: "/project1/base1"
+includeDocs: true             # Add method docstrings (truncated to 500 chars)
+maxMethods: 50                # Max methods per extension (default 50)
+```
+
+Returns each extension's `name`, `methodCount`, `propertyCount`, and lists of `{name, signature}` methods and `{name, type}` properties.

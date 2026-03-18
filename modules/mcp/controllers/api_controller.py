@@ -97,6 +97,31 @@ class ApiServiceProtocol(Protocol):
         recursive: bool = ...,
         purpose: str = ...,
     ) -> Result: ...
+    def get_node_parameter_schema(
+        self, node_path: str, pattern: str = ...
+    ) -> Result: ...
+    def complete_op_paths(
+        self, context_node_path: str, prefix: str = ..., limit: int = ...
+    ) -> Result: ...
+    def get_chop_channels(
+        self,
+        node_path: str,
+        pattern: str = ...,
+        include_stats: bool = ...,
+        limit: int = ...,
+    ) -> Result: ...
+    def get_dat_table_info(
+        self,
+        node_path: str,
+        max_preview_rows: int = ...,
+        max_cell_chars: int = ...,
+    ) -> Result: ...
+    def get_comp_extensions(
+        self,
+        comp_path: str,
+        include_docs: bool = ...,
+        max_methods: int = ...,
+    ) -> Result: ...
 
 
 class RequestProcessor:

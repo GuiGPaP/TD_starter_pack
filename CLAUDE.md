@@ -100,7 +100,7 @@ scripts/
 
 `_mcp_server/` est un submodule pointant vers `GuiGPaP/touchdesigner-mcp`
 (fork de `8beeeaaat/touchdesigner-mcp`).
-Branche custom : `td-starter-pack` (7 tools additionnels).
+Branche custom : `td-starter-pack` (13 tools additionnels : 3 helpers, 4 DAT, 5 introspection sémantique, 1 discovery).
 Version : semver propre (ex: `1.5.0-td.1`), `minApiVersion` aligné sur la spec locale.
 
 ### Setup initial

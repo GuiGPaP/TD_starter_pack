@@ -121,6 +121,26 @@ class TestRouteExistence:
         routes = extract_routes(_load_schema())
         assert "discover_dat_candidates" in {r.operation_id for r in routes}
 
+    def test_get_node_parameter_schema_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_node_parameter_schema" in {r.operation_id for r in routes}
+
+    def test_complete_op_paths_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "complete_op_paths" in {r.operation_id for r in routes}
+
+    def test_get_chop_channels_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_chop_channels" in {r.operation_id for r in routes}
+
+    def test_get_dat_table_info_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_dat_table_info" in {r.operation_id for r in routes}
+
+    def test_get_comp_extensions_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_comp_extensions" in {r.operation_id for r in routes}
+
 
 # ── End-to-end tests ──────────────────────────────────────────────
 
@@ -402,3 +422,119 @@ class TestEndToEnd:
         assert result["success"] is True
         assert result["data"]["count"] >= 1
         assert result["data"]["candidates"][0]["kindGuess"] == "python"
+
+    def test_get_node_parameter_schema_end_to_end(self, integration_router, mock_td):
+        node = MagicMock()
+        node.valid = True
+        node.path = "/project1/noise1"
+        node.OPType = "noiseCHOP"
+
+        par = MagicMock()
+        par.name = "seed"
+        par.label = "Seed"
+        par.style = "Int"
+        par.default = 0
+        par.min = 0
+        par.max = 100
+        par.clampMin = True
+        par.clampMax = False
+        par.menuNames = ()
+        par.menuLabels = ()
+        par.isOP = False
+        par.readOnly = False
+        par.page = "Noise"
+        par.eval.return_value = 42
+
+        node.pars.return_value = [par]
+        mock_td.op.return_value = node
+        mock_td.OP = MagicMock  # isinstance check
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/parameter-schema",
+            {"nodePath": "/project1/noise1"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["count"] == 1
+        assert result["data"]["parameters"][0]["name"] == "seed"
+
+    def test_complete_op_paths_end_to_end(self, integration_router, mock_td):
+        context = MagicMock()
+        context.valid = True
+        context.path = "/project1/script1"
+        parent = MagicMock()
+        parent.valid = True
+        parent.path = "/project1"
+
+        sibling = MagicMock()
+        sibling.name = "noise1"
+        sibling.path = "/project1/noise1"
+        sibling.OPType = "noiseCHOP"
+        sibling.family = "CHOP"
+
+        context.parent.return_value = parent
+        parent.findChildren.return_value = [sibling]
+        mock_td.op.return_value = context
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/complete-paths",
+            {"contextNodePath": "/project1/script1", "prefix": "noise"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["count"] >= 1
+
+    def test_get_chop_channels_end_to_end(self, integration_router, mock_td):
+        node = MagicMock()
+        node.valid = True
+        node.path = "/project1/noise1"
+        node.numChans = 2
+        node.numSamples = 100
+        node.sampleRate = 60.0
+
+        ch0 = MagicMock()
+        ch0.name = "tx"
+        ch0.vals = [1.0, 2.0]
+        ch1 = MagicMock()
+        ch1.name = "ty"
+        ch1.vals = [3.0]
+        node.chan.side_effect = lambda i: [ch0, ch1][i] if i < 2 else None
+        mock_td.op.return_value = node
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/chop-channels",
+            {"nodePath": "/project1/noise1"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["numChannels"] == 2
+
+    def test_get_dat_table_info_end_to_end(self, integration_router, mock_td):
+        node = MagicMock()
+        node.valid = True
+        node.path = "/project1/table1"
+        node.numRows = 2
+        node.numCols = 2
+
+        cell = MagicMock()
+        cell.val = "hello"
+        node.__getitem__ = MagicMock(return_value=cell)
+        mock_td.op.return_value = node
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/dat-table-info",
+            {"nodePath": "/project1/table1"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["numRows"] == 2
+
+    def test_get_comp_extensions_end_to_end(self, integration_router, mock_td):
+        comp = MagicMock()
+        comp.valid = True
+        comp.path = "/project1/base1"
+        comp.extensions = []
+        mock_td.op.return_value = comp
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/comp-extensions",
+            {"compPath": "/project1/base1"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["extensions"] == []

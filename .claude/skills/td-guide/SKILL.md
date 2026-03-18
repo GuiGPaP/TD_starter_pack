@@ -51,6 +51,18 @@ For standard composite patterns, use the dedicated MCP tools instead of `execute
 
 These tools wrap `td_helpers.network` and handle all boilerplate (viewer flags, layout, connections).
 
+### Semantic Introspection (stop guessing)
+
+Before writing code that references parameters, paths, channels, or extensions — **query the runtime**:
+
+| MCP Tool | Use When... |
+|----------|-------------|
+| `get_node_parameter_schema` | You need parameter names, types, ranges, menus for a node. Use `pattern` to filter (e.g. `"instance*"`) |
+| `complete_op_paths` | You need to resolve an `op('...')` reference. Supports `./child`, `../sibling`, `/absolute`, `name` forms |
+| `get_chop_channels` | You need channel names or stats from a CHOP. Set `includeStats=true` for min/max/avg |
+| `get_dat_table_info` | You need to know a table DAT's dimensions and content preview |
+| `get_comp_extensions` | You need to discover Python extension methods on a COMP |
+
 ### `execute_python_script` — Fallback
 
 For anything not covered by the high-level tools (custom wiring, expression modes, data reads, etc.), use `execute_python_script`. The namespace provides:

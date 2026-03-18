@@ -15,11 +15,46 @@ from itertools import count
 
 
 class FakePar:
-    """A single TD parameter with ``.name`` and ``.eval()``."""
+    """A single TD parameter with ``.name`` and ``.eval()``.
 
-    def __init__(self, name: str, value):
+    Rich keyword arguments expose the schema attributes used by
+    ``get_node_parameter_schema``.  All are optional so existing call
+    sites ``FakePar(name, value)`` keep working.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        value,
+        *,
+        label: str = "",
+        style: str = "Float",
+        default=None,
+        min_val=None,
+        max_val=None,
+        clamp_min: bool = False,
+        clamp_max: bool = False,
+        menu_names: tuple = (),
+        menu_labels: tuple = (),
+        is_op: bool = False,
+        read_only: bool = False,
+        page: str = "",
+    ):
         self.name = name
         self._value = value
+        # Schema attributes
+        self.label = label or name
+        self.style = style
+        self.default = default if default is not None else value
+        self.min = min_val
+        self.max = max_val
+        self.clampMin = clamp_min
+        self.clampMax = clamp_max
+        self.menuNames = menu_names
+        self.menuLabels = menu_labels
+        self.isOP = is_op
+        self.readOnly = read_only
+        self.page = page
 
     def eval(self):
         return self._value
@@ -68,6 +103,7 @@ class FakeOp:
         self.id: int = next(_id_counter)
         self.name: str = name
         self.OPType: str = "baseCOMP"
+        self.family: str = ""
         self.valid: bool = True
 
         self.nodeX: int = 0
@@ -99,8 +135,19 @@ class FakeOp:
     # -- Parameter reading (used by _get_node_properties) --
 
     def pars(self, pattern: str = "*") -> list[FakePar]:
-        """Return FakePar objects for all attributes set on ``self.par``."""
-        return [FakePar(k, v) for k, v in vars(self.par).items() if not k.startswith("_")]
+        """Return FakePar objects for all attributes set on ``self.par``.
+
+        Rich ``FakePar`` instances are returned as-is; plain values are
+        wrapped.  *pattern* is applied via ``fnmatch``.
+        """
+        result: list[FakePar] = []
+        for k, v in vars(self.par).items():
+            if k.startswith("_"):
+                continue
+            par = v if isinstance(v, FakePar) else FakePar(k, v)
+            if fnmatch.fnmatch(par.name, pattern):
+                result.append(par)
+        return result
 
     def parent(self) -> FakeOp | None:
         """Return the parent operator, or None for root."""
@@ -220,3 +267,88 @@ class FakeGraph:
 
     def op(self, path: str) -> FakeOp | None:
         return self._nodes.get(path)
+
+
+# ── CHOP fakes ───────────────────────────────────────────────────────
+
+
+class FakeChannel:
+    """A single CHOP channel with name and sample values."""
+
+    def __init__(self, name: str, vals: list[float] | None = None):
+        self.name = name
+        self.vals = vals or [0.0]
+
+
+class FakeChop(FakeOp):
+    """Fake CHOP operator with channels."""
+
+    def __init__(
+        self,
+        name: str = "chop1",
+        channels: list[FakeChannel] | None = None,
+        *,
+        sample_rate: float = 60.0,
+        **kwargs,
+    ):
+        super().__init__(name=name, **kwargs)
+        self.OPType = "noiseCHOP"
+        self.family = "CHOP"
+        self._channels: list[FakeChannel] = channels or []
+        self.sampleRate = sample_rate
+
+    @property
+    def numChans(self) -> int:
+        return len(self._channels)
+
+    @property
+    def numSamples(self) -> int:
+        return max((len(ch.vals) for ch in self._channels), default=0)
+
+    def chan(self, index: int | str) -> FakeChannel | None:
+        if isinstance(index, int):
+            return self._channels[index] if 0 <= index < len(self._channels) else None
+        for ch in self._channels:
+            if ch.name == index:
+                return ch
+        return None
+
+
+# ── Table DAT fakes ──────────────────────────────────────────────────
+
+
+class FakeCell:
+    """A single DAT table cell."""
+
+    def __init__(self, val: str = ""):
+        self.val = val
+
+
+class FakeTableDat(FakeOp):
+    """Fake table DAT with row/col cell access."""
+
+    def __init__(
+        self,
+        name: str = "table1",
+        data: list[list[str]] | None = None,
+        **kwargs,
+    ):
+        super().__init__(name=name, **kwargs)
+        self.OPType = "tableDAT"
+        self.family = "DAT"
+        self._data: list[list[str]] = data or []
+
+    @property
+    def numRows(self) -> int:
+        return len(self._data)
+
+    @property
+    def numCols(self) -> int:
+        return max((len(row) for row in self._data), default=0)
+
+    def __getitem__(self, key):
+        """Support ``node[r, c]`` cell access returning a FakeCell."""
+        r, c = key
+        if 0 <= r < len(self._data) and 0 <= c < len(self._data[r]):
+            return FakeCell(self._data[r][c])
+        return FakeCell("")

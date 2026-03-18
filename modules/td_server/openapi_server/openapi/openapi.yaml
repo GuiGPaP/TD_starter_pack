@@ -348,6 +348,321 @@ paths:
           description: DAT discovery results
       summary: Discover DAT candidates for agent workflows
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/parameter-schema:
+    get:
+      description: Return parameter schema metadata (type, range, menu, default) for
+        a node. Eliminates guessing parameter names and valid values.
+      operationId: get_node_parameter_schema
+      parameters:
+      - description: "Absolute path to the node. e.g., \"/project1/noise1\""
+        in: query
+        name: nodePath
+        required: true
+        schema:
+          type: string
+      - description: "Glob pattern to filter parameter names. e.g., \"instance*\""
+        in: query
+        name: pattern
+        required: false
+        schema:
+          default: '*'
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      nodePath:
+                        type: string
+                      opType:
+                        type: string
+                      count:
+                        type: integer
+                      parameters:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ParameterSchema'
+          description: Parameter schema list
+      summary: Get parameter schema for a node
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/complete-paths:
+    get:
+      description: "Resolve op('...') style references from a context node. Supports\
+        \ relative (noise1, ./sub, ../foo) and absolute (/project1/geo*) forms."
+      operationId: complete_op_paths
+      parameters:
+      - description: "Absolute path to the context node. e.g., \"/project1/base1/script1\""
+        in: query
+        name: contextNodePath
+        required: true
+        schema:
+          type: string
+      - description: "Prefix to complete. e.g., \"noise\", \"./sub\", \"../foo\",\
+          \ \"/project1/geo*\""
+        in: query
+        name: prefix
+        required: false
+        schema:
+          default: '*'
+          type: string
+      - description: Maximum number of results to return
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      contextNodePath:
+                        type: string
+                      prefix:
+                        type: string
+                      count:
+                        type: integer
+                      truncated:
+                        type: boolean
+                      note:
+                        type: string
+                      matches:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            path:
+                              type: string
+                            name:
+                              type: string
+                            opType:
+                              type: string
+                            family:
+                              type: string
+                            relativeRef:
+                              type: string
+          description: Path completion results
+      summary: Complete op() path references
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/chop-channels:
+    get:
+      description: Return channel information for a CHOP node. Optionally includes
+        per-channel statistics (min, max, avg).
+      operationId: get_chop_channels
+      parameters:
+      - description: "Absolute path to the CHOP node. e.g., \"/project1/noise1\""
+        in: query
+        name: nodePath
+        required: true
+        schema:
+          type: string
+      - description: "Glob pattern to filter channel names. e.g., \"chan*\""
+        in: query
+        name: pattern
+        required: false
+        schema:
+          default: '*'
+          type: string
+      - description: Include per-channel min/max/avg statistics
+        in: query
+        name: includeStats
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: Maximum number of channels to return
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      nodePath:
+                        type: string
+                      numChannels:
+                        type: integer
+                      numSamples:
+                        type: integer
+                      sampleRate:
+                        type: number
+                      channels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            minVal:
+                              type: number
+                            maxVal:
+                              type: number
+                            avgVal:
+                              type: number
+                      truncated:
+                        type: boolean
+          description: CHOP channel information
+      summary: Get CHOP channel info
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-table-info:
+    get:
+      description: Return dimensions and a content sample of a table DAT. No type
+        inference — raw cell values only.
+      operationId: get_dat_table_info
+      parameters:
+      - description: "Absolute path to the table DAT. e.g., \"/project1/table1\""
+        in: query
+        name: nodePath
+        required: true
+        schema:
+          type: string
+      - description: Maximum number of rows to include in sample data
+        in: query
+        name: maxPreviewRows
+        required: false
+        schema:
+          default: 6
+          type: integer
+      - description: Truncate cell values longer than this
+        in: query
+        name: maxCellChars
+        required: false
+        schema:
+          default: 200
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      nodePath:
+                        type: string
+                      numRows:
+                        type: integer
+                      numCols:
+                        type: integer
+                      sampleData:
+                        type: array
+                        items:
+                          type: array
+                          items:
+                            type: string
+                      truncatedRows:
+                        type: boolean
+                      truncatedCols:
+                        type: boolean
+                      truncatedCells:
+                        type: boolean
+          description: Table DAT info
+      summary: Get table DAT dimensions and sample data
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/comp-extensions:
+    get:
+      description: Return extension classes, methods, and properties for a COMP. Useful
+        for discovering custom Python extensions on components.
+      operationId: get_comp_extensions
+      parameters:
+      - description: "Absolute path to the COMP. e.g., \"/project1/base1\""
+        in: query
+        name: compPath
+        required: true
+        schema:
+          type: string
+      - description: Include method docstrings (truncated to 500 chars)
+        in: query
+        name: includeDocs
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: Maximum methods per extension
+        in: query
+        name: maxMethods
+        required: false
+        schema:
+          default: 50
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      compPath:
+                        type: string
+                      extensions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            methodCount:
+                              type: integer
+                            propertyCount:
+                              type: integer
+                            methods:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  signature:
+                                    type: string
+                                  doc:
+                                    type: string
+                            properties:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  type:
+                                    type: string
+          description: COMP extension info
+      summary: Get COMP extension methods and properties
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/td/classes:
     get:
       description: "Returns a list of Python classes, modules, and functions available\
@@ -528,6 +843,42 @@ paths:
       x-openapi-router-controller: openapi_server.controllers.default_controller
 components:
   schemas:
+    ParameterSchema:
+      description: Schema metadata for a single TouchDesigner parameter
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        style:
+          type: string
+        default: {}
+        val: {}
+        min:
+          type: number
+          nullable: true
+        max:
+          type: number
+          nullable: true
+        clampMin:
+          type: boolean
+        clampMax:
+          type: boolean
+        menuNames:
+          type: array
+          items:
+            type: string
+        menuLabels:
+          type: array
+          items:
+            type: string
+        isOP:
+          type: boolean
+        readOnly:
+          type: boolean
+        page:
+          type: string
     TdNode:
       description: Information about a TouchDesigner node
       example:

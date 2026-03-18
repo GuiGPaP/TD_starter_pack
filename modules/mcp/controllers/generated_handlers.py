@@ -693,6 +693,156 @@ def discover_dat_candidates(body: str = None, **kwargs) -> Result:
         return error_result(f"Handler for 'discover_dat_candidates' failed: {str(e)}")
 
 
+def get_node_parameter_schema(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_node_parameter_schema
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_node_parameter_schema' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_node_parameter_schema", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_node_parameter_schema' not implemented")
+
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+        sig = inspect.signature(service_method)
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_node_parameter_schema' failed: {str(e)}")
+
+
+def complete_op_paths(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: complete_op_paths
+    """
+    try:
+        print(f"[DEBUG] Handler 'complete_op_paths' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "complete_op_paths", None)
+        if not callable(service_method):
+            return error_result("Service method 'complete_op_paths' not implemented")
+
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+        sig = inspect.signature(service_method)
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'complete_op_paths' failed: {str(e)}")
+
+
+def get_chop_channels(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_chop_channels
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_chop_channels' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_chop_channels", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_chop_channels' not implemented")
+
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+        sig = inspect.signature(service_method)
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_chop_channels' failed: {str(e)}")
+
+
+def get_dat_table_info(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_dat_table_info
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_dat_table_info' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_dat_table_info", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_dat_table_info' not implemented")
+
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+        sig = inspect.signature(service_method)
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_dat_table_info' failed: {str(e)}")
+
+
+def get_comp_extensions(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_comp_extensions
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_comp_extensions' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_comp_extensions", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_comp_extensions' not implemented")
+
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+        sig = inspect.signature(service_method)
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_comp_extensions' failed: {str(e)}")
+
+
 __all__ = [
     "delete_node",
     "get_nodes",
@@ -713,4 +863,9 @@ __all__ = [
     "set_dat_text",
     "lint_dat",
     "discover_dat_candidates",
+    "get_node_parameter_schema",
+    "complete_op_paths",
+    "get_chop_channels",
+    "get_dat_table_info",
+    "get_comp_extensions",
 ]

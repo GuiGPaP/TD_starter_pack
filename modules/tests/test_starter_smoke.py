@@ -12,7 +12,16 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from tests.fake_td import FakeContainer, FakeDat, FakeGraph, FakeOp
+from tests.fake_td import (
+    FakeChannel,
+    FakeChop,
+    FakeContainer,
+    FakeDat,
+    FakeGraph,
+    FakeOp,
+    FakePar,
+    FakeTableDat,
+)
 
 
 @pytest.fixture()
@@ -712,3 +721,381 @@ class TestDiscoverDatCandidates:
         assert result["success"] is True
         c = result["data"]["candidates"][0]
         assert c["lineCount"] == 4  # 3 \n + 1
+
+
+# ── 10. Parameter Schema ──────────────────────────────────────────────
+
+
+class TestGetNodeParameterSchema:
+    def test_basic_schema(self, starter):
+        svc, graph, _base = starter
+        node = FakeOp("test1", parent=_base, graph=graph)
+        _base.children.append(node)
+        node.par.brightness = FakePar(
+            "brightness", 0.5,
+            label="Brightness", style="Float",
+            default=1.0, min_val=0.0, max_val=1.0,
+            clamp_min=True, clamp_max=True, page="Transform",
+        )
+        result = svc.get_node_parameter_schema("/project1/base1/test1")
+        assert result["success"] is True
+        data = result["data"]
+        assert data["count"] == 1
+        p = data["parameters"][0]
+        assert p["name"] == "brightness"
+        assert p["label"] == "Brightness"
+        assert p["style"] == "Float"
+        assert p["default"] == 1.0
+        assert p["val"] == 0.5
+        assert p["min"] == 0.0
+        assert p["max"] == 1.0
+        assert p["clampMin"] is True
+        assert p["page"] == "Transform"
+
+    def test_pattern_filter(self, starter):
+        svc, graph, _base = starter
+        node = FakeOp("test2", parent=_base, graph=graph)
+        _base.children.append(node)
+        node.par.instancetx = FakePar("instancetx", 0.0)
+        node.par.instancety = FakePar("instancety", 0.0)
+        node.par.brightness = FakePar("brightness", 1.0)
+        result = svc.get_node_parameter_schema("/project1/base1/test2", pattern="instance*")
+        assert result["success"] is True
+        names = [p["name"] for p in result["data"]["parameters"]]
+        assert "instancetx" in names
+        assert "instancety" in names
+        assert "brightness" not in names
+
+    def test_node_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_node_parameter_schema("/nonexistent")
+        assert result["success"] is False
+
+    def test_menu_par(self, starter):
+        svc, graph, _base = starter
+        node = FakeOp("test3", parent=_base, graph=graph)
+        _base.children.append(node)
+        node.par.mode = FakePar(
+            "mode", "add",
+            style="Menu",
+            menu_names=("add", "multiply", "screen"),
+            menu_labels=("Add", "Multiply", "Screen"),
+        )
+        result = svc.get_node_parameter_schema("/project1/base1/test3")
+        assert result["success"] is True
+        p = result["data"]["parameters"][0]
+        assert p["menuNames"] == ["add", "multiply", "screen"]
+        assert p["menuLabels"] == ["Add", "Multiply", "Screen"]
+
+    def test_op_par(self, starter):
+        svc, graph, _base = starter
+        node = FakeOp("test4", parent=_base, graph=graph)
+        _base.children.append(node)
+        node.par.top = FakePar("top", "", is_op=True)
+        result = svc.get_node_parameter_schema("/project1/base1/test4")
+        assert result["success"] is True
+        p = result["data"]["parameters"][0]
+        assert p["isOP"] is True
+
+
+# ── 11. Complete Op Paths ─────────────────────────────────────────────
+
+
+class TestCompleteOpPaths:
+    def test_sibling_by_name(self, starter):
+        svc, graph, _base = starter
+        noise = FakeOp("noise1", parent=_base, graph=graph)
+        _base.children.append(noise)
+        ctx = FakeOp("script1", parent=_base, graph=graph)
+        _base.children.append(ctx)
+
+        result = svc.complete_op_paths("/project1/base1/script1", prefix="noise")
+        assert result["success"] is True
+        names = [m["name"] for m in result["data"]["matches"]]
+        assert "noise1" in names
+
+    def test_child_dot_slash(self, starter):
+        svc, graph, _base = starter
+        sub = FakeContainer("sub1", parent=_base, graph=graph)
+        _base.children.append(sub)
+        child = FakeOp("foo", parent=sub, graph=graph)
+        sub.children.append(child)
+
+        result = svc.complete_op_paths("/project1/base1/sub1", prefix="./foo")
+        assert result["success"] is True
+        assert result["data"]["count"] >= 1
+
+    def test_parent_dot_dot(self, starter):
+        svc, graph, _base = starter
+        sibling = FakeOp("sib1", parent=_base, graph=graph)
+        _base.children.append(sibling)
+        sub = FakeContainer("sub1", parent=_base, graph=graph)
+        _base.children.append(sub)
+        ctx = FakeOp("ctx", parent=sub, graph=graph)
+        sub.children.append(ctx)
+
+        result = svc.complete_op_paths("/project1/base1/sub1/ctx", prefix="../")
+        assert result["success"] is True
+        names = [m["name"] for m in result["data"]["matches"]]
+        assert "sub1" in names
+
+    def test_absolute_path(self, starter):
+        svc, graph, _base = starter
+        geo = FakeOp("geo1", parent=_base, graph=graph)
+        _base.children.append(geo)
+
+        result = svc.complete_op_paths("/project1/base1/geo1", prefix="/project1/base1/geo")
+        assert result["success"] is True
+        names = [m["name"] for m in result["data"]["matches"]]
+        assert "geo1" in names
+
+    def test_limit(self, starter):
+        svc, graph, _base = starter
+        for i in range(5):
+            child = FakeOp(f"n{i}", parent=_base, graph=graph)
+            _base.children.append(child)
+        ctx = FakeOp("ctx", parent=_base, graph=graph)
+        _base.children.append(ctx)
+
+        result = svc.complete_op_paths("/project1/base1/ctx", prefix="n", limit=2)
+        assert result["success"] is True
+        assert result["data"]["truncated"] is True
+        assert len(result["data"]["matches"]) == 2
+
+    def test_no_matches(self, starter):
+        svc, graph, _base = starter
+        ctx = FakeOp("ctx", parent=_base, graph=graph)
+        _base.children.append(ctx)
+        result = svc.complete_op_paths("/project1/base1/ctx", prefix="zzz")
+        assert result["success"] is True
+        assert result["data"]["count"] == 0
+
+    def test_context_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.complete_op_paths("/nonexistent", prefix="foo")
+        assert result["success"] is False
+
+
+# ── 12. CHOP Channels ────────────────────────────────────────────────
+
+
+class TestGetChopChannels:
+    def test_basic_names_only(self, starter):
+        svc, graph, _base = starter
+        chop = FakeChop(
+            "noise1",
+            channels=[FakeChannel("tx", [1.0, 2.0]), FakeChannel("ty", [3.0])],
+            parent=_base, graph=graph,
+        )
+        _base.children.append(chop)
+
+        result = svc.get_chop_channels("/project1/base1/noise1")
+        assert result["success"] is True
+        data = result["data"]
+        assert data["numChannels"] == 2
+        assert data["sampleRate"] == 60.0
+        names = [c["name"] for c in data["channels"]]
+        assert "tx" in names
+        assert "ty" in names
+        # No stats by default
+        assert "minVal" not in data["channels"][0]
+
+    def test_with_stats(self, starter):
+        svc, graph, _base = starter
+        chop = FakeChop(
+            "noise1",
+            channels=[FakeChannel("tx", [1.0, 3.0, 5.0])],
+            parent=_base, graph=graph,
+        )
+        _base.children.append(chop)
+
+        result = svc.get_chop_channels("/project1/base1/noise1", include_stats=True)
+        assert result["success"] is True
+        ch = result["data"]["channels"][0]
+        assert ch["minVal"] == 1.0
+        assert ch["maxVal"] == 5.0
+        assert ch["avgVal"] == 3.0
+
+    def test_pattern(self, starter):
+        svc, graph, _base = starter
+        chop = FakeChop(
+            "noise1",
+            channels=[FakeChannel("tx"), FakeChannel("ty"), FakeChannel("rz")],
+            parent=_base, graph=graph,
+        )
+        _base.children.append(chop)
+
+        result = svc.get_chop_channels("/project1/base1/noise1", pattern="t*")
+        assert result["success"] is True
+        names = [c["name"] for c in result["data"]["channels"]]
+        assert "tx" in names
+        assert "ty" in names
+        assert "rz" not in names
+
+    def test_limit_truncation(self, starter):
+        svc, graph, _base = starter
+        channels = [FakeChannel(f"ch{i}") for i in range(10)]
+        chop = FakeChop("noise1", channels=channels, parent=_base, graph=graph)
+        _base.children.append(chop)
+
+        result = svc.get_chop_channels("/project1/base1/noise1", limit=3)
+        assert result["success"] is True
+        assert result["data"]["truncated"] is True
+        assert len(result["data"]["channels"]) == 3
+
+    def test_not_a_chop(self, starter):
+        svc, graph, _base = starter
+        top = FakeOp("null1", parent=_base, graph=graph)
+        top.OPType = "nullTOP"
+        _base.children.append(top)
+
+        result = svc.get_chop_channels("/project1/base1/null1")
+        assert result["success"] is False
+        assert "Not a CHOP" in result["error"]
+
+    def test_node_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_chop_channels("/nonexistent")
+        assert result["success"] is False
+
+
+# ── 13. DAT Table Info ────────────────────────────────────────────────
+
+
+class TestGetDatTableInfo:
+    def test_basic(self, starter):
+        svc, graph, _base = starter
+        table = FakeTableDat(
+            "table1",
+            data=[["name", "value"], ["foo", "1"], ["bar", "2"]],
+            parent=_base, graph=graph,
+        )
+        _base.children.append(table)
+
+        result = svc.get_dat_table_info("/project1/base1/table1")
+        assert result["success"] is True
+        data = result["data"]
+        assert data["numRows"] == 3
+        assert data["numCols"] == 2
+        assert len(data["sampleData"]) == 3
+        assert data["sampleData"][0] == ["name", "value"]
+
+    def test_empty_table(self, starter):
+        svc, graph, _base = starter
+        table = FakeTableDat("table1", data=[], parent=_base, graph=graph)
+        _base.children.append(table)
+
+        result = svc.get_dat_table_info("/project1/base1/table1")
+        assert result["success"] is True
+        assert result["data"]["numRows"] == 0
+        assert result["data"]["sampleData"] == []
+
+    def test_cell_truncation(self, starter):
+        svc, graph, _base = starter
+        long_val = "x" * 300
+        table = FakeTableDat(
+            "table1", data=[[long_val]], parent=_base, graph=graph,
+        )
+        _base.children.append(table)
+
+        result = svc.get_dat_table_info("/project1/base1/table1")
+        assert result["success"] is True
+        cell = result["data"]["sampleData"][0][0]
+        assert cell.endswith("...")
+        assert len(cell) == 203  # 200 + "..."
+        assert result["data"]["truncatedCells"] is True
+
+    def test_max_preview_rows(self, starter):
+        svc, graph, _base = starter
+        data = [[f"r{i}c0", f"r{i}c1"] for i in range(20)]
+        table = FakeTableDat("table1", data=data, parent=_base, graph=graph)
+        _base.children.append(table)
+
+        result = svc.get_dat_table_info("/project1/base1/table1", max_preview_rows=3)
+        assert result["success"] is True
+        assert len(result["data"]["sampleData"]) == 3
+        assert result["data"]["truncatedRows"] is True
+
+    def test_not_a_table(self, starter):
+        svc, graph, _base = starter
+        top = FakeOp("null1", parent=_base, graph=graph)
+        top.OPType = "nullTOP"
+        _base.children.append(top)
+
+        result = svc.get_dat_table_info("/project1/base1/null1")
+        assert result["success"] is False
+        assert "Not a table DAT" in result["error"]
+
+
+# ── 14. COMP Extensions ──────────────────────────────────────────────
+
+
+class _MockExtension:
+    """Test extension class with methods and properties."""
+    color = "red"
+
+    def do_something(self, x: int) -> str:
+        """Does something useful."""
+        return str(x)
+
+    def run(self):
+        """Runs the extension."""
+        pass
+
+
+class TestGetCompExtensions:
+    def test_summary_mode(self, starter):
+        svc, graph, _base = starter
+        comp = FakeOp("comp1", parent=_base, graph=graph)
+        _base.children.append(comp)
+        comp.extensions = [_MockExtension()]
+
+        result = svc.get_comp_extensions("/project1/base1/comp1")
+        assert result["success"] is True
+        ext = result["data"]["extensions"][0]
+        assert ext["name"] == "_MockExtension"
+        assert ext["methodCount"] >= 2
+        assert ext["propertyCount"] >= 1
+        # No docs in summary mode
+        for m in ext["methods"]:
+            assert "doc" not in m
+
+    def test_with_docs(self, starter):
+        svc, graph, _base = starter
+        comp = FakeOp("comp1", parent=_base, graph=graph)
+        _base.children.append(comp)
+        comp.extensions = [_MockExtension()]
+
+        result = svc.get_comp_extensions("/project1/base1/comp1", include_docs=True)
+        assert result["success"] is True
+        methods = result["data"]["extensions"][0]["methods"]
+        docs = [m.get("doc", "") for m in methods]
+        assert any("something" in d for d in docs)
+
+    def test_max_methods(self, starter):
+        svc, graph, _base = starter
+        comp = FakeOp("comp1", parent=_base, graph=graph)
+        _base.children.append(comp)
+        comp.extensions = [_MockExtension()]
+
+        result = svc.get_comp_extensions("/project1/base1/comp1", max_methods=1)
+        assert result["success"] is True
+        ext = result["data"]["extensions"][0]
+        assert len(ext["methods"]) == 1
+        # methodCount reflects actual count, not truncated
+        assert ext["methodCount"] >= 2
+
+    def test_no_extensions(self, starter):
+        svc, graph, _base = starter
+        comp = FakeOp("comp1", parent=_base, graph=graph)
+        _base.children.append(comp)
+        comp.extensions = []
+
+        result = svc.get_comp_extensions("/project1/base1/comp1")
+        assert result["success"] is True
+        assert result["data"]["extensions"] == []
+
+    def test_not_found(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_comp_extensions("/nonexistent")
+        assert result["success"] is False

@@ -29,10 +29,12 @@ uv sync
 
 | Catégorie | Outils |
 |-----------|--------|
-| **Nodes** | `get_nodes`, `get_node_detail`, `create_node`, `delete_node`, `update_node`, `get_node_errors` |
+| **Nodes** | `get_td_nodes`, `get_td_node_parameters`, `create_td_node`, `delete_td_node`, `update_td_node_parameters`, `get_td_node_errors` |
 | **Helpers haut niveau** | `create_geometry_comp`, `create_feedback_loop`, `configure_instancing` |
-| **Exécution** | `exec_python_script`, `exec_node_method` |
-| **Introspection TD** | `get_td_info`, `get_td_python_classes`, `get_td_python_class_details`, `get_module_help` |
+| **Exécution** | `execute_python_script`, `exec_node_method` |
+| **Introspection TD** | `get_td_info`, `get_td_classes`, `get_td_class_details`, `get_td_module_help` |
+| **Introspection sémantique** | `get_node_parameter_schema`, `complete_op_paths`, `get_chop_channels`, `get_dat_table_info`, `get_comp_extensions` |
+| **DAT** | `get_dat_text`, `set_dat_text`, `lint_dat`, `discover_dat_candidates` |
 
 ## Golden Path — workflows de base
 
@@ -64,7 +66,7 @@ modules/
   td_server/             # serveur OpenAPI (d'origine générée)
   utils/                 # result types, logging, serialization
   tests/                 # pytest unit + smoke tests (fake_td.py = fake graph TD)
-.claude/skills/          # 4 skills Claude (td-guide, td-glsl, td-glsl-vertex, td-pops)
+.claude/skills/          # 5 skills Claude (td-guide, td-glsl, td-glsl-vertex, td-pops, td-lint)
 starter_pack.toe         # projet TD de démarrage
 mcp_webserver_base.tox   # composant serveur web MCP
 import_modules.py        # bootstrap des modules au démarrage TD
@@ -107,6 +109,7 @@ just check                           # tout d'un coup (requiert just)
 | Pixel shader / GLSL TOP | `td-glsl` |
 | Vertex shader / GLSL MAT | `td-glsl-vertex` |
 | Compute shader / particules | `td-pops` |
+| Linting Python DAT / ruff | `td-lint` |
 
 ## Troubleshooting
 
