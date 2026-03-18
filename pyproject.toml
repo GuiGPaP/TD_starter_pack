@@ -46,6 +46,9 @@ ignore = [
 "modules/mcp/controllers/generated_handlers.py" = ["ALL"]
 "modules/mcp/controllers/api_controller.py" = ["F403"]
 
+[tool.ruff.format]
+exclude = ["modules/td_server/openapi_server/*"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["mcp", "utils"]
 
