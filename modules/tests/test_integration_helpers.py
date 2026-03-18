@@ -117,6 +117,10 @@ class TestRouteExistence:
         routes = extract_routes(_load_schema())
         assert "lint_dat" in {r.operation_id for r in routes}
 
+    def test_discover_dat_candidates_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "discover_dat_candidates" in {r.operation_id for r in routes}
+
 
 # ── End-to-end tests ──────────────────────────────────────────────
 
@@ -233,3 +237,27 @@ class TestEndToEnd:
         result = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body)
         assert result["success"] is True
         assert result["data"]["diagnosticCount"] == 0
+
+    def test_discover_dat_candidates_end_to_end(self, integration_router, mock_td):
+        parent = MagicMock()
+        parent.valid = True
+        parent.path = "/project1"
+
+        script_dat = MagicMock()
+        script_dat.path = "/project1/script1"
+        script_dat.name = "script1"
+        script_dat.OPType = "scriptDAT"
+        script_dat.text = "print('hello')"
+        script_dat.parent.return_value = parent
+        script_dat.dock = None
+
+        parent.findChildren.return_value = [script_dat]
+        mock_td.op.return_value = parent
+
+        result = integration_router.route_request(
+            "GET", "/api/nodes/dat-discover",
+            {"parentPath": "/project1"}, None
+        )
+        assert result["success"] is True
+        assert result["data"]["count"] >= 1
+        assert result["data"]["candidates"][0]["kindGuess"] == "python"
