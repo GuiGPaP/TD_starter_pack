@@ -94,6 +94,11 @@ See [reference/TROUBLESHOOTING.md](reference/TROUBLESHOOTING.md) for solutions t
 - Uniforms with no effect
 - Black/incorrect output
 
+## External Resources
+
+- **Context7** — Use to look up official TouchDesigner GLSL documentation (built-in functions, uniform structs, sTD2DInputs behavior, TDOutputSwizzle, etc.)
+- **MCP TouchDesigner** — For network scaffolding, use `create_feedback_loop` (simulation loops) and `create_geometry_comp` (render targets). For shader DAT editing, uniforms, and compilation checks, use `execute_python_script`. See td-guide's `reference/project-api.md` for the full tool mapping.
+
 ## Related Skills
 
 - **td-glsl-vertex** — Vertex shaders, GLSL MAT, 3D materials, displacement

@@ -230,6 +230,11 @@ When writing a GLSL MAT shader, always provide:
 
 ---
 
+## External Resources
+
+- **Context7** — Use to look up official TouchDesigner GLSL MAT documentation (TDDeform, TDWorldToProj, uTDMats, instancing, skinning, etc.)
+- **MCP TouchDesigner** — For network scaffolding, use `create_geometry_comp` (render geometry) and `configure_instancing` (GPU instances). For vertex/pixel DAT editing, uniforms, and Render TOP configuration, use `execute_python_script`. See td-guide's `reference/project-api.md` for the full tool mapping.
+
 ## Additional Resources
 
 - [reference/VERTEX-API.md](reference/VERTEX-API.md) — Complete TD vertex function reference

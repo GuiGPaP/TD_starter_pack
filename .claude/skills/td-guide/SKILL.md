@@ -37,9 +37,23 @@ These files contain essential patterns for operator creation, layout, error hand
 
 ---
 
-## MCP Runtime: `execute_python_script` Namespace
+## MCP Tools
 
-When running Python via the MCP `execute_python_script` tool, the namespace provides:
+### High-Level Helpers (composite patterns)
+
+For standard composite patterns, use the dedicated MCP tools instead of `execute_python_script`:
+
+| MCP Tool | What It Does | Example Call |
+|----------|--------------|-------------|
+| `create_geometry_comp` | Creates geometryCOMP, clears default torus, adds In/Out | `{ "parentPath": "/project1/base1", "name": "geo1", "x": 400, "y": 0 }` |
+| `create_feedback_loop` | Creates feedback/process/null_out/const_init chain | `{ "parentPath": "/project1/base1", "name": "sim", "processType": "glslTOP" }` |
+| `configure_instancing` | Enables instancing, sets instanceop + tx/ty/tz | `{ "geoPath": "/project1/base1/geo1", "instanceOpName": "sopto1" }` |
+
+These tools wrap `td_helpers.network` and handle all boilerplate (viewer flags, layout, connections).
+
+### `execute_python_script` — Fallback
+
+For anything not covered by the high-level tools (custom wiring, expression modes, data reads, etc.), use `execute_python_script`. The namespace provides:
 - `op` — `td.op` (callable: `op('/project1/base1')`)
 - `ops` — `td.ops`
 - `td` — the `td` module
@@ -130,6 +144,14 @@ print(params)  # ['radx', 'rady', 'radz']
 
 ## Geometry COMP Pattern
 
+> **Recommended:** Use the `create_geometry_comp` MCP tool:
+>
+> MCP tool call: `create_geometry_comp`
+> ```json
+> { "parentPath": "/project1/base1", "name": "geo1", "x": 400, "y": 0 }
+> ```
+> For POP variant: add `"pop": true`. Use `execute_python_script` below only for non-standard setups.
+
 ```python
 base = op('/project1/base1')
 
@@ -180,7 +202,7 @@ from td_helpers.layout import move_with_docked, chain_ops, get_bounds, place_bel
 from td_helpers.network import setup_geometry_comp, setup_feedback_loop, setup_instancing
 ```
 
-These work in `execute_python_script` (modules/ is on `sys.path`). See inline snippets below for the patterns they encapsulate.
+The `td_helpers.network` functions are also exposed as high-level MCP tools (`create_geometry_comp`, `create_feedback_loop`, `configure_instancing`) — prefer those for standard use. The Python imports remain available for advanced cases within `execute_python_script`.
 
 ---
 

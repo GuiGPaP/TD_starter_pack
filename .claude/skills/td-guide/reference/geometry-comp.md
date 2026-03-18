@@ -35,7 +35,27 @@ out_sop.render = True
 out_sop.inputConnectors[0].connect(in_sop)
 
 # Connect external SOP to Geometry COMP input
+geo.inputConnectors[0].connect(base.op('null1'))
+```
+
+> **Recommended:** Use the `create_geometry_comp` MCP tool:
+>
+> MCP tool call: `create_geometry_comp`
+> ```json
+> { "parentPath": "/project1/base1", "name": "geo1", "x": 400, "y": 0 }
+> ```
+> For POP variant: add `"pop": true`.
+> Use the `execute_python_script` pattern below only for non-standard setups.
+
+Also available via `from td_helpers.network import setup_geometry_comp`
+
+```python
+from td_helpers.network import setup_geometry_comp
+base = op('/project1/base1')
+geo, in_op, out_op = setup_geometry_comp(base, 'geo1', x=400, y=0)
 geo.inputConnectors[0].connect(external_sop)
+# POP variant:
+# geo, in_op, out_op = setup_geometry_comp(base, 'geo1', pop=True)
 ```
 
 For POP family, replace `inSOP`/`outSOP` with `inPOP`/`outPOP`.
@@ -143,6 +163,23 @@ geo.par.instanceop = 'sopto1'
 geo.par.instancetx = 'tx'
 geo.par.instancety = 'ty'
 geo.par.instancetz = 'tz'
+```
+
+> **Recommended:** Use the `configure_instancing` MCP tool:
+>
+> MCP tool call: `configure_instancing`
+> ```json
+> { "geoPath": "/project1/base1/geo1", "instanceOpName": "sopto1" }
+> ```
+> Custom channels: add `"tx"`, `"ty"`, `"tz"` parameters.
+
+Also available via `from td_helpers.network import setup_instancing`
+
+```python
+from td_helpers.network import setup_instancing
+setup_instancing(geo, 'sopto1')
+# Custom channel names:
+# setup_instancing(geo, 'grid_sop', tx='P(0)', ty='P(1)', tz='P(2)')
 ```
 
 ### Instance Attribute Names by OP Type

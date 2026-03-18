@@ -15,15 +15,20 @@ This project exposes TouchDesigner functionality through an MCP web server. The 
 | Set parameters on an operator | `update_td_node_parameters` | Batch-updates parameters by name/value dict |
 | Call a method on a node | `exec_node_method` | Invokes any callable method on a node (e.g., `.cook()`, `.save()`) |
 | Run arbitrary Python in TD | `execute_python_script` | Executes a Python script string with full `td`, `op`, `ops` access |
+| Create Geometry COMP with In/Out | `create_geometry_comp` | Creates geometryCOMP, clears default torus, adds In/Out operators |
+| Create feedback loop | `create_feedback_loop` | Creates feedback/process/null_out/const_init chain |
+| Configure instancing | `configure_instancing` | Enables instancing, sets instanceop + tx/ty/tz |
 | Look up TD Python classes | `get_td_classes` | Lists all members of the `td` module |
 | Get class/module details | `get_td_class_details` | Introspects methods and properties of a td class |
 | Get Python help text | `get_td_module_help` | Returns `pydoc.render_doc()` output for a module/class |
 
 ## Usage Notes
 
-### `execute_python_script` — The Escape Hatch
+### `execute_python_script` — Fallback for Complex Operations
 
-When other endpoints are too limited, `execute_python_script` runs arbitrary Python inside TD. It provides:
+For standard composite patterns (geometry comp, feedback loop, instancing), prefer the dedicated high-level MCP tools above (`create_geometry_comp`, `create_feedback_loop`, `configure_instancing`).
+
+When those tools are too limited, `execute_python_script` runs arbitrary Python inside TD. It provides:
 - `op`, `ops`, `td`, `project` in the namespace
 - **`parent`** — injected as a **string path** (e.g., `"/project1"`), NOT an OP object. `parent.create(...)` will crash. Use `op('/project1/base1').create(...)` instead.
 - stdout/stderr capture

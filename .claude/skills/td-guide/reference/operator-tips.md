@@ -66,6 +66,26 @@ glsl.inputConnectors[0].connect(feedback)
 feedback.par.resetpulse.pulse()
 ```
 
+> **Recommended:** Use the `create_feedback_loop` MCP tool:
+>
+> MCP tool call: `create_feedback_loop`
+> ```json
+> { "parentPath": "/project1/base1", "name": "sim", "processType": "glslTOP" }
+> ```
+> Returns operator summaries: `feedback`, `process`, `null_out`, `const_init`.
+> Use the `execute_python_script` pattern below only for non-standard setups.
+
+Also available via `from td_helpers.network import setup_feedback_loop`
+
+```python
+from td_helpers.network import setup_feedback_loop
+base = op('/project1/base1')
+loop = setup_feedback_loop(base, 'sim', x=0, y=0)
+# loop = {"feedback", "process", "null_out", "const_init"}
+# Custom process type:
+# loop = setup_feedback_loop(base, 'sim', process_type='compositeTOP')
+```
+
 ### Use Cases
 
 #### Wave Simulation

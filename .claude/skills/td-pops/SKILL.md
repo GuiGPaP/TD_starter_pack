@@ -158,6 +158,11 @@ See [reference/TROUBLESHOOTING.md](reference/TROUBLESHOOTING.md) for solutions t
 - Attributes not appearing in output
 - Performance issues with large point counts
 
+## External Resources
+
+- **Context7** — Use to look up official TouchDesigner POP/compute shader documentation (TDIndex, TDIn_* functions, attribute arrays, SSBO layout, etc.)
+- **MCP TouchDesigner** — For network scaffolding, use `create_geometry_comp` with `pop=true` (POP geometry setup). For compute DAT editing, Output Attributes configuration, and uniforms, use `execute_python_script`. See td-guide's `reference/project-api.md` for the full tool mapping.
+
 ## Additional Resources
 
 - [reference/FUNCTIONS.md](reference/FUNCTIONS.md) — Complete GLSL POP API reference
