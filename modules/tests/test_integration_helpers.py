@@ -141,6 +141,10 @@ class TestRouteExistence:
         routes = extract_routes(_load_schema())
         assert "get_comp_extensions" in {r.operation_id for r in routes}
 
+    def test_get_health_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_health" in {r.operation_id for r in routes}
+
 
 # ── End-to-end tests ──────────────────────────────────────────────
 
@@ -555,3 +559,11 @@ class TestEndToEnd:
         )
         assert result["success"] is True
         assert result["data"]["extensions"] == []
+
+    def test_get_health_end_to_end(self, integration_router, mock_td):
+        result = integration_router.route_request("GET", "/api/health", {}, None)
+        assert result["success"] is True
+        assert result["data"]["status"] == "ok"
+        assert result["data"]["tdVersion"] == "2023.30000"
+        assert result["data"]["tdBuild"] == "30000"
+        assert "pythonVersion" in result["data"]

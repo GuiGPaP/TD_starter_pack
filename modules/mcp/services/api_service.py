@@ -92,6 +92,7 @@ class IApiService(Protocol):
         include_docs: bool = ...,
         max_methods: int = ...,
     ) -> Result: ...
+    def get_health(self) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -112,6 +113,21 @@ class TouchDesignerApiService(IApiService):
         }
 
         return success_result(server_info)
+
+    def get_health(self) -> Result:
+        """Health check: status, Python version, TD version/build."""
+        import sys
+
+        version = td.app.version
+        build = td.app.build
+        return success_result(
+            {
+                "status": "ok",
+                "pythonVersion": sys.version.split()[0],
+                "tdVersion": f"{version}.{build}",
+                "tdBuild": str(build),
+            }
+        )
 
     def get_td_python_classes(self) -> Result:
         """Get list of Python classes and modules available in TouchDesigner"""

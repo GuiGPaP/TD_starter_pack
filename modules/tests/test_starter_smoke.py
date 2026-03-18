@@ -1130,3 +1130,34 @@ class TestGetCompExtensions:
         svc, _graph, _base = starter
         result = svc.get_comp_extensions("/nonexistent")
         assert result["success"] is False
+
+
+# ── Health Check ─────────────────────────────────────────────────
+
+
+class TestGetHealth:
+    def test_get_health_returns_ok(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_health()
+        assert result["success"] is True
+        data = result["data"]
+        assert data["status"] == "ok"
+        assert "pythonVersion" in data
+        assert "tdVersion" in data
+        assert "tdBuild" in data
+
+    def test_get_health_td_version_format(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_health()
+        data = result["data"]
+        # tdVersion should be "version.build" e.g. "2023.30000"
+        assert "." in data["tdVersion"]
+        assert data["tdBuild"] == "30000"
+
+    def test_get_health_python_version_format(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_health()
+        data = result["data"]
+        parts = data["pythonVersion"].split(".")
+        assert len(parts) >= 2
+        assert parts[0].isdigit()
