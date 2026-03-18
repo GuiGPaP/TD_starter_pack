@@ -131,6 +131,18 @@ class FakeOp:
             self._graph.unregister(self.path)
 
 
+# ── DAT operator (has .text) ─────────────────────────────────────────
+
+
+class FakeDat(FakeOp):
+    """Fake DAT operator with .text attribute."""
+
+    def __init__(self, name: str = "text1", text: str = "", **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.OPType: str = "textDAT"
+        self.text: str = text
+
+
 # ── Container (supports .create()) ──────────────────────────────────
 
 
@@ -161,6 +173,8 @@ class FakeContainer(FakeOp):
                 graph=self._graph,
                 default_children=defaults,
             )
+        elif "DAT" in op_type:
+            child = FakeDat(op_name, parent=self, graph=self._graph)
         else:
             child = FakeOp(op_name, parent=self, graph=self._graph)
         child.OPType = op_type

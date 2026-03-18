@@ -22,6 +22,7 @@ class OP:
     name: str
     id: int
     OPType: str
+    text: str
     par: _ParCollection
 
     def pars(self, pattern: str) -> list[_Par]: ...
