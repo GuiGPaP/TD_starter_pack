@@ -189,6 +189,24 @@ def configure_instancing(body):  # noqa: E501
     return 'do some magic!'
 
 
+def get_dat_text(node_path):  # noqa: E501
+    """Get DAT text content
+
+    :param node_path: Absolute path to the DAT
+    :type node_path: str
+    """
+    return 'do some magic!'
+
+
+def set_dat_text(body=None):  # noqa: E501
+    """Set DAT text content
+
+    :param body: nodePath and text
+    :type body: dict | bytes
+    """
+    return 'do some magic!'
+
+
 def update_node(body=None):  # noqa: E501
     """Update node properties
 

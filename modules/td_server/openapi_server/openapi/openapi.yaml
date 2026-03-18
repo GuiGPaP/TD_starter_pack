@@ -138,6 +138,78 @@ paths:
           description: Node error report
       summary: Get node errors
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-text:
+    get:
+      description: Read the .text content of a DAT operator
+      operationId: get_dat_text
+      parameters:
+      - description: "Absolute path to the DAT. e.g., \"/project1/text1\""
+        in: query
+        name: nodePath
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      text:
+                        type: string
+          description: DAT text content
+      summary: Get DAT text content
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+    put:
+      description: Write .text content to a DAT operator
+      operationId: set_dat_text
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              - text
+              properties:
+                nodePath:
+                  type: string
+                  description: Absolute path to the DAT
+                text:
+                  type: string
+                  description: Text content to write
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      length:
+                        type: integer
+          description: DAT text updated
+      summary: Set DAT text content
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/td/classes:
     get:
       description: "Returns a list of Python classes, modules, and functions available\
