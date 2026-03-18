@@ -845,6 +845,22 @@ def get_comp_extensions(body: str = None, **kwargs) -> Result:
         return error_result(f"Handler for 'get_comp_extensions' failed: {str(e)}")
 
 
+def get_health(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_health
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_health' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_health", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_health' not implemented")
+
+        return service_method()
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_health' failed: {str(e)}")
+
+
 __all__ = [
     "delete_node",
     "get_nodes",
@@ -870,4 +886,5 @@ __all__ = [
     "get_chop_channels",
     "get_dat_table_info",
     "get_comp_extensions",
+    "get_health",
 ]

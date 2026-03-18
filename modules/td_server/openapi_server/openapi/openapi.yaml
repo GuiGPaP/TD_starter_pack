@@ -778,6 +778,19 @@ paths:
           description: TouchDesigner information
       summary: Get TouchDesigner information
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/health:
+    get:
+      description: Returns health status of the TouchDesigner server
+      operationId: get_health
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_health_200_response'
+          description: Health check response
+      summary: Get server health status
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/td/helpers/geometry-comp:
     post:
       description: |
@@ -1982,4 +1995,49 @@ components:
       - error
       - success
       title: configure_instancing_200_response
+      type: object
+    get_health_200_response_data:
+      nullable: true
+      properties:
+        status:
+          description: Server status
+          title: status
+          type: string
+        pythonVersion:
+          description: Python interpreter version
+          title: pythonVersion
+          type: string
+        tdVersion:
+          description: "TouchDesigner version (e.g., 2023.30000)"
+          title: tdVersion
+          type: string
+        tdBuild:
+          description: TouchDesigner build number
+          title: tdBuild
+          type: string
+      required:
+      - status
+      - pythonVersion
+      - tdVersion
+      - tdBuild
+      title: get_health_200_response_data
+      type: object
+    get_health_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/get_health_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: get_health_200_response
       type: object
