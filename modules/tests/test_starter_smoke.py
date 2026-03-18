@@ -305,6 +305,151 @@ class TestLintDatWorkflow:
         assert result["success"] is False
         assert "ruff not found" in result["error"]
 
+    def test_lint_fix_remaining_diagnostics(self, starter, monkeypatch):
+        """Fix run followed by re-lint that still finds remaining issues."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "import os\nx=1\n")
+
+        monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
+        svc_mod = self._get_svc_module()
+
+        # First call: ruff check --fix (returns initial diagnostics, writes fixed file)
+        fix_diag = json.dumps([{
+            "code": "F401",
+            "message": "`os` imported but unused",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 10},
+            "fix": {"edits": []},
+        }])
+        # Second call: re-lint (returns remaining issue)
+        remaining_diag = json.dumps([{
+            "code": "E711",
+            "message": "comparison to None",
+            "location": {"row": 2, "column": 1},
+            "end_location": {"row": 2, "column": 5},
+            "fix": None,
+        }])
+
+        call_count = {"n": 0}
+
+        def mock_run(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                # Write fixed code to the temp file (simulate --fix)
+                tmp = args[0][-1] if args else kwargs.get("args", [""])[-1]
+                with open(tmp, "w", encoding="utf-8") as f:
+                    f.write("x=1\n")  # os import removed
+                return MagicMock(returncode=1, stdout=fix_diag, stderr="")
+            else:
+                return MagicMock(returncode=1, stdout=remaining_diag, stderr="")
+
+        monkeypatch.setattr(svc_mod.subprocess, "run", mock_run)
+
+        result = svc.lint_dat("/project1/base1/script1", fix=True)
+        assert result["success"] is True
+        assert result["data"]["fixed"] is True
+        assert result["data"]["applied"] is True
+        assert result["data"]["remainingDiagnosticCount"] == 1
+        assert result["data"]["remainingDiagnostics"][0]["code"] == "E711"
+
+    def test_lint_fix_no_remaining(self, starter, monkeypatch):
+        """Fix run where re-lint returns zero remaining issues."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "import os\n")
+
+        monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
+        svc_mod = self._get_svc_module()
+
+        fix_diag = json.dumps([{
+            "code": "F401",
+            "message": "`os` imported but unused",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 10},
+            "fix": {"edits": []},
+        }])
+
+        call_count = {"n": 0}
+
+        def mock_run(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                tmp = args[0][-1] if args else kwargs.get("args", [""])[-1]
+                with open(tmp, "w", encoding="utf-8") as f:
+                    f.write("")  # all code removed by fix
+                return MagicMock(returncode=1, stdout=fix_diag, stderr="")
+            else:
+                return MagicMock(returncode=0, stdout="[]", stderr="")
+
+        monkeypatch.setattr(svc_mod.subprocess, "run", mock_run)
+
+        result = svc.lint_dat("/project1/base1/script1", fix=True)
+        assert result["success"] is True
+        assert result["data"]["fixed"] is True
+        assert result["data"]["remainingDiagnosticCount"] == 0
+        assert result["data"]["remainingDiagnostics"] == []
+
+    def test_lint_fix_dry_run(self, starter, monkeypatch):
+        """dry_run=True with fix=True returns diff but doesn't modify node.text."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        original_code = "import os\n"
+        svc.set_dat_text("/project1/base1/script1", original_code)
+
+        monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
+        svc_mod = self._get_svc_module()
+
+        fix_diag = json.dumps([{
+            "code": "F401",
+            "message": "`os` imported but unused",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 10},
+            "fix": {"edits": []},
+        }])
+
+        call_count = {"n": 0}
+
+        def mock_run(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                tmp = args[0][-1] if args else kwargs.get("args", [""])[-1]
+                with open(tmp, "w", encoding="utf-8") as f:
+                    f.write("")  # fixed: removed import
+                return MagicMock(returncode=1, stdout=fix_diag, stderr="")
+            else:
+                return MagicMock(returncode=0, stdout="[]", stderr="")
+
+        monkeypatch.setattr(svc_mod.subprocess, "run", mock_run)
+
+        result = svc.lint_dat("/project1/base1/script1", fix=True, dry_run=True)
+        assert result["success"] is True
+        assert result["data"]["applied"] is False
+        assert "diff" in result["data"]
+        assert len(result["data"]["diff"]) > 0
+        # Node text must NOT be modified
+        read_back = svc.get_dat_text("/project1/base1/script1")
+        assert read_back["data"]["text"] == original_code
+
+    def test_lint_dry_run_without_fix_noop(self, starter, monkeypatch):
+        """dry_run=True without fix=True behaves as normal lint (no diff)."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
+        svc_mod = self._get_svc_module()
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=0, stdout="[]", stderr=""),
+        )
+
+        result = svc.lint_dat("/project1/base1/script1", dry_run=True)
+        assert result["success"] is True
+        assert "diff" not in result["data"]
+        assert "applied" not in result["data"]
+
 
 # ── 7. DAT Classifier Unit Tests ──────────────────────────────────────
 

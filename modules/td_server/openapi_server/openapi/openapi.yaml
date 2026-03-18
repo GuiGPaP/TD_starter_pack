@@ -228,6 +228,10 @@ paths:
                   type: boolean
                   default: false
                   description: If true, apply auto-fixable corrections to the DAT
+                dryRun:
+                  type: boolean
+                  default: false
+                  description: "Preview fix without applying (returns diff). Only meaningful with fix=true."
         required: true
       responses:
         "200":
@@ -250,26 +254,21 @@ paths:
                       diagnostics:
                         type: array
                         items:
-                          type: object
-                          properties:
-                            code:
-                              type: string
-                            message:
-                              type: string
-                            line:
-                              type: integer
-                            column:
-                              type: integer
-                            endLine:
-                              type: integer
-                            endColumn:
-                              type: integer
-                            fixable:
-                              type: boolean
+                          $ref: '#/components/schemas/LintDiagnostic'
                       fixed:
                         type: boolean
                       fixedText:
                         type: string
+                      remainingDiagnosticCount:
+                        type: integer
+                      remainingDiagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LintDiagnostic'
+                      diff:
+                        type: string
+                      applied:
+                        type: boolean
           description: Lint results
       summary: Lint DAT code with ruff
       x-openapi-router-controller: openapi_server.controllers.default_controller
@@ -656,6 +655,25 @@ components:
       - nodePath
       - opType
       title: TdNodeErrorReport
+      type: object
+    LintDiagnostic:
+      description: A single ruff lint diagnostic
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        endLine:
+          type: integer
+        endColumn:
+          type: integer
+        fixable:
+          type: boolean
+      title: LintDiagnostic
       type: object
     TdPythonClassDetails:
       description: Detailed information about a Python class or module

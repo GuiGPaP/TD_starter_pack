@@ -4,6 +4,7 @@ Provides API functionality related to TouchDesigner
 """
 
 import contextlib
+import difflib
 import importlib
 import inspect
 import io
@@ -61,7 +62,7 @@ class IApiService(Protocol):
     ) -> Result: ...
     def get_dat_text(self, node_path: str) -> Result: ...
     def set_dat_text(self, node_path: str, text: str) -> Result: ...
-    def lint_dat(self, node_path: str, fix: bool = ...) -> Result: ...
+    def lint_dat(self, node_path: str, fix: bool = ..., dry_run: bool = ...) -> Result: ...
     def discover_dat_candidates(
         self,
         parent_path: str,
@@ -626,7 +627,23 @@ class TouchDesignerApiService(IApiService):
         node.text = text
         return success_result({"path": node.path, "name": node.name, "length": len(text)})
 
-    def lint_dat(self, node_path: str, fix: bool = False) -> Result:
+    @staticmethod
+    def _parse_ruff_diagnostics(raw: list) -> list[dict]:
+        """Parse raw ruff JSON diagnostics into structured dicts."""
+        return [
+            {
+                "code": d.get("code"),
+                "message": d.get("message", ""),
+                "line": d.get("location", {}).get("row"),
+                "column": d.get("location", {}).get("column"),
+                "endLine": d.get("end_location", {}).get("row"),
+                "endColumn": d.get("end_location", {}).get("column"),
+                "fixable": d.get("fix") is not None,
+            }
+            for d in raw
+        ]
+
+    def lint_dat(self, node_path: str, fix: bool = False, dry_run: bool = False) -> Result:
         """Lint the .text content of a DAT operator using ruff"""
         node = td.op(node_path)
         if node is None or not node.valid:
@@ -674,18 +691,7 @@ class TouchDesignerApiService(IApiService):
             except json.JSONDecodeError:
                 return error_result(f"ruff returned invalid JSON: {proc.stdout[:200]}")
 
-            diagnostics = [
-                {
-                    "code": d.get("code"),
-                    "message": d.get("message", ""),
-                    "line": d.get("location", {}).get("row"),
-                    "column": d.get("location", {}).get("column"),
-                    "endLine": d.get("end_location", {}).get("row"),
-                    "endColumn": d.get("end_location", {}).get("column"),
-                    "fixable": d.get("fix") is not None,
-                }
-                for d in raw_diagnostics
-            ]
+            diagnostics = self._parse_ruff_diagnostics(raw_diagnostics)
 
             result_data: dict[str, Any] = {
                 "path": node.path,
@@ -698,11 +704,48 @@ class TouchDesignerApiService(IApiService):
                 with open(tmp_path, encoding="utf-8") as f:
                     fixed_code = f.read()
                 if fixed_code != code:
-                    node.text = fixed_code
+                    # Re-lint the fixed code to find remaining issues
+                    relint_cmd = [ruff, "check", "--output-format", "json", tmp_path]
+                    try:
+                        relint_proc = subprocess.run(
+                            relint_cmd,
+                            capture_output=True,
+                            text=True,
+                            cwd=str(project_root),
+                            timeout=30,
+                        )
+                        relint_raw = (
+                            json.loads(relint_proc.stdout)
+                            if relint_proc.stdout.strip()
+                            else []
+                        )
+                    except (subprocess.TimeoutExpired, json.JSONDecodeError):
+                        relint_raw = []
+                    remaining = self._parse_ruff_diagnostics(relint_raw)
+                    result_data["remainingDiagnostics"] = remaining
+                    result_data["remainingDiagnosticCount"] = len(remaining)
+
+                    if dry_run:
+                        diff_lines = list(
+                            difflib.unified_diff(
+                                code.splitlines(keepends=True),
+                                fixed_code.splitlines(keepends=True),
+                                fromfile=f"{node.path} (original)",
+                                tofile=f"{node.path} (fixed)",
+                            )
+                        )
+                        result_data["diff"] = "".join(diff_lines)
+                        result_data["applied"] = False
+                    else:
+                        node.text = fixed_code
+                        result_data["applied"] = True
                     result_data["fixed"] = True
                     result_data["fixedText"] = fixed_code
                 else:
                     result_data["fixed"] = False
+                    result_data["remainingDiagnostics"] = []
+                    result_data["remainingDiagnosticCount"] = 0
+                    result_data["applied"] = False
 
             return success_result(result_data)
 
