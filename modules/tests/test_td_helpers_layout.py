@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
-
 from td_helpers.layout import chain_ops, get_bounds, move_with_docked, place_below
-
 
 # ── Fake objects ──────────────────────────────────────────────────────
 

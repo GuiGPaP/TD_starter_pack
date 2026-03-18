@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
-
 from td_helpers.network import setup_feedback_loop, setup_geometry_comp, setup_instancing
-
 
 # ── Fake objects ──────────────────────────────────────────────────────
 
@@ -87,7 +84,7 @@ class TestSetupGeometryComp:
 
     def test_pop_mode(self):
         base = MockContainer(name="base")
-        geo, in_op, out_op = setup_geometry_comp(base, "geo1", pop=True)
+        _geo, in_op, out_op = setup_geometry_comp(base, "geo1", pop=True)
 
         assert in_op.OPType == "inPOP"
         assert out_op.OPType == "outPOP"

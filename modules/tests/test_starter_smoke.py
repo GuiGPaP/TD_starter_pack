@@ -49,7 +49,7 @@ def starter(monkeypatch):
 
 class TestGeometryCompWorkflow:
     def test_create_success(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         result = svc.create_geometry_comp("/project1/base1", "geo1", x=400, y=0)
 
         assert result["success"] is True
@@ -60,7 +60,7 @@ class TestGeometryCompWorkflow:
         assert data["geo"]["opType"] == "geometryCOMP"
 
     def test_children_after_create(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_geometry_comp("/project1/base1", "geo1", x=400, y=0)
 
         nodes_result = svc.get_nodes("/project1/base1/geo1")
@@ -72,7 +72,7 @@ class TestGeometryCompWorkflow:
         assert "torus1" not in names
 
     def test_detail(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_geometry_comp("/project1/base1", "geo1")
 
         detail = svc.get_node_detail("/project1/base1/geo1")
@@ -81,7 +81,7 @@ class TestGeometryCompWorkflow:
         assert detail["data"]["path"] == "/project1/base1/geo1"
 
     def test_no_errors(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_geometry_comp("/project1/base1", "geo1")
 
         errors = svc.get_node_errors("/project1/base1/geo1")
@@ -94,7 +94,7 @@ class TestGeometryCompWorkflow:
 
 class TestFeedbackLoopWorkflow:
     def test_create_returns_four_ops(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         result = svc.create_feedback_loop("/project1/base1", "sim", process_type="glslTOP")
 
         assert result["success"] is True
@@ -102,7 +102,7 @@ class TestFeedbackLoopWorkflow:
         assert set(data.keys()) == {"feedback", "process", "null_out", "const_init"}
 
     def test_children_visible(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_feedback_loop("/project1/base1", "sim")
 
         nodes_result = svc.get_nodes("/project1/base1")
@@ -114,7 +114,7 @@ class TestFeedbackLoopWorkflow:
         assert "sim_out" in names
 
     def test_no_errors(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_feedback_loop("/project1/base1", "sim")
 
         errors = svc.get_node_errors("/project1/base1")
@@ -128,7 +128,7 @@ class TestFeedbackLoopWorkflow:
 
 class TestInstancingWorkflow:
     def test_configure(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_geometry_comp("/project1/base1", "geo1")
 
         result = svc.configure_instancing("/project1/base1/geo1", "sopto1")
@@ -136,7 +136,7 @@ class TestInstancingWorkflow:
         assert result["data"]["instanceOp"] == "sopto1"
 
     def test_instancing_in_properties(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         svc.create_geometry_comp("/project1/base1", "geo1")
         svc.configure_instancing("/project1/base1/geo1", "sopto1")
 
@@ -152,7 +152,7 @@ class TestInstancingWorkflow:
 
 class TestStateVerification:
     def test_td_info(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         result = svc.get_td_info()
 
         assert result["success"] is True
@@ -161,7 +161,7 @@ class TestStateVerification:
         assert "version" in data
 
     def test_existing_node_detail(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         detail = svc.get_node_detail("/project1/base1")
 
         assert detail["success"] is True
@@ -169,13 +169,13 @@ class TestStateVerification:
         assert detail["data"]["path"] == "/project1/base1"
 
     def test_nonexistent_node(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         detail = svc.get_node_detail("/nonexistent")
 
         assert detail["success"] is False
 
     def test_no_errors_on_base(self, starter):
-        svc, graph, base = starter
+        svc, _graph, _base = starter
         errors = svc.get_node_errors("/project1/base1")
 
         assert errors["success"] is True

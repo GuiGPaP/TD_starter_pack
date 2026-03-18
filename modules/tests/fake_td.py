@@ -11,7 +11,6 @@ from __future__ import annotations
 import fnmatch
 from itertools import count
 
-
 # ── Atomic parameter ────────────────────────────────────────────────
 
 class FakePar:
@@ -60,7 +59,9 @@ class FakeOp:
     helpers read/write.
     """
 
-    def __init__(self, name: str = "op1", *, parent: FakeOp | None = None, graph: FakeGraph | None = None):
+    def __init__(
+        self, name: str = "op1", *, parent: FakeOp | None = None, graph: FakeGraph | None = None
+    ):
         self.id: int = next(_id_counter)
         self.name: str = name
         self.OPType: str = "baseCOMP"
