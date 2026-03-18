@@ -238,6 +238,147 @@ class TestEndToEnd:
         assert result["success"] is True
         assert result["data"]["diagnosticCount"] == 0
 
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_lint_dat_dry_run_end_to_end(self, _mock_which, mock_run, integration_router, mock_td):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "import os\n"
+        dat.errors.return_value = ""
+        mock_td.op.return_value = dat
+
+        fix_diag = json.dumps([{
+            "code": "F401", "message": "unused import",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 10},
+            "fix": {"edits": []},
+        }])
+        call_count = {"n": 0}
+
+        def side_effect(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                tmp = args[0][-1]
+                with open(tmp, "w", encoding="utf-8") as f:
+                    f.write("")  # fixed
+                return MagicMock(returncode=1, stdout=fix_diag, stderr="")
+            return MagicMock(returncode=0, stdout="[]", stderr="")
+
+        mock_run.side_effect = side_effect
+
+        body = json.dumps({"nodePath": "/project1/script1", "fix": True, "dryRun": True})
+        result = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body)
+        assert result["success"] is True
+        assert result["data"]["applied"] is False
+        assert "diff" in result["data"]
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_lint_dat_fix_with_remaining_end_to_end(
+        self, _mock_which, mock_run, integration_router, mock_td
+    ):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "import os\nx=1\n"
+        dat.errors.return_value = ""
+        mock_td.op.return_value = dat
+
+        fix_diag = json.dumps([{
+            "code": "F401", "message": "unused import",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 10},
+            "fix": {"edits": []},
+        }])
+        remaining_diag = json.dumps([{
+            "code": "E711", "message": "comparison to None",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 5},
+            "fix": None,
+        }])
+        call_count = {"n": 0}
+
+        def side_effect(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                tmp = args[0][-1]
+                with open(tmp, "w", encoding="utf-8") as f:
+                    f.write("x=1\n")
+                return MagicMock(returncode=1, stdout=fix_diag, stderr="")
+            return MagicMock(returncode=1, stdout=remaining_diag, stderr="")
+
+        mock_run.side_effect = side_effect
+
+        body = json.dumps({"nodePath": "/project1/script1", "fix": True})
+        result = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body)
+        assert result["success"] is True
+        assert result["data"]["fixed"] is True
+        assert result["data"]["remainingDiagnosticCount"] == 1
+        assert result["data"]["remainingDiagnostics"][0]["code"] == "E711"
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_lint_dat_correction_loop_end_to_end(
+        self, _mock_which, mock_run, integration_router, mock_td
+    ):
+        """Full correction loop: lint(check) -> lint(dryRun) -> lint(fix)."""
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "import os\n"
+        dat.errors.return_value = ""
+        mock_td.op.return_value = dat
+
+        diag = json.dumps([{
+            "code": "F401", "message": "unused import",
+            "location": {"row": 1, "column": 1},
+            "end_location": {"row": 1, "column": 10},
+            "fix": {"edits": []},
+        }])
+
+        def make_side_effect():
+            call_count = {"n": 0}
+
+            def side_effect(*args, **kwargs):
+                call_count["n"] += 1
+                cmd = args[0] if args else kwargs.get("args", [])
+                if "--fix" in cmd:
+                    tmp = cmd[-1]
+                    with open(tmp, "w", encoding="utf-8") as f:
+                        f.write("")  # fixed
+                    return MagicMock(returncode=1, stdout=diag, stderr="")
+                rc = 1 if call_count["n"] <= 2 else 0
+                out = diag if call_count["n"] <= 2 else "[]"
+                return MagicMock(returncode=rc, stdout=out, stderr="")
+
+            return side_effect
+
+        # Step 1: lint check only
+        mock_run.side_effect = make_side_effect()
+        body1 = json.dumps({"nodePath": "/project1/script1"})
+        r1 = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body1)
+        assert r1["success"] is True
+        assert r1["data"]["diagnosticCount"] == 1
+
+        # Step 2: lint dry-run
+        mock_run.side_effect = make_side_effect()
+        body2 = json.dumps({"nodePath": "/project1/script1", "fix": True, "dryRun": True})
+        r2 = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body2)
+        assert r2["success"] is True
+        assert r2["data"]["applied"] is False
+        assert "diff" in r2["data"]
+
+        # Step 3: lint fix (apply)
+        mock_run.side_effect = make_side_effect()
+        body3 = json.dumps({"nodePath": "/project1/script1", "fix": True})
+        r3 = integration_router.route_request("POST", "/api/nodes/dat-lint", {}, body3)
+        assert r3["success"] is True
+        assert r3["data"]["applied"] is True
+
     def test_discover_dat_candidates_end_to_end(self, integration_router, mock_td):
         parent = MagicMock()
         parent.valid = True
