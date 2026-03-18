@@ -8,6 +8,7 @@ from mcp.controllers.openapi_router import (
     extract_routes,
     match_route,
 )
+from utils.types import Result
 
 MINI_SCHEMA = {
     "info": {"version": "1.0.0"},
@@ -98,7 +99,7 @@ class TestOpenAPIRouter:
 
         handler_called_with = {}
 
-        def handler(**kwargs):
+        def handler(**kwargs) -> Result:
             handler_called_with.update(kwargs)
             return {"success": True, "data": "ok", "error": None}
 
@@ -144,7 +145,7 @@ class TestOpenAPIRouter:
 
         received = {}
 
-        def handler(**kwargs):
+        def handler(**kwargs) -> Result:
             received.update(kwargs)
             return {"success": True, "data": None, "error": None}
 
@@ -162,7 +163,7 @@ class TestOpenAPIRouter:
 
         received = {}
 
-        def handler(**kwargs):
+        def handler(**kwargs) -> Result:
             received.update(kwargs)
             return {"success": True, "data": None, "error": None}
 

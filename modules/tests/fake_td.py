@@ -117,6 +117,7 @@ class FakeOp:
 
         self.par = FakeParNamespace()
         self.children: list[FakeOp] = []
+        self.extensions: list[object] = []
         self.inputConnectors = [FakeConnector()]
 
         self._parent: FakeOp | None = parent

@@ -69,9 +69,7 @@ class IApiService(Protocol):
         recursive: bool = ...,
         purpose: str = ...,
     ) -> Result: ...
-    def get_node_parameter_schema(
-        self, node_path: str, pattern: str = ...
-    ) -> Result: ...
+    def get_node_parameter_schema(self, node_path: str, pattern: str = ...) -> Result: ...
     def complete_op_paths(
         self, context_node_path: str, prefix: str = ..., limit: int = ...
     ) -> Result: ...
@@ -737,9 +735,7 @@ class TouchDesignerApiService(IApiService):
                             timeout=30,
                         )
                         relint_raw = (
-                            json.loads(relint_proc.stdout)
-                            if relint_proc.stdout.strip()
-                            else []
+                            json.loads(relint_proc.stdout) if relint_proc.stdout.strip() else []
                         )
                     except (subprocess.TimeoutExpired, json.JSONDecodeError):
                         relint_raw = []
@@ -1087,9 +1083,7 @@ class TouchDesignerApiService(IApiService):
                             entry["doc"] = doc[:500] if len(doc) > 500 else doc
                         methods.append(entry)
                 else:
-                    properties.append(
-                        {"name": member_name, "type": type(member_obj).__name__}
-                    )
+                    properties.append({"name": member_name, "type": type(member_obj).__name__})
 
             extensions_list.append(
                 {
@@ -1444,16 +1438,16 @@ class TouchDesignerApiService(IApiService):
         if not callable(item) and hasattr(item, "name"):
             return str(item)
 
-        if hasattr(item, "eval") and callable(item.eval):
+        if hasattr(item, "eval") and callable(item.eval):  # pyright: ignore[reportFunctionMemberAccess]
             try:
-                value = item.eval()
+                value = item.eval()  # pyright: ignore[reportFunctionMemberAccess]
                 if hasattr(td, "OP") and isinstance(value, td.OP):
                     return value.path
                 return value
             except Exception as e:
                 log_message(
                     "Error evaluating parameter "
-                    f"{item.name if hasattr(item, 'name') else 'unknown'}: {e!s}",
+                    f"{item.name if hasattr(item, 'name') else 'unknown'}: {e!s}",  # pyright: ignore[reportFunctionMemberAccess]
                     LogLevel.DEBUG,
                 )
                 return f"<Error: {e!s}>"
