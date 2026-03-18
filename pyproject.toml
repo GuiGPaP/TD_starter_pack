@@ -22,7 +22,8 @@ td-server = [
   "Flask-Testing==0.8.1",
 ]
 
-# ── uv ────────────────────────────────────────────────────────────
+# ── uv: Python + packages ────────────────────────────────────────
+# System tools (uv, just, lefthook) are managed by mise (see mise.toml)
 [tool.uv]
 package = false
 default-groups = ["dev", "td-server"]

@@ -24,6 +24,10 @@ test:
 # All checks
 check: lint typecheck test
 
+# Install git hooks (requires lefthook)
+hooks:
+    lefthook install
+
 # Legacy tox (td_server only)
 tox:
     cd modules/td_server && tox
