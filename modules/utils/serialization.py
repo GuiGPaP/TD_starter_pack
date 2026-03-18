@@ -33,13 +33,13 @@ def safe_serialize(obj: Any) -> Any:
 	if hasattr(obj, "eval") and callable(obj.eval):
 		try:
 			val = obj.eval()
-			if hasattr(val, "path") and callable(getattr(val, "path", None)):
-				return val.path
+			if hasattr(val, "path") and isinstance(getattr(val, "path", None), str):
+				return val.path  # pyright: ignore[reportAttributeAccessIssue]
 			return val
 		except Exception:
 			return str(obj)
 
-	if hasattr(obj, "path") and callable(getattr(obj, "path", None)):
+	if hasattr(obj, "path") and isinstance(getattr(obj, "path", None), str):
 		return obj.path
 
 	if hasattr(obj, "__class__") and obj.__class__.__name__ == "Page":
