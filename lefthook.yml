@@ -15,3 +15,5 @@ pre-push:
       run: uv run pyright
     test:
       run: uv run pytest
+    links:
+      run: mise exec -- lychee --offline --no-progress .

@@ -4,3 +4,4 @@
 uv = "latest"
 just = "latest"
 lefthook = "latest"
+"github:lycheeverse/lychee" = "lychee-v0.23.0"

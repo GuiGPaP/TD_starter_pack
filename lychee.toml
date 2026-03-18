@@ -1,0 +1,8 @@
+exclude_path = [
+  "^\\./\\.venv/",
+  "^\\./\\.pytest_cache/",
+  "^\\./_mcp_server/",
+  "^\\./\\.claude/",
+  "^\\./plans/",
+  "^\\./tasks/",
+]
