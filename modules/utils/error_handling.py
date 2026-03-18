@@ -46,17 +46,17 @@ def categorize_error(exception: Exception) -> ErrorCategory:
 
     if isinstance(exception, ValueError):
         return ErrorCategory.VALIDATION
-    elif (
+    if (
         isinstance(exception, FileNotFoundError)
         or "not found" in error_message
         or "doesn't exist" in error_message
     ):
         return ErrorCategory.NOT_FOUND
-    elif "permission" in error_message or "access denied" in error_message:
+    if "permission" in error_message or "access denied" in error_message:
         return ErrorCategory.PERMISSION
-    elif "network" in error_message or "connection" in error_message:
+    if "network" in error_message or "connection" in error_message:
         return ErrorCategory.NETWORK
-    elif "external" in error_message or "service unavailable" in error_message:
+    if "external" in error_message or "service unavailable" in error_message:
         return ErrorCategory.EXTERNAL
 
     return ErrorCategory.INTERNAL

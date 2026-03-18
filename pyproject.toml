@@ -34,17 +34,53 @@ line-length = 100
 src = ["modules"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+select = [
+  # ── baseline ──
+  "E",      # pycodestyle errors
+  "F",      # pyflakes
+  "W",      # pycodestyle warnings
+  "I",      # isort
+  "UP",     # pyupgrade — modernise syntax to 3.11+
+  "B",      # flake8-bugbear
+  "SIM",    # flake8-simplify
+  "RUF",    # ruff-specific
+  # ── agent-era guardrails ──
+  "T20",    # no leftover print()
+  "C4",     # clean comprehensions
+  "RET",    # clean returns
+  "PIE",    # no-op code
+  "PERF",   # perf anti-patterns
+  "FURB",   # modern idioms
+  "S",      # flake8-bandit — security basics
+  "ARG",    # unused arguments
+  "ISC",    # implicit string concat
+  "TC",     # type-checking imports
+]
 ignore = [
-  "E101",   # mixed spaces and tabs
+  "E101",   # mixed spaces and tabs (TD uses tabs)
   "W191",   # tabs
+  "ISC001", # conflicts with ruff format
+  "RET504", # unnecessary assignment before return — often clearer
 ]
 
 [tool.ruff.lint.per-file-ignores]
-# Code généré — exclure du linting
+# generated code — exclude entirely
 "modules/td_server/openapi_server/*" = ["ALL"]
 "modules/mcp/controllers/generated_handlers.py" = ["ALL"]
-"modules/mcp/controllers/api_controller.py" = ["F403"]
+# TD callbacks have fixed signatures with unused params
+"modules/td_helpers/*" = ["ARG001"]
+# api_controller: star re-export + TD callback signatures
+"modules/mcp/controllers/api_controller.py" = ["F403", "ARG002"]
+# openapi_router: schema_path kept for interface compat
+"modules/mcp/controllers/openapi_router.py" = ["ARG001"]
+# api_service: eval/exec/subprocess are intentional (MCP executes TD scripts)
+"modules/mcp/services/api_service.py" = ["S102", "S307", "S110", "S603"]
+# webserver script: print is TD logging, callbacks have fixed signatures
+"modules/mcp_webserver_script.py" = ["T20", "ARG001"]
+# logging util: print is the output mechanism
+"modules/utils/utils_logging.py" = ["T20"]
+# tests: print, assert, hardcoded values, unused params all expected
+"modules/tests/*" = ["T20", "S", "ARG"]
 
 [tool.ruff.format]
 exclude = ["modules/td_server/openapi_server/*"]
