@@ -29,7 +29,7 @@ class TestDefaultController(BaseTestCase):
 
         Create a new node
         """
-        create_node_request = openapi_server.CreateNodeRequest()
+        create_node_request = CreateNodeRequest(parent_path='/project1', node_type='textTOP')
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ class TestDefaultController(BaseTestCase):
 
         Call a method of the specified node
         """
-        exec_node_method_request = openapi_server.ExecNodeMethodRequest()
+        exec_node_method_request = ExecNodeMethodRequest(node_path='/project1', method='cook')
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ class TestDefaultController(BaseTestCase):
 
         Execute python code on the server
         """
-        exec_python_script_request = openapi_server.ExecPythonScriptRequest()
+        exec_python_script_request = ExecPythonScriptRequest(script='print(1)')
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ class TestDefaultController(BaseTestCase):
 
         Update node properties
         """
-        update_node_request = openapi_server.UpdateNodeRequest()
+        update_node_request = UpdateNodeRequest(node_path='/project1', properties={'tx': 0})
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
