@@ -698,7 +698,9 @@ def get_node_parameter_schema(body: str = None, **kwargs) -> Result:
     Auto-generated handler for operation: get_node_parameter_schema
     """
     try:
-        print(f"[DEBUG] Handler 'get_node_parameter_schema' called with body: {body}, kwargs: {kwargs}")
+        print(
+            f"[DEBUG] Handler 'get_node_parameter_schema' called with body: {body}, kwargs: {kwargs}"
+        )
         service_method = getattr(get_api_service(), "get_node_parameter_schema", None)
         if not callable(service_method):
             return error_result("Service method 'get_node_parameter_schema' not implemented")

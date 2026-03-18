@@ -69,9 +69,7 @@ class IApiService(Protocol):
         recursive: bool = ...,
         purpose: str = ...,
     ) -> Result: ...
-    def get_node_parameter_schema(
-        self, node_path: str, pattern: str = ...
-    ) -> Result: ...
+    def get_node_parameter_schema(self, node_path: str, pattern: str = ...) -> Result: ...
     def complete_op_paths(
         self, context_node_path: str, prefix: str = ..., limit: int = ...
     ) -> Result: ...
@@ -740,9 +738,7 @@ class TouchDesignerApiService(IApiService):
                             timeout=30,
                         )
                         relint_raw = (
-                            json.loads(relint_proc.stdout)
-                            if relint_proc.stdout.strip()
-                            else []
+                            json.loads(relint_proc.stdout) if relint_proc.stdout.strip() else []
                         )
                     except (subprocess.TimeoutExpired, json.JSONDecodeError):
                         relint_raw = []
@@ -1090,9 +1086,7 @@ class TouchDesignerApiService(IApiService):
                             entry["doc"] = doc[:500] if len(doc) > 500 else doc
                         methods.append(entry)
                 else:
-                    properties.append(
-                        {"name": member_name, "type": type(member_obj).__name__}
-                    )
+                    properties.append({"name": member_name, "type": type(member_obj).__name__})
 
             extensions_list.append(
                 {

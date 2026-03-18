@@ -324,21 +324,29 @@ class TestLintDatWorkflow:
         svc_mod = self._get_svc_module()
 
         # First call: ruff check --fix (returns initial diagnostics, writes fixed file)
-        fix_diag = json.dumps([{
-            "code": "F401",
-            "message": "`os` imported but unused",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
         # Second call: re-lint (returns remaining issue)
-        remaining_diag = json.dumps([{
-            "code": "E711",
-            "message": "comparison to None",
-            "location": {"row": 2, "column": 1},
-            "end_location": {"row": 2, "column": 5},
-            "fix": None,
-        }])
+        remaining_diag = json.dumps(
+            [
+                {
+                    "code": "E711",
+                    "message": "comparison to None",
+                    "location": {"row": 2, "column": 1},
+                    "end_location": {"row": 2, "column": 5},
+                    "fix": None,
+                }
+            ]
+        )
 
         call_count = {"n": 0}
 
@@ -371,13 +379,17 @@ class TestLintDatWorkflow:
         monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
         svc_mod = self._get_svc_module()
 
-        fix_diag = json.dumps([{
-            "code": "F401",
-            "message": "`os` imported but unused",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
 
         call_count = {"n": 0}
 
@@ -409,13 +421,17 @@ class TestLintDatWorkflow:
         monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
         svc_mod = self._get_svc_module()
 
-        fix_diag = json.dumps([{
-            "code": "F401",
-            "message": "`os` imported but unused",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
 
         call_count = {"n": 0}
 
@@ -732,10 +748,16 @@ class TestGetNodeParameterSchema:
         node = FakeOp("test1", parent=_base, graph=graph)
         _base.children.append(node)
         node.par.brightness = FakePar(
-            "brightness", 0.5,
-            label="Brightness", style="Float",
-            default=1.0, min_val=0.0, max_val=1.0,
-            clamp_min=True, clamp_max=True, page="Transform",
+            "brightness",
+            0.5,
+            label="Brightness",
+            style="Float",
+            default=1.0,
+            min_val=0.0,
+            max_val=1.0,
+            clamp_min=True,
+            clamp_max=True,
+            page="Transform",
         )
         result = svc.get_node_parameter_schema("/project1/base1/test1")
         assert result["success"] is True
@@ -776,7 +798,8 @@ class TestGetNodeParameterSchema:
         node = FakeOp("test3", parent=_base, graph=graph)
         _base.children.append(node)
         node.par.mode = FakePar(
-            "mode", "add",
+            "mode",
+            "add",
             style="Menu",
             menu_names=("add", "multiply", "screen"),
             menu_labels=("Add", "Multiply", "Screen"),
@@ -885,7 +908,8 @@ class TestGetChopChannels:
         chop = FakeChop(
             "noise1",
             channels=[FakeChannel("tx", [1.0, 2.0]), FakeChannel("ty", [3.0])],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(chop)
 
@@ -905,7 +929,8 @@ class TestGetChopChannels:
         chop = FakeChop(
             "noise1",
             channels=[FakeChannel("tx", [1.0, 3.0, 5.0])],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(chop)
 
@@ -921,7 +946,8 @@ class TestGetChopChannels:
         chop = FakeChop(
             "noise1",
             channels=[FakeChannel("tx"), FakeChannel("ty"), FakeChannel("rz")],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(chop)
 
@@ -968,7 +994,8 @@ class TestGetDatTableInfo:
         table = FakeTableDat(
             "table1",
             data=[["name", "value"], ["foo", "1"], ["bar", "2"]],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(table)
 
@@ -994,7 +1021,10 @@ class TestGetDatTableInfo:
         svc, graph, _base = starter
         long_val = "x" * 300
         table = FakeTableDat(
-            "table1", data=[[long_val]], parent=_base, graph=graph,
+            "table1",
+            data=[[long_val]],
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(table)
 
@@ -1032,6 +1062,7 @@ class TestGetDatTableInfo:
 
 class _MockExtension:
     """Test extension class with methods and properties."""
+
     color = "red"
 
     def do_something(self, x: int) -> str:
