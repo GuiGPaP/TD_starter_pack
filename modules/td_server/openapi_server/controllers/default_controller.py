@@ -212,6 +212,19 @@ def lint_dat(body=None):  # noqa: E501
     return 'do some magic!'
 
 
+def discover_dat_candidates(parent_path, recursive=None, purpose=None):  # noqa: E501
+    """Discover DAT candidates for agent workflows
+
+    :param parent_path: Absolute path to the parent
+    :type parent_path: str
+    :param recursive: Search recursively into descendants
+    :type recursive: bool
+    :param purpose: Filter by DAT kind
+    :type purpose: str
+    """
+    return 'do some magic!'
+
+
 def update_node(body=None):  # noqa: E501
     """Update node properties
 

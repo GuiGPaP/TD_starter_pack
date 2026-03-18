@@ -62,6 +62,12 @@ class IApiService(Protocol):
     def get_dat_text(self, node_path: str) -> Result: ...
     def set_dat_text(self, node_path: str, text: str) -> Result: ...
     def lint_dat(self, node_path: str, fix: bool = ...) -> Result: ...
+    def discover_dat_candidates(
+        self,
+        parent_path: str,
+        recursive: bool = ...,
+        purpose: str = ...,
+    ) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -705,6 +711,115 @@ class TouchDesignerApiService(IApiService):
                 os.close(fd)
             with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
+
+    def _find_text_dats(
+        self,
+        parent_path: str,
+        pattern: str = "*",
+        recursive: bool = False,
+    ) -> list[Any] | None:
+        """Return DAT nodes with .text under parent, or None if parent invalid."""
+        parent = td.op(parent_path)
+        if parent is None or not parent.valid:
+            return None
+        depth = None if recursive else 1
+        children = parent.findChildren(name=pattern, depth=depth)
+        return [n for n in children if hasattr(n, "text")]
+
+    _GLSL_MARKERS = ("uniform ", "layout(", "in vec", "out vec")
+    _PYTHON_MARKERS = ("import ", "def ", "class ", "op(", "me.", "parent()", "ext.")
+
+    def _classify_dat_kind(self, node: Any) -> tuple[str, str, str]:
+        """Classify a DAT node into (kindGuess, confidence, why)."""
+        op_type = getattr(node, "OPType", "")
+
+        # 1. By opType (most reliable signal)
+        if op_type == "scriptDAT":
+            return ("python", "high", "scriptDAT operator")
+        if op_type == "cplusplusDAT":
+            return ("text", "high", "C++ DAT")
+        if op_type in ("tableDAT", "jsonDAT", "xmlDAT"):
+            return ("data", "high", f"{op_type} operator")
+
+        # 2. By docking context (for textDAT)
+        name = getattr(node, "name", "")
+        if name.endswith(("_pixel", "_vertex", "_compute")):
+            suffix = name.rsplit("_", 1)[-1]
+            return ("glsl", "high", f"docked shader DAT (name ends with _{suffix})")
+
+        # 3. By content analysis (for textDAT without structural signal)
+        text = getattr(node, "text", "") or ""
+        if not text.strip():
+            return ("empty", "high", "no content")
+
+        # GLSL detection
+        if "#version" in text or "void main(" in text:
+            return ("glsl", "high", "GLSL keywords (#version or void main)")
+        glsl_count = sum(1 for m in self._GLSL_MARKERS if m in text)
+        if glsl_count >= 2:
+            return ("glsl", "medium", f"GLSL markers ({glsl_count} found)")
+
+        # Python detection
+        py_count = sum(1 for m in self._PYTHON_MARKERS if m in text)
+        if py_count >= 3:
+            return ("python", "high", f"Python markers ({py_count} found)")
+        if py_count >= 2:
+            return ("python", "medium", f"Python markers ({py_count} found)")
+        if py_count >= 1:
+            return ("python", "low", f"Python markers ({py_count} found)")
+
+        return ("text", "low", "no recognizable pattern")
+
+    def discover_dat_candidates(
+        self,
+        parent_path: str,
+        recursive: bool = False,
+        purpose: str = "any",
+    ) -> Result:
+        """Discover DAT candidates under parent, classified by kind."""
+        valid_purposes = ("python", "glsl", "text", "data", "any")
+        if purpose not in valid_purposes:
+            return error_result(f"Invalid purpose: {purpose}. Use python|glsl|text|data|any")
+
+        text_dats = self._find_text_dats(parent_path, recursive=recursive)
+        if text_dats is None:
+            return error_result(f"Parent not found: {parent_path}")
+
+        candidates = []
+        for dat in text_dats:
+            kind, confidence, why = self._classify_dat_kind(dat)
+            if purpose != "any" and kind != purpose:
+                continue
+            if kind == "empty":
+                continue
+            text = getattr(dat, "text", "") or ""
+            parent_op = dat.parent() if hasattr(dat, "parent") and callable(dat.parent) else None
+            parent_path_str: str = getattr(parent_op, "path", "") if parent_op else ""
+            candidates.append(
+                {
+                    "path": dat.path,
+                    "name": dat.name,
+                    "opType": dat.OPType,
+                    "kindGuess": kind,
+                    "confidence": confidence,
+                    "why": why,
+                    "lineCount": text.count("\n") + 1 if text else 0,
+                    "parentComp": parent_path_str,
+                    "isDocked": bool(getattr(dat, "dock", None)),
+                }
+            )
+
+        order = {"high": 0, "medium": 1, "low": 2}
+        candidates.sort(key=lambda c: (order.get(c["confidence"], 3), c["name"]))
+
+        return success_result(
+            {
+                "parentPath": parent_path,
+                "purpose": purpose,
+                "count": len(candidates),
+                "candidates": candidates,
+            }
+        )
 
     def _find_ruff(self) -> str | None:
         """Locate the ruff binary on PATH or in the project .venv."""

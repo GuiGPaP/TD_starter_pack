@@ -273,6 +273,82 @@ paths:
           description: Lint results
       summary: Lint DAT code with ruff
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-discover:
+    get:
+      description: Discover DAT candidates under a parent, classified by kind (python,
+        glsl, text, data). Agent-friendly endpoint that eliminates N+1 round-trips.
+      operationId: discover_dat_candidates
+      parameters:
+      - description: "Absolute path to the parent. e.g., \"/project1\""
+        in: query
+        name: parentPath
+        required: true
+        schema:
+          type: string
+      - description: Search recursively into descendants
+        in: query
+        name: recursive
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: "Filter by DAT kind: python, glsl, text, data, or any"
+        in: query
+        name: purpose
+        required: false
+        schema:
+          default: any
+          enum:
+          - python
+          - glsl
+          - text
+          - data
+          - any
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      parentPath:
+                        type: string
+                      purpose:
+                        type: string
+                      count:
+                        type: integer
+                      candidates:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            path:
+                              type: string
+                            name:
+                              type: string
+                            opType:
+                              type: string
+                            kindGuess:
+                              type: string
+                            confidence:
+                              type: string
+                            why:
+                              type: string
+                            lineCount:
+                              type: integer
+                            parentComp:
+                              type: string
+                            isDocked:
+                              type: boolean
+          description: DAT discovery results
+      summary: Discover DAT candidates for agent workflows
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/td/classes:
     get:
       description: "Returns a list of Python classes, modules, and functions available\

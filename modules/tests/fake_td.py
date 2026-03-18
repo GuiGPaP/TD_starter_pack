@@ -102,9 +102,19 @@ class FakeOp:
         """Return FakePar objects for all attributes set on ``self.par``."""
         return [FakePar(k, v) for k, v in vars(self.par).items() if not k.startswith("_")]
 
+    def parent(self) -> FakeOp | None:
+        """Return the parent operator, or None for root."""
+        return self._parent
+
     # -- Children search (used by get_nodes) --
 
-    def findChildren(self, *, name: str = "*", depth: int | None = None) -> list[FakeOp]:
+    def findChildren(
+        self,
+        *,
+        name: str = "*",
+        type: type | None = None,
+        depth: int | None = None,
+    ) -> list[FakeOp]:
         if depth == 1:
             results = list(self.children)
         else:
@@ -114,6 +124,8 @@ class FakeOp:
                 results.extend(child.findChildren(name="*"))
         if name != "*":
             results = [c for c in results if fnmatch.fnmatch(c.name, name)]
+        if type is not None:
+            results = [c for c in results if isinstance(c, type)]
         return results
 
     # -- Errors (used by get_node_errors) --
@@ -137,10 +149,18 @@ class FakeOp:
 class FakeDat(FakeOp):
     """Fake DAT operator with .text attribute."""
 
-    def __init__(self, name: str = "text1", text: str = "", **kwargs):
+    def __init__(
+        self,
+        name: str = "text1",
+        text: str = "",
+        *,
+        dock: FakeOp | None = None,
+        **kwargs,
+    ):
         super().__init__(name=name, **kwargs)
         self.OPType: str = "textDAT"
         self.text: str = text
+        self.dock: FakeOp | None = dock
 
 
 # ── Container (supports .create()) ──────────────────────────────────

@@ -12,7 +12,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from tests.fake_td import FakeContainer, FakeGraph, FakeOp
+from tests.fake_td import FakeContainer, FakeDat, FakeGraph, FakeOp
 
 
 @pytest.fixture()
@@ -304,3 +304,266 @@ class TestLintDatWorkflow:
         result = svc.lint_dat("/project1/base1/script1")
         assert result["success"] is False
         assert "ruff not found" in result["error"]
+
+
+# ── 7. DAT Classifier Unit Tests ──────────────────────────────────────
+
+
+class TestClassifyDatKind:
+    def test_script_dat(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "scriptDAT", "myscript")
+        node = _graph.op("/project1/base1/myscript")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "python"
+        assert confidence == "high"
+
+    def test_text_dat_with_glsl_content(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "shader1")
+        svc.set_dat_text(
+            "/project1/base1/shader1",
+            "#version 330\nvoid main() { gl_FragColor = vec4(1.0); }",
+        )
+        node = _graph.op("/project1/base1/shader1")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "glsl"
+        assert confidence == "high"
+
+    def test_text_dat_with_python_content(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "pycode")
+        svc.set_dat_text(
+            "/project1/base1/pycode",
+            "import os\ndef main():\n    op('/project1').par.x = 1\n",
+        )
+        node = _graph.op("/project1/base1/pycode")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "python"
+        assert confidence == "high"
+
+    def test_text_dat_with_op_marker_only(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "short")
+        svc.set_dat_text("/project1/base1/short", "# set value\nop('/project1').cook()\n")
+        node = _graph.op("/project1/base1/short")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "python"
+        assert confidence == "low"
+
+    def test_empty_text_dat(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "empty1")
+        node = _graph.op("/project1/base1/empty1")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "empty"
+        assert confidence == "high"
+
+    def test_prose_text_dat(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "notes")
+        svc.set_dat_text("/project1/base1/notes", "This is a note about the project.\n")
+        node = _graph.op("/project1/base1/notes")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "text"
+        assert confidence == "low"
+
+    def test_docked_pixel_dat(self, starter):
+        svc, graph, base = starter
+        # Create a docked DAT manually with dock reference
+        glsl_comp = FakeContainer("glsl1", parent=base, graph=graph)
+        base.children.append(glsl_comp)
+        docked_dat = FakeDat(
+            "glsl1_pixel",
+            text="uniform float uTime;",
+            parent=glsl_comp,
+            graph=graph,
+            dock=glsl_comp,
+        )
+        glsl_comp.children.append(docked_dat)
+        kind, confidence, _why = svc._classify_dat_kind(docked_dat)
+        assert kind == "glsl"
+        assert confidence == "high"
+
+    def test_table_dat(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "tableDAT", "data1")
+        node = _graph.op("/project1/base1/data1")
+        kind, confidence, _why = svc._classify_dat_kind(node)
+        assert kind == "data"
+        assert confidence == "high"
+
+
+# ── 8. _find_text_dats Unit Tests ──────────────────────────────────────
+
+
+class TestFindTextDats:
+    def test_invalid_parent(self, starter):
+        svc, _graph, _base = starter
+        result = svc._find_text_dats("/nonexistent")
+        assert result is None
+
+    def test_mixed_children(self, starter):
+        svc, _graph, _base = starter
+        # Create a mix of DATs and non-DATs
+        svc.create_node("/project1/base1", "textDAT", "dat1")
+        svc.create_node("/project1/base1", "nullTOP", "null1")
+        svc.create_node("/project1/base1", "textDAT", "dat2")
+        result = svc._find_text_dats("/project1/base1")
+        assert result is not None
+        names = [n.name for n in result]
+        assert "dat1" in names
+        assert "dat2" in names
+        assert "null1" not in names
+
+    def test_recursive_vs_non_recursive(self, starter):
+        svc, graph, base = starter
+        # Create a nested structure
+        sub = FakeContainer("sub", parent=base, graph=graph)
+        base.children.append(sub)
+        svc.create_node("/project1/base1", "textDAT", "top_dat")
+        svc.create_node("/project1/base1/sub", "textDAT", "nested_dat")
+
+        non_recursive = svc._find_text_dats("/project1/base1", recursive=False)
+        recursive = svc._find_text_dats("/project1/base1", recursive=True)
+
+        assert non_recursive is not None
+        assert recursive is not None
+        non_rec_names = [n.name for n in non_recursive]
+        rec_names = [n.name for n in recursive]
+        assert "top_dat" in non_rec_names
+        assert "nested_dat" not in non_rec_names
+        assert "top_dat" in rec_names
+        assert "nested_dat" in rec_names
+
+
+# ── 9. DAT Discovery Workflow ──────────────────────────────────────────
+
+
+class TestDiscoverDatCandidates:
+    def test_purpose_any(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "scriptDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "import os\ndef run(): pass\n")
+        svc.create_node("/project1/base1", "textDAT", "shader1")
+        svc.set_dat_text("/project1/base1/shader1", "#version 330\nvoid main() {}\n")
+        svc.create_node("/project1/base1", "textDAT", "notes")
+        svc.set_dat_text("/project1/base1/notes", "Just a note.\n")
+
+        result = svc.discover_dat_candidates("/project1/base1")
+        assert result["success"] is True
+        data = result["data"]
+        assert data["purpose"] == "any"
+        kinds = {c["kindGuess"] for c in data["candidates"]}
+        assert "python" in kinds
+        assert "glsl" in kinds
+        assert "text" in kinds
+
+    def test_purpose_python(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "scriptDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+        svc.create_node("/project1/base1", "textDAT", "shader1")
+        svc.set_dat_text("/project1/base1/shader1", "#version 330\nvoid main() {}\n")
+
+        result = svc.discover_dat_candidates("/project1/base1", purpose="python")
+        assert result["success"] is True
+        for c in result["data"]["candidates"]:
+            assert c["kindGuess"] == "python"
+
+    def test_purpose_glsl(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "scriptDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+        svc.create_node("/project1/base1", "textDAT", "shader1")
+        svc.set_dat_text("/project1/base1/shader1", "#version 330\nvoid main() {}\n")
+
+        result = svc.discover_dat_candidates("/project1/base1", purpose="glsl")
+        assert result["success"] is True
+        for c in result["data"]["candidates"]:
+            assert c["kindGuess"] == "glsl"
+
+    def test_recursive(self, starter):
+        svc, graph, base = starter
+        sub = FakeContainer("sub", parent=base, graph=graph)
+        base.children.append(sub)
+        svc.create_node("/project1/base1", "textDAT", "top_script")
+        svc.set_dat_text("/project1/base1/top_script", "import os\ndef run(): pass\n")
+        svc.create_node("/project1/base1/sub", "textDAT", "nested_script")
+        svc.set_dat_text("/project1/base1/sub/nested_script", "import sys\ndef go(): pass\n")
+
+        non_rec = svc.discover_dat_candidates("/project1/base1", recursive=False)
+        rec = svc.discover_dat_candidates("/project1/base1", recursive=True)
+        assert non_rec["success"] is True
+        assert rec["success"] is True
+        non_rec_paths = [c["path"] for c in non_rec["data"]["candidates"]]
+        rec_paths = [c["path"] for c in rec["data"]["candidates"]]
+        assert "/project1/base1/sub/nested_script" not in non_rec_paths
+        assert "/project1/base1/sub/nested_script" in rec_paths
+
+    def test_empty_dats_excluded(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "empty1")
+        # empty DAT — no text set
+
+        result = svc.discover_dat_candidates("/project1/base1")
+        assert result["success"] is True
+        names = [c["name"] for c in result["data"]["candidates"]]
+        assert "empty1" not in names
+
+    def test_invalid_parent(self, starter):
+        svc, _graph, _base = starter
+        result = svc.discover_dat_candidates("/nonexistent")
+        assert result["success"] is False
+
+    def test_invalid_purpose(self, starter):
+        svc, _graph, _base = starter
+        result = svc.discover_dat_candidates("/project1/base1", purpose="invalid")
+        assert result["success"] is False
+        assert "Invalid purpose" in result["error"]
+
+    def test_docked_dat_detection(self, starter):
+        svc, graph, base = starter
+        glsl_comp = FakeContainer("glsl1", parent=base, graph=graph)
+        base.children.append(glsl_comp)
+        docked = FakeDat(
+            "glsl1_pixel",
+            text="uniform float uTime;\nvoid main() {}\n",
+            parent=glsl_comp,
+            graph=graph,
+            dock=glsl_comp,
+        )
+        glsl_comp.children.append(docked)
+
+        result = svc.discover_dat_candidates("/project1/base1/glsl1")
+        assert result["success"] is True
+        assert result["data"]["count"] == 1
+        c = result["data"]["candidates"][0]
+        assert c["kindGuess"] == "glsl"
+        assert c["isDocked"] is True
+        assert c["confidence"] == "high"
+
+    def test_sorted_by_confidence(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "scriptDAT", "z_script")
+        svc.set_dat_text("/project1/base1/z_script", "x = 1\n")
+        svc.create_node("/project1/base1", "textDAT", "a_notes")
+        svc.set_dat_text("/project1/base1/a_notes", "just notes\n")
+
+        result = svc.discover_dat_candidates("/project1/base1")
+        assert result["success"] is True
+        candidates = result["data"]["candidates"]
+        assert len(candidates) >= 2
+        # high confidence should come before low
+        confs = [c["confidence"] for c in candidates]
+        assert confs.index("high") < confs.index("low")
+
+    def test_line_count(self, starter):
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "scriptDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "line1\nline2\nline3\n")
+
+        result = svc.discover_dat_candidates("/project1/base1")
+        assert result["success"] is True
+        c = result["data"]["candidates"][0]
+        assert c["lineCount"] == 4  # 3 \n + 1
