@@ -67,3 +67,23 @@ pythonpath = ["modules", "modules/td_server"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+addopts = '-m "not integration"'
+markers = [
+  "integration: generated OpenAPI integration tests (require Flask test server)",
+]
+
+# ── coverage ─────────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["modules/mcp", "modules/utils", "modules/td_helpers"]
+omit = [
+  "modules/td_server/*",
+  "modules/mcp/controllers/generated_handlers.py",
+  "modules/mcp/controllers/api_controller.py",
+  "modules/tests/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if __name__ == .__main__.",
+]

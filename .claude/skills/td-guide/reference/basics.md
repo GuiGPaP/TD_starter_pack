@@ -65,6 +65,8 @@ def move_with_docked(target, x, y):
 
 Use `move_with_docked()` whenever moving GLSL TOP, GLSL MAT, or Script SOP operators.
 
+> Also available via `from td_helpers.layout import move_with_docked`
+
 ### Connect
 
 ```python
@@ -78,6 +80,8 @@ for i in range(1, len(ops_list)):
     ops_list[i].nodeX = ops_list[i-1].nodeX + 200
     ops_list[i].nodeY = ops_list[i-1].nodeY
 ```
+
+> Also available via `from td_helpers.layout import chain_ops`
 
 ### Parameters
 

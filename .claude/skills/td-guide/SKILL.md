@@ -171,6 +171,19 @@ geo.inputConnectors[0].connect(base.op('null1'))
 
 ---
 
+## Python Helpers
+
+Common layout and network patterns are available as importable helpers:
+
+```python
+from td_helpers.layout import move_with_docked, chain_ops, get_bounds, place_below
+from td_helpers.network import setup_geometry_comp, setup_feedback_loop, setup_instancing
+```
+
+These work in `execute_python_script` (modules/ is on `sys.path`). See inline snippets below for the patterns they encapsulate.
+
+---
+
 ## GLSL Skills
 
 For GLSL shader work, use the specialized skills:
