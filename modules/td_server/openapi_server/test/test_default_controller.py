@@ -1,6 +1,9 @@
 import unittest
 
+import pytest
 from flask import json
+
+pytestmark = pytest.mark.integration
 
 from openapi_server.models.create_node200_response import CreateNode200Response  # noqa: E501
 from openapi_server.models.create_node_request import CreateNodeRequest  # noqa: E501
