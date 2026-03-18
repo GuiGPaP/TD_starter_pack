@@ -3,13 +3,14 @@ Type definitions module for TouchDesigner MCP Web server
 Defines Result and APIResponse types
 """
 
-from typing import Any, TypedDict
+from enum import StrEnum
+from typing import Any, Required, TypedDict
 
 
 class Result(TypedDict, total=False):
 	"""Type representing operation results (equivalent to TypeScript Result pattern)"""
 
-	success: bool
+	success: Required[bool]
 	data: Any  # Data when successful
 	error: Any  # Error information when failed
 
@@ -24,7 +25,7 @@ class APIResponse(TypedDict, total=False):
 	headers: dict[str, str]
 
 
-class LogLevel:
+class LogLevel(StrEnum):
 	"""Log level definitions"""
 
 	DEBUG = "DEBUG"

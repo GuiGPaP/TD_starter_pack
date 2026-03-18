@@ -3,10 +3,11 @@ Error handling utilities for TouchDesigner MCP Web server
 Provides standardized error categorization, formatting, and handling
 """
 
-from enum import Enum
 import functools
 import traceback
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from enum import Enum
+from typing import TypeVar
 
 from utils.logging import log_message
 from utils.result import Result, error_result
@@ -61,7 +62,7 @@ def categorize_error(exception: Exception) -> ErrorCategory:
 	return ErrorCategory.INTERNAL
 
 
-def format_error(message: str, category: Optional[ErrorCategory] = None) -> str:
+def format_error(message: str, category: ErrorCategory | None = None) -> str:
 	"""
 	Format an error message with its category
 
@@ -97,7 +98,7 @@ def handle_service_errors(func: Callable[..., Result]) -> Callable[..., Result]:
 			category = categorize_error(e)
 
 			func_name = func.__name__
-			log_message(f"Error in {func_name}: {str(e)}", LogLevel.ERROR)
+			log_message(f"Error in {func_name}: {e!s}", LogLevel.ERROR)
 			log_message(traceback.format_exc(), LogLevel.DEBUG)
 
 			error_message = format_error(str(e), category)

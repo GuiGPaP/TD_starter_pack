@@ -7,7 +7,7 @@ and converts between API models and internal data structures.
 
 import json
 import traceback
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 from mcp.controllers.generated_handlers import *
 from mcp.controllers.openapi_router import OpenAPIRouter
@@ -24,16 +24,16 @@ class ApiServiceProtocol(Protocol):
 		self,
 		node_path: str,
 		method_name: str,
-		args: list[Any] = None,
-		kwargs: dict[str, Any] = None,
+		args: list[Any] | None = None,
+		kwargs: dict[str, Any] | None = None,
 	) -> Result: ...
 
 	def create_node(
 		self,
 		parent_path: str,
 		node_type: str,
-		node_name: Optional[str] = None,
-		parameters: Optional[dict[str, Any]] = None,
+		node_name: str | None = None,
+		parameters: dict[str, Any] | None = None,
 	) -> Result: ...
 
 	def delete_node(self, node_path: str) -> Result: ...
@@ -45,7 +45,7 @@ class ApiServiceProtocol(Protocol):
 	def get_nodes(
 		self,
 		parent_path: str,
-		pattern: Optional[str] = None,
+		pattern: str | None = None,
 		include_properties: bool = False,
 	) -> Result: ...
 
@@ -106,7 +106,7 @@ class RequestProcessor:
 			body = RequestProcessor._extract_body(request)
 
 		except Exception as e:
-			log_message(f"Error during request normalization: {str(e)}", LogLevel.ERROR)
+			log_message(f"Error during request normalization: {e!s}", LogLevel.ERROR)
 			log_message(traceback.format_exc(), LogLevel.DEBUG)
 
 		return method, path, query_params, body
@@ -197,7 +197,7 @@ class APIControllerOpenAPI(IController):
 	Implements the IController interface for consistency with other controllers.
 	"""
 
-	def __init__(self, service: Optional[ApiServiceProtocol] = None):
+	def __init__(self, service: ApiServiceProtocol | None = None):
 		"""
 		Initialize the controller with a service implementation
 
@@ -265,7 +265,7 @@ class APIControllerOpenAPI(IController):
 			response["data"] = json.dumps(
 				{
 					"success": False,
-					"error": f"Request normalization error: {str(e)}",
+					"error": f"Request normalization error: {e!s}",
 					"errorCategory": str(ErrorCategory.INTERNAL),
 				}
 			)
@@ -294,7 +294,7 @@ class APIControllerOpenAPI(IController):
 					{
 						"success": False,
 						"data": None,
-						"error": result["error"],
+						"error": result["error"],  # pyright: ignore[reportTypedDictNotRequiredAccess]
 						"errorCategory": (
 							str(error_category)
 							if hasattr(error_category, "__str__")
@@ -312,7 +312,7 @@ class APIControllerOpenAPI(IController):
 			response["data"] = json.dumps(
 				{
 					"success": False,
-					"error": f"Internal server error: {str(e)}",
+					"error": f"Internal server error: {e!s}",
 					"errorCategory": str(ErrorCategory.INTERNAL),
 				}
 			)
@@ -372,7 +372,7 @@ class APIControllerOpenAPI(IController):
 		for operation_id in handlers.__all__:
 			handler = getattr(handlers, operation_id, None)
 			if callable(handler):
-				self.router.register_handler(operation_id, handler)
+				self.router.register_handler(operation_id, handler)  # pyright: ignore[reportArgumentType]
 			else:
 				log_message(f"Handler for {operation_id} not found.", LogLevel.WARNING)
 

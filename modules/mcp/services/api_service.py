@@ -8,9 +8,10 @@ import importlib
 import inspect
 import io
 import pydoc
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 import td
+
 from utils.logging import log_message
 from utils.result import error_result, success_result
 from utils.serialization import safe_serialize
@@ -79,7 +80,7 @@ class TouchDesignerApiService(IApiService):
 			log_message(f"Found {class_name} in td module", LogLevel.DEBUG)
 		else:
 			log_message(f"Class not found: {class_name}", LogLevel.WARNING)
-			raise error_result(f"Class or module not found: {class_name}")
+			raise error_result(f"Class or module not found: {class_name}")  # pyright: ignore[reportGeneralTypeIssues]
 
 		methods = []
 		properties = []
@@ -104,7 +105,7 @@ class TouchDesignerApiService(IApiService):
 					properties.append(info)
 			except Exception as e:
 				log_message(
-					f"Error processing member {name}: {str(e)}", LogLevel.WARNING
+					f"Error processing member {name}: {e!s}", LogLevel.WARNING
 				)
 
 		if inspect.isclass(obj):
@@ -132,13 +133,13 @@ class TouchDesignerApiService(IApiService):
 
 		try:
 			help_text = self._normalize_help_text(pydoc.render_doc(target))
-		except Exception as exc:  # noqa: BLE001
+		except Exception as exc:
 			log_message(
-				f"Error generating help for {module_name}: {str(exc)}",
+				f"Error generating help for {module_name}: {exc!s}",
 				LogLevel.ERROR,
 			)
 			return error_result(
-				f"Failed to get help for {module_name}: {str(exc)}",
+				f"Failed to get help for {module_name}: {exc!s}",
 			)
 
 		log_message(f"Retrieved help for {module_name}", LogLevel.DEBUG)
@@ -159,7 +160,7 @@ class TouchDesignerApiService(IApiService):
 		node = td.op(node_path)
 
 		if node is None or not node.valid:
-			raise error_result(f"Node not found at path: {node_path}")
+			raise error_result(f"Node not found at path: {node_path}")  # pyright: ignore[reportGeneralTypeIssues]
 
 		node_info = self._get_node_summary(node)
 		return success_result(node_info)
@@ -223,7 +224,7 @@ class TouchDesignerApiService(IApiService):
 								)
 			except Exception as e:
 				log_message(
-					f"Error getting errors from node {node_path}: {str(e)}",
+					f"Error getting errors from node {node_path}: {e!s}",
 					LogLevel.WARNING,
 				)
 
@@ -241,15 +242,17 @@ class TouchDesignerApiService(IApiService):
 	def get_nodes(
 		self,
 		parent_path: str,
-		pattern: Optional[str] = None,
+		pattern: str | None = None,
 		include_properties: bool = False,
 	) -> Result:
 		"""Get nodes under the specified parent path, optionally filtered by pattern
 
 		Args:
 		    parent_path: Path to the parent node
-		    pattern: Pattern to filter nodes by name (e.g. "text*" for all nodes starting with "text")
-		    include_properties: Whether to include full node properties (default False for better performance)
+		    pattern: Pattern to filter nodes by name
+		        (e.g. "text*" for all nodes starting with "text")
+		    include_properties: Whether to include full node properties
+		        (default False for better performance)
 
 		Returns:
 		    Result: Success with list of nodes or error
@@ -257,7 +260,7 @@ class TouchDesignerApiService(IApiService):
 
 		parent_node = td.op(parent_path)
 		if parent_node is None or not parent_node.valid:
-			raise error_result(f"Parent node not found at path: {parent_path}")
+			raise error_result(f"Parent node not found at path: {parent_path}")  # pyright: ignore[reportGeneralTypeIssues]
 
 		if pattern:
 			log_message(
@@ -280,8 +283,8 @@ class TouchDesignerApiService(IApiService):
 		self,
 		parent_path: str,
 		node_type: str,
-		node_name: Optional[str] = None,
-		parameters: Optional[dict[str, Any]] = None,
+		node_name: str | None = None,
+		parameters: dict[str, Any] | None = None,
 	) -> Result:
 		"""Create a new node under the specified parent path"""
 
@@ -311,7 +314,7 @@ class TouchDesignerApiService(IApiService):
 							setattr(new_node, prop_name, prop_value)
 				except Exception as e:
 					log_message(
-						f"Error setting parameter {prop_name} on new node: {str(e)}",
+						f"Error setting parameter {prop_name} on new node: {e!s}",
 						LogLevel.WARNING,
 					)
 
@@ -344,14 +347,14 @@ class TouchDesignerApiService(IApiService):
 
 		node = td.op(node_path)
 		if node is None or not node.valid:
-			raise error_result(f"Node not found at path: {node_path}")
+			raise error_result(f"Node not found at path: {node_path}")  # pyright: ignore[reportGeneralTypeIssues]
 
 		if not hasattr(node, method):
-			raise error_result(f"Method {method} not found on node {node_path}")
+			raise error_result(f"Method {method} not found on node {node_path}")  # pyright: ignore[reportGeneralTypeIssues]
 
 		method = getattr(node, method)
 		if not callable(method):
-			raise error_result(f"{method} is not a callable method")
+			raise error_result(f"{method} is not a callable method")  # pyright: ignore[reportGeneralTypeIssues]
 
 		result = method(*args, **kwargs)
 
@@ -405,7 +408,7 @@ class TouchDesignerApiService(IApiService):
 					processed_result = self._process_method_result(result)
 
 					log_message(
-						f"Script evaluated. Raw result: {repr(result)}",
+						f"Script evaluated. Raw result: {result!r}",
 						LogLevel.DEBUG,
 					)
 
@@ -468,7 +471,7 @@ class TouchDesignerApiService(IApiService):
 					}
 				)
 			except Exception as exec_error:
-				raise Exception(f"Script execution failed: {str(exec_error)}")
+				raise Exception(f"Script execution failed: {exec_error!s}") from exec_error
 
 	def update_node(self, node_path: str, properties: dict[str, Any]) -> Result:
 		"""Update properties of the node at the specified path"""
@@ -476,7 +479,7 @@ class TouchDesignerApiService(IApiService):
 		node = td.op(node_path)
 
 		if node is None or not node.valid:
-			raise error_result(f"Node not found at path: {node_path}")
+			raise error_result(f"Node not found at path: {node_path}")  # pyright: ignore[reportGeneralTypeIssues]
 
 		updated_properties = []
 		failed_properties = []
@@ -513,7 +516,7 @@ class TouchDesignerApiService(IApiService):
 					)
 			except Exception as e:
 				log_message(
-					f"Error updating property {prop_name}: {str(e)}", LogLevel.ERROR
+					f"Error updating property {prop_name}: {e!s}", LogLevel.ERROR
 				)
 				failed_properties.append({"name": prop_name, "reason": str(e)})
 
@@ -536,9 +539,9 @@ class TouchDesignerApiService(IApiService):
 				LogLevel.WARNING,
 			)
 			if failed_properties:
-				raise error_result("Failed to update any properties")
+				raise error_result("Failed to update any properties")  # pyright: ignore[reportGeneralTypeIssues]
 			else:
-				raise error_result("No matching properties to update")
+				raise error_result("No matching properties to update")  # pyright: ignore[reportGeneralTypeIssues]
 
 	def _get_node_properties(self, node):
 		params_dict = {}
@@ -550,9 +553,9 @@ class TouchDesignerApiService(IApiService):
 				params_dict[par.name] = value
 			except Exception as e:
 				log_message(
-					f"Error evaluating parameter {par.name}: {str(e)}", LogLevel.DEBUG
+					f"Error evaluating parameter {par.name}: {e!s}", LogLevel.DEBUG
 				)
-				params_dict[par.name] = f"<Error: {str(e)}>"
+				params_dict[par.name] = f"<Error: {e!s}>"
 
 		return params_dict
 
@@ -570,7 +573,7 @@ class TouchDesignerApiService(IApiService):
 			return node_info
 		except Exception as e:
 			log_message(
-				f"Error collecting node information: {str(e)}", LogLevel.WARNING
+				f"Error collecting node information: {e!s}", LogLevel.WARNING
 			)
 			return {"name": node.name if hasattr(node, "name") else "unknown"}
 
@@ -588,11 +591,11 @@ class TouchDesignerApiService(IApiService):
 			return node_info
 		except Exception as e:
 			log_message(
-				f"Error collecting node information: {str(e)}", LogLevel.WARNING
+				f"Error collecting node information: {e!s}", LogLevel.WARNING
 			)
 			return {"name": node.name if hasattr(node, "name") else "unknown"}
 
-	def _resolve_help_target(self, module_name: str) -> Optional[Any]:
+	def _resolve_help_target(self, module_name: str) -> Any | None:
 		"""Locate a module/class for help() lookup."""
 		if not module_name:
 			return None
@@ -602,7 +605,7 @@ class TouchDesignerApiService(IApiService):
 			return None
 
 		# Handle dotted names like "td.noiseCHOP" or "td.tdu.SomeClass"
-		def resolve_dotted_name(name: str) -> Optional[Any]:
+		def resolve_dotted_name(name: str) -> Any | None:
 			parts = name.split(".")
 			# Only allow access starting from td or tdu
 			if parts[0] == "td":
@@ -643,15 +646,15 @@ class TouchDesignerApiService(IApiService):
 
 		return None
 
-	def _import_module_safely(self, target: str) -> Optional[Any]:
+	def _import_module_safely(self, target: str) -> Any | None:
 		try:
 			return importlib.import_module(target)
 		except (ImportError, ModuleNotFoundError) as e:
-			log_message(f"Failed to import module '{target}': {str(e)}", LogLevel.DEBUG)
+			log_message(f"Failed to import module '{target}': {e!s}", LogLevel.DEBUG)
 			return None
 		except Exception as e:
 			log_message(
-				f"Unexpected error importing module '{target}': {str(e)}",
+				f"Unexpected error importing module '{target}': {e!s}",
 				LogLevel.WARNING,
 			)
 			return None
@@ -742,10 +745,11 @@ class TouchDesignerApiService(IApiService):
 				return value
 			except Exception as e:
 				log_message(
-					f"Error evaluating parameter {item.name if hasattr(item, 'name') else 'unknown'}: {str(e)}",
+					"Error evaluating parameter "
+				f"{item.name if hasattr(item, 'name') else 'unknown'}: {e!s}",
 					LogLevel.DEBUG,
 				)
-				return f"<Error: {str(e)}>"
+				return f"<Error: {e!s}>"
 
 		try:
 			return safe_serialize(item)

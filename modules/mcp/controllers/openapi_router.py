@@ -8,9 +8,9 @@ This module provides utilities to:
 - Call registered handler functions based on operationId
 """
 
-from dataclasses import dataclass, field
 import traceback
-from typing import Any, NamedTuple, Optional, Protocol
+from dataclasses import dataclass, field
+from typing import Any, NamedTuple, Protocol
 
 from mcp import openapi_schema
 from utils.error_handling import ErrorCategory, categorize_error, format_error
@@ -37,7 +37,7 @@ class RouteMatch(NamedTuple):
 	path_params: dict[str, str]
 
 
-def load_schema(schema_path: str = None) -> dict[str, Any]:
+def load_schema(schema_path: str | None = None) -> dict[str, Any]:
 	"""
 	Load OpenAPI schema from preloaded global variable
 	"""
@@ -49,7 +49,7 @@ def load_schema(schema_path: str = None) -> dict[str, Any]:
 		return {"paths": {}}
 
 
-def extract_routes(schema: dict[str, Any] = None) -> list[RouteDefinition]:
+def extract_routes(schema: dict[str, Any] | None = None) -> list[RouteDefinition]:
 	"""
 	Extract route definitions from OpenAPI schema
 
@@ -98,7 +98,7 @@ def extract_routes(schema: dict[str, Any] = None) -> list[RouteDefinition]:
 
 def match_route(
 	method: str, path: str, routes: list[RouteDefinition]
-) -> Optional[RouteMatch]:
+) -> RouteMatch | None:
 	"""
 	Match request method and path to a route definition
 
@@ -133,7 +133,7 @@ def match_route(
 
 		match = True
 
-		for i, (pattern_part, path_part) in enumerate(zip(pattern_parts, path_parts)):
+		for i, (pattern_part, path_part) in enumerate(zip(pattern_parts, path_parts, strict=False)):
 			if not pattern_part and not path_part:
 				continue
 
@@ -141,7 +141,7 @@ def match_route(
 				param_name = pattern_part[1:-1]
 
 				if i == len(pattern_parts) - 1 and i < len(path_parts) - 1:
-					param_value = "/".join([path_part] + path_parts[i + 1 :])
+					param_value = "/".join([path_part, *path_parts[i + 1 :]])
 					path_params[param_name] = param_value
 					match = True
 					break
@@ -181,8 +181,13 @@ class OpenAPIRouter:
 		if load_schema:
 			self.routes = extract_routes()
 
+			schema_version = (
+				openapi_schema.get("info", {}).get("version", "unknown")
+				if openapi_schema
+				else "unknown"
+			)
 			log_message(
-				f"OpenAPI Schema Version: {openapi_schema.get('info', {}).get('version', 'unknown')}",
+				f"OpenAPI Schema Version: {schema_version}",
 				LogLevel.INFO,
 			)
 
@@ -218,7 +223,7 @@ class OpenAPIRouter:
 		self._handlers[operation_id] = handler
 
 	def route_request(
-		self, method: str, path: str, query_params: dict[str, Any], body: Optional[str]
+		self, method: str, path: str, query_params: dict[str, Any], body: str | None
 	) -> Result:
 		"""
 		Route a request to the appropriate handler based on method and path
@@ -244,7 +249,10 @@ class OpenAPIRouter:
 
 			handler = self._handlers.get(match.route.operation_id)
 			if not handler:
-				error_msg = f"No handler registered for {method} {path} (operation: {match.route.operation_id})"
+				error_msg = (
+				f"No handler registered for {method} {path}"
+				f" (operation: {match.route.operation_id})"
+			)
 				log_message(error_msg, LogLevel.ERROR)
 				return error_result(
 					format_error(error_msg, ErrorCategory.INTERNAL),
@@ -259,7 +267,7 @@ class OpenAPIRouter:
 			return handler(**params)
 
 		except TypeError as e:
-			error_msg = f"Handler argument mismatch: {str(e)}"
+			error_msg = f"Handler argument mismatch: {e!s}"
 			log_message(error_msg, LogLevel.ERROR)
 			log_message(traceback.format_exc(), LogLevel.DEBUG)
 			return error_result(
@@ -267,7 +275,7 @@ class OpenAPIRouter:
 				{"errorCategory": ErrorCategory.VALIDATION},
 			)
 		except Exception as e:
-			error_msg = f"Handler execution error: {str(e)}"
+			error_msg = f"Handler execution error: {e!s}"
 			error_category = categorize_error(e)
 			log_message(error_msg, LogLevel.ERROR)
 			log_message(traceback.format_exc(), LogLevel.DEBUG)

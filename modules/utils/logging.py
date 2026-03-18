@@ -2,8 +2,8 @@
 Logging module for TouchDesigner MCP Web server
 """
 
-from datetime import datetime
 import sys
+from datetime import datetime
 from typing import TextIO
 
 from utils.types import LogLevel

@@ -14,7 +14,7 @@ try:
 
 	import_modules.setup()
 except Exception as e:
-	print(f"[ERROR] Failed to setup modules: {str(e)}")
+	print(f"[ERROR] Failed to setup modules: {e!s}")
 
 
 def onServerStart(webServerDAT):
@@ -64,7 +64,7 @@ class ModuleFactory:
 		except ImportError as e:
 			self._modules[module_name] = None
 			self._import_status[module_name] = False
-			print(f"MCP: Failed to import module {module_name}: {str(e)}")
+			print(f"MCP: Failed to import module {module_name}: {e!s}")
 
 
 class ControllerManager:
@@ -96,7 +96,7 @@ class ControllerManager:
 				return response
 			return self.controller.onHTTPRequest(webServerDAT, request, response)
 		except Exception as e:
-			print(f"MCP: Error handling request: {str(e)}")
+			print(f"MCP: Error handling request: {e!s}")
 			traceback.print_exc()
 
 		response["statusCode"] = 500

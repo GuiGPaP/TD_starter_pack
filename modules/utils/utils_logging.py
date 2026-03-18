@@ -1,6 +1,5 @@
-from enum import Enum
 import traceback
-from typing import Optional, Union
+from enum import Enum
 
 
 class LogLevel(Enum):
@@ -27,8 +26,8 @@ class Logger:
 	def log(
 		self,
 		message: str,
-		level: Union[LogLevel, str] = LogLevel.INFO,
-		exception: Optional[Exception] = None,
+		level: LogLevel | str = LogLevel.INFO,
+		exception: Exception | None = None,
 	):
 		if isinstance(level, str):
 			level = LogLevel.from_string(level)
@@ -51,7 +50,7 @@ class Logger:
 	def warning(self, message: str):
 		self.log(message, LogLevel.WARNING)
 
-	def error(self, message: str, exception: Optional[Exception] = None):
+	def error(self, message: str, exception: Exception | None = None):
 		self.log(message, LogLevel.ERROR, exception)
 
 

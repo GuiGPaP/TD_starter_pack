@@ -3,7 +3,7 @@ Result pattern utilities for TouchDesigner MCP Web server
 Provides utility functions for handling success and failure results
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from .types import Result
 
@@ -21,7 +21,7 @@ def success_result(data: Any) -> Result:
 	return {"success": True, "data": data, "error": None}
 
 
-def error_result(message: str, metadata: Optional[dict[str, Any]] = None) -> Result:
+def error_result(message: str, metadata: dict[str, Any] | None = None) -> Result:
 	"""
 	Create an error result with message and optional metadata
 
@@ -32,9 +32,9 @@ def error_result(message: str, metadata: Optional[dict[str, Any]] = None) -> Res
 	Returns:
 	    Result dictionary with error information
 	"""
-	result = {"success": False, "data": None, "error": message}
+	result: Result = {"success": False, "data": None, "error": message}
 
 	if metadata:
-		result.update(metadata)
+		result.update(metadata)  # pyright: ignore[reportCallIssue, reportArgumentType]
 
 	return result

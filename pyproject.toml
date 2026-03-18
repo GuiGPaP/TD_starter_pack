@@ -44,6 +44,7 @@ ignore = [
 # Code généré — exclure du linting
 "modules/td_server/openapi_server/*" = ["ALL"]
 "modules/mcp/controllers/generated_handlers.py" = ["ALL"]
+"modules/mcp/controllers/api_controller.py" = ["F403"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["mcp", "utils"]
