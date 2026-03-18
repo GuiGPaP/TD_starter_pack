@@ -72,7 +72,7 @@ class TestSafeSerializePath:
 class TestSafeSerializePage:
     def test_page_with_name(self):
         obj = MagicMock()
-        obj.__class__ = type("Page", (), {})
+        obj.__class__ = type("Page", (), {})  # pyright: ignore[reportAttributeAccessIssue]
         obj.name = "Default"
         # Remove eval/path so it hits the Page branch
         del obj.eval

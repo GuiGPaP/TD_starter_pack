@@ -69,7 +69,7 @@ def integration_router(mock_td, monkeypatch):
     for operation_id in handlers_mod.__all__:
         handler = getattr(handlers_mod, operation_id, None)
         if callable(handler):
-            router.register_handler(operation_id, handler)
+            router.register_handler(operation_id, handler)  # pyright: ignore[reportArgumentType]
 
     yield router
 
@@ -269,12 +269,17 @@ class TestEndToEnd:
         dat.errors.return_value = ""
         mock_td.op.return_value = dat
 
-        fix_diag = json.dumps([{
-            "code": "F401", "message": "unused import",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "unused import",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
         call_count = {"n": 0}
 
         def side_effect(*args, **kwargs):
@@ -307,18 +312,28 @@ class TestEndToEnd:
         dat.errors.return_value = ""
         mock_td.op.return_value = dat
 
-        fix_diag = json.dumps([{
-            "code": "F401", "message": "unused import",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
-        remaining_diag = json.dumps([{
-            "code": "E711", "message": "comparison to None",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 5},
-            "fix": None,
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "unused import",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
+        remaining_diag = json.dumps(
+            [
+                {
+                    "code": "E711",
+                    "message": "comparison to None",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 5},
+                    "fix": None,
+                }
+            ]
+        )
         call_count = {"n": 0}
 
         def side_effect(*args, **kwargs):
@@ -353,12 +368,17 @@ class TestEndToEnd:
         dat.errors.return_value = ""
         mock_td.op.return_value = dat
 
-        diag = json.dumps([{
-            "code": "F401", "message": "unused import",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "unused import",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
 
         def make_side_effect():
             call_count = {"n": 0}
@@ -416,8 +436,7 @@ class TestEndToEnd:
         mock_td.op.return_value = parent
 
         result = integration_router.route_request(
-            "GET", "/api/nodes/dat-discover",
-            {"parentPath": "/project1"}, None
+            "GET", "/api/nodes/dat-discover", {"parentPath": "/project1"}, None
         )
         assert result["success"] is True
         assert result["data"]["count"] >= 1
@@ -450,8 +469,7 @@ class TestEndToEnd:
         mock_td.OP = MagicMock  # isinstance check
 
         result = integration_router.route_request(
-            "GET", "/api/nodes/parameter-schema",
-            {"nodePath": "/project1/noise1"}, None
+            "GET", "/api/nodes/parameter-schema", {"nodePath": "/project1/noise1"}, None
         )
         assert result["success"] is True
         assert result["data"]["count"] == 1
@@ -476,8 +494,10 @@ class TestEndToEnd:
         mock_td.op.return_value = context
 
         result = integration_router.route_request(
-            "GET", "/api/nodes/complete-paths",
-            {"contextNodePath": "/project1/script1", "prefix": "noise"}, None
+            "GET",
+            "/api/nodes/complete-paths",
+            {"contextNodePath": "/project1/script1", "prefix": "noise"},
+            None,
         )
         assert result["success"] is True
         assert result["data"]["count"] >= 1
@@ -500,8 +520,7 @@ class TestEndToEnd:
         mock_td.op.return_value = node
 
         result = integration_router.route_request(
-            "GET", "/api/nodes/chop-channels",
-            {"nodePath": "/project1/noise1"}, None
+            "GET", "/api/nodes/chop-channels", {"nodePath": "/project1/noise1"}, None
         )
         assert result["success"] is True
         assert result["data"]["numChannels"] == 2
@@ -519,8 +538,7 @@ class TestEndToEnd:
         mock_td.op.return_value = node
 
         result = integration_router.route_request(
-            "GET", "/api/nodes/dat-table-info",
-            {"nodePath": "/project1/table1"}, None
+            "GET", "/api/nodes/dat-table-info", {"nodePath": "/project1/table1"}, None
         )
         assert result["success"] is True
         assert result["data"]["numRows"] == 2
@@ -533,8 +551,7 @@ class TestEndToEnd:
         mock_td.op.return_value = comp
 
         result = integration_router.route_request(
-            "GET", "/api/nodes/comp-extensions",
-            {"compPath": "/project1/base1"}, None
+            "GET", "/api/nodes/comp-extensions", {"compPath": "/project1/base1"}, None
         )
         assert result["success"] is True
         assert result["data"]["extensions"] == []

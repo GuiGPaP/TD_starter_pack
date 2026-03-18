@@ -28,7 +28,7 @@ def api_service_module(monkeypatch):
         import mcp.services.api_service  # noqa: F401
 
     mod = importlib.reload(sys.modules["mcp.services.api_service"])
-    mod._mock_td = mock_td  # stash for tests
+    mod._mock_td = mock_td  # stash for tests  # pyright: ignore[reportAttributeAccessIssue]
     yield mod
 
 

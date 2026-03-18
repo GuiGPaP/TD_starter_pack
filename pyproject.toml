@@ -96,10 +96,12 @@ include = ["modules"]
 exclude = [
   "modules/td_server/openapi_server",
   "modules/mcp/controllers/generated_handlers.py",
-  "modules/tests",
 ]
-typeCheckingMode = "basic"
-reportMissingImports = "warning"
+typeCheckingMode = "standard"
+# td.pyi is a stub-only module (no .py source) — expected
+reportMissingModuleSource = "none"
+# connexion/Flask lack type stubs
+reportMissingTypeStubs = "none"
 
 # ── pytest ────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
