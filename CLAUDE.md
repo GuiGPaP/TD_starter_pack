@@ -20,12 +20,15 @@ When working with TouchDesigner, pick the right skill:
 ## Project Structure
 
 ```
+_mcp_server/                      # Git submodule → GuiGPaP/touchdesigner-mcp
 modules/                          # TouchDesigner Python modules
   mcp/
     services/
       api_service.py              # MCP API service — TD ↔ Claude bridge
 import_modules.py                 # Module loader
 mcp_webserver_base.tox            # MCP web server TOX component
+scripts/
+  update-mcp.mjs                  # Rebase MCP fork onto upstream tags
 
 .claude/
   skills/
@@ -90,6 +93,30 @@ mcp_webserver_base.tox            # MCP web server TOX component
 - **Simplicity First**: Make every change as simple as possible. Impact minimal code.
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
+
+## MCP Server (submodule)
+
+`_mcp_server/` est un submodule pointant vers `GuiGPaP/touchdesigner-mcp`
+(fork de `8beeeaaat/touchdesigner-mcp`).
+Branche custom : `td-starter-pack` (7 tools additionnels).
+Version : semver propre (ex: `1.5.0-td.1`), `minApiVersion` aligné sur la spec locale.
+
+### Setup initial
+
+    git submodule update --init
+    cd _mcp_server && npm ci
+
+### Config MCP locale
+
+Copier `.mcp.example.json` vers `.mcp.json` et remplacer le placeholder par le chemin
+absolu vers `_mcp_server/dist/cli.js` sur votre machine.
+
+### Mise à jour depuis upstream
+
+    node scripts/update-mcp.mjs            # rebase sur le dernier tag
+    node scripts/update-mcp.mjs v1.5.1     # rebase sur un tag spécifique
+
+Le script s'arrête après build+test. Suivre les instructions affichées pour push.
 
 ## Attribution
 
