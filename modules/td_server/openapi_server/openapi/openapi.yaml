@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: OpenAPI schema for generating TouchDesigner API client code
   title: TouchDesigner API
-  version: 1.4.3
+  version: 1.5.0
 servers:
 - description: TouchDesigner Web Server
   url: "${process.env.TD_WEB_SERVER_HOST}:${process.env.TD_WEB_SERVER_PORT}"
@@ -252,6 +252,69 @@ paths:
                 $ref: '#/components/schemas/get_td_info_200_response'
           description: TouchDesigner information
       summary: Get TouchDesigner information
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/td/helpers/geometry-comp:
+    post:
+      description: |
+        Create a Geometry COMP with In and Out operators inside it.
+        Wraps the td_helpers.network.setup_geometry_comp() helper.
+      operationId: create_geometry_comp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_geometry_comp_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_geometry_comp_200_response'
+          description: Geometry COMP created successfully
+      summary: Create a Geometry COMP with In/Out operators
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/td/helpers/feedback-loop:
+    post:
+      description: |
+        Create a Feedback TOP loop with cache, process, and feedback operators.
+        Wraps the td_helpers.network.setup_feedback_loop() helper.
+      operationId: create_feedback_loop
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_feedback_loop_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_feedback_loop_200_response'
+          description: Feedback loop created successfully
+      summary: Create a Feedback TOP loop
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/td/helpers/instancing:
+    post:
+      description: |
+        Configure GPU instancing on an existing Geometry COMP.
+        Wraps the td_helpers.network.setup_instancing() helper.
+      operationId: configure_instancing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/configure_instancing_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/configure_instancing_200_response'
+          description: Instancing configured successfully
+      summary: Configure instancing on a Geometry COMP
       x-openapi-router-controller: openapi_server.controllers.default_controller
 components:
   schemas:
@@ -1183,4 +1246,160 @@ components:
       - error
       - success
       title: get_td_info_200_response
+      type: object
+    create_geometry_comp_request:
+      properties:
+        parentPath:
+          description: "Path to the parent node (e.g., /project1)"
+          title: parentPath
+          type: string
+        name:
+          default: geo1
+          description: Name for the geometry COMP
+          title: name
+          type: string
+        x:
+          default: 0
+          description: X position in the network
+          title: x
+          type: integer
+        "y":
+          default: 0
+          description: Y position in the network
+          title: "y"
+          type: integer
+        pop:
+          default: false
+          description: Whether to use POP (point) topology instead of SOP
+          title: pop
+          type: boolean
+      required:
+      - parentPath
+      title: create_geometry_comp_request
+      type: object
+    create_geometry_comp_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          description: Created geometry COMP details
+          nullable: true
+          title: data
+          type: object
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: create_geometry_comp_200_response
+      type: object
+    create_feedback_loop_request:
+      properties:
+        parentPath:
+          description: "Path to the parent node (e.g., /project1)"
+          title: parentPath
+          type: string
+        name:
+          default: sim
+          description: Base name for the feedback loop operators
+          title: name
+          type: string
+        x:
+          default: 0
+          description: X position in the network
+          title: x
+          type: integer
+        "y":
+          default: 0
+          description: Y position in the network
+          title: "y"
+          type: integer
+        processType:
+          default: glslTOP
+          description: "Operator type for the process step (e.g., glslTOP, compositeTOP)"
+          title: processType
+          type: string
+      required:
+      - parentPath
+      title: create_feedback_loop_request
+      type: object
+    create_feedback_loop_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          description: Created feedback loop operator details
+          nullable: true
+          title: data
+          type: object
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: create_feedback_loop_200_response
+      type: object
+    configure_instancing_request:
+      properties:
+        geoPath:
+          description: "Path to the Geometry COMP (e.g., /project1/geo1)"
+          title: geoPath
+          type: string
+        instanceOpName:
+          description: Name of the operator providing instance data
+          title: instanceOpName
+          type: string
+        tx:
+          default: tx
+          description: Column name for translate X
+          title: tx
+          type: string
+        ty:
+          default: ty
+          description: Column name for translate Y
+          title: ty
+          type: string
+        tz:
+          default: tz
+          description: Column name for translate Z
+          title: tz
+          type: string
+      required:
+      - geoPath
+      - instanceOpName
+      title: configure_instancing_request
+      type: object
+    configure_instancing_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          description: Instancing configuration details
+          nullable: true
+          title: data
+          type: object
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: configure_instancing_200_response
       type: object

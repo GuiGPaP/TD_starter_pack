@@ -174,6 +174,21 @@ def get_td_python_classes():  # noqa: E501
     return 'do some magic!'
 
 
+def create_geometry_comp(body):  # noqa: E501
+    """Create a Geometry COMP with In/Out operators  # noqa: E501"""
+    return 'do some magic!'
+
+
+def create_feedback_loop(body):  # noqa: E501
+    """Create a Feedback TOP loop  # noqa: E501"""
+    return 'do some magic!'
+
+
+def configure_instancing(body):  # noqa: E501
+    """Configure instancing on a Geometry COMP  # noqa: E501"""
+    return 'do some magic!'
+
+
 def update_node(body=None):  # noqa: E501
     """Update node properties
 

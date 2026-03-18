@@ -18,363 +18,380 @@ from utils.types import LogLevel, Result
 
 
 class ApiServiceProtocol(Protocol):
-	"""Protocol defining the API service interface"""
+    """Protocol defining the API service interface"""
 
-	def call_node_method(
-		self,
-		node_path: str,
-		method_name: str,
-		args: list[Any] | None = None,
-		kwargs: dict[str, Any] | None = None,
-	) -> Result: ...
+    def call_node_method(
+        self,
+        node_path: str,
+        method_name: str,
+        args: list[Any] | None = None,
+        kwargs: dict[str, Any] | None = None,
+    ) -> Result: ...
 
-	def create_node(
-		self,
-		parent_path: str,
-		node_type: str,
-		node_name: str | None = None,
-		parameters: dict[str, Any] | None = None,
-	) -> Result: ...
+    def create_node(
+        self,
+        parent_path: str,
+        node_type: str,
+        node_name: str | None = None,
+        parameters: dict[str, Any] | None = None,
+    ) -> Result: ...
 
-	def delete_node(self, node_path: str) -> Result: ...
+    def delete_node(self, node_path: str) -> Result: ...
 
-	def exec_script(self, script: str) -> Result: ...
+    def exec_script(self, script: str) -> Result: ...
 
-	def get_td_info(self) -> Result: ...
+    def get_td_info(self) -> Result: ...
 
-	def get_nodes(
-		self,
-		parent_path: str,
-		pattern: str | None = None,
-		include_properties: bool = False,
-	) -> Result: ...
+    def get_nodes(
+        self,
+        parent_path: str,
+        pattern: str | None = None,
+        include_properties: bool = False,
+    ) -> Result: ...
 
-	def get_module_help(self, module_name: str) -> Result: ...
+    def get_module_help(self, module_name: str) -> Result: ...
 
-	def get_node_detail(self, node_path: str) -> Result: ...
+    def get_node_detail(self, node_path: str) -> Result: ...
 
-	def get_node_errors(self, node_path: str) -> Result: ...
+    def get_node_errors(self, node_path: str) -> Result: ...
 
-	def get_td_python_class_details(self, class_name: str) -> Result: ...
+    def get_td_python_class_details(self, class_name: str) -> Result: ...
 
-	def get_td_python_classes(self) -> Result: ...
+    def get_td_python_classes(self) -> Result: ...
 
-	def update_node(self, node_path: str, properties: dict[str, Any]) -> Result: ...
+    def update_node(self, node_path: str, properties: dict[str, Any]) -> Result: ...
+
+    def create_geometry_comp(
+        self,
+        parent_path: str,
+        name: str = ...,
+        x: int = ...,
+        y: int = ...,
+        pop: bool = ...,
+    ) -> Result: ...
+
+    def create_feedback_loop(
+        self,
+        parent_path: str,
+        name: str = ...,
+        x: int = ...,
+        y: int = ...,
+        process_type: str = ...,
+    ) -> Result: ...
+
+    def configure_instancing(
+        self,
+        geo_path: str,
+        instance_op_name: str,
+        tx: str = ...,
+        ty: str = ...,
+        tz: str = ...,
+    ) -> Result: ...
 
 
 class RequestProcessor:
-	"""
-	Responsible for processing and normalizing HTTP requests from different sources
+    """
+    Responsible for processing and normalizing HTTP requests from different sources
 
-	This class helps achieve separation of concerns by isolating request processing logic
-	from the controller class, improving maintainability and testability.
-	"""
+    This class helps achieve separation of concerns by isolating request processing logic
+    from the controller class, improving maintainability and testability.
+    """
 
-	@staticmethod
-	def normalize_request(
-		request: dict[str, Any],
-	) -> tuple[str, str, dict[str, Any], str]:
-		"""
-		Normalize request object to handle different request formats
+    @staticmethod
+    def normalize_request(
+        request: dict[str, Any],
+    ) -> tuple[str, str, dict[str, Any], str]:
+        """
+        Normalize request object to handle different request formats
 
-		Args:
-		    request: Request object that might be in different formats
+        Args:
+            request: Request object that might be in different formats
 
-		Returns:
-		    Tuple containing (method, path, query_params, body)
-		"""
-		method = ""
-		path = ""
-		query_params = {}
-		body = ""
+        Returns:
+            Tuple containing (method, path, query_params, body)
+        """
+        method = ""
+        path = ""
+        query_params = {}
+        body = ""
 
-		try:
-			method = RequestProcessor._extract_method(request)
+        try:
+            method = RequestProcessor._extract_method(request)
 
-			path, uri_query_params = RequestProcessor._extract_path_and_query(request)
-			query_params.update(uri_query_params)
+            path, uri_query_params = RequestProcessor._extract_path_and_query(request)
+            query_params.update(uri_query_params)
 
-			if "query" in request and isinstance(request["query"], dict):
-				query_params.update(request["query"])
+            if "query" in request and isinstance(request["query"], dict):
+                query_params.update(request["query"])
 
-			if "pars" in request and isinstance(request["pars"], dict):
-				log_message(
-					f"Found 'pars' in request: {request['pars']}", LogLevel.DEBUG
-				)
-				query_params.update(request["pars"])
+            if "pars" in request and isinstance(request["pars"], dict):
+                log_message(f"Found 'pars' in request: {request['pars']}", LogLevel.DEBUG)
+                query_params.update(request["pars"])
 
-			body = RequestProcessor._extract_body(request)
+            body = RequestProcessor._extract_body(request)
 
-		except Exception as e:
-			log_message(f"Error during request normalization: {e!s}", LogLevel.ERROR)
-			log_message(traceback.format_exc(), LogLevel.DEBUG)
+        except Exception as e:
+            log_message(f"Error during request normalization: {e!s}", LogLevel.ERROR)
+            log_message(traceback.format_exc(), LogLevel.DEBUG)
 
-		return method, path, query_params, body
+        return method, path, query_params, body
 
-	@staticmethod
-	def _extract_method(request: dict[str, Any]) -> str:
-		"""Extract HTTP method from request"""
-		if "method" in request and isinstance(request["method"], str):
-			return request["method"].upper()
-		return ""
+    @staticmethod
+    def _extract_method(request: dict[str, Any]) -> str:
+        """Extract HTTP method from request"""
+        if "method" in request and isinstance(request["method"], str):
+            return request["method"].upper()
+        return ""
 
-	@staticmethod
-	def _extract_path_and_query(request: dict[str, Any]) -> tuple[str, dict[str, Any]]:
-		"""Extract path and query parameters from request"""
-		path = ""
-		query_params = {}
+    @staticmethod
+    def _extract_path_and_query(request: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+        """Extract path and query parameters from request"""
+        path = ""
+        query_params = {}
 
-		uri = request.get("uri", {})
+        uri = request.get("uri", {})
 
-		if isinstance(uri, dict):
-			path = uri.get("path", "")
-			uri_query = uri.get("query", {})
-			if isinstance(uri_query, dict):
-				query_params.update(uri_query)
-		elif isinstance(uri, str):
-			path = uri
+        if isinstance(uri, dict):
+            path = uri.get("path", "")
+            uri_query = uri.get("query", {})
+            if isinstance(uri_query, dict):
+                query_params.update(uri_query)
+        elif isinstance(uri, str):
+            path = uri
 
-		return path, query_params
+        return path, query_params
 
-	@staticmethod
-	def _extract_body(request: dict[str, Any]) -> str:
-		"""Extract body content from request"""
-		body = ""
+    @staticmethod
+    def _extract_body(request: dict[str, Any]) -> str:
+        """Extract body content from request"""
+        body = ""
 
-		body_content = request.get("body", "")
+        body_content = request.get("body", "")
 
-		if isinstance(body_content, (str, bytes)):
-			body = (
-				body_content
-				if isinstance(body_content, str)
-				else body_content.decode("utf-8", errors="replace")
-			)
-		elif isinstance(body_content, dict):
-			body = json.dumps(body_content)
+        if isinstance(body_content, (str, bytes)):
+            body = (
+                body_content
+                if isinstance(body_content, str)
+                else body_content.decode("utf-8", errors="replace")
+            )
+        elif isinstance(body_content, dict):
+            body = json.dumps(body_content)
 
-		if not body and "data" in request:
-			data = request.get("data", "")
-			if isinstance(data, bytes):
-				body = data.decode("utf-8", errors="replace") if data else ""
-			elif isinstance(data, str):
-				body = data
-			elif isinstance(data, dict):
-				body = json.dumps(data)
+        if not body and "data" in request:
+            data = request.get("data", "")
+            if isinstance(data, bytes):
+                body = data.decode("utf-8", errors="replace") if data else ""
+            elif isinstance(data, str):
+                body = data
+            elif isinstance(data, dict):
+                body = json.dumps(data)
 
-		return body
+        return body
 
 
 class IController(Protocol):
-	"""
-	Controller interface for handling HTTP requests
+    """
+    Controller interface for handling HTTP requests
 
-	All controllers should implement this interface to ensure consistency across
-	different controller implementations. This enforces a unified approach to
-	request handling throughout the application.
-	"""
+    All controllers should implement this interface to ensure consistency across
+    different controller implementations. This enforces a unified approach to
+    request handling throughout the application.
+    """
 
-	def onHTTPRequest(
-		self, webServerDAT: Any, request: dict[str, Any], response: dict[str, Any]
-	) -> dict[str, Any]:
-		"""
-		Process an HTTP request from TouchDesigner WebServerDAT
+    def onHTTPRequest(
+        self, webServerDAT: Any, request: dict[str, Any], response: dict[str, Any]
+    ) -> dict[str, Any]:
+        """
+        Process an HTTP request from TouchDesigner WebServerDAT
 
-		Args:
-		    webServerDAT: Reference to the WebServerDAT object
-		    request: Dictionary containing request information
-		    response: Dictionary for storing response information
+        Args:
+            webServerDAT: Reference to the WebServerDAT object
+            request: Dictionary containing request information
+            response: Dictionary for storing response information
 
-		Returns:
-		    Updated response dictionary
-		"""
-		...
+        Returns:
+            Updated response dictionary
+        """
+        ...
 
 
 class APIControllerOpenAPI(IController):
-	"""
-	API controller that uses OpenAPI schema for routing and model conversion
+    """
+    API controller that uses OpenAPI schema for routing and model conversion
 
-	Implements the IController interface for consistency with other controllers.
-	"""
+    Implements the IController interface for consistency with other controllers.
+    """
 
-	def __init__(self, service: ApiServiceProtocol | None = None):
-		"""
-		Initialize the controller with a service implementation
+    def __init__(self, service: ApiServiceProtocol | None = None):
+        """
+        Initialize the controller with a service implementation
 
-		Args:
-		    service: Service implementation (uses default if None)
-		"""
-		if service is None:
-			from mcp.services.api_service import api_service
+        Args:
+            service: Service implementation (uses default if None)
+        """
+        if service is None:
+            from mcp.services.api_service import api_service
 
-			self._service = api_service
-		else:
-			self._service = service
+            self._service = api_service
+        else:
+            self._service = service
 
-		self.router = OpenAPIRouter()
-		self.register_handlers()
+        self.router = OpenAPIRouter()
+        self.register_handlers()
 
-	def _normalize_request(
-		self, request: dict[str, Any]
-	) -> tuple[str, str, dict[str, Any], str]:
-		"""
-		Normalize request object to handle different request formats
+    def _normalize_request(self, request: dict[str, Any]) -> tuple[str, str, dict[str, Any], str]:
+        """
+        Normalize request object to handle different request formats
 
-		Args:
-		    request: Request object that might be in different formats
+        Args:
+            request: Request object that might be in different formats
 
-		Returns:
-		    Tuple containing (method, path, query_params, body)
-		"""
-		return RequestProcessor.normalize_request(request)
+        Returns:
+            Tuple containing (method, path, query_params, body)
+        """
+        return RequestProcessor.normalize_request(request)
 
-	def onHTTPRequest(
-		self, webServerDAT: Any, request: dict[str, Any], response: dict[str, Any]
-	) -> dict[str, Any]:
-		"""
-		Handle HTTP request from TouchDesigner WebServer DAT
+    def onHTTPRequest(
+        self, webServerDAT: Any, request: dict[str, Any], response: dict[str, Any]
+    ) -> dict[str, Any]:
+        """
+        Handle HTTP request from TouchDesigner WebServer DAT
 
-		Implements IController interface for consistent handling across controllers.
+        Implements IController interface for consistent handling across controllers.
 
-		Args:
-		    webServerDAT: Reference to the WebServerDAT object
-		    request: Dictionary containing request information
-		    response: Dictionary for storing response information
+        Args:
+            webServerDAT: Reference to the WebServerDAT object
+            request: Dictionary containing request information
+            response: Dictionary for storing response information
 
-		Returns:
-		    Updated response dictionary
-		"""
+        Returns:
+            Updated response dictionary
+        """
 
-		if "headers" not in response:
-			response["headers"] = {}
+        if "headers" not in response:
+            response["headers"] = {}
 
-		response["headers"]["Access-Control-Allow-Origin"] = "*"
-		response["headers"]["Access-Control-Allow-Methods"] = (
-			"GET, POST, PUT, DELETE, PATCH, OPTIONS"
-		)
-		response["headers"]["Access-Control-Allow-Headers"] = (
-			"Content-Type, Authorization"
-		)
-		response["headers"]["Content-Type"] = "application/json"
+        response["headers"]["Access-Control-Allow-Origin"] = "*"
+        response["headers"]["Access-Control-Allow-Methods"] = (
+            "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        )
+        response["headers"]["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response["headers"]["Content-Type"] = "application/json"
 
-		try:
-			method, path, query_params, body = self._normalize_request(request)
-		except Exception as e:
-			response["statusCode"] = 500
-			response["statusReason"] = "Internal Server Error"
-			response["data"] = json.dumps(
-				{
-					"success": False,
-					"error": f"Request normalization error: {e!s}",
-					"errorCategory": str(ErrorCategory.INTERNAL),
-				}
-			)
-			return response
+        try:
+            method, path, query_params, body = self._normalize_request(request)
+        except Exception as e:
+            response["statusCode"] = 500
+            response["statusReason"] = "Internal Server Error"
+            response["data"] = json.dumps(
+                {
+                    "success": False,
+                    "error": f"Request normalization error: {e!s}",
+                    "errorCategory": str(ErrorCategory.INTERNAL),
+                }
+            )
+            return response
 
-		try:
-			if method == "OPTIONS":
-				response["statusCode"] = 200
-				response["statusReason"] = "OK"
-				response["data"] = "{}"
-				return response
+        try:
+            if method == "OPTIONS":
+                response["statusCode"] = 200
+                response["statusReason"] = "OK"
+                response["data"] = "{}"
+                return response
 
-			result = self.router.route_request(method, path, query_params, body)
+            result = self.router.route_request(method, path, query_params, body)
 
-			if result["success"]:
-				response["statusCode"] = 200
-				response["statusReason"] = "OK"
-				response["data"] = json.dumps(safe_serialize(result))
-			else:
-				error_category = result.get("errorCategory", ErrorCategory.VALIDATION)
-				response["statusCode"] = 200
-				response["statusReason"] = self._get_status_reason_for_error(
-					error_category
-				)
-				response["data"] = json.dumps(
-					{
-						"success": False,
-						"data": None,
-						"error": result["error"],  # pyright: ignore[reportTypedDictNotRequiredAccess]
-						"errorCategory": (
-							str(error_category)
-							if hasattr(error_category, "__str__")
-							else None
-						),
-					}
-				)
+            if result["success"]:
+                response["statusCode"] = 200
+                response["statusReason"] = "OK"
+                response["data"] = json.dumps(safe_serialize(result))
+            else:
+                error_category = result.get("errorCategory", ErrorCategory.VALIDATION)
+                response["statusCode"] = 200
+                response["statusReason"] = self._get_status_reason_for_error(error_category)
+                response["data"] = json.dumps(
+                    {
+                        "success": False,
+                        "data": None,
+                        "error": result["error"],  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                        "errorCategory": (
+                            str(error_category) if hasattr(error_category, "__str__") else None
+                        ),
+                    }
+                )
 
-		except Exception as e:
-			log_message(f"Error handling request: {e}", LogLevel.ERROR)
-			log_message(traceback.format_exc(), LogLevel.DEBUG)
+        except Exception as e:
+            log_message(f"Error handling request: {e}", LogLevel.ERROR)
+            log_message(traceback.format_exc(), LogLevel.DEBUG)
 
-			response["statusCode"] = 500
-			response["statusReason"] = "Internal Server Error"
-			response["data"] = json.dumps(
-				{
-					"success": False,
-					"error": f"Internal server error: {e!s}",
-					"errorCategory": str(ErrorCategory.INTERNAL),
-				}
-			)
+            response["statusCode"] = 500
+            response["statusReason"] = "Internal Server Error"
+            response["data"] = json.dumps(
+                {
+                    "success": False,
+                    "error": f"Internal server error: {e!s}",
+                    "errorCategory": str(ErrorCategory.INTERNAL),
+                }
+            )
 
-		log_message(
-			f"Response status: {response['statusCode']}, {response['data']}",
-			LogLevel.DEBUG,
-		)
-		return response
+        log_message(
+            f"Response status: {response['statusCode']}, {response['data']}",
+            LogLevel.DEBUG,
+        )
+        return response
 
-	def _get_status_code_for_error(self, error_category) -> int:
-		"""
-		Map error category to HTTP status code
+    def _get_status_code_for_error(self, error_category) -> int:
+        """
+        Map error category to HTTP status code
 
-		Args:
-		    error_category: The error category
+        Args:
+            error_category: The error category
 
-		Returns:
-		    Appropriate HTTP status code
-		"""
-		if error_category == ErrorCategory.NOT_FOUND:
-			return 404
-		elif error_category == ErrorCategory.PERMISSION:
-			return 403
-		elif error_category == ErrorCategory.VALIDATION:
-			return 400
-		elif error_category == ErrorCategory.EXTERNAL:
-			return 502
-		else:
-			return 500
+        Returns:
+            Appropriate HTTP status code
+        """
+        if error_category == ErrorCategory.NOT_FOUND:
+            return 404
+        elif error_category == ErrorCategory.PERMISSION:
+            return 403
+        elif error_category == ErrorCategory.VALIDATION:
+            return 400
+        elif error_category == ErrorCategory.EXTERNAL:
+            return 502
+        else:
+            return 500
 
-	def _get_status_reason_for_error(self, error_category) -> str:
-		"""
-		Map error category to HTTP status reason
+    def _get_status_reason_for_error(self, error_category) -> str:
+        """
+        Map error category to HTTP status reason
 
-		Args:
-		    error_category: The error category
+        Args:
+            error_category: The error category
 
-		Returns:
-		    Status reason text
-		"""
-		if error_category == ErrorCategory.NOT_FOUND:
-			return "Not Found"
-		elif error_category == ErrorCategory.PERMISSION:
-			return "Forbidden"
-		elif error_category == ErrorCategory.VALIDATION:
-			return "Bad Request"
-		elif error_category == ErrorCategory.EXTERNAL:
-			return "Bad Gateway"
-		else:
-			return "Internal Server Error"
+        Returns:
+            Status reason text
+        """
+        if error_category == ErrorCategory.NOT_FOUND:
+            return "Not Found"
+        elif error_category == ErrorCategory.PERMISSION:
+            return "Forbidden"
+        elif error_category == ErrorCategory.VALIDATION:
+            return "Bad Request"
+        elif error_category == ErrorCategory.EXTERNAL:
+            return "Bad Gateway"
+        else:
+            return "Internal Server Error"
 
-	def register_handlers(self) -> None:
-		"""Register all generated handlers automatically"""
-		import mcp.controllers.generated_handlers as handlers
+    def register_handlers(self) -> None:
+        """Register all generated handlers automatically"""
+        import mcp.controllers.generated_handlers as handlers
 
-		for operation_id in handlers.__all__:
-			handler = getattr(handlers, operation_id, None)
-			if callable(handler):
-				self.router.register_handler(operation_id, handler)  # pyright: ignore[reportArgumentType]
-			else:
-				log_message(f"Handler for {operation_id} not found.", LogLevel.WARNING)
+        for operation_id in handlers.__all__:
+            handler = getattr(handlers, operation_id, None)
+            if callable(handler):
+                self.router.register_handler(operation_id, handler)  # pyright: ignore[reportArgumentType]
+            else:
+                log_message(f"Handler for {operation_id} not found.", LogLevel.WARNING)
 
 
 api_controller_openapi = APIControllerOpenAPI()

@@ -8,17 +8,21 @@ from utils.result import error_result
 # Service instance singleton pattern
 _api_service_instance = None
 
+
 def get_api_service():
     global _api_service_instance
     if _api_service_instance is None:
         from mcp.services.api_service import api_service
+
         _api_service_instance = api_service
     return _api_service_instance
+
 
 def camel_to_snake(name):
     """Convert camelCase to snake_case"""
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
 
 def delete_node(body: str = None, **kwargs) -> Result:
     """
@@ -53,6 +57,8 @@ def delete_node(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'delete_node' failed: {str(e)}")
+
+
 def get_nodes(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_nodes
@@ -86,6 +92,8 @@ def get_nodes(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'get_nodes' failed: {str(e)}")
+
+
 def create_node(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: create_node
@@ -119,6 +127,8 @@ def create_node(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'create_node' failed: {str(e)}")
+
+
 def get_node_detail(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_node_detail
@@ -152,6 +162,8 @@ def get_node_detail(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'get_node_detail' failed: {str(e)}")
+
+
 def update_node(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: update_node
@@ -185,6 +197,8 @@ def update_node(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'update_node' failed: {str(e)}")
+
+
 def get_node_errors(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_node_errors
@@ -218,6 +232,8 @@ def get_node_errors(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'get_node_errors' failed: {str(e)}")
+
+
 def get_td_python_classes(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_td_python_classes
@@ -251,12 +267,16 @@ def get_td_python_classes(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'get_td_python_classes' failed: {str(e)}")
+
+
 def get_td_python_class_details(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_td_python_class_details
     """
     try:
-        print(f"[DEBUG] Handler 'get_td_python_class_details' called with body: {body}, kwargs: {kwargs}")
+        print(
+            f"[DEBUG] Handler 'get_td_python_class_details' called with body: {body}, kwargs: {kwargs}"
+        )
         service_method = getattr(get_api_service(), "get_td_python_class_details", None)
         if not callable(service_method):
             return error_result("Service method 'get_td_python_class_details' not implemented")
@@ -284,6 +304,8 @@ def get_td_python_class_details(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'get_td_python_class_details' failed: {str(e)}")
+
+
 def get_module_help(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_module_help
@@ -317,6 +339,8 @@ def get_module_help(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'get_module_help' failed: {str(e)}")
+
+
 def exec_node_method(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: exec_node_method
@@ -350,6 +374,8 @@ def exec_node_method(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'exec_node_method' failed: {str(e)}")
+
+
 def exec_python_script(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: exec_python_script
@@ -383,6 +409,8 @@ def exec_python_script(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'exec_python_script' failed: {str(e)}")
+
+
 def get_td_info(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_td_info
@@ -417,17 +445,126 @@ def get_td_info(body: str = None, **kwargs) -> Result:
     except Exception as e:
         return error_result(f"Handler for 'get_td_info' failed: {str(e)}")
 
+
+def create_geometry_comp(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: create_geometry_comp
+    """
+    try:
+        print(f"[DEBUG] Handler 'create_geometry_comp' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "create_geometry_comp", None)
+        if not callable(service_method):
+            return error_result("Service method 'create_geometry_comp' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'create_geometry_comp' failed: {str(e)}")
+
+
+def create_feedback_loop(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: create_feedback_loop
+    """
+    try:
+        print(f"[DEBUG] Handler 'create_feedback_loop' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "create_feedback_loop", None)
+        if not callable(service_method):
+            return error_result("Service method 'create_feedback_loop' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'create_feedback_loop' failed: {str(e)}")
+
+
+def configure_instancing(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: configure_instancing
+    """
+    try:
+        print(f"[DEBUG] Handler 'configure_instancing' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "configure_instancing", None)
+        if not callable(service_method):
+            return error_result("Service method 'configure_instancing' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'configure_instancing' failed: {str(e)}")
+
+
 __all__ = [
-  "delete_node",
-  "get_nodes",
-  "create_node",
-  "get_node_detail",
-  "update_node",
-  "get_node_errors",
-  "get_td_python_classes",
-  "get_td_python_class_details",
-  "get_module_help",
-  "exec_node_method",
-  "exec_python_script",
-  "get_td_info",
+    "delete_node",
+    "get_nodes",
+    "create_node",
+    "get_node_detail",
+    "update_node",
+    "get_node_errors",
+    "get_td_python_classes",
+    "get_td_python_class_details",
+    "get_module_help",
+    "exec_node_method",
+    "exec_python_script",
+    "get_td_info",
+    "create_geometry_comp",
+    "create_feedback_loop",
+    "configure_instancing",
 ]
