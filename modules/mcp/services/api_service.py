@@ -53,6 +53,8 @@ class IApiService(Protocol):
         ty: str = ...,
         tz: str = ...,
     ) -> Result: ...
+    def get_dat_text(self, node_path: str) -> Result: ...
+    def set_dat_text(self, node_path: str, text: str) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -591,6 +593,25 @@ class TouchDesignerApiService(IApiService):
 
         ops = setup_feedback_loop(parent, name, x=x, y=y, process_type=process_type)
         return success_result({k: self._get_node_summary_light(v) for k, v in ops.items()})
+
+    def get_dat_text(self, node_path: str) -> Result:
+        """Read the .text content of a DAT operator"""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+        return success_result({"path": node.path, "name": node.name, "text": node.text})
+
+    def set_dat_text(self, node_path: str, text: str) -> Result:
+        """Write .text content to a DAT operator"""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+        node.text = text
+        return success_result({"path": node.path, "name": node.name, "length": len(text)})
 
     def configure_instancing(
         self,

@@ -88,6 +88,9 @@ class ApiServiceProtocol(Protocol):
         tz: str = ...,
     ) -> Result: ...
 
+    def get_dat_text(self, node_path: str) -> Result: ...
+    def set_dat_text(self, node_path: str, text: str) -> Result: ...
+
 
 class RequestProcessor:
     """

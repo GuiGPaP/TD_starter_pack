@@ -551,6 +551,76 @@ def configure_instancing(body: str = None, **kwargs) -> Result:
         return error_result(f"Handler for 'configure_instancing' failed: {str(e)}")
 
 
+def get_dat_text(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_dat_text
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_dat_text' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_dat_text", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_dat_text' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_dat_text' failed: {str(e)}")
+
+
+def set_dat_text(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: set_dat_text
+    """
+    try:
+        print(f"[DEBUG] Handler 'set_dat_text' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "set_dat_text", None)
+        if not callable(service_method):
+            return error_result("Service method 'set_dat_text' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'set_dat_text' failed: {str(e)}")
+
+
 __all__ = [
     "delete_node",
     "get_nodes",
@@ -567,4 +637,6 @@ __all__ = [
     "create_geometry_comp",
     "create_feedback_loop",
     "configure_instancing",
+    "get_dat_text",
+    "set_dat_text",
 ]
