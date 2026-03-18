@@ -10,6 +10,7 @@ When working with TouchDesigner, pick the right skill:
 | Pixel shader / GLSL TOP / 2D image effect / generative texture / feedback | **td-glsl** |
 | Vertex shader / GLSL MAT / 3D material / displacement / instancing | **td-glsl-vertex** |
 | Compute shader / particles / GLSL POP / SSBO / point cloud | **td-pops** |
+| Python DAT linting / code quality / ruff | **td-lint** |
 
 **When in doubt:** Start with `td-guide` — it routes to the GLSL skills when needed.
 
@@ -36,6 +37,7 @@ scripts/
     td-glsl/                      # GLSL TOP pixel shaders
     td-glsl-vertex/               # GLSL MAT vertex shaders
     td-pops/                      # GLSL POP compute shaders
+    td-lint/                      # Python DAT linting & correction
   skills-archive/
     touchdesigner-glsl-legacy/    # Archived previous monolithic GLSL skill
 ```
