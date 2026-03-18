@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint-fix:
+      glob: "modules/**/*.py"
+      run: uv run ruff check --fix {staged_files} && git add {staged_files}
+    format:
+      glob: "modules/**/*.py"
+      run: uv run ruff format {staged_files} && git add {staged_files}
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: uv run pyright
+    test:
+      run: uv run pytest

@@ -1,0 +1,6 @@
+# ── mise: system tools only ──────────────────────────────────────
+# Python + Python packages are managed by uv (see pyproject.toml)
+[tools]
+uv = "latest"
+just = "latest"
+lefthook = "latest"
