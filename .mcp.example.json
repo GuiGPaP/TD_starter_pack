@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "touchdesigner": {
+      "command": "node",
+      "args": [
+        "/ABSOLUTE/PATH/TO/_mcp_server/dist/cli.js"
+      ],
+      "env": {
+        "TD_WEB_SERVER_HOST": "http://127.0.0.1",
+        "TD_WEB_SERVER_PORT": "9981"
+      }
+    }
+  }
+}
