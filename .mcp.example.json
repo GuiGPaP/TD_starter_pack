@@ -9,6 +9,18 @@
         "TD_WEB_SERVER_HOST": "http://127.0.0.1",
         "TD_WEB_SERVER_PORT": "9981"
       }
+    },
+    "Context7": {
+      "command": "bun",
+      "args": ["x", "@upstash/context7-mcp@latest"],
+      "type": "stdio"
+    },
+    "exa": {
+      "type": "http",
+      "url": "https://mcp.exa.ai/mcp",
+      "headers": {
+        "x-api-key": "YOUR_EXA_API_KEY"
+      }
     }
   }
 }
