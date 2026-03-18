@@ -1,4 +1,4 @@
-# TD_Docker — TouchDesigner MCP Project
+# TD_starter_pack — TouchDesigner MCP Project
 
 ## Skill Decision Tree
 

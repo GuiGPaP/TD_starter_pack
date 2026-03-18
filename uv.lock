@@ -796,7 +796,7 @@ wheels = [
 ]
 
 [[package]]
-name = "td-docker"
+name = "td-starter-pack"
 version = "0.1.0"
 source = { virtual = "." }
 
