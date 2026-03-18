@@ -93,7 +93,8 @@ mcp_webserver_base.tox            # MCP web server TOX component
 
 ## Attribution
 
-Skills adapted from open-source repositories (both MIT licensed):
+Based on and adapted from open-source repositories (MIT licensed):
+- **MCP server** — based on [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp)
 - **td-guide** — adapted from [satoruhiga/claude-touchdesigner](https://github.com/satoruhiga/claude-touchdesigner)
 - **td-glsl, td-glsl-vertex, td-pops** — adapted from [rheadsh/audiovisual-production-skills](https://github.com/rheadsh/audiovisual-production-skills)
 

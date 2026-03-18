@@ -116,6 +116,7 @@ just check                           # tout d'un coup (requiert just)
 
 ## Attribution
 
-Skills adaptés de repos open-source (MIT) :
-- [satoruhiga/claude-touchdesigner](https://github.com/satoruhiga/claude-touchdesigner)
-- [rheadsh/audiovisual-production-skills](https://github.com/rheadsh/audiovisual-production-skills)
+Basé sur et adapté de repos open-source (MIT) :
+- [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) — serveur MCP TouchDesigner d'origine
+- [satoruhiga/claude-touchdesigner](https://github.com/satoruhiga/claude-touchdesigner) — skill td-guide
+- [rheadsh/audiovisual-production-skills](https://github.com/rheadsh/audiovisual-production-skills) — skills td-glsl, td-glsl-vertex, td-pops
