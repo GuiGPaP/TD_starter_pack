@@ -11,4 +11,4 @@ from unittest.mock import MagicMock
 
 # Insert mock *before* any mcp.* import triggers `import td`
 if "td" not in sys.modules:
-	sys.modules["td"] = MagicMock()
+    sys.modules["td"] = MagicMock()

@@ -13,6 +13,7 @@ from itertools import count
 
 # ── Atomic parameter ────────────────────────────────────────────────
 
+
 class FakePar:
     """A single TD parameter with ``.name`` and ``.eval()``."""
 
@@ -26,6 +27,7 @@ class FakePar:
 
 # ── Parameter namespace (node.par.*) ────────────────────────────────
 
+
 class FakeParNamespace:
     """``node.par.*`` — write freely, read back via ``pars("*")``."""
 
@@ -38,6 +40,7 @@ class FakeParNamespace:
 
 
 # ── Connector ───────────────────────────────────────────────────────
+
 
 class FakeConnector:
     def __init__(self):
@@ -97,11 +100,7 @@ class FakeOp:
 
     def pars(self, pattern: str = "*") -> list[FakePar]:
         """Return FakePar objects for all attributes set on ``self.par``."""
-        return [
-            FakePar(k, v)
-            for k, v in vars(self.par).items()
-            if not k.startswith("_")
-        ]
+        return [FakePar(k, v) for k, v in vars(self.par).items() if not k.startswith("_")]
 
     # -- Children search (used by get_nodes) --
 
@@ -133,6 +132,7 @@ class FakeOp:
 
 
 # ── Container (supports .create()) ──────────────────────────────────
+
 
 class FakeContainer(FakeOp):
     """Operator that can create children, like a COMP in TD."""
@@ -170,6 +170,7 @@ class FakeContainer(FakeOp):
 
 
 # ── Graph registry (td.op() lookup) ─────────────────────────────────
+
 
 class FakeGraph:
     """Path → operator registry, backing ``td.op(path)``."""

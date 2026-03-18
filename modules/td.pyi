@@ -8,16 +8,13 @@ class _App:
     osName: str
     osVersion: str
 
-
 class _Par:
     name: str
     val: Any
     def eval(self) -> Any: ...
 
-
 class _ParCollection:
     def __getattr__(self, name: str) -> _Par: ...
-
 
 class OP:
     valid: bool
@@ -37,11 +34,9 @@ class OP:
     ) -> list[OP]: ...
     def errors(self, recurse: bool = False) -> str: ...
 
-
 class _OpFunc:
     me: OP | None
     def __call__(self, path: object) -> OP | None: ...
-
 
 app: _App
 op: _OpFunc

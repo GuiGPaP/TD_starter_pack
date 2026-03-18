@@ -9,32 +9,32 @@ from .types import Result
 
 
 def success_result(data: Any) -> Result:
-	"""
-	Create a success result with data
+    """
+    Create a success result with data
 
-	Args:
-	    data: The success result data
+    Args:
+        data: The success result data
 
-	Returns:
-	    Result dictionary with success flag and data
-	"""
-	return {"success": True, "data": data, "error": None}
+    Returns:
+        Result dictionary with success flag and data
+    """
+    return {"success": True, "data": data, "error": None}
 
 
 def error_result(message: str, metadata: dict[str, Any] | None = None) -> Result:
-	"""
-	Create an error result with message and optional metadata
+    """
+    Create an error result with message and optional metadata
 
-	Args:
-	    message: The error message
-	    metadata: Optional additional error metadata
+    Args:
+        message: The error message
+        metadata: Optional additional error metadata
 
-	Returns:
-	    Result dictionary with error information
-	"""
-	result: Result = {"success": False, "data": None, "error": message}
+    Returns:
+        Result dictionary with error information
+    """
+    result: Result = {"success": False, "data": None, "error": message}
 
-	if metadata:
-		result.update(metadata)  # pyright: ignore[reportCallIssue, reportArgumentType]
+    if metadata:
+        result.update(metadata)  # pyright: ignore[reportCallIssue, reportArgumentType]
 
-	return result
+    return result
