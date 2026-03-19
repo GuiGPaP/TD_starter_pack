@@ -68,17 +68,7 @@ If you discover mid-task that you need a second reference, load it then.
 
 ## Reference Docs
 
-Pick the ONE reference that matches your current task:
-
-| Your task | Reference |
-|---|---|
-| Creating operators, positioning, connecting, parameters, debugging | @references/basics/index.md |
-| Geometry COMP setup, In/Out pattern, instancing | @references/geometry-comp.md |
-| Rendering pipeline: camera, light, material, Render TOP | @references/rendering.md |
-| Operator families, cross-family conversion, available operators | @references/operator-families.md |
-| Feedback loops, simulations, accumulation effects | @references/operator-tips.md |
-| GLSL orientation and skill routing | @references/glsl.md |
-| MCP API endpoints and usage patterns | @references/project-api.md |
+Load @references/index.md and pick the ONE file that matches your task.
 
 ## Response Format
 
