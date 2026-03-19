@@ -22,7 +22,7 @@ test:
     uv run pytest
 
 # All checks
-check: lint typecheck test
+check: lint typecheck
 
 # Install git hooks (requires lefthook)
 hooks:

@@ -18,6 +18,12 @@ When working with TouchDesigner, pick the right skill:
 
 **Pre-trained TD knowledge is unreliable** — always read skill reference files before writing TouchDesigner code. Do not guess parameter names, operator types, or API patterns from memory.
 
+## Dev Workflow
+
+- `just` — list all available commands
+- `just check` — run all checks (lint, typecheck)
+- `just test` — run test suite
+
 ## Workflow Orchestration
 
 ### 1. Plan Node Default
