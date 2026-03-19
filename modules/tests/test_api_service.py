@@ -5,8 +5,12 @@ succeeds. Each test gets a fresh MagicMock wired into sys.modules["td"]
 and the api_service module is reloaded to pick it up.
 """
 
+import datetime as _dt
 import importlib
+import io
+import os
 import sys
+import zipfile
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -113,6 +117,10 @@ class TestGetCapabilities:
         assert r["data"]["tools"]["ruff"]["version"] is None
 
     @patch(
+        "mcp.services.api_service.TouchDesignerApiService._find_glslang_validator",
+        return_value=None,
+    )
+    @patch(
         "mcp.services.api_service.TouchDesignerApiService._find_pyright",
         return_value=None,
     )
@@ -120,9 +128,8 @@ class TestGetCapabilities:
         "mcp.services.api_service.TouchDesignerApiService._find_ruff",
         return_value=None,
     )
-    @patch("mcp.services.api_service.shutil.which", return_value=None)
     def test_capabilities_format_and_typecheck_false(
-        self, mock_which, mock_find_ruff, mock_find_pyright, api_service_module
+        self, mock_find_ruff, mock_find_pyright, mock_find_glslang, api_service_module
     ):
         svc = api_service_module.TouchDesignerApiService()
         r = svc.get_capabilities()
@@ -776,8 +783,8 @@ class TestValidateGlslDat:
         dat.parent.return_value = parent
         mock_td.op.return_value = dat
 
-        with patch("mcp.services.api_service.shutil.which", return_value=None):
-            svc = api_service_module.TouchDesignerApiService()
+        svc = api_service_module.TouchDesignerApiService()
+        with patch.object(svc, "_ensure_glslang_validator", return_value=None):
             r = svc.validate_glsl_dat("/project1/myshader_pixel")
 
         assert r["success"] is True
@@ -799,8 +806,8 @@ class TestValidateGlslDat:
         dat.parent.return_value = parent
         mock_td.op.return_value = dat
 
-        with patch("mcp.services.api_service.shutil.which", return_value=None):
-            svc = api_service_module.TouchDesignerApiService()
+        svc = api_service_module.TouchDesignerApiService()
+        with patch.object(svc, "_ensure_glslang_validator", return_value=None):
             r = svc.validate_glsl_dat("/project1/myshader_vertex")
 
         assert r["success"] is True
@@ -818,8 +825,8 @@ class TestValidateGlslDat:
         dat.parent.return_value = parent
         mock_td.op.return_value = dat
 
-        with patch("mcp.services.api_service.shutil.which", return_value=None):
-            svc = api_service_module.TouchDesignerApiService()
+        svc = api_service_module.TouchDesignerApiService()
+        with patch.object(svc, "_ensure_glslang_validator", return_value=None):
             r = svc.validate_glsl_dat("/project1/sim_compute")
 
         assert r["success"] is True
@@ -907,8 +914,11 @@ class TestValidateGlslDat:
         assert data["diagnostics"] == []
 
     @patch("mcp.services.api_service.subprocess.run")
-    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/glslangValidator")
-    def test_glslang_validator_fallback(self, _mock_which, mock_run, api_service_module):
+    @patch(
+        "mcp.services.api_service.TouchDesignerApiService._ensure_glslang_validator",
+        return_value="/usr/bin/glslangValidator",
+    )
+    def test_glslang_validator_fallback(self, _mock_ensure, mock_run, api_service_module):
         """When no GLSL TOP is connected, fall back to glslangValidator."""
         mock_td = api_service_module._mock_td
         dat = MagicMock()
@@ -962,3 +972,253 @@ class TestConfigureInstancing:
         assert r["success"] is True
         assert r["data"]["instanceOp"] == "particles"
         mock_setup.assert_called_once()
+
+
+# ── glslangValidator resolver tests ────────────────────────────────
+
+
+class TestFindGlslangValidator:
+    def test_env_override(self, api_service_module):
+        """TD_MCP_GLSLANG_PATH set + works → returns override."""
+        svc = api_service_module.TouchDesignerApiService()
+        with (
+            patch.dict(os.environ, {"TD_MCP_GLSLANG_PATH": "/custom/glslangValidator"}),
+            patch.object(svc, "_glslang_works", return_value=True),
+        ):
+            assert svc._find_glslang_validator() == "/custom/glslangValidator"
+
+    def test_system_path(self, api_service_module):
+        """PATH + works → returns PATH."""
+        svc = api_service_module.TouchDesignerApiService()
+        which_path = "/usr/bin/glslangValidator"
+        with (
+            patch.dict(os.environ, {}, clear=False),
+            patch.object(svc, "_glslang_works", return_value=True),
+            patch("mcp.services.api_service.shutil.which", return_value=which_path),
+        ):
+            # Ensure no env override
+            os.environ.pop("TD_MCP_GLSLANG_PATH", None)
+            assert svc._find_glslang_validator() == which_path
+
+    def test_system_path_broken(self, api_service_module):
+        """PATH exists but _glslang_works false → returns None."""
+        svc = api_service_module.TouchDesignerApiService()
+        which_path = "/usr/bin/glslangValidator"
+        with (
+            patch.dict(os.environ, {}, clear=False),
+            patch.object(svc, "_glslang_works", return_value=False),
+            patch("mcp.services.api_service.shutil.which", return_value=which_path),
+        ):
+            os.environ.pop("TD_MCP_GLSLANG_PATH", None)
+            assert svc._find_glslang_validator() is None
+
+    def test_cached(self, api_service_module, tmp_path):
+        """Cache exists + works → returns cache path."""
+        svc = api_service_module.TouchDesignerApiService()
+        exe_name = api_service_module._GLSLANG_EXE
+        cached = tmp_path / exe_name
+        cached.write_bytes(b"fake")
+
+        with (
+            patch.dict(os.environ, {}, clear=False),
+            patch("mcp.services.api_service.shutil.which", return_value=None),
+            patch.object(
+                api_service_module.TouchDesignerApiService,
+                "_glslang_cache_dir",
+                return_value=tmp_path,
+            ),
+            patch.object(svc, "_glslang_works", return_value=True),
+        ):
+            os.environ.pop("TD_MCP_GLSLANG_PATH", None)
+            assert svc._find_glslang_validator() == str(cached)
+
+    def test_nothing_found(self, api_service_module):
+        """Nothing available → returns None (no download)."""
+        svc = api_service_module.TouchDesignerApiService()
+        with (
+            patch.dict(os.environ, {}, clear=False),
+            patch.object(svc, "_glslang_works", return_value=False),
+            patch("mcp.services.api_service.shutil.which", return_value=None),
+        ):
+            os.environ.pop("TD_MCP_GLSLANG_PATH", None)
+            assert svc._find_glslang_validator() is None
+
+
+class TestEnsureGlslangValidator:
+    def test_finds_existing(self, api_service_module):
+        """Probe finds → no download."""
+        svc = api_service_module.TouchDesignerApiService()
+        with patch.object(svc, "_find_glslang_validator", return_value="/found"):
+            assert svc._ensure_glslang_validator() == "/found"
+
+    def test_downloads_when_missing(self, api_service_module, tmp_path):
+        """Probe fails → mock download → returns path."""
+        svc = api_service_module.TouchDesignerApiService()
+        dest = str(tmp_path / "glslangValidator")
+        with (
+            patch.object(svc, "_find_glslang_validator", return_value=None),
+            patch.object(svc, "_download_glslang_validator", return_value=dest),
+            patch.object(svc, "_glslang_works", return_value=True),
+            patch.object(
+                api_service_module.TouchDesignerApiService,
+                "_glslang_cache_dir",
+                return_value=tmp_path,
+            ),
+        ):
+            assert svc._ensure_glslang_validator() == dest
+
+
+    def test_negative_cache_skips_download(self, api_service_module, tmp_path):
+        """After failed download, sentinel prevents retry within cooldown."""
+        svc = api_service_module.TouchDesignerApiService()
+        sentinel_name = api_service_module._GLSLANG_FAIL_SENTINEL
+        sentinel = tmp_path / sentinel_name
+        sentinel.write_text("")
+
+        with (
+            patch.object(svc, "_find_glslang_validator", return_value=None),
+            patch.object(
+                api_service_module.TouchDesignerApiService,
+                "_glslang_cache_dir",
+                return_value=tmp_path,
+            ),
+            patch.object(svc, "_download_glslang_validator") as mock_dl,
+        ):
+            result = svc._ensure_glslang_validator()
+            mock_dl.assert_not_called()
+        assert result is None
+
+    def test_negative_cache_expires(self, api_service_module, tmp_path):
+        """Sentinel older than cooldown allows retry."""
+        svc = api_service_module.TouchDesignerApiService()
+        sentinel_name = api_service_module._GLSLANG_FAIL_SENTINEL
+        sentinel = tmp_path / sentinel_name
+        sentinel.write_text("")
+        # Age the sentinel beyond cooldown
+        old_time = _dt.datetime.now().timestamp() - 7200
+        os.utime(str(sentinel), (old_time, old_time))
+
+        with (
+            patch.object(svc, "_find_glslang_validator", return_value=None),
+            patch.object(
+                api_service_module.TouchDesignerApiService,
+                "_glslang_cache_dir",
+                return_value=tmp_path,
+            ),
+            patch.object(
+                svc, "_download_glslang_validator", return_value=None
+            ) as mock_dl,
+        ):
+            svc._ensure_glslang_validator()
+            mock_dl.assert_called_once()
+
+
+class TestDownloadGlslangValidator:
+    def _make_zip_bytes(self, member_name: str, content: bytes = b"fake-exe") -> bytes:
+        """Create an in-memory zip with a single member."""
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr(member_name, content)
+        return buf.getvalue()
+
+    @patch("mcp.services.api_service.sys")
+    def test_success(self, mock_sys, api_service_module, tmp_path):
+        """Mock urllib + zipfile → binary extracted, glslang.json written."""
+        mock_sys.platform = "win32"
+        exe_name = api_service_module._GLSLANG_EXE
+
+        svc = api_service_module.TouchDesignerApiService()
+        dest = tmp_path / exe_name
+        zip_data = self._make_zip_bytes(f"bin/{exe_name}")
+
+        mock_response = MagicMock()
+        mock_response.read.side_effect = [zip_data, b""]
+        mock_response.__enter__ = lambda s: s
+        mock_response.__exit__ = MagicMock(return_value=False)
+
+        with patch("urllib.request.urlopen", return_value=mock_response):
+            result = svc._download_glslang_validator(dest)
+
+        assert result == str(dest)
+        assert dest.exists()
+        meta = tmp_path / "glslang.json"
+        assert meta.exists()
+
+    def test_unsupported_platform(self, api_service_module, tmp_path):
+        """Platform key not in _GLSLANG_ASSETS → None."""
+        svc = api_service_module.TouchDesignerApiService()
+        dest = tmp_path / "glslangValidator"
+        with (
+            patch("mcp.services.api_service.sys") as mock_sys,
+            patch("mcp.services.api_service.log_message"),
+        ):
+            mock_sys.platform = "freebsd"
+            import platform as plat
+
+            with patch.object(plat, "machine", return_value="arm64"):
+                result = svc._download_glslang_validator(dest)
+        assert result is None
+
+    def test_404_error(self, api_service_module, tmp_path):
+        """HTTP 404 → returns None, logs warning."""
+        import urllib.error
+
+        svc = api_service_module.TouchDesignerApiService()
+        dest = tmp_path / "glslangValidator.exe"
+
+        with (
+            patch("mcp.services.api_service.sys") as mock_sys,
+            patch("urllib.request.urlopen", side_effect=urllib.error.HTTPError(
+                "url", 404, "Not Found", {}, None  # pyright: ignore[reportArgumentType]
+            )),
+            patch("mcp.services.api_service.log_message"),
+        ):
+            mock_sys.platform = "win32"
+            import platform as plat
+
+            with patch.object(plat, "machine", return_value="AMD64"):
+                result = svc._download_glslang_validator(dest)
+        assert result is None
+
+
+class TestValidateGlslUsesEnsure:
+    def test_validate_glsl_calls_ensure(self, api_service_module):
+        """validate_glsl_dat calls _ensure_ not shutil.which."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/shader_pixel"
+        dat.name = "shader_pixel"
+        dat.text = "void main() {}"
+        parent = MagicMock()
+        parent.children = []
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        with patch.object(svc, "_ensure_glslang_validator", return_value=None) as mock_ensure:
+            r = svc.validate_glsl_dat("/project1/shader_pixel")
+            mock_ensure.assert_called_once()
+        assert r["data"]["validationMethod"] == "none"
+
+    def test_empty_dat_skips_ensure(self, api_service_module):
+        """Empty shader text should not trigger _ensure_ (no download)."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/shader_pixel"
+        dat.name = "shader_pixel"
+        dat.text = "   "
+        parent = MagicMock()
+        parent.children = []
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        with patch.object(
+            svc, "_ensure_glslang_validator"
+        ) as mock_ensure:
+            r = svc.validate_glsl_dat("/project1/shader_pixel")
+            mock_ensure.assert_not_called()
+        assert r["data"]["validationMethod"] == "none"
+        assert r["data"]["valid"] is None
