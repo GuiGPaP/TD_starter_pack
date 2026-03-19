@@ -446,6 +446,179 @@ class TestFormatDat:
         assert "ruff not found" in r["error"]
 
 
+class TestLintDats:
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_batch_lint_aggregation(self, _mock_which, mock_run, api_service_module):
+        """Test batch lint with 3 DATs, verify aggregation math."""
+        mock_td = api_service_module._mock_td
+
+        # Create 3 DAT nodes
+        dats = []
+        for name, code in [
+            ("script1", "import os\nimport sys\n"),
+            ("script2", "x=1\n"),
+            ("script3", "print('hello')\n"),
+        ]:
+            d = MagicMock()
+            d.valid = True
+            d.path = f"/project1/{name}"
+            d.name = name
+            d.OPType = "scriptDAT"
+            d.text = code
+            d.dock = None
+            parent_mock = MagicMock()
+            parent_mock.path = "/project1"
+            d.parent.return_value = parent_mock
+            dats.append(d)
+
+        parent = MagicMock()
+        parent.valid = True
+        parent.OPType = "COMP"
+        parent.findChildren.return_value = dats
+
+        def op_side_effect(path):
+            if path == "/project1":
+                return parent
+            for d in dats:
+                if d.path == path:
+                    return d
+            return None
+
+        mock_td.op.side_effect = op_side_effect
+
+        # Simulate ruff returning diagnostics for script1 and script2
+        def run_side_effect(cmd, **kwargs):
+            # Read the temp file to determine which script this is
+            tmp_path = cmd[-1]
+            with open(tmp_path, encoding="utf-8") as f:
+                content = f.read()
+
+            if "import os" in content:
+                # script1: 2 issues (F401 = fixable)
+                diag1 = (
+                    '{"code":"F401","message":"unused import os",'
+                    '"location":{"row":1,"column":1},'
+                    '"end_location":{"row":1,"column":10},'
+                    '"fix":{"applicability":"safe"}}'
+                )
+                diag2 = (
+                    '{"code":"F401","message":"unused import sys",'
+                    '"location":{"row":2,"column":1},'
+                    '"end_location":{"row":2,"column":10},'
+                    '"fix":{"applicability":"safe"}}'
+                )
+                return MagicMock(
+                    returncode=1,
+                    stdout=f"[{diag1},{diag2}]",
+                    stderr="",
+                )
+            elif "x=1" in content:
+                # script2: 1 issue (E225 = not fixable)
+                diag = (
+                    '{"code":"E225","message":"missing whitespace",'
+                    '"location":{"row":1,"column":2},'
+                    '"end_location":{"row":1,"column":2},'
+                    '"fix":null}'
+                )
+                return MagicMock(
+                    returncode=1,
+                    stdout=f"[{diag}]",
+                    stderr="",
+                )
+            else:
+                # script3: clean
+                return MagicMock(returncode=0, stdout="[]", stderr="")
+
+        mock_run.side_effect = run_side_effect
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.lint_dats("/project1", purpose="python")
+
+        assert r["success"] is True
+        data = r["data"]
+
+        assert data["parentPath"] == "/project1"
+
+        summary = data["summary"]
+        assert summary["totalDatsScanned"] == 3
+        assert summary["datsWithErrors"] == 2
+        assert summary["datsClean"] == 1
+        assert summary["totalIssues"] == 3
+        assert summary["fixableCount"] == 2
+        assert summary["manualCount"] == 1
+
+        # Check severity breakdown
+        assert summary["bySeverity"]["error"] == 1  # E225
+        assert summary["bySeverity"]["warning"] == 0
+        assert summary["bySeverity"]["info"] == 2  # F401 x2
+
+        # Check worst offenders
+        assert len(summary["worstOffenders"]) == 2
+        assert summary["worstOffenders"][0]["diagnosticCount"] == 2  # script1
+
+        # Check per-DAT results
+        assert len(data["results"]) == 3
+
+    def test_parent_not_found(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        mock_td.op.return_value = None
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.lint_dats("/bad")
+        assert r["success"] is False
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_pattern_filter(self, _mock_which, mock_run, api_service_module):
+        """Test that the pattern parameter filters DATs by name."""
+        mock_td = api_service_module._mock_td
+
+        d1 = MagicMock()
+        d1.valid = True
+        d1.path = "/project1/ext_script"
+        d1.name = "ext_script"
+        d1.OPType = "scriptDAT"
+        d1.text = "x = 1\n"
+        d1.dock = None
+        p = MagicMock()
+        p.path = "/project1"
+        d1.parent.return_value = p
+
+        d2 = MagicMock()
+        d2.valid = True
+        d2.path = "/project1/callbacks"
+        d2.name = "callbacks"
+        d2.OPType = "scriptDAT"
+        d2.text = "y = 2\n"
+        d2.dock = None
+        d2.parent.return_value = p
+
+        parent = MagicMock()
+        parent.valid = True
+        parent.OPType = "COMP"
+        parent.findChildren.return_value = [d1, d2]
+
+        def op_side_effect(path):
+            if path == "/project1":
+                return parent
+            if path == d1.path:
+                return d1
+            if path == d2.path:
+                return d2
+            return None
+
+        mock_td.op.side_effect = op_side_effect
+        mock_run.return_value = MagicMock(returncode=0, stdout="[]", stderr="")
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.lint_dats("/project1", pattern="ext_*", purpose="python")
+
+        assert r["success"] is True
+        # Only ext_script matches the pattern
+        assert r["data"]["summary"]["totalDatsScanned"] == 1
+        assert r["data"]["results"][0]["name"] == "ext_script"
+
+
 class TestConfigureInstancing:
     def test_geo_not_found(self, api_service_module):
         mock_td = api_service_module._mock_td

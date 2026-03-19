@@ -5,6 +5,7 @@ Provides API functionality related to TouchDesigner
 
 import contextlib
 import difflib
+import fnmatch
 import importlib
 import inspect
 import io
@@ -69,6 +70,13 @@ class IApiService(Protocol):
         parent_path: str,
         recursive: bool = ...,
         purpose: str = ...,
+    ) -> Result: ...
+    def lint_dats(
+        self,
+        parent_path: str,
+        pattern: str = ...,
+        purpose: str = ...,
+        recursive: bool = ...,
     ) -> Result: ...
     def get_node_parameter_schema(self, node_path: str, pattern: str = ...) -> Result: ...
     def complete_op_paths(
@@ -1354,6 +1362,116 @@ class TouchDesignerApiService(IApiService):
                 "purpose": purpose,
                 "count": len(candidates),
                 "candidates": candidates,
+            }
+        )
+
+    def lint_dats(
+        self,
+        parent_path: str,
+        pattern: str = "*",
+        purpose: str = "python",
+        recursive: bool = False,
+    ) -> Result:
+        """Batch-lint DAT operators under a parent path.
+
+        Calls discover_dat_candidates then lint_dat on each result.
+        Returns per-DAT breakdown and summary counters.
+        """
+        discover_result = self.discover_dat_candidates(
+            parent_path, recursive=recursive, purpose=purpose
+        )
+        if not discover_result.get("success"):
+            return discover_result
+
+        candidates = discover_result.get("data", {}).get("candidates", [])
+
+        # Apply name pattern filter
+        if pattern and pattern != "*":
+            candidates = [c for c in candidates if fnmatch.fnmatch(c["name"], pattern)]
+
+        results: list[dict[str, Any]] = []
+        total_issues = 0
+        fixable_count = 0
+        dats_with_errors = 0
+        by_severity: dict[str, int] = {"error": 0, "warning": 0, "info": 0}
+
+        for candidate in candidates:
+            lint_result = self.lint_dat(candidate["path"])
+            if not lint_result.get("success"):
+                # Record the failure but continue
+                results.append(
+                    {
+                        "path": candidate["path"],
+                        "name": candidate["name"],
+                        "diagnosticCount": 0,
+                        "diagnostics": [],
+                        "error": lint_result.get("error", "lint failed"),
+                    }
+                )
+                continue
+
+            lint_data = lint_result.get("data", {})
+            diag_count = lint_data.get("diagnosticCount", 0)
+            diagnostics = lint_data.get("diagnostics", [])
+
+            results.append(
+                {
+                    "path": lint_data.get("path", candidate["path"]),
+                    "name": lint_data.get("name", candidate["name"]),
+                    "diagnosticCount": diag_count,
+                    "diagnostics": diagnostics,
+                }
+            )
+
+            total_issues += diag_count
+            if diag_count > 0:
+                dats_with_errors += 1
+
+            for d in diagnostics:
+                if d.get("fixable"):
+                    fixable_count += 1
+                code = d.get("code") or ""
+                first_char = code[0].upper() if code else ""
+                if first_char == "E":
+                    by_severity["error"] += 1
+                elif first_char == "W":
+                    by_severity["warning"] += 1
+                else:
+                    by_severity["info"] += 1
+
+        total_scanned = len(results)
+        dats_clean = total_scanned - dats_with_errors
+        manual_count = total_issues - fixable_count
+
+        # Worst offenders: top 5 DATs sorted by issue count desc
+        worst_offenders = sorted(
+            [r for r in results if r["diagnosticCount"] > 0],
+            key=lambda r: r["diagnosticCount"],
+            reverse=True,
+        )[:5]
+        worst_offenders_summary = [
+            {
+                "path": r["path"],
+                "name": r["name"],
+                "diagnosticCount": r["diagnosticCount"],
+            }
+            for r in worst_offenders
+        ]
+
+        return success_result(
+            {
+                "parentPath": parent_path,
+                "summary": {
+                    "totalDatsScanned": total_scanned,
+                    "datsWithErrors": dats_with_errors,
+                    "datsClean": dats_clean,
+                    "totalIssues": total_issues,
+                    "fixableCount": fixable_count,
+                    "manualCount": manual_count,
+                    "bySeverity": by_severity,
+                    "worstOffenders": worst_offenders_summary,
+                },
+                "results": results,
             }
         )
 
