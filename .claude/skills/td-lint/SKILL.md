@@ -46,6 +46,12 @@ Check the response:
 | `lint_dat` (fix) | Apply auto-fixes | `lint_dat({ nodePath: '/project1/script1', fix: true })` |
 | `set_dat_text` | Write text back to a DAT (rollback) | `set_dat_text({ nodePath: '/project1/script1', text: '...' })` |
 | `get_node_errors` | Check TD runtime errors after fix | `get_node_errors({ nodePath: '/project1/script1' })` |
+| `format_dat` | Auto-format Python code with ruff | `format_dat({ nodePath: '/project1/script1' })` |
+| `format_dat` (dry-run) | Preview formatting diff | `format_dat({ nodePath: '/project1/script1', dryRun: true })` |
+| `typecheck_dat` | Type-check Python code with pyright | `typecheck_dat({ nodePath: '/project1/script1' })` |
+| `lint_dats` | Batch lint all DATs under a parent | `lint_dats({ parentPath: '/project1', recursive: true })` |
+| `validate_json_dat` | Validate JSON/YAML content | `validate_json_dat({ nodePath: '/project1/config1' })` |
+| `validate_glsl_dat` | Validate GLSL shader syntax | `validate_glsl_dat({ nodePath: '/project1/shader_pixel' })` |
 
 ---
 
@@ -109,6 +115,73 @@ The full correction loop ensures safe, reversible fixes:
    ```
 
 6. **Loop or escalate** — if errors appeared after fix, rollback and inform the user.
+
+---
+
+## Workflow: Batch Lint (Project-Wide)
+
+For linting all Python DATs under a scope at once:
+
+```
+lint_dats({ parentPath: '/project1', recursive: true })
+```
+
+Review the aggregated report:
+- `totalDatsScanned`, `datsWithErrors`, `datsClean`
+- `bySeverity` breakdown (error/warning/info)
+- `worstOffenders` — top DATs by issue count
+- Per-DAT `diagnostics` array
+
+Use this for project-wide audits. For individual fixes, use the 6-step workflow above on each DAT.
+
+---
+
+## Workflow: Format & Typecheck
+
+### Auto-Format with ruff
+
+Preview formatting changes:
+```
+format_dat({ nodePath: '/project1/script1', dryRun: true })
+```
+
+If `changed == true`, review the `diff` and apply:
+```
+format_dat({ nodePath: '/project1/script1' })
+```
+
+### Type-Check with pyright
+
+Run pyright on DAT code (requires pyright — check `get_capabilities` first):
+```
+typecheck_dat({ nodePath: '/project1/script1' })
+```
+
+Review `diagnostics` with severity, message, line, column, and rule. Pyright errors are informational — they don't auto-fix. Present them to the user for manual resolution.
+
+---
+
+## Workflow: Multi-Language Validation
+
+### JSON/YAML DATs
+
+Validate data DATs containing JSON or YAML:
+```
+validate_json_dat({ nodePath: '/project1/config1' })
+```
+
+Auto-detects format. Returns `valid`, `format` (json/yaml/unknown), and `diagnostics` with line/column on parse errors.
+
+### GLSL Shader DATs
+
+Validate GLSL shader code:
+```
+validate_glsl_dat({ nodePath: '/project1/shader_pixel' })
+```
+
+Shader type is auto-detected from DAT name suffix (`_pixel`, `_vertex`, `_compute`). Validation uses the connected GLSL TOP/MAT errors, or `glslangValidator` as fallback. Returns `valid`, `shaderType`, `validationMethod`, and `diagnostics`.
+
+**Note:** GLSL and JSON/YAML DATs should NOT be linted with `lint_dat` (ruff) — use the appropriate validation tool.
 
 ---
 
