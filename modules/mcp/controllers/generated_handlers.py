@@ -656,6 +656,41 @@ def lint_dat(body: str = None, **kwargs) -> Result:
         return error_result(f"Handler for 'lint_dat' failed: {str(e)}")
 
 
+def format_dat(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: format_dat
+    """
+    try:
+        print(f"[DEBUG] Handler 'format_dat' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "format_dat", None)
+        if not callable(service_method):
+            return error_result("Service method 'format_dat' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'format_dat' failed: {str(e)}")
+
+
 def discover_dat_candidates(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: discover_dat_candidates
@@ -896,6 +931,7 @@ __all__ = [
     "get_dat_text",
     "set_dat_text",
     "lint_dat",
+    "format_dat",
     "discover_dat_candidates",
     "get_node_parameter_schema",
     "complete_op_paths",

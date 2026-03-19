@@ -63,6 +63,7 @@ class IApiService(Protocol):
     def get_dat_text(self, node_path: str) -> Result: ...
     def set_dat_text(self, node_path: str, text: str) -> Result: ...
     def lint_dat(self, node_path: str, fix: bool = ..., dry_run: bool = ...) -> Result: ...
+    def format_dat(self, node_path: str, dry_run: bool = ...) -> Result: ...
     def discover_dat_candidates(
         self,
         parent_path: str,
@@ -163,7 +164,7 @@ class TouchDesignerApiService(IApiService):
         return success_result(
             {
                 "lint_dat": ruff is not None,
-                "format_dat": False,
+                "format_dat": ruff is not None,
                 "typecheck_dat": False,
                 "tools": {
                     "ruff": {"installed": ruff is not None, "version": ruff_version},
@@ -831,6 +832,86 @@ class TouchDesignerApiService(IApiService):
                     result_data["applied"] = False
 
             return success_result(result_data)
+
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
+
+    def format_dat(self, node_path: str, dry_run: bool = False) -> Result:
+        """Format the .text content of a DAT operator using ruff format"""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        ruff = self._find_ruff()
+        if ruff is None:
+            return error_result(
+                "ruff not found. Install it with 'uv add ruff' or ensure it is on PATH."
+            )
+
+        code = node.text
+        project_root = Path(__file__).resolve().parents[3]
+
+        fd, tmp_path = tempfile.mkstemp(suffix=".py")
+        try:
+            os.write(fd, code.encode("utf-8"))
+            os.close(fd)
+            fd = -1  # mark as already closed
+
+            cmd = [ruff, "format", tmp_path]
+
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(project_root),
+                    timeout=30,
+                )
+            except subprocess.TimeoutExpired:
+                return error_result("ruff format timed out after 30s")
+
+            if proc.returncode >= 2:
+                stderr_msg = proc.stderr.strip() if proc.stderr else "unknown error"
+                return error_result(f"ruff format failed (exit {proc.returncode}): {stderr_msg}")
+
+            with open(tmp_path, encoding="utf-8") as f:
+                formatted_code = f.read()
+
+            changed = formatted_code != code
+
+            diff_text = ""
+            if changed:
+                diff_lines = list(
+                    difflib.unified_diff(
+                        code.splitlines(keepends=True),
+                        formatted_code.splitlines(keepends=True),
+                        fromfile=f"{node.path} (original)",
+                        tofile=f"{node.path} (formatted)",
+                    )
+                )
+                diff_text = "".join(diff_lines)
+
+            applied = False
+            if changed and not dry_run:
+                node.text = formatted_code
+                applied = True
+
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "originalText": code,
+                    "formattedText": formatted_code,
+                    "changed": changed,
+                    "diff": diff_text,
+                    "applied": applied,
+                }
+            )
 
         finally:
             if fd >= 0:
