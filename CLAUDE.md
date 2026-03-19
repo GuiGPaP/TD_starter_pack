@@ -29,6 +29,18 @@ When working with TouchDesigner, pick the right skill:
 `_mcp_server/` is a git submodule pointing to `GuiGPaP/touchdesigner-mcp` (branch `td-starter-pack`).
 Run `git submodule update --init` after clone. See `.mcp.example.json` for local config.
 
+## glslangValidator Auto-Provisioning
+
+`validate_glsl_dat` auto-provisions `glslangValidator` when no GLSL TOP is connected.
+
+**Resolution order:** `TD_MCP_GLSLANG_PATH` env var → system PATH → user cache → download.
+
+- **Auto-download:** Windows x64 only (from Khronos `main-tot` rolling release). macOS/Linux: install via PATH (`brew install glslang`, `apt install glslang-tools`).
+- **Cache location:** `%LOCALAPPDATA%/TDStarterPack/bin/` (Windows), `~/Library/Caches/TDStarterPack/bin/` (macOS), `$XDG_CACHE_HOME/TDStarterPack/bin/` (Linux).
+- **Negative cache:** After a failed download, retries are suppressed for 1 hour (sentinel file `.glslang_download_failed`). Delete the sentinel to force immediate retry.
+- **Override:** Set `TD_MCP_GLSLANG_PATH=/path/to/glslangValidator` to skip all auto-resolution.
+- **No lock:** Concurrent TD sessions may trigger redundant downloads; `os.replace()` prevents partial files but not duplicate work.
+
 ## Generated Files
 
 `modules/td_server/openapi_server/` and `modules/mcp/controllers/generated_handlers.py` are auto-generated — excluded from linting and type-checking.

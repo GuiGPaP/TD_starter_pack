@@ -4,6 +4,7 @@ Provides API functionality related to TouchDesigner
 """
 
 import contextlib
+import datetime as _dt
 import difflib
 import fnmatch
 import importlib
@@ -14,6 +15,7 @@ import os
 import pydoc
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Protocol
@@ -24,6 +26,19 @@ from utils.result import error_result, success_result
 from utils.serialization import safe_serialize
 from utils.types import LogLevel, Result
 from utils.version import get_mcp_api_version
+
+_GLSLANG_RELEASE_TAG = "main-tot"
+_GLSLANG_ASSETS = {
+    # Only Windows x64 is auto-provisioned for now.
+    # macOS/Linux: install via PATH (brew install glslang, apt install glslang-tools)
+    ("win32", "AMD64"): "glslang-master-windows-Release.zip",
+}
+_GLSLANG_BASE_URL = (
+    f"https://github.com/KhronosGroup/glslang/releases/download/{_GLSLANG_RELEASE_TAG}"
+)
+_GLSLANG_EXE = "glslangValidator.exe" if os.name == "nt" else "glslangValidator"
+_GLSLANG_FAIL_SENTINEL = ".glslang_download_failed"
+_GLSLANG_FAIL_COOLDOWN_S = 3600  # retry after 1 hour
 
 
 class IApiService(Protocol):
@@ -172,6 +187,20 @@ class TouchDesignerApiService(IApiService):
             except Exception:
                 pass
 
+        glslang = self._find_glslang_validator()
+        glslang_version = None
+        if glslang:
+            try:
+                proc = subprocess.run(
+                    [glslang, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                glslang_version = proc.stdout.strip() if proc.returncode == 0 else None
+            except Exception:
+                pass
+
         return success_result(
             {
                 "lint_dat": ruff is not None,
@@ -185,7 +214,8 @@ class TouchDesignerApiService(IApiService):
                         "version": pyright_version,
                     },
                     "glslangValidator": {
-                        "installed": shutil.which("glslangValidator") is not None,
+                        "installed": glslang is not None,
+                        "version": glslang_version,
                     },
                 },
             }
@@ -1040,7 +1070,8 @@ class TouchDesignerApiService(IApiService):
         Strategy:
         1. Determine shader type from DAT name suffix (_pixel, _vertex, _compute).
         2. Try to find a connected GLSL TOP/MAT in the same parent and check its errors().
-        3. Fall back to glslangValidator if available on PATH.
+        3. Fall back to glslangValidator — resolved via env var, PATH, user cache,
+           or best-effort auto-download from Khronos GitHub (Windows x64 only).
         4. Return structured diagnostics.
         """
         node = td.op(node_path)
@@ -1077,20 +1108,24 @@ class TouchDesignerApiService(IApiService):
                 }
             )
 
-        # Strategy 2: Fall back to glslangValidator
-        validator_path = shutil.which("glslangValidator")
-        if validator_path is not None and text.strip():
-            diagnostics, valid = self._run_glslang_validator(text, shader_type, validator_path)
-            return success_result(
-                {
-                    "path": path,
-                    "name": name,
-                    "shaderType": shader_type,
-                    "valid": valid,
-                    "diagnostics": diagnostics,
-                    "validationMethod": "glslangValidator",
-                }
-            )
+        # Strategy 2: Fall back to glslangValidator (with auto-download)
+        # Skip resolution entirely when text is empty — nothing to validate.
+        if text.strip():
+            validator_path = self._ensure_glslang_validator()
+            if validator_path is not None:
+                diagnostics, valid = self._run_glslang_validator(
+                    text, shader_type, validator_path
+                )
+                return success_result(
+                    {
+                        "path": path,
+                        "name": name,
+                        "shaderType": shader_type,
+                        "valid": valid,
+                        "diagnostics": diagnostics,
+                        "validationMethod": "glslangValidator",
+                    }
+                )
 
         # No validation method available — result is indeterminate
         return success_result(
@@ -1272,6 +1307,176 @@ class TouchDesignerApiService(IApiService):
             with contextlib.suppress(OSError):
                 if tmp_path:
                     os.unlink(tmp_path)
+
+    @staticmethod
+    def _glslang_cache_dir() -> Path:
+        """User-local cache directory for downloaded tools."""
+        if os.name == "nt":
+            base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+        elif sys.platform == "darwin":
+            base = Path.home() / "Library" / "Caches"
+        else:
+            base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+        return base / "TDStarterPack" / "bin"
+
+    def _find_glslang_validator(self) -> str | None:
+        """Locate glslangValidator without downloading. For probing only."""
+        # 1. Explicit override
+        override = os.environ.get("TD_MCP_GLSLANG_PATH")
+        if override and self._glslang_works(override):
+            return override
+
+        # 2. System PATH
+        system = shutil.which("glslangValidator")
+        if system and self._glslang_works(system):
+            return system
+
+        # 3. User cache (already downloaded?)
+        cached = self._glslang_cache_dir() / _GLSLANG_EXE
+        if cached.is_file() and self._glslang_works(str(cached)):
+            return str(cached)
+
+        return None
+
+    def _ensure_glslang_validator(self) -> str | None:
+        """Locate glslangValidator, downloading if needed."""
+        found = self._find_glslang_validator()
+        if found:
+            return found
+
+        cache_dir = self._glslang_cache_dir()
+        sentinel = cache_dir / _GLSLANG_FAIL_SENTINEL
+
+        # Negative cache: skip download if a recent failure is recorded
+        if sentinel.is_file():
+            try:
+                age = _dt.datetime.now().timestamp() - sentinel.stat().st_mtime
+                if age < _GLSLANG_FAIL_COOLDOWN_S:
+                    return None
+            except OSError:
+                pass
+
+        # Attempt lazy download (Windows x64 only for now)
+        dest = cache_dir / _GLSLANG_EXE
+        downloaded = self._download_glslang_validator(dest)
+        if downloaded and self._glslang_works(downloaded):
+            # Clear sentinel on success
+            with contextlib.suppress(OSError):
+                sentinel.unlink(missing_ok=True)
+            return downloaded
+
+        # Record failure so we don't retry on every call
+        with contextlib.suppress(OSError):
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            sentinel.write_text("")
+
+        return None
+
+    def _download_glslang_validator(self, dest: Path) -> str | None:
+        """Download glslangValidator from Khronos GitHub releases (best-effort).
+
+        Note: timeout=30 is the socket/connection timeout, not a total
+        transfer deadline. A 14 MB download on a slow connection may take
+        longer. Acceptable — the download happens once and is cached.
+        """
+        import platform as plat
+        import urllib.error
+        import urllib.request
+        import zipfile
+
+        key = (sys.platform, plat.machine())
+        asset_name = _GLSLANG_ASSETS.get(key)
+        if asset_name is None:
+            log_message(
+                f"glslangValidator auto-download: unsupported platform {key}",
+                LogLevel.DEBUG,
+            )
+            return None
+
+        url = f"{_GLSLANG_BASE_URL}/{asset_name}"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            req = urllib.request.Request(  # noqa: S310 — URL is GitHub releases only
+                url, headers={"User-Agent": "td-mcp/1.0"}
+            )
+            fd_zip, tmp_zip = tempfile.mkstemp(suffix=".zip", dir=str(dest.parent))
+            try:
+                with (
+                    urllib.request.urlopen(req, timeout=30) as resp,  # noqa: S310
+                    os.fdopen(fd_zip, "wb") as f,
+                ):
+                    while chunk := resp.read(65536):
+                        f.write(chunk)
+
+                # Scan zip for glslangValidator by basename (absorb structure changes)
+                target = _GLSLANG_EXE
+                with zipfile.ZipFile(tmp_zip) as zf:
+                    member = next(
+                        (n for n in zf.namelist() if os.path.basename(n) == target),
+                        None,
+                    )
+                    if member is None:
+                        log_message(
+                            f"glslangValidator not found in archive {asset_name}",
+                            LogLevel.WARNING,
+                        )
+                        return None
+
+                    # Extract single binary atomically
+                    fd_bin, tmp_bin = tempfile.mkstemp(dir=str(dest.parent))
+                    try:
+                        with zf.open(member) as src, os.fdopen(fd_bin, "wb") as dst:
+                            while chunk := src.read(65536):
+                                dst.write(chunk)
+
+                        if os.name != "nt":
+                            import stat
+
+                            s = os.stat(tmp_bin).st_mode
+                            os.chmod(tmp_bin, s | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+                        os.replace(tmp_bin, str(dest))
+
+                        # Cache metadata for traceability
+                        meta = dest.parent / "glslang.json"
+                        meta.write_text(
+                            json.dumps(
+                                {
+                                    "downloaded_at": _dt.datetime.now(_dt.UTC).isoformat(),
+                                    "url": url,
+                                    "asset": asset_name,
+                                    "member": member,
+                                    "platform": list(key),
+                                }
+                            )
+                        )
+
+                        return str(dest)
+                    except Exception:
+                        with contextlib.suppress(OSError):
+                            os.unlink(tmp_bin)
+                        raise
+            finally:
+                with contextlib.suppress(OSError):
+                    os.unlink(tmp_zip)
+        except Exception as exc:
+            log_message(
+                f"Failed to download glslangValidator from {url}: {exc}",
+                LogLevel.WARNING,
+            )
+            return None
+
+    @staticmethod
+    def _glslang_works(path: str) -> bool:
+        """Verify glslangValidator can execute."""
+        try:
+            proc = subprocess.run(
+                [path, "--version"], capture_output=True, text=True, timeout=10
+            )
+            return proc.returncode == 0
+        except Exception:
+            return False
 
     @staticmethod
     def _safe_par_value(par, mode: str = "eval"):

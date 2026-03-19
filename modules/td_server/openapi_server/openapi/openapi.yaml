@@ -406,6 +406,7 @@ paths:
                         - unknown
                       valid:
                         type: boolean
+                        nullable: true
                       diagnostics:
                         type: array
                         items:
@@ -416,6 +417,9 @@ paths:
                         - td_errors
                         - glslangValidator
                         - none
+                      validationAvailable:
+                        type: boolean
+                        description: Whether any validation method was available
           description: GLSL validation results
       summary: Validate GLSL shader code in a DAT
       x-openapi-router-controller: openapi_server.controllers.default_controller
@@ -2419,6 +2423,8 @@ components:
           $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
         pyright:
           $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
+        glslangValidator:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
       title: get_capabilities_200_response_data_tools
       type: object
     get_capabilities_200_response_data:
@@ -2431,6 +2437,10 @@ components:
         format_dat:
           description: Whether format_dat is available
           title: format_dat
+          type: boolean
+        validate_glsl_dat:
+          description: Whether validate_glsl_dat is available (always true, may use fallback)
+          title: validate_glsl_dat
           type: boolean
         typecheck_dat:
           description: Whether typecheck_dat is available
