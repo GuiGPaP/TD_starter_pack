@@ -272,6 +272,54 @@ paths:
           description: Lint results
       summary: Lint DAT code with ruff
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-format:
+    post:
+      operationId: format_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+                dryRun:
+                  type: boolean
+                  default: false
+                  description: "Preview formatting without applying (returns diff)."
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      originalText:
+                        type: string
+                      formattedText:
+                        type: string
+                      changed:
+                        type: boolean
+                      diff:
+                        type: string
+                      applied:
+                        type: boolean
+          description: Format results
+      summary: Format DAT code with ruff
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/dat-discover:
     get:
       description: Discover DAT candidates under a parent, classified by kind (python,
