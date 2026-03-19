@@ -476,6 +476,120 @@ class TestLintDatWorkflow:
         assert "applied" not in result["data"]
 
 
+# ── 6b. Typecheck DAT Workflow ─────────────────────────────────────────
+
+
+class TestTypecheckDatWorkflow:
+    def _get_svc_module(self):
+        return sys.modules["mcp.services.api_service"]
+
+    def test_typecheck_clean_code(self, starter, monkeypatch):
+        """No diagnostics on well-typed code."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x: int = 1\n")
+
+        monkeypatch.setattr(svc, "_find_pyright", lambda: "/usr/bin/pyright")
+        svc_mod = self._get_svc_module()
+
+        pyright_output = json.dumps({"generalDiagnostics": []})
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=0, stdout=pyright_output, stderr=""),
+        )
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 0
+        assert result["data"]["diagnostics"] == []
+
+    def test_typecheck_with_errors(self, starter, monkeypatch):
+        """Pyright finds type errors and returns diagnostics."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", 'x: int = "hello"\n')
+
+        monkeypatch.setattr(svc, "_find_pyright", lambda: "/usr/bin/pyright")
+        svc_mod = self._get_svc_module()
+
+        pyright_output = json.dumps(
+            {
+                "generalDiagnostics": [
+                    {
+                        "severity": "error",
+                        "message": 'Type "str" is not assignable to type "int"',
+                        "range": {
+                            "start": {"line": 0, "character": 9},
+                            "end": {"line": 0, "character": 16},
+                        },
+                        "rule": "reportAssignmentType",
+                    }
+                ]
+            }
+        )
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=1, stdout=pyright_output, stderr=""),
+        )
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 1
+        d = result["data"]["diagnostics"][0]
+        assert d["severity"] == "error"
+        assert d["rule"] == "reportAssignmentType"
+        assert d["line"] == 0
+        assert d["column"] == 9
+
+    def test_typecheck_not_found(self, starter):
+        """Node not found returns error."""
+        svc, _graph, _base = starter
+        result = svc.typecheck_dat("/nonexistent")
+        assert result["success"] is False
+
+    def test_typecheck_no_text_attr(self, starter):
+        """Node without .text attribute returns error."""
+        svc, _graph, _base = starter
+        result = svc.typecheck_dat("/project1/base1")
+        assert result["success"] is False
+
+    def test_pyright_not_found(self, starter, monkeypatch):
+        """Missing pyright binary returns helpful error."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        svc_mod = self._get_svc_module()
+        monkeypatch.setattr(svc_mod.shutil, "which", lambda _name: None)
+        monkeypatch.setattr(svc_mod.Path, "is_file", lambda _self: False)
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is False
+        assert "pyright not found" in result["error"]
+
+    def test_pyright_timeout(self, starter, monkeypatch):
+        """Pyright timeout returns error."""
+        import subprocess as real_subprocess
+
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        monkeypatch.setattr(svc, "_find_pyright", lambda: "/usr/bin/pyright")
+        svc_mod = self._get_svc_module()
+
+        def timeout_run(*a, **kw):
+            raise real_subprocess.TimeoutExpired(cmd="pyright", timeout=60)
+
+        monkeypatch.setattr(svc_mod.subprocess, "run", timeout_run)
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is False
+        assert "timed out" in result["error"]
+
+
 # ── 7. DAT Classifier Unit Tests ──────────────────────────────────────
 
 

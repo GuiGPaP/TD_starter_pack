@@ -105,6 +105,7 @@ class IApiService(Protocol):
     ) -> Result: ...
     def get_health(self) -> Result: ...
     def get_capabilities(self) -> Result: ...
+    def typecheck_dat(self, node_path: str) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -157,7 +158,7 @@ class TouchDesignerApiService(IApiService):
             except Exception:
                 pass
 
-        pyright = shutil.which("pyright")
+        pyright = self._find_pyright()
         pyright_version = None
         if pyright:
             try:
@@ -176,7 +177,7 @@ class TouchDesignerApiService(IApiService):
                 "lint_dat": ruff is not None,
                 "format_dat": ruff is not None,
                 "validate_glsl_dat": True,
-                "typecheck_dat": False,
+                "typecheck_dat": pyright is not None,
                 "tools": {
                     "ruff": {"installed": ruff is not None, "version": ruff_version},
                     "pyright": {
@@ -1835,6 +1836,117 @@ class TouchDesignerApiService(IApiService):
             return str(candidate)
 
         return None
+
+    def _find_pyright(self) -> str | None:
+        """Locate the pyright executable (or pyright-python wrapper)."""
+        project_root = Path(__file__).resolve().parents[3]
+        venv_bin = project_root / ".venv" / ("Scripts" if os.name == "nt" else "bin")
+        candidates = [venv_bin / "pyright", venv_bin / "pyright.exe"]
+        for c in candidates:
+            if c.is_file():
+                return str(c)
+        return shutil.which("pyright")
+
+    @staticmethod
+    def _parse_pyright_diagnostics(output: dict) -> list[dict]:
+        """Parse pyright --outputjson output into a flat diagnostic list."""
+        diagnostics: list[dict] = []
+        for diag in output.get("generalDiagnostics", []):
+            rng = diag.get("range", {})
+            start = rng.get("start", {})
+            diagnostics.append(
+                {
+                    "severity": diag.get("severity", "error"),
+                    "message": diag.get("message", ""),
+                    "line": start.get("line", 0),
+                    "column": start.get("character", 0),
+                    "rule": diag.get("rule", ""),
+                }
+            )
+        return diagnostics
+
+    def typecheck_dat(self, node_path: str) -> Result:
+        """Typecheck the .text content of a DAT operator using pyright."""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        pyright = self._find_pyright()
+        if pyright is None:
+            return error_result(
+                "pyright not found. Install it with 'uv add pyright' or ensure it is on PATH."
+            )
+
+        code = node.text
+        project_root = Path(__file__).resolve().parents[3]
+        stubs_dir = project_root / "modules"  # td.pyi lives here
+
+        fd, tmp_path = tempfile.mkstemp(suffix=".py")
+        try:
+            os.write(fd, code.encode("utf-8"))
+            os.close(fd)
+            fd = -1
+
+            # Write a temp pyrightconfig.json so pyright resolves import td via stubs
+            tmp_dir = Path(tmp_path).parent
+            pyright_config = tmp_dir / "pyrightconfig.json"
+            wrote_config = False
+            if not pyright_config.exists():
+                pyright_config.write_text(
+                    json.dumps(
+                        {
+                            "pythonVersion": "3.11",
+                            "extraPaths": [str(stubs_dir)],
+                            "typeCheckingMode": "basic",
+                        }
+                    )
+                )
+                wrote_config = True
+
+            cmd = [pyright, "--outputjson", tmp_path]
+
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(tmp_dir),
+                    timeout=60,
+                )
+            except subprocess.TimeoutExpired:
+                return error_result("pyright timed out after 60s")
+            finally:
+                if wrote_config:
+                    with contextlib.suppress(OSError):
+                        pyright_config.unlink()
+
+            # pyright exit codes: 0=clean, 1=diagnostics, 2+=fatal
+            if proc.returncode >= 2:
+                stderr_msg = proc.stderr.strip() if proc.stderr else "unknown error"
+                return error_result(f"pyright failed (exit {proc.returncode}): {stderr_msg}")
+
+            try:
+                output = json.loads(proc.stdout) if proc.stdout.strip() else {}
+            except json.JSONDecodeError:
+                return error_result(f"pyright returned invalid JSON: {proc.stdout[:200]}")
+
+            diagnostics = self._parse_pyright_diagnostics(output)
+
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "diagnosticCount": len(diagnostics),
+                    "diagnostics": diagnostics,
+                }
+            )
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
 
     def configure_instancing(
         self,
