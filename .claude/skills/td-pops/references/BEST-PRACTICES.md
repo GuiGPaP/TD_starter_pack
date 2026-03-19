@@ -263,13 +263,7 @@ GLSL POP and GLSL Advanced POP support hardware raytracing for collision detecti
 
 ## Common Pitfalls
 
-1. **Using fragment-shader syntax** — No `fragColor`, `vUV`, `sTD2DInputs`, or `TDOutputSwizzle()` in POP compute shaders
-2. **Missing bounds check** — Always `if (id >= TDNumElements()) return;`
-3. **Not listing Output Attributes** — Attributes must be listed in the operator parameter or they won't exist as writable arrays
-4. **Reading uninitialized outputs** — Enable initialization or write every element
-5. **Wrong attribute class** — Make sure "Attribute Class" matches what you're processing (Point/Vertex/Primitive)
-6. **Confusing GLSL POP and GLSL Advanced POP syntax** — `TDIn_P()` vs `TDInPoint_P()` are different operators
-7. **Forgetting `TDUpdatePointGroups()` in Copy POP** — Group membership is lost without this call
-8. **Division by zero in force calculations** — Always clamp distances: `max(dist, EPSILON)`
-9. **Overwriting attributes you didn't mean to** — Only list modified attributes in Output Attributes
-10. **Ignoring workgroup rounding** — `TDNumElements()` may be slightly larger than actual element count due to workgroup alignment
+Review the Critical Guardrails in SKILL.md — they cover the 8 most common mistakes. Two additional pitfalls not covered there:
+
+1. **Overwriting attributes you didn't mean to** — Only list modified attributes in Output Attributes; unlisted attributes pass through from the first input by reference
+2. **Ignoring workgroup rounding** — `TDNumElements()` may be slightly larger than actual element count due to workgroup alignment; the bounds check handles this
