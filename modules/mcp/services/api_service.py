@@ -93,6 +93,7 @@ class IApiService(Protocol):
         max_methods: int = ...,
     ) -> Result: ...
     def get_health(self) -> Result: ...
+    def get_capabilities(self) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -126,6 +127,51 @@ class TouchDesignerApiService(IApiService):
                 "pythonVersion": sys.version.split()[0],
                 "tdVersion": f"{version}.{build}",
                 "tdBuild": str(build),
+            }
+        )
+
+    def get_capabilities(self) -> Result:
+        """Report available features and tool versions."""
+        ruff = self._find_ruff()
+        ruff_version = None
+        if ruff:
+            try:
+                proc = subprocess.run(
+                    [ruff, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                ruff_version = proc.stdout.strip() if proc.returncode == 0 else None
+            except Exception:
+                pass
+
+        pyright = shutil.which("pyright")
+        pyright_version = None
+        if pyright:
+            try:
+                proc = subprocess.run(
+                    [pyright, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                pyright_version = proc.stdout.strip() if proc.returncode == 0 else None
+            except Exception:
+                pass
+
+        return success_result(
+            {
+                "lint_dat": ruff is not None,
+                "format_dat": False,
+                "typecheck_dat": False,
+                "tools": {
+                    "ruff": {"installed": ruff is not None, "version": ruff_version},
+                    "pyright": {
+                        "installed": pyright is not None,
+                        "version": pyright_version,
+                    },
+                },
             }
         )
 

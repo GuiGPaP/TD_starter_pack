@@ -145,6 +145,10 @@ class TestRouteExistence:
         routes = extract_routes(_load_schema())
         assert "get_health" in {r.operation_id for r in routes}
 
+    def test_get_capabilities_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_capabilities" in {r.operation_id for r in routes}
+
 
 # ── End-to-end tests ──────────────────────────────────────────────
 
@@ -567,3 +571,12 @@ class TestEndToEnd:
         assert result["data"]["tdVersion"] == "2023.30000"
         assert result["data"]["tdBuild"] == "30000"
         assert "pythonVersion" in result["data"]
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_get_capabilities_end_to_end(self, _mock_which, mock_run, integration_router, mock_td):
+        mock_run.return_value = MagicMock(returncode=0, stdout="ruff 0.8.6", stderr="")
+        result = integration_router.route_request("GET", "/api/capabilities", {}, None)
+        assert result["success"] is True
+        assert result["data"]["lint_dat"] is True
+        assert result["data"]["tools"]["ruff"]["installed"] is True
