@@ -1818,11 +1818,8 @@ class TouchDesignerApiService(IApiService):
         )
 
     def _find_ruff(self) -> str | None:
-        """Locate the ruff binary on PATH or in the project .venv."""
-        found = shutil.which("ruff")
-        if found:
-            return found
-
+        """Locate the ruff binary, preferring the project .venv over system PATH."""
+        # Prefer project venv to avoid version mismatch with system ruff
         project_root = Path(__file__).resolve().parents[3]
         if os.name == "nt":
             candidate = project_root / ".venv" / "Scripts" / "ruff.exe"
@@ -1832,17 +1829,38 @@ class TouchDesignerApiService(IApiService):
         if candidate.is_file():
             return str(candidate)
 
+        found = shutil.which("ruff")
+        if found:
+            return found
+
         return None
 
     def _find_pyright(self) -> str | None:
-        """Locate the pyright executable (or pyright-python wrapper)."""
+        """Locate a working pyright executable."""
         project_root = Path(__file__).resolve().parents[3]
         venv_bin = project_root / ".venv" / ("Scripts" if os.name == "nt" else "bin")
         candidates = [venv_bin / "pyright", venv_bin / "pyright.exe"]
         for c in candidates:
-            if c.is_file():
+            if c.is_file() and self._pyright_works(str(c)):
                 return str(c)
-        return shutil.which("pyright")
+        system = shutil.which("pyright")
+        if system and self._pyright_works(system):
+            return system
+        return None
+
+    @staticmethod
+    def _pyright_works(path: str) -> bool:
+        """Verify pyright can actually execute."""
+        try:
+            proc = subprocess.run(
+                [path, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return proc.returncode == 0 and proc.stdout.strip() != ""
+        except Exception:
+            return False
 
     @staticmethod
     def _parse_pyright_diagnostics(output: dict) -> list[dict]:
