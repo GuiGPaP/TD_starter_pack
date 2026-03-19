@@ -784,7 +784,8 @@ class TestValidateGlslDat:
         data = r.get("data", {})
         assert data["shaderType"] == "pixel"
         assert data["validationMethod"] == "none"
-        assert data["valid"] is True
+        assert data["valid"] is None
+        assert data["validationAvailable"] is False
 
     def test_shader_type_from_name_vertex(self, api_service_module):
         mock_td = api_service_module._mock_td
