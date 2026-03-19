@@ -320,6 +320,52 @@ paths:
           description: Format results
       summary: Format DAT code with ruff
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-validate-json:
+    post:
+      operationId: validate_json_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/data1\""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      format:
+                        type: string
+                        enum:
+                        - json
+                        - yaml
+                        - unknown
+                      valid:
+                        type: boolean
+                      diagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/JsonValidationDiagnostic'
+          description: Validation results
+      summary: Validate JSON/YAML content in a DAT
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/dat-lint-batch:
     post:
       operationId: lint_dats
@@ -1155,6 +1201,17 @@ components:
         fixable:
           type: boolean
       title: LintDiagnostic
+      type: object
+    JsonValidationDiagnostic:
+      description: A single JSON/YAML validation diagnostic
+      properties:
+        line:
+          type: integer
+        column:
+          type: integer
+        message:
+          type: string
+      title: JsonValidationDiagnostic
       type: object
     BatchLintSummary:
       description: Aggregated summary for a batch lint operation
