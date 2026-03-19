@@ -184,6 +184,9 @@ class TouchDesignerApiService(IApiService):
                         "installed": pyright is not None,
                         "version": pyright_version,
                     },
+                    "glslangValidator": {
+                        "installed": shutil.which("glslangValidator") is not None,
+                    },
                 },
             }
         )
@@ -1089,15 +1092,16 @@ class TouchDesignerApiService(IApiService):
                 }
             )
 
-        # No validation method available
+        # No validation method available — result is indeterminate
         return success_result(
             {
                 "path": path,
                 "name": name,
                 "shaderType": shader_type,
-                "valid": True,
+                "valid": None,
                 "diagnostics": [],
                 "validationMethod": "none",
+                "validationAvailable": False,
             }
         )
 
