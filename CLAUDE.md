@@ -21,8 +21,17 @@ When working with TouchDesigner, pick the right skill:
 ## Dev Workflow
 
 - `just` — list all available commands
-- `just check` — run all checks (lint, typecheck)
+- `just check` — lint + typecheck only (does **not** run tests)
 - `just test` — run test suite
+
+## MCP Server (submodule)
+
+`_mcp_server/` is a git submodule pointing to `GuiGPaP/touchdesigner-mcp` (branch `td-starter-pack`).
+Run `git submodule update --init` after clone. See `.mcp.example.json` for local config.
+
+## Generated Files
+
+`modules/td_server/openapi_server/` and `modules/mcp/controllers/generated_handlers.py` are auto-generated — excluded from linting and type-checking.
 
 ## Workflow Orchestration
 

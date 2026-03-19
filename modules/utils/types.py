@@ -4,13 +4,13 @@ Defines Result and APIResponse types
 """
 
 from enum import StrEnum
-from typing import Any, TypedDict
+from typing import Any, Required, TypedDict
 
 
-class Result(TypedDict):
+class Result(TypedDict, total=False):
     """Type representing operation results (equivalent to TypeScript Result pattern)"""
 
-    success: bool
+    success: Required[bool]
     data: Any  # Data when successful
     error: Any  # Error information when failed
 

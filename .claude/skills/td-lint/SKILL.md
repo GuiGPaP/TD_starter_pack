@@ -29,6 +29,23 @@ description: "Python DAT linting, code quality, and ruff-based correction loops 
 
 7. **One DAT at a time.** Process each DAT through the full correction loop individually. WHY: Batching fixes across DATs makes rollback ambiguous and error attribution impossible.
 
+8. **Use the right tool for the language.** Do not use `lint_dat` (ruff) on GLSL or JSON/YAML DATs — use `validate_glsl_dat` or `validate_json_dat` instead. WHY: Ruff is a Python linter; it will parse non-Python content as broken Python and suggest destructive "fixes".
+
+## Step 0: Preflight — Check Capabilities
+
+Before starting any lint workflow, call `get_capabilities` to verify the required tools are available:
+
+```
+get_capabilities()
+```
+
+Check the response:
+- If `lint_dat == false` → **abort** and tell the user: "ruff is not available on the TD server. Install it with `uv add ruff`."
+- If `format_dat == false` → skip format-related steps (not critical for linting)
+- If `typecheck_dat == false` → skip typecheck steps (pyright not available)
+
+**Do not proceed with linting if `lint_dat` is false.** The workflow will fail mid-execution.
+
 ## Fetching Documentation
 
 ### Which tool for which question
@@ -65,6 +82,7 @@ If you discover mid-task that you need a second reference, load it then.
 
 | Tool | Purpose | Call |
 |---|---|---|
+| `get_capabilities` | Preflight: check available tools | `get_capabilities()` |
 | `discover_dat_candidates` | Find DATs under a parent, classified by kind | `discover_dat_candidates({ parentPath: '/project1', purpose: 'python' })` |
 | `get_dat_text` | Read DAT source code (and save for rollback) | `get_dat_text({ nodePath: '/project1/script1' })` |
 | `lint_dat` (check) | Lint without fixing — get diagnostics | `lint_dat({ nodePath: '/project1/script1' })` |
@@ -72,6 +90,44 @@ If you discover mid-task that you need a second reference, load it then.
 | `lint_dat` (fix) | Apply auto-fixes to DAT text | `lint_dat({ nodePath: '/project1/script1', fix: true })` |
 | `set_dat_text` | Write text back to DAT (for rollback) | `set_dat_text({ nodePath: '/project1/script1', text: '...' })` |
 | `get_node_errors` | Check TD runtime errors after fix | `get_node_errors({ nodePath: '/project1/script1' })` |
+| `format_dat` | Auto-format Python code with ruff | `format_dat({ nodePath: '/project1/script1' })` |
+| `format_dat` (dry-run) | Preview formatting diff | `format_dat({ nodePath: '/project1/script1', dryRun: true })` |
+| `typecheck_dat` | Type-check Python code with pyright | `typecheck_dat({ nodePath: '/project1/script1' })` |
+| `lint_dats` | Batch lint all DATs under a parent | `lint_dats({ parentPath: '/project1', recursive: true })` |
+| `validate_json_dat` | Validate JSON/YAML content | `validate_json_dat({ nodePath: '/project1/config1' })` |
+| `validate_glsl_dat` | Validate GLSL shader syntax | `validate_glsl_dat({ nodePath: '/project1/shader_pixel' })` |
+
+## 6-Step Lint & Fix Workflow
+
+### 1. Discover
+Find Python DATs in the target scope:
+```
+discover_dat_candidates({ parentPath: '/project1', purpose: 'python', recursive: true })
+```
+
+### 2. Read
+Inspect the source code before linting:
+```
+get_dat_text({ nodePath: '/project1/script1' })
+```
+
+### 3. Lint (check only)
+Run read-only lint to see all diagnostics:
+```
+lint_dat({ nodePath: '/project1/script1' })
+```
+
+### 4. Report
+Present diagnostics to the user. Group by severity and fixability.
+
+### 5. Fix (safe)
+Use the correction loop (see @examples/correction-loop.md). Never jump straight to `fix: true` without checking first.
+
+### 6. Verify
+After applying fixes, confirm no TD runtime errors:
+```
+get_node_errors({ nodePath: '/project1/script1' })
+```
 
 ## Response Format
 

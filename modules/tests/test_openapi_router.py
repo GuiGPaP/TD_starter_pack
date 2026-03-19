@@ -112,7 +112,7 @@ class TestOpenAPIRouter:
         router = OpenAPIRouter(load_schema=False)
         result = router.route_request("GET", "/nope", {}, None)
         assert result["success"] is False
-        assert "NOT_FOUND" in result["error"]
+        assert "NOT_FOUND" in result["error"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     def test_missing_handler(self):
         router = OpenAPIRouter(load_schema=False)
@@ -120,7 +120,7 @@ class TestOpenAPIRouter:
         router.routes = [route]
         result = router.route_request("GET", "/test", {}, None)
         assert result["success"] is False
-        assert "INTERNAL" in result["error"]
+        assert "INTERNAL" in result["error"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     @patch("mcp.controllers.openapi_router.log_message")
     def test_handler_error(self, mock_log):
@@ -135,7 +135,7 @@ class TestOpenAPIRouter:
         router.register_handler("err_op", bad_handler)
         result = router.route_request("GET", "/err", {}, None)
         assert result["success"] is False
-        assert "boom" in result["error"]
+        assert "boom" in result["error"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     def test_post_body_forwarded(self):
         router = OpenAPIRouter(load_schema=False)
