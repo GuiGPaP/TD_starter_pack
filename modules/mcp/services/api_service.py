@@ -997,12 +997,13 @@ class TouchDesignerApiService(IApiService):
                 column = 1
                 msg = str(e)
                 # yaml.YAMLError subclasses may have problem_mark
-                if hasattr(e, "problem_mark") and e.problem_mark is not None:
-                    mark = e.problem_mark
-                    line = mark.line + 1  # 0-based to 1-based
-                    column = mark.column + 1
-                if hasattr(e, "problem") and e.problem:
-                    msg = e.problem
+                mark = getattr(e, "problem_mark", None)
+                if mark is not None:
+                    line = getattr(mark, "line", 0) + 1  # 0-based to 1-based
+                    column = getattr(mark, "column", 0) + 1
+                problem = getattr(e, "problem", None)
+                if problem:
+                    msg = str(problem)
                 yaml_error = {
                     "line": line,
                     "column": column,
