@@ -272,6 +272,249 @@ paths:
           description: Lint results
       summary: Lint DAT code with ruff
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-format:
+    post:
+      operationId: format_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+                dryRun:
+                  type: boolean
+                  default: false
+                  description: "Preview formatting without applying (returns diff)."
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      originalText:
+                        type: string
+                      formattedText:
+                        type: string
+                      changed:
+                        type: boolean
+                      diff:
+                        type: string
+                      applied:
+                        type: boolean
+          description: Format results
+      summary: Format DAT code with ruff
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-validate-json:
+    post:
+      operationId: validate_json_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/data1\""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      format:
+                        type: string
+                        enum:
+                        - json
+                        - yaml
+                        - unknown
+                      valid:
+                        type: boolean
+                      diagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/JsonValidationDiagnostic'
+          description: Validation results
+      summary: Validate JSON/YAML content in a DAT
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-validate-glsl:
+    post:
+      operationId: validate_glsl_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/glsl_pixel\""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      shaderType:
+                        type: string
+                        enum:
+                        - pixel
+                        - vertex
+                        - compute
+                        - unknown
+                      valid:
+                        type: boolean
+                      diagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/GlslValidationDiagnostic'
+                      validationMethod:
+                        type: string
+                        enum:
+                        - td_errors
+                        - glslangValidator
+                        - none
+          description: GLSL validation results
+      summary: Validate GLSL shader code in a DAT
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-lint-batch:
+    post:
+      operationId: lint_dats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - parentPath
+              properties:
+                parentPath:
+                  type: string
+                  description: "Absolute path to the parent. e.g., \"/project1\""
+                pattern:
+                  type: string
+                  default: '*'
+                  description: "Glob pattern to filter DAT names"
+                purpose:
+                  type: string
+                  default: python
+                  enum:
+                  - python
+                  - glsl
+                  - text
+                  - data
+                  - any
+                  description: "Filter by DAT kind"
+                recursive:
+                  type: boolean
+                  default: false
+                  description: Search recursively into descendants
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      parentPath:
+                        type: string
+                      summary:
+                        $ref: '#/components/schemas/BatchLintSummary'
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BatchLintDatResult'
+          description: Batch lint results
+      summary: Batch lint DATs under a parent path
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-typecheck:
+    post:
+      operationId: typecheck_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      diagnosticCount:
+                        type: integer
+                      diagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TypecheckDiagnostic'
+          description: Typecheck results
+      summary: Typecheck DAT code with pyright
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/dat-discover:
     get:
       description: Discover DAT candidates under a parent, classified by kind (python,
@@ -778,6 +1021,32 @@ paths:
           description: TouchDesigner information
       summary: Get TouchDesigner information
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/health:
+    get:
+      description: Returns health status of the TouchDesigner server
+      operationId: get_health
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_health_200_response'
+          description: Health check response
+      summary: Get server health status
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/capabilities:
+    get:
+      description: Returns available features and tool versions
+      operationId: get_capabilities
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_capabilities_200_response'
+          description: Capabilities report
+      summary: Get server capabilities
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/td/helpers/geometry-comp:
     post:
       description: |
@@ -1025,6 +1294,107 @@ components:
         fixable:
           type: boolean
       title: LintDiagnostic
+      type: object
+    TypecheckDiagnostic:
+      description: A single pyright typecheck diagnostic
+      properties:
+        severity:
+          type: string
+          enum:
+          - error
+          - warning
+          - information
+        message:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        rule:
+          type: string
+      title: TypecheckDiagnostic
+      type: object
+    JsonValidationDiagnostic:
+      description: A single JSON/YAML validation diagnostic
+      properties:
+        line:
+          type: integer
+        column:
+          type: integer
+        message:
+          type: string
+      title: JsonValidationDiagnostic
+      type: object
+    GlslValidationDiagnostic:
+      description: A single GLSL validation diagnostic
+      properties:
+        line:
+          type: integer
+        column:
+          type: integer
+        message:
+          type: string
+        severity:
+          type: string
+          enum:
+          - error
+          - warning
+          - info
+      title: GlslValidationDiagnostic
+      type: object
+    BatchLintSummary:
+      description: Aggregated summary for a batch lint operation
+      properties:
+        totalDatsScanned:
+          type: integer
+        datsWithErrors:
+          type: integer
+        datsClean:
+          type: integer
+        totalIssues:
+          type: integer
+        fixableCount:
+          type: integer
+        manualCount:
+          type: integer
+        bySeverity:
+          type: object
+          properties:
+            error:
+              type: integer
+            warning:
+              type: integer
+            info:
+              type: integer
+        worstOffenders:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              name:
+                type: string
+              diagnosticCount:
+                type: integer
+      title: BatchLintSummary
+      type: object
+    BatchLintDatResult:
+      description: Per-DAT lint result in a batch operation
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        diagnosticCount:
+          type: integer
+        diagnostics:
+          type: array
+          items:
+            $ref: '#/components/schemas/LintDiagnostic'
+        error:
+          type: string
+      title: BatchLintDatResult
       type: object
     TdPythonClassDetails:
       description: Detailed information about a Python class or module
@@ -1982,4 +2352,110 @@ components:
       - error
       - success
       title: configure_instancing_200_response
+      type: object
+    get_health_200_response_data:
+      nullable: true
+      properties:
+        status:
+          description: Server status
+          title: status
+          type: string
+        pythonVersion:
+          description: Python interpreter version
+          title: pythonVersion
+          type: string
+        tdVersion:
+          description: "TouchDesigner version (e.g., 2023.30000)"
+          title: tdVersion
+          type: string
+        tdBuild:
+          description: TouchDesigner build number
+          title: tdBuild
+          type: string
+      required:
+      - status
+      - pythonVersion
+      - tdVersion
+      - tdBuild
+      title: get_health_200_response_data
+      type: object
+    get_health_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/get_health_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: get_health_200_response
+      type: object
+    get_capabilities_200_response_data_tool:
+      nullable: true
+      properties:
+        installed:
+          description: Whether the tool is installed
+          title: installed
+          type: boolean
+        version:
+          description: Tool version string
+          nullable: true
+          title: version
+          type: string
+      title: get_capabilities_200_response_data_tool
+      type: object
+    get_capabilities_200_response_data_tools:
+      nullable: true
+      properties:
+        ruff:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
+        pyright:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
+      title: get_capabilities_200_response_data_tools
+      type: object
+    get_capabilities_200_response_data:
+      nullable: true
+      properties:
+        lint_dat:
+          description: Whether lint_dat is available
+          title: lint_dat
+          type: boolean
+        format_dat:
+          description: Whether format_dat is available
+          title: format_dat
+          type: boolean
+        typecheck_dat:
+          description: Whether typecheck_dat is available
+          title: typecheck_dat
+          type: boolean
+        tools:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tools'
+      title: get_capabilities_200_response_data
+      type: object
+    get_capabilities_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/get_capabilities_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: get_capabilities_200_response
       type: object
