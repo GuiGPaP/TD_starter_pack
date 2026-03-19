@@ -366,6 +366,59 @@ paths:
           description: Validation results
       summary: Validate JSON/YAML content in a DAT
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-validate-glsl:
+    post:
+      operationId: validate_glsl_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/glsl_pixel\""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      shaderType:
+                        type: string
+                        enum:
+                        - pixel
+                        - vertex
+                        - compute
+                        - unknown
+                      valid:
+                        type: boolean
+                      diagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/GlslValidationDiagnostic'
+                      validationMethod:
+                        type: string
+                        enum:
+                        - td_errors
+                        - glslangValidator
+                        - none
+          description: GLSL validation results
+      summary: Validate GLSL shader code in a DAT
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/dat-lint-batch:
     post:
       operationId: lint_dats
@@ -1212,6 +1265,23 @@ components:
         message:
           type: string
       title: JsonValidationDiagnostic
+      type: object
+    GlslValidationDiagnostic:
+      description: A single GLSL validation diagnostic
+      properties:
+        line:
+          type: integer
+        column:
+          type: integer
+        message:
+          type: string
+        severity:
+          type: string
+          enum:
+          - error
+          - warning
+          - info
+      title: GlslValidationDiagnostic
       type: object
     BatchLintSummary:
       description: Aggregated summary for a batch lint operation

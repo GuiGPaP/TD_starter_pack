@@ -66,6 +66,7 @@ class IApiService(Protocol):
     def lint_dat(self, node_path: str, fix: bool = ..., dry_run: bool = ...) -> Result: ...
     def format_dat(self, node_path: str, dry_run: bool = ...) -> Result: ...
     def validate_json_dat(self, node_path: str) -> Result: ...
+    def validate_glsl_dat(self, node_path: str) -> Result: ...
     def discover_dat_candidates(
         self,
         parent_path: str,
@@ -174,6 +175,7 @@ class TouchDesignerApiService(IApiService):
             {
                 "lint_dat": ruff is not None,
                 "format_dat": ruff is not None,
+                "validate_glsl_dat": True,
                 "typecheck_dat": False,
                 "tools": {
                     "ruff": {"installed": ruff is not None, "version": ruff_version},
@@ -1030,6 +1032,244 @@ class TouchDesignerApiService(IApiService):
                 "diagnostics": diagnostics,
             }
         )
+
+    def validate_glsl_dat(self, node_path: str) -> Result:
+        """Validate GLSL shader code in a DAT operator.
+
+        Strategy:
+        1. Determine shader type from DAT name suffix (_pixel, _vertex, _compute).
+        2. Try to find a connected GLSL TOP/MAT in the same parent and check its errors().
+        3. Fall back to glslangValidator if available on PATH.
+        4. Return structured diagnostics.
+        """
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        text = getattr(node, "text", "") or ""
+        name = getattr(node, "name", "")
+        path = getattr(node, "path", node_path)
+
+        # Determine shader type from name suffix
+        shader_type = "unknown"
+        if name.endswith("_pixel"):
+            shader_type = "pixel"
+        elif name.endswith("_vertex"):
+            shader_type = "vertex"
+        elif name.endswith("_compute"):
+            shader_type = "compute"
+
+        # Strategy 1: Find connected GLSL TOP/MAT and check its errors
+        td_errors_diagnostics = self._check_glsl_td_errors(node)
+        if td_errors_diagnostics is not None:
+            diagnostics, valid = td_errors_diagnostics
+            return success_result(
+                {
+                    "path": path,
+                    "name": name,
+                    "shaderType": shader_type,
+                    "valid": valid,
+                    "diagnostics": diagnostics,
+                    "validationMethod": "td_errors",
+                }
+            )
+
+        # Strategy 2: Fall back to glslangValidator
+        validator_path = shutil.which("glslangValidator")
+        if validator_path is not None and text.strip():
+            diagnostics, valid = self._run_glslang_validator(text, shader_type, validator_path)
+            return success_result(
+                {
+                    "path": path,
+                    "name": name,
+                    "shaderType": shader_type,
+                    "valid": valid,
+                    "diagnostics": diagnostics,
+                    "validationMethod": "glslangValidator",
+                }
+            )
+
+        # No validation method available
+        return success_result(
+            {
+                "path": path,
+                "name": name,
+                "shaderType": shader_type,
+                "valid": True,
+                "diagnostics": [],
+                "validationMethod": "none",
+            }
+        )
+
+    def _check_glsl_td_errors(self, dat_node: Any) -> tuple[list[dict[str, object]], bool] | None:
+        """Check for GLSL errors via connected GLSL TOP/MAT in the same parent.
+
+        Returns (diagnostics, valid) or None if no GLSL operator found.
+        """
+        parent_attr = getattr(dat_node, "parent", None)
+        parent = parent_attr() if parent_attr is not None and callable(parent_attr) else None
+        if parent is None:
+            return None
+
+        children = getattr(parent, "children", None)
+        if children is None:
+            return None
+
+        dat_name = getattr(dat_node, "name", "")
+        glsl_op_types = ("glslTOP", "glslmultiTOP", "glslMAT")
+        glsl_op = None
+
+        for child in children:
+            op_type = getattr(child, "OPType", "")
+            if op_type not in glsl_op_types:
+                continue
+            # Check if this GLSL operator references our DAT
+            # by looking at its parameters (dat, glsldat, pixeldat, vertexdat, etc.)
+            for par_name in ("dat", "glsldat", "pixeldat", "vertexdat", "computedat"):
+                par = getattr(child.par, par_name, None) if hasattr(child, "par") else None
+                if par is not None:
+                    par_val = getattr(par, "eval", lambda: None)()
+                    if par_val is not None:
+                        ref_path = getattr(par_val, "path", str(par_val))
+                        if ref_path == getattr(dat_node, "path", ""):
+                            glsl_op = child
+                            break
+                        # Also check by name reference
+                        ref_name = getattr(par_val, "name", str(par_val))
+                        if ref_name == dat_name:
+                            glsl_op = child
+                            break
+            if glsl_op is not None:
+                break
+
+        if glsl_op is None:
+            return None
+
+        # Get errors from the GLSL operator
+        diagnostics: list[dict[str, object]] = []
+        error_output: str = ""
+        errors_fn = getattr(glsl_op, "errors", None)
+        if errors_fn is not None and callable(errors_fn):
+            with contextlib.suppress(Exception):
+                error_output = str(errors_fn() or "")
+
+        if not error_output:
+            return ([], True)
+
+        # Parse error lines into diagnostics
+        for line in error_output.strip().split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            diag: dict[str, object] = self._parse_glsl_error_line(line)
+            diagnostics.append(diag)
+
+        return (diagnostics, len(diagnostics) == 0)
+
+    @staticmethod
+    def _parse_glsl_error_line(line: str) -> dict[str, object]:
+        """Parse a GLSL error line into structured diagnostic.
+
+        Common formats:
+        - 'ERROR: 0:5: ...' (glsl compiler)
+        - Plain text error message
+        """
+        import re
+
+        # Try to match 'ERROR: <file>:<line>: <message>' or 'WARNING: <file>:<line>: <message>'
+        m = re.match(r"(ERROR|WARNING|INFO):\s*\d+:(\d+):\s*(.*)", line)
+        if m:
+            severity = m.group(1).lower()
+            line_num = int(m.group(2))
+            message = m.group(3)
+            return {
+                "line": line_num,
+                "column": 1,
+                "message": message,
+                "severity": severity,
+            }
+
+        # Fallback: treat as error with no line info
+        return {
+            "line": 1,
+            "column": 1,
+            "message": line,
+            "severity": "error",
+        }
+
+    def _run_glslang_validator(
+        self, text: str, shader_type: str, validator_path: str
+    ) -> tuple[list[dict[str, object]], bool]:
+        """Run glslangValidator on shader text. Returns (diagnostics, valid)."""
+        # Map shader type to file extension
+        ext_map = {
+            "pixel": ".frag",
+            "vertex": ".vert",
+            "compute": ".comp",
+            "unknown": ".frag",  # default to fragment
+        }
+        ext = ext_map.get(shader_type, ".frag")
+
+        fd = -1
+        tmp_path = ""
+        try:
+            fd, tmp_path = tempfile.mkstemp(suffix=ext, prefix="glsl_validate_")
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            fd = -1  # fd is closed by os.fdopen
+
+            proc = subprocess.run(
+                [validator_path, tmp_path],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            diagnostics: list[dict[str, object]] = []
+            output = (proc.stdout or "") + (proc.stderr or "")
+            for line in output.strip().split("\n"):
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith(("ERROR:", "WARNING:")):
+                    diag = self._parse_glsl_error_line(line)
+                    diagnostics.append(diag)
+
+            valid = proc.returncode == 0
+            return (diagnostics, valid)
+
+        except subprocess.TimeoutExpired:
+            return (
+                [
+                    {
+                        "line": 1,
+                        "column": 1,
+                        "message": "glslangValidator timed out",
+                        "severity": "error",
+                    }
+                ],
+                False,
+            )
+        except Exception as exc:
+            return (
+                [
+                    {
+                        "line": 1,
+                        "column": 1,
+                        "message": f"glslangValidator error: {exc!s}",
+                        "severity": "error",
+                    }
+                ],
+                False,
+            )
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                if tmp_path:
+                    os.unlink(tmp_path)
 
     @staticmethod
     def _safe_par_value(par, mode: str = "eval"):

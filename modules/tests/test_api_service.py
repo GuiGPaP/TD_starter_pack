@@ -743,6 +743,197 @@ class TestValidateJsonDat:
         assert len(data["diagnostics"]) >= 1
 
 
+class TestValidateGlslDat:
+    def test_node_not_found(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        mock_td.op.return_value = None
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_glsl_dat("/bad")
+        assert r["success"] is False
+
+    def test_no_text_attribute(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        node = MagicMock(spec=[])  # no .text attribute
+        node.valid = True
+        mock_td.op.return_value = node
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_glsl_dat("/project1/shader1")
+        assert r["success"] is False
+
+    def test_shader_type_from_name_pixel(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/myshader_pixel"
+        dat.name = "myshader_pixel"
+        dat.text = "void main() {}"
+        # No connected GLSL op, no glslangValidator
+        parent = MagicMock()
+        parent.children = []
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        with patch("mcp.services.api_service.shutil.which", return_value=None):
+            svc = api_service_module.TouchDesignerApiService()
+            r = svc.validate_glsl_dat("/project1/myshader_pixel")
+
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["shaderType"] == "pixel"
+        assert data["validationMethod"] == "none"
+        assert data["valid"] is True
+
+    def test_shader_type_from_name_vertex(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/myshader_vertex"
+        dat.name = "myshader_vertex"
+        dat.text = "void main() {}"
+        parent = MagicMock()
+        parent.children = []
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        with patch("mcp.services.api_service.shutil.which", return_value=None):
+            svc = api_service_module.TouchDesignerApiService()
+            r = svc.validate_glsl_dat("/project1/myshader_vertex")
+
+        assert r["success"] is True
+        assert r.get("data", {})["shaderType"] == "vertex"
+
+    def test_shader_type_from_name_compute(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/sim_compute"
+        dat.name = "sim_compute"
+        dat.text = "void main() {}"
+        parent = MagicMock()
+        parent.children = []
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        with patch("mcp.services.api_service.shutil.which", return_value=None):
+            svc = api_service_module.TouchDesignerApiService()
+            r = svc.validate_glsl_dat("/project1/sim_compute")
+
+        assert r["success"] is True
+        assert r.get("data", {})["shaderType"] == "compute"
+
+    def test_td_errors_from_connected_glsl_top(self, api_service_module):
+        """When a GLSL TOP references the DAT, use its errors() output."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/shader_pixel"
+        dat.name = "shader_pixel"
+        dat.text = "void main() { bad }"
+
+        # Create a GLSL TOP that references this DAT
+        glsl_top = MagicMock()
+        glsl_top.OPType = "glslTOP"
+        glsl_top.errors.return_value = "ERROR: 0:5: undeclared identifier 'bad'"
+        # par.pixeldat.eval() returns the DAT node
+        pixel_par = MagicMock()
+        pixel_par.eval.return_value = dat
+        glsl_top.par.pixeldat = pixel_par
+        # Ensure other pars don't exist
+        glsl_top.par.dat = MagicMock()
+        glsl_top.par.dat.eval.return_value = None
+        glsl_top.par.glsldat = MagicMock()
+        glsl_top.par.glsldat.eval.return_value = None
+        glsl_top.par.vertexdat = MagicMock()
+        glsl_top.par.vertexdat.eval.return_value = None
+        glsl_top.par.computedat = MagicMock()
+        glsl_top.par.computedat.eval.return_value = None
+
+        parent = MagicMock()
+        parent.children = [glsl_top]
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_glsl_dat("/project1/shader_pixel")
+
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["validationMethod"] == "td_errors"
+        assert data["valid"] is False
+        assert len(data["diagnostics"]) == 1
+        assert data["diagnostics"][0]["line"] == 5
+        assert "bad" in data["diagnostics"][0]["message"]
+
+    def test_td_errors_no_errors(self, api_service_module):
+        """When GLSL TOP has no errors, report valid."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/shader_pixel"
+        dat.name = "shader_pixel"
+        dat.text = "void main() {}"
+
+        glsl_top = MagicMock()
+        glsl_top.OPType = "glslTOP"
+        glsl_top.errors.return_value = ""
+        pixel_par = MagicMock()
+        pixel_par.eval.return_value = dat
+        glsl_top.par.pixeldat = pixel_par
+        glsl_top.par.dat = MagicMock()
+        glsl_top.par.dat.eval.return_value = None
+        glsl_top.par.glsldat = MagicMock()
+        glsl_top.par.glsldat.eval.return_value = None
+        glsl_top.par.vertexdat = MagicMock()
+        glsl_top.par.vertexdat.eval.return_value = None
+        glsl_top.par.computedat = MagicMock()
+        glsl_top.par.computedat.eval.return_value = None
+
+        parent = MagicMock()
+        parent.children = [glsl_top]
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_glsl_dat("/project1/shader_pixel")
+
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["validationMethod"] == "td_errors"
+        assert data["valid"] is True
+        assert data["diagnostics"] == []
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/glslangValidator")
+    def test_glslang_validator_fallback(self, _mock_which, mock_run, api_service_module):
+        """When no GLSL TOP is connected, fall back to glslangValidator."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/shader_pixel"
+        dat.name = "shader_pixel"
+        dat.text = "void main() { bad }"
+
+        parent = MagicMock()
+        parent.children = []  # No GLSL operators
+        dat.parent.return_value = parent
+        mock_td.op.return_value = dat
+
+        mock_run.return_value = MagicMock(
+            returncode=1,
+            stdout="ERROR: 0:1: 'bad' : undeclared identifier\n",
+            stderr="",
+        )
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_glsl_dat("/project1/shader_pixel")
+
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["validationMethod"] == "glslangValidator"
+        assert data["valid"] is False
+        assert len(data["diagnostics"]) >= 1
+
+
 class TestConfigureInstancing:
     def test_geo_not_found(self, api_service_module):
         mock_td = api_service_module._mock_td
