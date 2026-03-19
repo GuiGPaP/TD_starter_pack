@@ -1067,7 +1067,6 @@ class TestEnsureGlslangValidator:
         ):
             assert svc._ensure_glslang_validator() == dest
 
-
     def test_negative_cache_skips_download(self, api_service_module, tmp_path):
         """After failed download, sentinel prevents retry within cooldown."""
         svc = api_service_module.TouchDesignerApiService()
@@ -1105,9 +1104,7 @@ class TestEnsureGlslangValidator:
                 "_glslang_cache_dir",
                 return_value=tmp_path,
             ),
-            patch.object(
-                svc, "_download_glslang_validator", return_value=None
-            ) as mock_dl,
+            patch.object(svc, "_download_glslang_validator", return_value=None) as mock_dl,
         ):
             svc._ensure_glslang_validator()
             mock_dl.assert_called_once()
@@ -1121,10 +1118,8 @@ class TestDownloadGlslangValidator:
             zf.writestr(member_name, content)
         return buf.getvalue()
 
-    @patch("mcp.services.api_service.sys")
-    def test_success(self, mock_sys, api_service_module, tmp_path):
+    def test_success(self, api_service_module, tmp_path):
         """Mock urllib + zipfile → binary extracted, glslang.json written."""
-        mock_sys.platform = "win32"
         exe_name = api_service_module._GLSLANG_EXE
 
         svc = api_service_module.TouchDesignerApiService()
@@ -1136,7 +1131,13 @@ class TestDownloadGlslangValidator:
         mock_response.__enter__ = lambda s: s
         mock_response.__exit__ = MagicMock(return_value=False)
 
-        with patch("urllib.request.urlopen", return_value=mock_response):
+        # Patch platform to match a key in _GLSLANG_ASSETS
+        with (
+            patch("mcp.services.api_service.sys") as mock_sys,
+            patch("platform.machine", return_value="AMD64"),
+            patch("urllib.request.urlopen", return_value=mock_response),
+        ):
+            mock_sys.platform = "win32"
             result = svc._download_glslang_validator(dest)
 
         assert result == str(dest)
@@ -1168,9 +1169,16 @@ class TestDownloadGlslangValidator:
 
         with (
             patch("mcp.services.api_service.sys") as mock_sys,
-            patch("urllib.request.urlopen", side_effect=urllib.error.HTTPError(
-                "url", 404, "Not Found", {}, None  # pyright: ignore[reportArgumentType]
-            )),
+            patch(
+                "urllib.request.urlopen",
+                side_effect=urllib.error.HTTPError(
+                    "url",
+                    404,
+                    "Not Found",
+                    {},  # pyright: ignore[reportArgumentType]
+                    None,
+                ),
+            ),
             patch("mcp.services.api_service.log_message"),
         ):
             mock_sys.platform = "win32"
@@ -1215,9 +1223,7 @@ class TestValidateGlslUsesEnsure:
         mock_td.op.return_value = dat
 
         svc = api_service_module.TouchDesignerApiService()
-        with patch.object(
-            svc, "_ensure_glslang_validator"
-        ) as mock_ensure:
+        with patch.object(svc, "_ensure_glslang_validator") as mock_ensure:
             r = svc.validate_glsl_dat("/project1/shader_pixel")
             mock_ensure.assert_not_called()
         assert r["data"]["validationMethod"] == "none"

@@ -1113,9 +1113,7 @@ class TouchDesignerApiService(IApiService):
         if text.strip():
             validator_path = self._ensure_glslang_validator()
             if validator_path is not None:
-                diagnostics, valid = self._run_glslang_validator(
-                    text, shader_type, validator_path
-                )
+                diagnostics, valid = self._run_glslang_validator(text, shader_type, validator_path)
                 return success_result(
                     {
                         "path": path,
@@ -1471,9 +1469,7 @@ class TouchDesignerApiService(IApiService):
     def _glslang_works(path: str) -> bool:
         """Verify glslangValidator can execute."""
         try:
-            proc = subprocess.run(
-                [path, "--version"], capture_output=True, text=True, timeout=10
-            )
+            proc = subprocess.run([path, "--version"], capture_output=True, text=True, timeout=10)
             return proc.returncode == 0
         except Exception:
             return False
