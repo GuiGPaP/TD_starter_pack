@@ -2,6 +2,21 @@
 
 Complete API reference for TouchDesigner GLSL POP compute shaders.
 
+## Table of Contents
+
+- [Thread Indexing](#thread-indexing)
+- [Input Attribute Access](#input-attribute-access)
+- [Output Attribute Declaration](#output-attribute-declaration)
+- [Index Buffer Operations](#index-buffer-operations)
+- [Primitive Topology](#primitive-topology)
+- [GLSL Copy POP Functions](#glsl-copy-pop-functions)
+- [GLSL Advanced POP — Per-Primitive-Batch Mode](#glsl-advanced-pop--per-primitive-batch-mode)
+- [Cache / Multi-Frame Access](#cache--multi-frame-access)
+- [Dimensional Data](#dimensional-data)
+- [Math Helper Functions](#math-helper-functions)
+- [Uniform Types](#uniform-types)
+- [Performance Notes](#performance-notes)
+
 ## Thread Indexing
 
 ### Core Index Functions

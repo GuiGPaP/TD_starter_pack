@@ -195,4 +195,4 @@ render.par.geometry = 'env_* prop_*'   # Multiple patterns (space = OR)
 render.par.geometry = '* ^debug_*'     # All except debug objects
 ```
 
-See [Pattern Matching](basics.md#pattern-matching) for full syntax.
+See @basics/data-io.md for full pattern matching syntax.

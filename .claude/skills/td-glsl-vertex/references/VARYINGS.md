@@ -119,8 +119,9 @@ void main() {
 ### Tangent Space (Normal Mapping)
 
 ```glsl
-// Vertex
+// Vertex — must pass UVs explicitly since custom VS replaces TD defaults
 out vec3 vWorldPos;
+out vec2 vTexCoord;
 out mat3 vTBN;        // Tangent-Bitangent-Normal matrix (3x3)
 
 void main() {
@@ -135,20 +136,20 @@ void main() {
     vec3 wBitang  = cross(wNormal, wTangent) * T.w;  // T.w = handedness
 
     vWorldPos = worldPos.xyz;
+    vTexCoord = uv[0].st;
     vTBN      = mat3(wTangent, wBitang, wNormal);
     gl_Position = TDWorldToProj(worldPos);
 }
 
 // Pixel
 in vec3 vWorldPos;
+in vec2 vTexCoord;
 in mat3 vTBN;
-
-uniform sampler2D uNormalMap;  // sTD2DInputs[1] or declared uniform
 
 layout(location = 0) out vec4 fragColor;
 void main() {
     // Sample normal map, remap from [0,1] to [-1,1]
-    vec3 tsNormal = texture(sTD2DInputs[1], vUV.st).xyz * 2.0 - 1.0;
+    vec3 tsNormal = texture(sTD2DInputs[1], vTexCoord).xyz * 2.0 - 1.0;
     vec3 worldNorm = normalize(vTBN * tsNormal);
 
     // ...use worldNorm for lighting

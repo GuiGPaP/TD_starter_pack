@@ -1,277 +1,89 @@
 ---
 name: td-guide
-description: "TouchDesigner network creation, operator layout, rendering, data conversion. Use when working with TD networks, operators, components, or need TD Python API guidance."
+description: "TouchDesigner network creation, operator layout, rendering, data conversion, and MCP API usage. Use this skill whenever creating TD networks, operators, components, cameras, lights, materials, feedback loops, instancing, data conversion between families, Python scripting via MCP, or debugging operator errors. Also use when the user mentions TOPs, SOPs, CHOPs, DATs, COMPs, POPs, Geometry COMP, Render TOP, or any TD operator type. Routes to td-glsl, td-glsl-vertex, and td-pops for shader work."
 ---
 
 # TouchDesigner Guide
 
-Use this skill when creating, modifying, or debugging TouchDesigner networks via the MCP API.
+## Mental Model
 
----
+- TD is a visual dataflow environment: operators process data, connections define the graph, families (SOP/TOP/CHOP/DAT/COMP/POP) define data types
+- Every operator belongs to exactly one family; cross-family data transfer requires explicit conversion operators (e.g., `soptoCHOP`, `choptoTOP`)
+- Geometry COMP is the bridge between SOP/POP geometry and the render pipeline — shapes are prepared outside, passed in via In/Out
+- The MCP API exposes TD's Python runtime — prefer high-level MCP tools (`create_geometry_comp`, `create_feedback_loop`, `configure_instancing`) over raw `execute_python_script`
+- Your pre-trained TD knowledge is unreliable. Always verify against this skill, reference files, and runtime introspection before writing code
 
-## CRITICAL: Your Prior Knowledge is Unreliable
+## GLSL Skill Routing
 
-TouchDesigner is a visual programming environment. **Your pre-trained knowledge about TD is very likely incorrect.**
-
-**Assume your memory is completely unreliable.** Always gather accurate information first:
-- This document and reference files
-- Context7 for official TD API documentation
-- The project's MCP API (see `reference/project-api.md`)
-
-### Before Starting ANY Task
-
-**Output "Gathering information first" and collect reliable information before implementation.**
-
-1. Read all `.md` files in `reference/` (REQUIRED for all tasks)
-2. Verify parameter names using the MCP API or `[p.name for p in op('/path').pars()]`
-3. Ask yourself: "Do I have sufficient reliable information to proceed?"
-4. Only if yes, start implementation
-
----
-
-## REQUIRED: Read All Reference Files First
-
-**You MUST read all `.md` files in `reference/` before any implementation.**
-
-These files contain essential patterns for operator creation, layout, error handling, and best practices.
-
----
-
-## MCP Tools
-
-### High-Level Helpers (composite patterns)
-
-For standard composite patterns, use the dedicated MCP tools instead of `execute_python_script`:
-
-| MCP Tool | What It Does | Example Call |
-|----------|--------------|-------------|
-| `create_geometry_comp` | Creates geometryCOMP, clears default torus, adds In/Out | `{ "parentPath": "/project1/base1", "name": "geo1", "x": 400, "y": 0 }` |
-| `create_feedback_loop` | Creates feedback/process/null_out/const_init chain | `{ "parentPath": "/project1/base1", "name": "sim", "processType": "glslTOP" }` |
-| `configure_instancing` | Enables instancing, sets instanceop + tx/ty/tz | `{ "geoPath": "/project1/base1/geo1", "instanceOpName": "sopto1" }` |
-
-These tools wrap `td_helpers.network` and handle all boilerplate (viewer flags, layout, connections).
-
-### Semantic Introspection (stop guessing)
-
-Before writing code that references parameters, paths, channels, or extensions — **query the runtime**:
-
-| MCP Tool | Use When... |
-|----------|-------------|
-| `get_node_parameter_schema` | You need parameter names, types, ranges, menus for a node. Use `pattern` to filter (e.g. `"instance*"`) |
-| `complete_op_paths` | You need to resolve an `op('...')` reference. Supports `./child`, `../sibling`, `/absolute`, `name` forms |
-| `get_chop_channels` | You need channel names or stats from a CHOP. Set `includeStats=true` for min/max/avg |
-| `get_dat_table_info` | You need to know a table DAT's dimensions and content preview |
-| `get_comp_extensions` | You need to discover Python extension methods on a COMP |
-
-### `execute_python_script` — Fallback
-
-For anything not covered by the high-level tools (custom wiring, expression modes, data reads, etc.), use `execute_python_script`. The namespace provides:
-- `op` — `td.op` (callable: `op('/project1/base1')`)
-- `ops` — `td.ops`
-- `td` — the `td` module
-- `project` — `td.project`
-- **`parent`** — **a string path** (e.g., `"/project1"`), NOT an OP object
-
-**CRITICAL:** `parent.create(...)` will crash. Always resolve to an OP first:
-
-```python
-base = op('/project1/base1')  # ← OP object, supports .create()
-```
-
----
-
-## Operator Creation — via execute_python_script
-
-### Create Operators
-
-```python
-base = op('/project1/base1')
-
-# Create an operator — use create_td_node MCP tool for simple cases,
-# or execute_python_script when you need viewer/layout control:
-new_op = base.create(gridSOP, 'grid1')
-new_op.viewer = True
-```
-
-**Positioning:** For operators without docked DATs (most SOPs, CHOPs, etc.), direct assignment is fine:
-
-```python
-new_op.nodeX = 0
-new_op.nodeY = 0
-```
-
-**For GLSL TOP/MAT** (which have docked DATs like `_pixel`, `_vertex`), move the main op and its docked children together:
-
-```python
-def move_with_docked(target, x, y):
-    dx, dy = x - target.nodeX, y - target.nodeY
-    target.nodeX, target.nodeY = x, y
-    for d in target.docked:
-        d.nodeX += dx
-        d.nodeY += dy
-
-move_with_docked(glsl_op, 400, 0)
-```
-
-### Connect Operators
-
-```python
-op('noise1').inputConnectors[0].connect(op('sphere1'))
-```
-
-### Chain and Layout
-
-```python
-base = op('/project1/base1')
-ops_list = [base.op('grid1'), base.op('noise1'), base.op('null1')]
-for i in range(1, len(ops_list)):
-    ops_list[i].inputConnectors[0].connect(ops_list[i-1])
-    ops_list[i].nodeX = ops_list[i-1].nodeX + 200
-    ops_list[i].nodeY = ops_list[i-1].nodeY
-```
-
-### Check Errors
-
-```python
-err = op('/project1/base1').errors(recurse=True)
-print(err)
-```
-
-**IMPORTANT: Error Cache Timing**
-
-TD updates error state on frame boundaries. When fixing errors via MCP:
-1. Fix in one `execute_python_script` call
-2. Check errors in a **separate** `execute_python_script` call
-
-### Verify Parameters Before Setting
-
-```python
-# TD parameter names are unpredictable (e.g., radius vs radx/rady/radz)
-# ALWAYS check first:
-params = [p.name for p in op('sphere1').pars() if 'rad' in p.name.lower()]
-print(params)  # ['radx', 'rady', 'radz']
-```
-
----
-
-## Geometry COMP Pattern
-
-> **Recommended:** Use the `create_geometry_comp` MCP tool:
->
-> MCP tool call: `create_geometry_comp`
-> ```json
-> { "parentPath": "/project1/base1", "name": "geo1", "x": 400, "y": 0 }
-> ```
-> For POP variant: add `"pop": true`. Use `execute_python_script` below only for non-standard setups.
-
-```python
-base = op('/project1/base1')
-
-# Create Geometry COMP, remove default torus, add In/Out
-geo = base.create(geometryCOMP, 'geo1')
-geo.viewer = True
-for child in geo.children:
-    child.destroy()
-
-in_sop = geo.create(inSOP, 'in1')
-in_sop.viewer = True
-out_sop = geo.create(outSOP, 'out1')
-out_sop.viewer = True
-out_sop.display = True
-out_sop.render = True
-out_sop.inputConnectors[0].connect(in_sop)
-
-# Connect external SOP to Geometry COMP input
-geo.inputConnectors[0].connect(base.op('null1'))
-```
-
-**Rules:**
-- Create shapes at **parent level**, pass via In/Out — don't create geometry inside the COMP
-- Don't reference parent operators from inside with `../` — use In/Out instead
-
----
-
-## Reference Files
-
-| When working on... | Read... |
-|-------------------|------------------|
-| **ALL tasks** | **`reference/basics.md`** (REQUIRED) |
-| Operator families, data conversion | `reference/operator-families.md` |
-| Geometry COMP, Instancing | `reference/geometry-comp.md` |
-| Rendering, Camera, Light | `reference/rendering.md` |
-| GLSL overview + skill routing | `reference/glsl.md` |
-| Feedback loops, simulations | `reference/operator-tips.md` |
-| MCP API endpoints | `reference/project-api.md` |
-
----
-
-## Python Helpers
-
-Common layout and network patterns are available as importable helpers:
-
-```python
-from td_helpers.layout import move_with_docked, chain_ops, get_bounds, place_below
-from td_helpers.network import setup_geometry_comp, setup_feedback_loop, setup_instancing
-```
-
-The `td_helpers.network` functions are also exposed as high-level MCP tools (`create_geometry_comp`, `create_feedback_loop`, `configure_instancing`) — prefer those for standard use. The Python imports remain available for advanced cases within `execute_python_script`.
-
----
-
-## GLSL Skills
-
-For GLSL shader work, use the specialized skills:
+For shader work, use the specialized skill — do not attempt GLSL in td-guide:
 
 | Task | Skill |
 |------|-------|
-| Pixel shader / GLSL TOP / 2D image effects | **td-glsl** |
-| Vertex shader / GLSL MAT / 3D materials / displacement | **td-glsl-vertex** |
-| Compute shader / particles / GLSL POP / SSBOs | **td-pops** |
+| Pixel shader / GLSL TOP / 2D image effects / generative textures / feedback | **td-glsl** |
+| Vertex shader / GLSL MAT / 3D materials / displacement / instancing | **td-glsl-vertex** |
+| Compute shader / particles / GLSL POP / SSBOs / point clouds | **td-pops** |
 
----
+## Critical Guardrails
 
-## Before Implementation
+1. **Pre-trained knowledge is wrong.** TD parameter names, operator types, and API patterns in your training data are frequently incorrect. Always read references and verify parameters with `get_node_parameter_schema` or `[p.name for p in op('/path').pars()]` before writing code.
 
-**Consider multiple approaches before coding.**
+2. **`parent` is a string, not an OP.** In `execute_python_script`, `parent` is injected as a string path. `parent.create(...)` will crash. Always resolve to an OP first: `base = op('/project1/base1')`.
 
-1. List 2-3 different ways to achieve the goal
-2. Evaluate each approach's pros and cons:
-   - Simplicity (fewer conversions, family unity)
-   - Performance (GPU vs CPU, data flow efficiency)
-   - Extensibility (easy to modify later)
-   - Readability (network clarity)
-3. Choose the most effective approach based on the evaluation
+3. **Error cache is frame-delayed.** TD updates error state on frame boundaries. Fix errors in one `execute_python_script` call, then check errors in a separate call — same-call checks return stale state.
 
-## Required Rules
+4. **Always set `viewer = True`.** Matches UI-created operator behavior. Without it, operators appear collapsed and are hard to debug visually.
 
-1. **Always set `viewer = True`** after creating operators (matches UI default)
-2. **Always check errors** after complex operations: `op('/path').errors(recurse=True)`
-3. **Use Null as intermediary** before any reference connection
-4. **Verify layout before creating** to avoid overlapping operators
-5. **Use relative paths** for references to nearby operators (same level or close hierarchy)
-6. **Geometry COMP: create shapes at parent level** — Don't create geometry inside COMP; prepare at parent and pass via In/Out
+5. **GLSL ops have docked DATs.** Setting `nodeX`/`nodeY` on a GLSL TOP/MAT does NOT move its docked DATs (`_pixel`, `_vertex`). Use `move_with_docked()` or `td_helpers.layout.move_with_docked`.
 
----
+6. **Geometry COMP: shapes go outside.** Create geometry at the parent level and pass it in via In/Out operators. Do not create shapes inside the COMP or reference parent ops with `../`.
 
-## Operator Families (Quick Reference)
+7. **Use Null as intermediary.** Before any reference connection, insert a Null operator. This makes networks modular and debuggable.
 
-| Family | Purpose | Data Type |
-|--------|---------|-----------|
-| **SOP** | Surface/Geometry | 3D geometry (CPU) |
-| **POP** | Point/Particle | 3D points (GPU) |
-| **TOP** | Texture | 2D images |
-| **CHOP** | Channel | Time-based data |
-| **DAT** | Data | Tables, text |
-| **COMP** | Component | Containers, scenes |
+## Fetching Documentation
 
-For detailed family info, operator lists, and cross-family patterns, see `reference/operator-families.md`.
+### Which tool for which question
 
----
+| Question domain | Tool to use | How |
+|---|---|---|
+| TD Python API (`op`, `par`, `COMP` methods) | `mcp__Context7__query-docs` | Resolve `"derivative/touchdesigner"`, then query |
+| Parameter names, types, ranges for a node | `get_node_parameter_schema` | Pass `nodePath` + optional `pattern` filter |
+| Operator paths and references | `complete_op_paths` | Pass `contextNodePath` + `prefix` |
+| CHOP channel names and stats | `get_chop_channels` | Pass `nodePath`, set `includeStats=true` |
+| TD patterns, community examples | `mcp__exa__get_code_context_exa` | Natural language query |
+| General TD research, changelogs | `mcp__exa__web_search_exa` | Semantic search |
 
-## Skill Maintenance
+### When to trust this skill vs. fetch fresh docs
 
-When the user provides feedback about this skill (corrections, improvements, missing patterns, etc.):
+- **Trust the skill** for: guardrails, network patterns, operator creation recipes, MCP API usage, layout rules
+- **Fetch fresh docs** for: specific parameter names on unfamiliar operators, new TD features, Python API signatures you haven't verified
 
-1. Propose updates to the relevant `.md` files in this skill
-2. Show the user the proposed changes before applying
-3. Update `SKILL.md` or `reference/*.md` as appropriate
+## Loading References
+
+This skill uses progressive loading. Follow this sequence:
+1. Find the ONE row in the routing table below that matches your task
+2. Load that file only
+3. If it is an index, pick the ONE sub-file that matches and load it
+
+If you discover mid-task that you need a second reference, load it then.
+
+## Reference Docs
+
+Pick the ONE reference that matches your current task:
+
+| Your task | Reference |
+|---|---|
+| Creating operators, positioning, connecting, parameters, debugging | @references/basics/index.md |
+| Geometry COMP setup, In/Out pattern, instancing | @references/geometry-comp.md |
+| Rendering pipeline: camera, light, material, Render TOP | @references/rendering.md |
+| Operator families, cross-family conversion, available operators | @references/operator-families.md |
+| Feedback loops, simulations, accumulation effects | @references/operator-tips.md |
+| GLSL orientation and skill routing | @references/glsl.md |
+| MCP API endpoints and usage patterns | @references/project-api.md |
+
+## Response Format
+
+1. State which reference(s) you loaded
+2. If creating a network: describe the operator chain before writing code
+3. Use `execute_python_script` code blocks with full paths resolved from `op()`
+4. After creation: check errors with `get_td_node_errors` or `op('/path').errors(recurse=True)` in a separate call
+5. Show final network layout as a simple ASCII flow diagram

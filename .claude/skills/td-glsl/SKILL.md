@@ -1,119 +1,80 @@
 ---
 name: td-glsl
-description: Write GLSL pixel/fragment shaders for TouchDesigner's GLSL TOP operator. Use for 2D image processing, texture effects, generative patterns, feedback loops, color grading. NOT for vertex shaders (use td-glsl-vertex) or compute/particle shaders (use td-pops).
+description: Write GLSL pixel/fragment shaders for TouchDesigner's GLSL TOP operator. Use this skill whenever creating pixel shaders, post-processing effects, image filters, texture effects, UV distortion, noise patterns, color correction, blur, feedback shaders, generative textures, chromatic aberration, or any 2D image processing in TouchDesigner. Also use when debugging GLSL TOP compilation errors or optimizing shader performance. NOT for vertex shaders (use td-glsl-vertex) or compute/particle shaders (use td-pops).
 ---
 
 # TouchDesigner GLSL TOP — Pixel Shader Writing
 
-Write GLSL pixel/fragment shaders optimized for TouchDesigner's GLSL TOP operator.
+## Mental Model
 
-## Quick Start
+- A GLSL TOP runs a **fragment shader** once per pixel. You write `main()`, TouchDesigner provides the pipeline (vertex stage, uniforms injection, output routing).
+- TouchDesigner auto-injects variables (`sTD2DInputs`, `vUV`, `vP`, `vN`, `vColor`) — declaring them yourself causes redefinition errors.
+- Uniforms are a two-step contract: declare in GLSL (`uniform float uTime;`) **and** configure in the TD parameter UI (Vectors/Colors/CHOP Uniforms page). Missing either side = silent failure.
+- `TDOutputSwizzle()` is mandatory on final output — it handles color space conversion. Omitting it produces wrong colors.
+- TouchDesigner uses GLSL 3.30+ internally. Do NOT add `#version` directives — TD injects its own and a second one causes a compilation error.
 
-Every TouchDesigner pixel shader needs:
+## Critical Guardrails
 
-```glsl
-// 1. Uniforms - Only declare what YOU need
-uniform float uTime;
+1. **`out vec4 fragColor;` must be global.** Declaring it inside `main()` produces `'fragColor' : undeclared identifier`. WHY: GLSL requires output variables at file scope.
 
-// 2. Output - Must be global, before main()
-out vec4 fragColor;
+2. **Never declare auto-injected variables.** `sTD2DInputs[]`, `vUV`, `vP`, `vN`, `vColor` are provided by TD. Redeclaring them causes `redefinition` errors.
 
-// 3. Main function
-void main() {
-    vec4 color = texture(sTD2DInputs[0], vUV.st);
-    fragColor = TDOutputSwizzle(color);
-}
-```
+3. **Always wrap output with `TDOutputSwizzle()`.** `fragColor = color;` without swizzle produces incorrect colors or black output. WHY: TD needs to apply color space and channel mapping.
 
-## Critical Rules
+4. **No `#version` directive.** TouchDesigner injects its own `#version` header. Adding one causes `#version must occur before any other statement`. WHY: the TD compiler prepends its own version line.
 
-1. **Output declaration**: `out vec4 fragColor;` must be global (before `main()`)
-2. **Never declare**: `sTD2DInputs[]`, `vUV`, `vP`, `vN` - TouchDesigner provides these
-3. **Always use**: `TDOutputSwizzle()` for final output
-4. **Uniforms workflow**: Declare in GLSL + Configure in TD parameter pages
+5. **Uniforms require TD-side configuration.** Declaring `uniform float uTime;` in GLSL is not enough — you must also set the name, type, and value/expression on the GLSL TOP's parameter page. Unused uniforms get optimized away by the compiler.
 
-## Automatic Variables (DO NOT Declare)
+6. **Guard `normalize()` against zero-length vectors.** `normalize(vec2(0.0))` is undefined behavior and produces NaN. Always check `length() > 0.0` first. WHY: common in radial effects when UV equals center.
 
-```glsl
-sTD2DInputs[0]     // Input textures - just use them!
-vUV.st             // UV coordinates (0-1)
-vP, vN, vColor     // Position, normal, vertex color
-```
+7. **Cache texture samples.** Each `texture()` call is a GPU memory fetch. Sample once into a variable, access `.rgb`/`.a` from the cached result. WHY: redundant fetches at the same UV are pure waste.
 
-## Must Declare and Configure
+## Fetching Documentation
 
-TouchDesigner does NOT provide automatic uniforms. You must:
+### Which tool for which question
 
-1. Declare in shader: `uniform float uTime;`
-2. Configure in TD UI (Vectors page):
-   - Name: `uTime`
-   - Type: `float`
-   - Value: `absTime.seconds`
+| Question domain | Tool to use | How |
+|---|---|---|
+| TD built-in GLSL functions, sTD2DInputs, TDOutputSwizzle | `mcp__Context7__query-docs` | Resolve `"touchdesigner"`, query with function name |
+| GLSL language features, built-in functions | `mcp__exa__get_code_context_exa` | `"GLSL [function] specification"` |
+| Shader techniques, algorithms, visual effects | `mcp__exa__get_code_context_exa` | `"GLSL [effect name] shader tutorial"` |
+| General shader concepts, GPU architecture | `mcp__exa__web_search_exa` | Semantic query |
 
-## Common Patterns
+### When to trust this skill vs. fetch fresh docs
 
-See [examples/PATTERNS.md](examples/PATTERNS.md) for ready-to-use templates:
-- Basic texture sampling
-- Time-based animation
-- Multi-input blending
-- Generative patterns
-- Feedback loops
-- Displacement effects
+- **Trust the skill** for: guardrails, TD-specific patterns, uniform workflow, code organization, templates
+- **Fetch fresh docs** for: specific TD function signatures not listed here, advanced GLSL features, new TD version changes, unfamiliar shader algorithms
 
-## TouchDesigner Functions
+## Loading References
 
-```glsl
-// Output (required)
-TDOutputSwizzle(vec4 color)
+This skill uses progressive loading. Follow this sequence:
+1. Find the ONE row in the routing table below that matches your task
+2. Load that file only
+3. If it is an index, pick the ONE sub-file that matches and load it
 
-// Noise
-TDSimplexNoise(vec2 p)
-TDPerlinNoise(vec3 p)
+If you discover mid-task that you need a second reference, load it then.
 
-// Color conversion
-TDHSVToRGB(vec3 hsv)
-TDRGBToHSV(vec3 rgb)
-```
+## Reference Docs
+
+| Your task | Reference |
+|---|---|
+| TD functions, automatic variables, GLSL API | @references/FUNCTIONS.md |
+| Performance optimization, code organization, debugging | @references/BEST-PRACTICES.md |
+| Fix compilation errors or unexpected output | @references/TROUBLESHOOTING.md |
+| Quick copy-paste shader snippets | @examples/PATTERNS.md |
+| Full production-ready shader examples | @examples/COMPLETE.md |
 
 ## Response Format
 
 When providing shaders, always include:
 
-1. **GLSL Code** with comments
-2. **TouchDesigner Setup** instructions:
+1. **Complete GLSL code** — uniforms, output declaration, helper functions, `main()`
+2. **TouchDesigner setup instructions**:
    - Which parameter page (Vectors, Colors, CHOP Uniforms)
-   - Uniform names and types
-   - Values or expressions (e.g., `absTime.seconds`)
-
-## Common Errors
-
-See [reference/TROUBLESHOOTING.md](reference/TROUBLESHOOTING.md) for solutions to:
-- `'fragColor' : undeclared identifier`
-- `'sTD2DInputs' : redefinition`
-- `'uTime' : undeclared identifier`
-- Uniforms with no effect
-- Black/incorrect output
-
-## External Resources
-
-- **Context7** — Use to look up official TouchDesigner GLSL documentation (built-in functions, uniform structs, sTD2DInputs behavior, TDOutputSwizzle, etc.)
-- **MCP TouchDesigner** — For network scaffolding, use `create_feedback_loop` (simulation loops) and `create_geometry_comp` (render targets). For shader DAT editing, uniforms, and compilation checks, use `execute_python_script`. See td-guide's `reference/project-api.md` for the full tool mapping.
-
-## Related Skills
-
-- **td-glsl-vertex** — Vertex shaders, GLSL MAT, 3D materials, displacement
-- **td-pops** — Compute shaders, particles, GLSL POP, SSBOs
-
-## Additional Resources
-
-- [reference/FUNCTIONS.md](reference/FUNCTIONS.md) - Complete API reference
-- [reference/BEST-PRACTICES.md](reference/BEST-PRACTICES.md) - Optimization & organization
-- [examples/COMPLETE.md](examples/COMPLETE.md) - Full shader examples
-
-## Writing Process
-
-1. Start with basic template
-2. Add uniforms (declare + configure)
-3. Implement shader logic
-4. Test incrementally
-5. Optimize when working
+   - Uniform name, type, and value/expression (e.g., `absTime.seconds`)
+   - Input connections (which TOPs to wire to which input index)
+3. **Starter templates** are in `templates/` — use them as the base when creating new shaders:
+   - `templates/basic.glsl` — minimal texture pass-through
+   - `templates/generative.glsl` — pattern generation without inputs
+   - `templates/multi-input.glsl` — compositing multiple inputs
+   - `templates/feedback.glsl` — feedback loop with decay
