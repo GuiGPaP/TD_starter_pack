@@ -17,10 +17,28 @@ TouchDesigner is a visual programming environment. **Your pre-trained knowledge 
 
 ---
 
+## Step 0: Preflight — Check Capabilities
+
+Before starting any lint workflow, call `get_capabilities` to verify the required tools are available:
+
+```
+get_capabilities()
+```
+
+Check the response:
+- If `lint_dat == false` → **abort** and tell the user: "ruff is not available on the TD server. Install it with `uv add ruff`."
+- If `format_dat == false` → skip format-related steps (not critical for linting)
+- If `typecheck_dat == false` → skip typecheck steps (pyright not available)
+
+**Do not proceed with linting if `lint_dat` is false.** The workflow will fail mid-execution.
+
+---
+
 ## MCP Tools
 
 | Tool | Purpose | Example |
 |------|---------|---------|
+| `get_capabilities` | Preflight: check available tools | `get_capabilities()` |
 | `discover_dat_candidates` | Find DATs under a parent, classified by kind | `discover_dat_candidates({ parentPath: '/project1', purpose: 'python' })` |
 | `get_dat_text` | Read DAT source code | `get_dat_text({ nodePath: '/project1/script1' })` |
 | `lint_dat` (check) | Lint without fixing | `lint_dat({ nodePath: '/project1/script1' })` |
