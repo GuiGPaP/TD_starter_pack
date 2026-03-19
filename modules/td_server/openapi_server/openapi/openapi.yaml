@@ -320,6 +320,62 @@ paths:
           description: Format results
       summary: Format DAT code with ruff
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-lint-batch:
+    post:
+      operationId: lint_dats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - parentPath
+              properties:
+                parentPath:
+                  type: string
+                  description: "Absolute path to the parent. e.g., \"/project1\""
+                pattern:
+                  type: string
+                  default: '*'
+                  description: "Glob pattern to filter DAT names"
+                purpose:
+                  type: string
+                  default: python
+                  enum:
+                  - python
+                  - glsl
+                  - text
+                  - data
+                  - any
+                  description: "Filter by DAT kind"
+                recursive:
+                  type: boolean
+                  default: false
+                  description: Search recursively into descendants
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      parentPath:
+                        type: string
+                      summary:
+                        $ref: '#/components/schemas/BatchLintSummary'
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BatchLintDatResult'
+          description: Batch lint results
+      summary: Batch lint DATs under a parent path
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/dat-discover:
     get:
       description: Discover DAT candidates under a parent, classified by kind (python,
@@ -1099,6 +1155,60 @@ components:
         fixable:
           type: boolean
       title: LintDiagnostic
+      type: object
+    BatchLintSummary:
+      description: Aggregated summary for a batch lint operation
+      properties:
+        totalDatsScanned:
+          type: integer
+        datsWithErrors:
+          type: integer
+        datsClean:
+          type: integer
+        totalIssues:
+          type: integer
+        fixableCount:
+          type: integer
+        manualCount:
+          type: integer
+        bySeverity:
+          type: object
+          properties:
+            error:
+              type: integer
+            warning:
+              type: integer
+            info:
+              type: integer
+        worstOffenders:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              name:
+                type: string
+              diagnosticCount:
+                type: integer
+      title: BatchLintSummary
+      type: object
+    BatchLintDatResult:
+      description: Per-DAT lint result in a batch operation
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        diagnosticCount:
+          type: integer
+        diagnostics:
+          type: array
+          items:
+            $ref: '#/components/schemas/LintDiagnostic'
+        error:
+          type: string
+      title: BatchLintDatResult
       type: object
     TdPythonClassDetails:
       description: Detailed information about a Python class or module
