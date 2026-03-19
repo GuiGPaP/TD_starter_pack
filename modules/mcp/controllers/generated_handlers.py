@@ -861,6 +861,22 @@ def get_health(body: str = None, **kwargs) -> Result:
         return error_result(f"Handler for 'get_health' failed: {str(e)}")
 
 
+def get_capabilities(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: get_capabilities
+    """
+    try:
+        print(f"[DEBUG] Handler 'get_capabilities' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "get_capabilities", None)
+        if not callable(service_method):
+            return error_result("Service method 'get_capabilities' not implemented")
+
+        return service_method()
+
+    except Exception as e:
+        return error_result(f"Handler for 'get_capabilities' failed: {str(e)}")
+
+
 __all__ = [
     "delete_node",
     "get_nodes",
@@ -887,4 +903,5 @@ __all__ = [
     "get_dat_table_info",
     "get_comp_extensions",
     "get_health",
+    "get_capabilities",
 ]
