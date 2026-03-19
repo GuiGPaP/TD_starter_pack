@@ -67,12 +67,10 @@ If you discover mid-task that you need a second reference, load it then.
 
 ## Reference Docs
 
-| Your task | Reference |
+| Your task | Load |
 |---|---|
-| Looking up a specific POP function or API signature | @references/FUNCTIONS.md |
-| Optimizing performance, code organization, debugging strategies | @references/BEST-PRACTICES.md |
-| Fixing a compile error, crash, or unexpected behavior | @references/TROUBLESHOOTING.md |
-| Full production-ready shader examples | @examples/index.md |
+| API functions, best practices, troubleshooting | @references/index.md |
+| Shader examples and patterns | @examples/index.md |
 | Starting from a template | @templates/ (basic-pop.glsl, advanced-pop.glsl, copy-pop.glsl, particle-sim.glsl) |
 
 ## Input / Output Attribute Access

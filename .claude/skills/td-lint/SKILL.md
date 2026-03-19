@@ -56,12 +56,10 @@ If you discover mid-task that you need a second reference, load it then.
 
 ## Reference Docs
 
-| Your task | Reference |
+| Your task | Load |
 |---|---|
-| Understanding MCP tool response JSON shapes (lint_dat, discover, errors) | @references/response-schemas.md |
-| TD-specific ruff rules, suppressions, false positives | @references/ruff-rules.md |
-| TD Python idioms (imports, callbacks, op() usage, COMP extensions) | @references/td-python-patterns.md |
-| Full correction loop walkthrough with tool calls | @examples/index.md |
+| Response schemas, ruff rules, TD Python patterns | @references/index.md |
+| Full correction loop walkthrough | @examples/index.md |
 
 ## MCP Tools
 

@@ -54,14 +54,10 @@ This skill uses progressive loading. Follow this sequence:
 
 ## Reference Docs
 
-| Your task | Reference |
+| Your task | Load |
 |---|---|
-| TD vertex functions, attributes, uniforms, matrices | @references/VERTEX-API.md |
-| Passing data vertex to pixel (varyings, interpolation, TBN) | @references/VARYINGS.md |
-| Phong, PBR, or unlit lighting in pixel shaders | @references/LIGHTING.md |
-| Debugging errors (black geometry, broken normals, link failures) | @references/TROUBLESHOOTING.md |
-| Full working vertex + pixel shader pairs | @examples/COMPLETE.md |
-| Quick-reference vertex patterns (displacement, wave, instancing) | @examples/PATTERNS.md |
+| API reference, varyings, lighting, troubleshooting | @references/index.md |
+| Shader examples and patterns | @examples/index.md |
 
 ## Response Format
 

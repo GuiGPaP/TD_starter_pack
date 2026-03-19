@@ -56,13 +56,10 @@ If you discover mid-task that you need a second reference, load it then.
 
 ## Reference Docs
 
-| Your task | Reference |
+| Your task | Load |
 |---|---|
-| TD functions, automatic variables, GLSL API | @references/FUNCTIONS.md |
-| Performance optimization, code organization, debugging | @references/BEST-PRACTICES.md |
-| Fix compilation errors or unexpected output | @references/TROUBLESHOOTING.md |
-| Quick copy-paste shader snippets | @examples/PATTERNS.md |
-| Full production-ready shader examples | @examples/COMPLETE.md |
+| API reference, best practices, troubleshooting | @references/index.md |
+| Shader patterns and full examples | @examples/index.md |
 
 ## Response Format
 
