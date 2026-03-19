@@ -332,6 +332,120 @@ class TestCreateFeedbackLoop:
         assert len(r["data"]) == 4
 
 
+class TestFormatDat:
+    def test_node_not_found(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        mock_td.op.return_value = None
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.format_dat("/bad")
+        assert r["success"] is False
+
+    def test_no_text_attribute(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        node = MagicMock(spec=[])  # no .text attribute
+        node.valid = True
+        mock_td.op.return_value = node
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.format_dat("/project1/table1")
+        assert r["success"] is False
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_no_changes(self, _mock_which, mock_run, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x = 1\n"
+        mock_td.op.return_value = dat
+
+        def side_effect(*args, **kwargs):
+            # ruff format writes in-place; simulate no change
+            return MagicMock(returncode=0, stdout="", stderr="")
+
+        mock_run.side_effect = side_effect
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.format_dat("/project1/script1")
+        assert r["success"] is True
+        assert r["data"]["changed"] is False
+        assert r["data"]["applied"] is False
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_dry_run_returns_diff(self, _mock_which, mock_run, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x=1\n"
+        mock_td.op.return_value = dat
+
+        def side_effect(*args, **kwargs):
+            # ruff format writes in-place; simulate formatting change
+            tmp = args[0][-1]
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write("x = 1\n")
+            return MagicMock(returncode=0, stdout="", stderr="")
+
+        mock_run.side_effect = side_effect
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.format_dat("/project1/script1", dry_run=True)
+        assert r["success"] is True
+        assert r["data"]["changed"] is True
+        assert r["data"]["applied"] is False
+        assert "diff" in r["data"]
+        assert len(r["data"]["diff"]) > 0
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_apply_writes_back(self, _mock_which, mock_run, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x=1\n"
+        mock_td.op.return_value = dat
+
+        def side_effect(*args, **kwargs):
+            tmp = args[0][-1]
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write("x = 1\n")
+            return MagicMock(returncode=0, stdout="", stderr="")
+
+        mock_run.side_effect = side_effect
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.format_dat("/project1/script1", dry_run=False)
+        assert r["success"] is True
+        assert r["data"]["changed"] is True
+        assert r["data"]["applied"] is True
+        assert r["data"]["formattedText"] == "x = 1\n"
+        assert dat.text == "x = 1\n"
+
+    @patch(
+        "mcp.services.api_service.TouchDesignerApiService._find_ruff",
+        return_value=None,
+    )
+    def test_ruff_not_found(self, _mock_find, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x=1\n"
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.format_dat("/project1/script1")
+        assert r["success"] is False
+        assert "ruff not found" in r["error"]
+
+
 class TestConfigureInstancing:
     def test_geo_not_found(self, api_service_module):
         mock_td = api_service_module._mock_td
