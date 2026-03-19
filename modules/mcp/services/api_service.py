@@ -1383,7 +1383,7 @@ class TouchDesignerApiService(IApiService):
         if not discover_result.get("success"):
             return discover_result
 
-        candidates = discover_result["data"].get("candidates", [])
+        candidates = discover_result.get("data", {}).get("candidates", [])
 
         # Apply name pattern filter
         if pattern and pattern != "*":
@@ -1410,7 +1410,7 @@ class TouchDesignerApiService(IApiService):
                 )
                 continue
 
-            lint_data = lint_result["data"]
+            lint_data = lint_result.get("data", {})
             diag_count = lint_data.get("diagnosticCount", 0)
             diagnostics = lint_data.get("diagnostics", [])
 
