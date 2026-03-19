@@ -475,6 +475,46 @@ paths:
           description: Batch lint results
       summary: Batch lint DATs under a parent path
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/dat-typecheck:
+    post:
+      operationId: typecheck_dat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - nodePath
+              properties:
+                nodePath:
+                  type: string
+                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      name:
+                        type: string
+                      diagnosticCount:
+                        type: integer
+                      diagnostics:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TypecheckDiagnostic'
+          description: Typecheck results
+      summary: Typecheck DAT code with pyright
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/dat-discover:
     get:
       description: Discover DAT candidates under a parent, classified by kind (python,
@@ -1254,6 +1294,25 @@ components:
         fixable:
           type: boolean
       title: LintDiagnostic
+      type: object
+    TypecheckDiagnostic:
+      description: A single pyright typecheck diagnostic
+      properties:
+        severity:
+          type: string
+          enum:
+          - error
+          - warning
+          - information
+        message:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        rule:
+          type: string
+      title: TypecheckDiagnostic
       type: object
     JsonValidationDiagnostic:
       description: A single JSON/YAML validation diagnostic

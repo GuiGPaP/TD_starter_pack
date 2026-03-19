@@ -113,12 +113,16 @@ class TestGetCapabilities:
         assert r["data"]["tools"]["ruff"]["version"] is None
 
     @patch(
+        "mcp.services.api_service.TouchDesignerApiService._find_pyright",
+        return_value=None,
+    )
+    @patch(
         "mcp.services.api_service.TouchDesignerApiService._find_ruff",
         return_value=None,
     )
     @patch("mcp.services.api_service.shutil.which", return_value=None)
     def test_capabilities_format_and_typecheck_false(
-        self, mock_which, mock_find_ruff, api_service_module
+        self, mock_which, mock_find_ruff, mock_find_pyright, api_service_module
     ):
         svc = api_service_module.TouchDesignerApiService()
         r = svc.get_capabilities()
