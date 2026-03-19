@@ -31,6 +31,10 @@ description: "Python DAT linting, code quality, and ruff-based correction loops 
 
 8. **Use the right tool for the language.** Do not use `lint_dat` (ruff) on GLSL or JSON/YAML DATs — use `validate_glsl_dat` or `validate_json_dat` instead. WHY: Ruff is a Python linter; it will parse non-Python content as broken Python and suggest destructive "fixes".
 
+9. **Ruff version mismatch.** TD may have an older system ruff (e.g., 0.7.0) while the project's `.venv` has a newer version (>=0.8). The MCP server's `_find_ruff()` prioritizes the `.venv` binary over system PATH. If lint fails with "Unknown rule selector", check `get_capabilities()` for the ruff version — it may not support all `pyproject.toml` rules. WHY: Rules like `TC` (type-checking imports) require ruff >=0.8.
+
+10. **Pyright may silently fail.** `typecheck_dat` returns 0 diagnostics when pyright can't run (e.g., `pyright-python` wrapper fails on Windows with "Failed to canonicalize script path"). Check `get_capabilities()` — if `tools.pyright.version` is `null`, typecheck results are unreliable. WHY: The endpoint returns `success: true` with empty diagnostics rather than an error.
+
 ## Step 0: Preflight — Check Capabilities
 
 Before starting any lint workflow, call `get_capabilities` to verify the required tools are available:

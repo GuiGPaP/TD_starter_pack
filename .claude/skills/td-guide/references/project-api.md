@@ -29,6 +29,11 @@ This project exposes TouchDesigner functionality through an MCP web server. The 
 | Read DAT text | `get_dat_text` | Returns the .text content of a DAT operator |
 | Write DAT text | `set_dat_text` | Writes .text content to a DAT operator |
 | Lint DAT code | `lint_dat` | Runs ruff on DAT .text, optional fix/dry-run with diff |
+| Batch lint DATs | `lint_dats` | Lint all Python DATs under a parent with aggregated report |
+| Format DAT code | `format_dat` | Auto-format Python with ruff format, optional dry-run |
+| Typecheck DAT code | `typecheck_dat` | Run pyright with td.pyi stubs on DAT .text |
+| Validate JSON/YAML DAT | `validate_json_dat` | Validate JSON or YAML content with structured diagnostics |
+| Validate GLSL DAT | `validate_glsl_dat` | Validate GLSL shader syntax with structured diagnostics |
 | Discover DAT candidates | `discover_dat_candidates` | Classifies DATs under a parent by kind (python/glsl/text/data) |
 
 ## Usage Notes

@@ -39,6 +39,8 @@ For shader work, use the specialized skill — do not attempt GLSL in td-guide:
 
 7. **Use Null as intermediary.** Before any reference connection, insert a Null operator. This makes networks modular and debuggable.
 
+8. **Check parameter bindings before modifying.** Parameters can be bound by reference to a parent COMP or another operator (`par.mode == ParMode.BIND`). Modifying a bound parameter directly can break the binding or propagate the change unexpectedly. Before any `par.xxx = value`, check `par.mode` and `par.bindExpr` — if bound, modify the source instead.
+
 ## Fetching Documentation
 
 ### Which tool for which question
