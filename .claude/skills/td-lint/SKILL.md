@@ -1,118 +1,86 @@
 ---
 name: td-lint
-description: "Python DAT linting, code quality, and ruff-based correction loops. Use for linting DAT operators, auto-fixing code, reviewing diffs, and iterative correction workflows."
+description: "Python DAT linting, code quality, and ruff-based correction loops in TouchDesigner. Use whenever linting DAT operators, auto-fixing Python code, reviewing ruff diagnostics, running correction loops, cleaning up Python, fixing PEP8 warnings, formatting TouchDesigner Python, or improving code style in DATs. Also use when the user mentions ruff, DAT code quality, or Python linting in a TD context — even without saying 'lint' explicitly."
 ---
 
 # TouchDesigner DAT Linting
 
-Use this skill when linting, fixing, or improving Python code quality in TouchDesigner DAT operators via the MCP API.
+## Mental Model
 
----
+- DAT operators are text containers inside a live TouchDesigner session — they hold Python, GLSL, data, or plain text
+- Ruff runs **outside** TD (via MCP subprocess) against a temp copy of the DAT's `.text` content
+- The project's `pyproject.toml` ruff config applies automatically — rules, ignores, and per-file overrides are inherited
+- The **Correction Loop** is the safe pattern for fixing code in a live TD session: lint → dry-run → confirm → apply → verify runtime
+- TD Python is not standard Python — it has injected globals (`op`, `me`, `tdu`, `parent()`) that ruff flags as undefined unless suppressed
 
-## CRITICAL: Your Prior Knowledge is Unreliable
+## Critical Guardrails
 
-TouchDesigner is a visual programming environment. **Your pre-trained knowledge about TD is very likely incorrect.**
+1. **Python DATs only.** Ruff parses Python. Running it on GLSL, data, or text DATs produces garbage diagnostics. Always verify `kindGuess == "python"` from `discover_dat_candidates` before linting. WHY: GLSL syntax overlaps with Python keywords enough that ruff won't crash — it will silently produce wrong fixes.
 
-**Always read this document and use the MCP tools described below.** Do not guess parameter names, operator types, or API patterns from memory.
+2. **Never skip the diagnostic step.** Always run `lint_dat({ fix: false })` before any fix attempt. WHY: You need the full diagnostic picture to decide which fixes are safe. Jumping to `fix: true` on unfamiliar code risks applying partial fixes that break runtime behavior.
 
----
+3. **Dry-run before applying on unknown code.** Use `lint_dat({ fix: true, dryRun: true })` to preview the unified diff before committing changes. WHY: Ruff auto-fixes can remove imports that TD injects at runtime, or collapse expressions the user intentionally expanded for readability.
+
+4. **Save original text before fixing.** Call `get_dat_text` and store the result before any `lint_dat({ fix: true })` call. WHY: If the fix introduces TD runtime errors, you need the original to rollback via `set_dat_text`. There is no undo in the MCP API.
+
+5. **Verify runtime after every fix.** Call `get_node_errors` after applying fixes. If errors appear, rollback immediately with `set_dat_text` and report the failure. WHY: Ruff validates syntax, not TD runtime semantics. A syntactically valid fix can break a live operator.
+
+6. **Respect TD's false-positive globals.** `op`, `me`, `parent()`, `ipar`, `tdu`, `ext`, `mod`, `absTime` are injected by TD at runtime. Ruff flags these as F821 (undefined name) or F401 (unused import for `from TDStoreTools import *`). Suppress with `# noqa` or explain — never "fix" by removing them.
+
+7. **One DAT at a time.** Process each DAT through the full correction loop individually. WHY: Batching fixes across DATs makes rollback ambiguous and error attribution impossible.
+
+## Fetching Documentation
+
+### Which tool for which question
+
+| Question domain | Tool to use | How |
+|---|---|---|
+| Ruff rule details (what E711 means, fix behavior) | `mcp__Context7__query-docs` | Resolve `ruff` via `mcp__Context7__resolve-library-id`, then query the rule code |
+| Ruff config options (select, ignore, per-file-ignores) | `mcp__Context7__query-docs` | Query `"ruff configuration select ignore"` |
+| TD Python API (op(), me, tdu, callbacks) | `mcp__exa__get_code_context_exa` | `"TouchDesigner Python op() me tdu API"` |
+| TD-specific linting patterns, community workarounds | `mcp__exa__web_search_exa` | `"TouchDesigner Python linting ruff"` |
+
+### When to trust this skill vs. fetch fresh docs
+
+- **Trust the skill** for: correction loop workflow, guardrails, response schema shapes, TD false-positive patterns
+- **Fetch fresh docs** for: specific ruff rule behavior, new ruff features, unfamiliar TD Python APIs
+
+## Loading References
+
+This skill uses progressive loading. Follow this sequence:
+1. Find the ONE row in the routing table below that matches your task
+2. Load that file only
+3. If it is an index, pick the ONE sub-file that matches and load it
+
+If you discover mid-task that you need a second reference, load it then.
+
+## Reference Docs
+
+| Your task | Reference |
+|---|---|
+| Understanding MCP tool response JSON shapes (lint_dat, discover, errors) | @references/response-schemas.md |
+| TD-specific ruff rules, suppressions, false positives | @references/ruff-rules.md |
+| TD Python idioms (imports, callbacks, op() usage, COMP extensions) | @references/td-python-patterns.md |
+| Full correction loop walkthrough with tool calls | @examples/index.md |
 
 ## MCP Tools
 
-| Tool | Purpose | Example |
-|------|---------|---------|
+| Tool | Purpose | Call |
+|---|---|---|
 | `discover_dat_candidates` | Find DATs under a parent, classified by kind | `discover_dat_candidates({ parentPath: '/project1', purpose: 'python' })` |
-| `get_dat_text` | Read DAT source code | `get_dat_text({ nodePath: '/project1/script1' })` |
-| `lint_dat` (check) | Lint without fixing | `lint_dat({ nodePath: '/project1/script1' })` |
+| `get_dat_text` | Read DAT source code (and save for rollback) | `get_dat_text({ nodePath: '/project1/script1' })` |
+| `lint_dat` (check) | Lint without fixing — get diagnostics | `lint_dat({ nodePath: '/project1/script1' })` |
 | `lint_dat` (dry-run) | Preview fix as unified diff | `lint_dat({ nodePath: '/project1/script1', fix: true, dryRun: true })` |
-| `lint_dat` (fix) | Apply auto-fixes | `lint_dat({ nodePath: '/project1/script1', fix: true })` |
-| `set_dat_text` | Write text back to a DAT (rollback) | `set_dat_text({ nodePath: '/project1/script1', text: '...' })` |
+| `lint_dat` (fix) | Apply auto-fixes to DAT text | `lint_dat({ nodePath: '/project1/script1', fix: true })` |
+| `set_dat_text` | Write text back to DAT (for rollback) | `set_dat_text({ nodePath: '/project1/script1', text: '...' })` |
 | `get_node_errors` | Check TD runtime errors after fix | `get_node_errors({ nodePath: '/project1/script1' })` |
 
----
+## Response Format
 
-## Workflow: 6-Step Lint & Fix
+Structure your output as:
 
-### 1. Discover
-Find Python DATs in the target scope:
-```
-discover_dat_candidates({ parentPath: '/project1', purpose: 'python', recursive: true })
-```
-
-### 2. Read
-Inspect the source code before linting:
-```
-get_dat_text({ nodePath: '/project1/script1' })
-```
-
-### 3. Lint (check only)
-Run read-only lint to see all diagnostics:
-```
-lint_dat({ nodePath: '/project1/script1' })
-```
-
-### 4. Report
-Present diagnostics to the user. Group by severity and fixability.
-
-### 5. Fix (safe)
-Use the correction loop below. Never jump straight to `fix: true` without checking first.
-
-### 6. Verify
-After applying fixes, confirm no TD runtime errors:
-```
-get_node_errors({ nodePath: '/project1/script1' })
-```
-
----
-
-## Correction Loop
-
-The full correction loop ensures safe, reversible fixes:
-
-1. **Dry-run first** — preview what will change:
-   ```
-   lint_dat({ nodePath: '...', fix: true, dryRun: true })
-   ```
-   Review `diff` and `remainingDiagnostics` in the response.
-
-2. **Get user confirmation** — show the diff and ask before applying.
-
-3. **Apply fix** — once confirmed:
-   ```
-   lint_dat({ nodePath: '...', fix: true })
-   ```
-   Check `applied: true` and `remainingDiagnosticCount` in the response.
-
-4. **Check remaining** — if `remainingDiagnosticCount > 0`, report unfixable issues to the user.
-
-5. **Verify runtime** — check for TD errors:
-   ```
-   get_node_errors({ nodePath: '...' })
-   ```
-
-6. **Loop or escalate** — if errors appeared after fix, rollback and inform the user.
-
----
-
-## Safety Rules
-
-These are **mandatory rules**, not suggestions.
-
-### 1. Python Only
-Before linting any DAT, verify it contains Python code:
-```
-discover_dat_candidates({ parentPath: '/project1', purpose: 'python' })
-```
-Check that `kindGuess == "python"`. **Never lint a GLSL, data, or text DAT.**
-
-### 2. Rollback Obligatory
-If `get_node_errors` returns errors after a fix:
-- You MUST have saved the original text via `get_dat_text` BEFORE the fix
-- Restore it immediately via `set_dat_text`
-- Report the failure to the user
-
-### 3. Lint Read-Only First
-Always run `lint_dat({ fix: false })` before `lint_dat({ fix: true })`. Never skip the diagnostic step.
-
-### 4. Dry-Run Before Fix on Unknown Code
-When fixing code you haven't inspected, always use `dryRun: true` first to preview the changes.
+1. **Discovery summary** — how many Python DATs found, their paths and line counts
+2. **Diagnostic report** — grouped by DAT, showing rule code, message, line, and fixability
+3. **Fix plan** — which diagnostics are auto-fixable, which need manual attention, which are TD false positives to suppress
+4. **Correction results** — diff preview (dry-run), applied status, remaining diagnostics, runtime verification
+5. **Rollback notice** (if needed) — what failed and that the original was restored

@@ -9,11 +9,13 @@ Complete reference for vertex-stage attributes, functions, and uniforms availabl
 These are **injected by TouchDesigner at compile time**. Do NOT re-declare them.
 
 ```glsl
-attribute vec3 P;      // Vertex position in object/local space
-attribute vec3 N;      // Vertex normal in object space (unit length)
-attribute vec4 uv[8];  // Texture coordinate layers (uv[0] = layer 0, etc.)
-attribute vec4 Cd;     // Vertex color (RGBA, 0–1 range)
-attribute vec4 T;      // Tangent vector (for normal mapping; xyz=tangent, w=handedness)
+// Auto-injected pseudo-code — TD handles declaration internally.
+// Use these names directly in your shader; never re-declare them.
+vec3 P;      // Vertex position in object/local space
+vec3 N;      // Vertex normal in object space (unit length)
+vec4 uv[8];  // Texture coordinate layers (uv[0] = layer 0, etc.)
+vec4 Cd;     // Vertex color (RGBA, 0–1 range)
+vec4 T;      // Tangent vector (for normal mapping; xyz=tangent, w=handedness)
 ```
 
 ### Accessing UV layers
@@ -140,6 +142,54 @@ vec3 worldNormal = normalize(uTDMats[TDCameraIndex()].worldForNormals * N);
 
 // ❌ Wrong — breaks with non-uniform scale
 vec3 worldNormal = normalize(mat3(uTDMats[TDCameraIndex()].world) * N);
+```
+
+---
+
+### `TDDeformNorm(norm)` — Normal Deform
+
+```glsl
+vec3 TDDeformNorm(vec3 normal)
+```
+
+Transforms a normal through the full deformation pipeline (instancing rotation, skinning). Without this, normals are wrong for rotated instances — lighting breaks because the normal still points in object space while the geometry has been rotated by `TDDeform`.
+
+```glsl
+// Correct — normal follows instance rotation
+vec3 worldNorm = normalize(TDDeformNorm(N));
+
+// Incorrect — normal ignores instance transforms
+vec3 worldNorm = normalize(uTDMats[TDCameraIndex()].worldForNormals * N);
+```
+
+Use `TDDeformNorm` whenever instancing or skinning is active. For static geometry without instancing, `worldForNormals * N` is equivalent.
+
+---
+
+### `TDInstanceTexCoord()` — Instance Texture Coordinate
+
+```glsl
+vec3 TDInstanceTexCoord(vec3 t)
+```
+
+Returns the per-instance texture coordinate transform applied to the input coordinate. Simpler than manually sampling instance texture data from a CHOP texture — TD handles the lookup internally based on the Render TOP's instancing settings.
+
+```glsl
+vec2 tc = TDInstanceTexCoord(uv[0].stp).st;
+```
+
+---
+
+### `TDInstanceColor()` — Instance Color
+
+```glsl
+vec4 TDInstanceColor(vec4 color)
+```
+
+Returns the input color multiplied by the per-instance color (set via Render TOP instancing). Simpler than manual texture lookup for per-instance coloring.
+
+```glsl
+vec4 col = TDInstanceColor(Cd);
 ```
 
 ---
