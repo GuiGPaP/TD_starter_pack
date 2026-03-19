@@ -87,6 +87,45 @@ class TestGetTdInfo:
         assert r["data"]["osName"] == "Windows"
 
 
+class TestGetCapabilities:
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_capabilities_with_ruff(self, mock_which, mock_run, api_service_module):
+        mock_run.return_value = MagicMock(returncode=0, stdout="ruff 0.8.6", stderr="")
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.get_capabilities()
+        assert r["success"] is True
+        assert r["data"]["lint_dat"] is True
+        assert r["data"]["tools"]["ruff"]["installed"] is True
+        assert r["data"]["tools"]["ruff"]["version"] == "ruff 0.8.6"
+
+    @patch(
+        "mcp.services.api_service.TouchDesignerApiService._find_ruff",
+        return_value=None,
+    )
+    @patch("mcp.services.api_service.shutil.which", return_value=None)
+    def test_capabilities_without_ruff(self, mock_which, mock_find_ruff, api_service_module):
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.get_capabilities()
+        assert r["success"] is True
+        assert r["data"]["lint_dat"] is False
+        assert r["data"]["tools"]["ruff"]["installed"] is False
+        assert r["data"]["tools"]["ruff"]["version"] is None
+
+    @patch(
+        "mcp.services.api_service.TouchDesignerApiService._find_ruff",
+        return_value=None,
+    )
+    @patch("mcp.services.api_service.shutil.which", return_value=None)
+    def test_capabilities_format_and_typecheck_false(
+        self, mock_which, mock_find_ruff, api_service_module
+    ):
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.get_capabilities()
+        assert r["data"]["format_dat"] is False
+        assert r["data"]["typecheck_dat"] is False
+
+
 class TestGetModuleHelp:
     @patch("mcp.services.api_service.log_message")
     def test_known_module(self, mock_log, api_service_module):

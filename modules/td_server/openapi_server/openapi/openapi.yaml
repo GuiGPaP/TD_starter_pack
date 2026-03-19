@@ -791,6 +791,19 @@ paths:
           description: Health check response
       summary: Get server health status
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/capabilities:
+    get:
+      description: Returns available features and tool versions
+      operationId: get_capabilities
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_capabilities_200_response'
+          description: Capabilities report
+      summary: Get server capabilities
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/td/helpers/geometry-comp:
     post:
       description: |
@@ -2040,4 +2053,65 @@ components:
       - error
       - success
       title: get_health_200_response
+      type: object
+    get_capabilities_200_response_data_tool:
+      nullable: true
+      properties:
+        installed:
+          description: Whether the tool is installed
+          title: installed
+          type: boolean
+        version:
+          description: Tool version string
+          nullable: true
+          title: version
+          type: string
+      title: get_capabilities_200_response_data_tool
+      type: object
+    get_capabilities_200_response_data_tools:
+      nullable: true
+      properties:
+        ruff:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
+        pyright:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
+      title: get_capabilities_200_response_data_tools
+      type: object
+    get_capabilities_200_response_data:
+      nullable: true
+      properties:
+        lint_dat:
+          description: Whether lint_dat is available
+          title: lint_dat
+          type: boolean
+        format_dat:
+          description: Whether format_dat is available
+          title: format_dat
+          type: boolean
+        typecheck_dat:
+          description: Whether typecheck_dat is available
+          title: typecheck_dat
+          type: boolean
+        tools:
+          $ref: '#/components/schemas/get_capabilities_200_response_data_tools'
+      title: get_capabilities_200_response_data
+      type: object
+    get_capabilities_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/get_capabilities_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: get_capabilities_200_response
       type: object
