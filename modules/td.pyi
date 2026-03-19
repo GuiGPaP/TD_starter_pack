@@ -8,20 +8,56 @@ class _App:
     osName: str
     osVersion: str
 
-class _Par:
+class Par:
     name: str
     val: Any
+    label: str
+    style: str
+    default: Any
+    min: float
+    max: float
+    clampMin: bool
+    clampMax: bool
+    menuNames: list[str]
+    menuLabels: list[str]
+    isOP: bool
+    readOnly: bool
+    page: Page
     def eval(self) -> Any: ...
 
-class _ParCollection:
-    def __getattr__(self, name: str) -> _Par: ...
+class Page:
+    name: str
+    pars: list[Par]
 
-class _Channel:
+class ParGroup:
+    name: str
+    def __getattr__(self, name: str) -> Par: ...
+
+class _ParCollection:
+    def __getattr__(self, name: str) -> Par: ...
+
+class Cell:
+    val: str
+    row: int
+    col: int
+
+class Channel:
     name: str
     vals: list[float]
 
-class _Cell:
-    val: str
+class Matrix:
+    def __init__(self, *args: Any) -> None: ...
+    def __mul__(self, other: Matrix) -> Matrix: ...
+
+class Position:
+    x: float
+    y: float
+    z: float
+
+class Vector:
+    x: float
+    y: float
+    z: float
 
 class OP:
     valid: bool
@@ -31,27 +67,10 @@ class OP:
     OPType: str
     text: str
     par: _ParCollection
+    type: str
+    subType: str
     family: str
-
-    # Navigation
-    def parent(self) -> OP | None: ...
-
-    # CHOP attributes (polymorphic — td.op() returns any operator family)
-    numChans: int
-    numSamples: int
-    sampleRate: float
-    def chan(self, index: int | str) -> _Channel | None: ...
-
-    # DAT attributes
-    numRows: int
-    numCols: int
-    def __getitem__(self, key: tuple[int, int]) -> _Cell | None: ...
-
-    # COMP attributes
-    extensions: list[object]
-    children: list[OP]
-
-    # Layout (used by td_helpers)
+    ext: Any
     nodeX: int
     nodeY: int
     nodeWidth: int
@@ -60,8 +79,22 @@ class OP:
     display: bool
     render: bool
     docked: list[OP]
+    inputConnectors: list[Any]
+    outputConnectors: list[Any]
+    inputs: list[OP]
+    outputs: list[OP]
+    # CHOP attributes (available on all OPs for duck-typing compatibility)
+    numChans: int
+    numSamples: int
+    sampleRate: float
+    # DAT attributes
+    numRows: int
+    numCols: int
+    # COMP attributes
+    extensions: list[Any]
 
-    def pars(self, pattern: str) -> list[_Par]: ...
+    def parent(self, *args: Any) -> OP | None: ...
+    def pars(self, pattern: str = ...) -> list[Par]: ...
     def create(self, node_type: str, node_name: str | None = None) -> OP | None: ...
     def destroy(self) -> None: ...
     def findChildren(
@@ -70,6 +103,25 @@ class OP:
         depth: int | None = None,
     ) -> list[OP]: ...
     def errors(self, recurse: bool = False) -> str: ...
+    def chan(self, index: int | str) -> Channel | None: ...
+    def __getitem__(self, key: Any) -> Any: ...
+
+class COMP(OP):
+    extensions: list[Any]
+
+class SOP(OP): ...
+class TOP(OP): ...
+
+class CHOP(OP):
+    numChans: int
+    numSamples: int
+    sampleRate: float
+    def chan(self, index: int | str) -> Channel | None: ...
+
+class DAT(OP):
+    text: str
+    numRows: int
+    numCols: int
 
 class _OpFunc:
     me: OP | None

@@ -324,21 +324,29 @@ class TestLintDatWorkflow:
         svc_mod = self._get_svc_module()
 
         # First call: ruff check --fix (returns initial diagnostics, writes fixed file)
-        fix_diag = json.dumps([{
-            "code": "F401",
-            "message": "`os` imported but unused",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
         # Second call: re-lint (returns remaining issue)
-        remaining_diag = json.dumps([{
-            "code": "E711",
-            "message": "comparison to None",
-            "location": {"row": 2, "column": 1},
-            "end_location": {"row": 2, "column": 5},
-            "fix": None,
-        }])
+        remaining_diag = json.dumps(
+            [
+                {
+                    "code": "E711",
+                    "message": "comparison to None",
+                    "location": {"row": 2, "column": 1},
+                    "end_location": {"row": 2, "column": 5},
+                    "fix": None,
+                }
+            ]
+        )
 
         call_count = {"n": 0}
 
@@ -370,13 +378,17 @@ class TestLintDatWorkflow:
         monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
         svc_mod = self._get_svc_module()
 
-        fix_diag = json.dumps([{
-            "code": "F401",
-            "message": "`os` imported but unused",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
 
         call_count = {"n": 0}
 
@@ -407,13 +419,17 @@ class TestLintDatWorkflow:
         monkeypatch.setattr(svc, "_find_ruff", lambda: "/usr/bin/ruff")
         svc_mod = self._get_svc_module()
 
-        fix_diag = json.dumps([{
-            "code": "F401",
-            "message": "`os` imported but unused",
-            "location": {"row": 1, "column": 1},
-            "end_location": {"row": 1, "column": 10},
-            "fix": {"edits": []},
-        }])
+        fix_diag = json.dumps(
+            [
+                {
+                    "code": "F401",
+                    "message": "`os` imported but unused",
+                    "location": {"row": 1, "column": 1},
+                    "end_location": {"row": 1, "column": 10},
+                    "fix": {"edits": []},
+                }
+            ]
+        )
 
         call_count = {"n": 0}
 
@@ -455,6 +471,120 @@ class TestLintDatWorkflow:
         assert result["success"] is True
         assert "diff" not in result["data"]
         assert "applied" not in result["data"]
+
+
+# ── 6b. Typecheck DAT Workflow ─────────────────────────────────────────
+
+
+class TestTypecheckDatWorkflow:
+    def _get_svc_module(self):
+        return sys.modules["mcp.services.api_service"]
+
+    def test_typecheck_clean_code(self, starter, monkeypatch):
+        """No diagnostics on well-typed code."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x: int = 1\n")
+
+        monkeypatch.setattr(svc, "_find_pyright", lambda: "/usr/bin/pyright")
+        svc_mod = self._get_svc_module()
+
+        pyright_output = json.dumps({"generalDiagnostics": []})
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=0, stdout=pyright_output, stderr=""),
+        )
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 0
+        assert result["data"]["diagnostics"] == []
+
+    def test_typecheck_with_errors(self, starter, monkeypatch):
+        """Pyright finds type errors and returns diagnostics."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", 'x: int = "hello"\n')
+
+        monkeypatch.setattr(svc, "_find_pyright", lambda: "/usr/bin/pyright")
+        svc_mod = self._get_svc_module()
+
+        pyright_output = json.dumps(
+            {
+                "generalDiagnostics": [
+                    {
+                        "severity": "error",
+                        "message": 'Type "str" is not assignable to type "int"',
+                        "range": {
+                            "start": {"line": 0, "character": 9},
+                            "end": {"line": 0, "character": 16},
+                        },
+                        "rule": "reportAssignmentType",
+                    }
+                ]
+            }
+        )
+        monkeypatch.setattr(
+            svc_mod.subprocess,
+            "run",
+            lambda *a, **kw: MagicMock(returncode=1, stdout=pyright_output, stderr=""),
+        )
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 1
+        d = result["data"]["diagnostics"][0]
+        assert d["severity"] == "error"
+        assert d["rule"] == "reportAssignmentType"
+        assert d["line"] == 0
+        assert d["column"] == 9
+
+    def test_typecheck_not_found(self, starter):
+        """Node not found returns error."""
+        svc, _graph, _base = starter
+        result = svc.typecheck_dat("/nonexistent")
+        assert result["success"] is False
+
+    def test_typecheck_no_text_attr(self, starter):
+        """Node without .text attribute returns error."""
+        svc, _graph, _base = starter
+        result = svc.typecheck_dat("/project1/base1")
+        assert result["success"] is False
+
+    def test_pyright_not_found(self, starter, monkeypatch):
+        """Missing pyright binary returns helpful error."""
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        svc_mod = self._get_svc_module()
+        monkeypatch.setattr(svc_mod.shutil, "which", lambda _name: None)
+        monkeypatch.setattr(svc_mod.Path, "is_file", lambda _self: False)
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is False
+        assert "pyright not found" in result["error"]
+
+    def test_pyright_timeout(self, starter, monkeypatch):
+        """Pyright timeout returns error."""
+        import subprocess as real_subprocess
+
+        svc, _graph, _base = starter
+        svc.create_node("/project1/base1", "textDAT", "script1")
+        svc.set_dat_text("/project1/base1/script1", "x = 1\n")
+
+        monkeypatch.setattr(svc, "_find_pyright", lambda: "/usr/bin/pyright")
+        svc_mod = self._get_svc_module()
+
+        def timeout_run(*a, **kw):
+            raise real_subprocess.TimeoutExpired(cmd="pyright", timeout=60)
+
+        monkeypatch.setattr(svc_mod.subprocess, "run", timeout_run)
+
+        result = svc.typecheck_dat("/project1/base1/script1")
+        assert result["success"] is False
+        assert "timed out" in result["error"]
 
 
 # ── 7. DAT Classifier Unit Tests ──────────────────────────────────────
@@ -729,10 +859,16 @@ class TestGetNodeParameterSchema:
         node = FakeOp("test1", parent=_base, graph=graph)
         _base.children.append(node)
         node.par.brightness = FakePar(
-            "brightness", 0.5,
-            label="Brightness", style="Float",
-            default=1.0, min_val=0.0, max_val=1.0,
-            clamp_min=True, clamp_max=True, page="Transform",
+            "brightness",
+            0.5,
+            label="Brightness",
+            style="Float",
+            default=1.0,
+            min_val=0.0,
+            max_val=1.0,
+            clamp_min=True,
+            clamp_max=True,
+            page="Transform",
         )
         result = svc.get_node_parameter_schema("/project1/base1/test1")
         assert result["success"] is True
@@ -773,7 +909,8 @@ class TestGetNodeParameterSchema:
         node = FakeOp("test3", parent=_base, graph=graph)
         _base.children.append(node)
         node.par.mode = FakePar(
-            "mode", "add",
+            "mode",
+            "add",
             style="Menu",
             menu_names=("add", "multiply", "screen"),
             menu_labels=("Add", "Multiply", "Screen"),
@@ -882,7 +1019,8 @@ class TestGetChopChannels:
         chop = FakeChop(
             "noise1",
             channels=[FakeChannel("tx", [1.0, 2.0]), FakeChannel("ty", [3.0])],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(chop)
 
@@ -902,7 +1040,8 @@ class TestGetChopChannels:
         chop = FakeChop(
             "noise1",
             channels=[FakeChannel("tx", [1.0, 3.0, 5.0])],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(chop)
 
@@ -918,7 +1057,8 @@ class TestGetChopChannels:
         chop = FakeChop(
             "noise1",
             channels=[FakeChannel("tx"), FakeChannel("ty"), FakeChannel("rz")],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(chop)
 
@@ -965,7 +1105,8 @@ class TestGetDatTableInfo:
         table = FakeTableDat(
             "table1",
             data=[["name", "value"], ["foo", "1"], ["bar", "2"]],
-            parent=_base, graph=graph,
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(table)
 
@@ -991,7 +1132,10 @@ class TestGetDatTableInfo:
         svc, graph, _base = starter
         long_val = "x" * 300
         table = FakeTableDat(
-            "table1", data=[[long_val]], parent=_base, graph=graph,
+            "table1",
+            data=[[long_val]],
+            parent=_base,
+            graph=graph,
         )
         _base.children.append(table)
 
@@ -1029,6 +1173,7 @@ class TestGetDatTableInfo:
 
 class _MockExtension:
     """Test extension class with methods and properties."""
+
     color = "red"
 
     def do_something(self, x: int) -> str:
@@ -1095,3 +1240,34 @@ class TestGetCompExtensions:
         svc, _graph, _base = starter
         result = svc.get_comp_extensions("/nonexistent")
         assert result["success"] is False
+
+
+# ── Health Check ─────────────────────────────────────────────────
+
+
+class TestGetHealth:
+    def test_get_health_returns_ok(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_health()
+        assert result["success"] is True
+        data = result["data"]
+        assert data["status"] == "ok"
+        assert "pythonVersion" in data
+        assert "tdVersion" in data
+        assert "tdBuild" in data
+
+    def test_get_health_td_version_format(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_health()
+        data = result["data"]
+        # tdVersion should be "version.build" e.g. "2023.30000"
+        assert "." in data["tdVersion"]
+        assert data["tdBuild"] == "30000"
+
+    def test_get_health_python_version_format(self, starter):
+        svc, _graph, _base = starter
+        result = svc.get_health()
+        data = result["data"]
+        parts = data["pythonVersion"].split(".")
+        assert len(parts) >= 2
+        assert parts[0].isdigit()

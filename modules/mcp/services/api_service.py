@@ -5,6 +5,7 @@ Provides API functionality related to TouchDesigner
 
 import contextlib
 import difflib
+import fnmatch
 import importlib
 import inspect
 import io
@@ -63,11 +64,21 @@ class IApiService(Protocol):
     def get_dat_text(self, node_path: str) -> Result: ...
     def set_dat_text(self, node_path: str, text: str) -> Result: ...
     def lint_dat(self, node_path: str, fix: bool = ..., dry_run: bool = ...) -> Result: ...
+    def format_dat(self, node_path: str, dry_run: bool = ...) -> Result: ...
+    def validate_json_dat(self, node_path: str) -> Result: ...
+    def validate_glsl_dat(self, node_path: str) -> Result: ...
     def discover_dat_candidates(
         self,
         parent_path: str,
         recursive: bool = ...,
         purpose: str = ...,
+    ) -> Result: ...
+    def lint_dats(
+        self,
+        parent_path: str,
+        pattern: str = ...,
+        purpose: str = ...,
+        recursive: bool = ...,
     ) -> Result: ...
     def get_node_parameter_schema(self, node_path: str, pattern: str = ...) -> Result: ...
     def complete_op_paths(
@@ -92,6 +103,9 @@ class IApiService(Protocol):
         include_docs: bool = ...,
         max_methods: int = ...,
     ) -> Result: ...
+    def get_health(self) -> Result: ...
+    def get_capabilities(self) -> Result: ...
+    def typecheck_dat(self, node_path: str) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -112,6 +126,67 @@ class TouchDesignerApiService(IApiService):
         }
 
         return success_result(server_info)
+
+    def get_health(self) -> Result:
+        """Health check: status, Python version, TD version/build."""
+        import sys
+
+        version = td.app.version
+        build = td.app.build
+        return success_result(
+            {
+                "status": "ok",
+                "pythonVersion": sys.version.split()[0],
+                "tdVersion": f"{version}.{build}",
+                "tdBuild": str(build),
+            }
+        )
+
+    def get_capabilities(self) -> Result:
+        """Report available features and tool versions."""
+        ruff = self._find_ruff()
+        ruff_version = None
+        if ruff:
+            try:
+                proc = subprocess.run(
+                    [ruff, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                ruff_version = proc.stdout.strip() if proc.returncode == 0 else None
+            except Exception:
+                pass
+
+        pyright = self._find_pyright()
+        pyright_version = None
+        if pyright:
+            try:
+                proc = subprocess.run(
+                    [pyright, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                pyright_version = proc.stdout.strip() if proc.returncode == 0 else None
+            except Exception:
+                pass
+
+        return success_result(
+            {
+                "lint_dat": ruff is not None,
+                "format_dat": ruff is not None,
+                "validate_glsl_dat": True,
+                "typecheck_dat": pyright is not None,
+                "tools": {
+                    "ruff": {"installed": ruff is not None, "version": ruff_version},
+                    "pyright": {
+                        "installed": pyright is not None,
+                        "version": pyright_version,
+                    },
+                },
+            }
+        )
 
     def get_td_python_classes(self) -> Result:
         """Get list of Python classes and modules available in TouchDesigner"""
@@ -773,6 +848,427 @@ class TouchDesignerApiService(IApiService):
             with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
 
+    def format_dat(self, node_path: str, dry_run: bool = False) -> Result:
+        """Format the .text content of a DAT operator using ruff format"""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        ruff = self._find_ruff()
+        if ruff is None:
+            return error_result(
+                "ruff not found. Install it with 'uv add ruff' or ensure it is on PATH."
+            )
+
+        code = node.text
+        project_root = Path(__file__).resolve().parents[3]
+
+        fd, tmp_path = tempfile.mkstemp(suffix=".py")
+        try:
+            os.write(fd, code.encode("utf-8"))
+            os.close(fd)
+            fd = -1  # mark as already closed
+
+            cmd = [ruff, "format", tmp_path]
+
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(project_root),
+                    timeout=30,
+                )
+            except subprocess.TimeoutExpired:
+                return error_result("ruff format timed out after 30s")
+
+            if proc.returncode >= 2:
+                stderr_msg = proc.stderr.strip() if proc.stderr else "unknown error"
+                return error_result(f"ruff format failed (exit {proc.returncode}): {stderr_msg}")
+
+            with open(tmp_path, encoding="utf-8") as f:
+                formatted_code = f.read()
+
+            changed = formatted_code != code
+
+            diff_text = ""
+            if changed:
+                diff_lines = list(
+                    difflib.unified_diff(
+                        code.splitlines(keepends=True),
+                        formatted_code.splitlines(keepends=True),
+                        fromfile=f"{node.path} (original)",
+                        tofile=f"{node.path} (formatted)",
+                    )
+                )
+                diff_text = "".join(diff_lines)
+
+            applied = False
+            if changed and not dry_run:
+                node.text = formatted_code
+                applied = True
+
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "originalText": code,
+                    "formattedText": formatted_code,
+                    "changed": changed,
+                    "diff": diff_text,
+                    "applied": applied,
+                }
+            )
+
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
+
+    def validate_json_dat(self, node_path: str) -> Result:
+        """Validate JSON or YAML content in a DAT operator.
+
+        Auto-detects format: tries JSON first, then YAML (if available).
+        Returns structured diagnostics with line/column positions.
+        """
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        text = node.text
+        if not text.strip():
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "format": "unknown",
+                    "valid": True,
+                    "diagnostics": [],
+                }
+            )
+
+        # Try JSON first
+        json_error = None
+        try:
+            json.loads(text)
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "format": "json",
+                    "valid": True,
+                    "diagnostics": [],
+                }
+            )
+        except json.JSONDecodeError as e:
+            json_error = {
+                "line": e.lineno,
+                "column": e.colno,
+                "message": e.msg,
+            }
+
+        # Try YAML if available
+        yaml_error = None
+        yaml_available = False
+        try:
+            import yaml
+
+            yaml_available = True
+            yaml.safe_load(text)
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "format": "yaml",
+                    "valid": True,
+                    "diagnostics": [],
+                }
+            )
+        except ImportError:
+            pass
+        except Exception as e:
+            if yaml_available:
+                line = 1
+                column = 1
+                msg = str(e)
+                # yaml.YAMLError subclasses may have problem_mark
+                mark = getattr(e, "problem_mark", None)
+                if mark is not None:
+                    line = getattr(mark, "line", 0) + 1  # 0-based to 1-based
+                    column = getattr(mark, "column", 0) + 1
+                problem = getattr(e, "problem", None)
+                if problem:
+                    msg = str(problem)
+                yaml_error = {
+                    "line": line,
+                    "column": column,
+                    "message": msg,
+                }
+
+        # Both failed (or only JSON tried)
+        diagnostics: list[dict[str, object]] = []
+        if json_error is not None:
+            diagnostics.append(json_error)
+        if yaml_error is not None:
+            diagnostics.append(yaml_error)
+
+        detected_format = "unknown"
+        if json_error is not None and yaml_error is None and not yaml_available:
+            detected_format = "json"
+
+        return success_result(
+            {
+                "path": node.path,
+                "name": node.name,
+                "format": detected_format,
+                "valid": False,
+                "diagnostics": diagnostics,
+            }
+        )
+
+    def validate_glsl_dat(self, node_path: str) -> Result:
+        """Validate GLSL shader code in a DAT operator.
+
+        Strategy:
+        1. Determine shader type from DAT name suffix (_pixel, _vertex, _compute).
+        2. Try to find a connected GLSL TOP/MAT in the same parent and check its errors().
+        3. Fall back to glslangValidator if available on PATH.
+        4. Return structured diagnostics.
+        """
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        text = getattr(node, "text", "") or ""
+        name = getattr(node, "name", "")
+        path = getattr(node, "path", node_path)
+
+        # Determine shader type from name suffix
+        shader_type = "unknown"
+        if name.endswith("_pixel"):
+            shader_type = "pixel"
+        elif name.endswith("_vertex"):
+            shader_type = "vertex"
+        elif name.endswith("_compute"):
+            shader_type = "compute"
+
+        # Strategy 1: Find connected GLSL TOP/MAT and check its errors
+        td_errors_diagnostics = self._check_glsl_td_errors(node)
+        if td_errors_diagnostics is not None:
+            diagnostics, valid = td_errors_diagnostics
+            return success_result(
+                {
+                    "path": path,
+                    "name": name,
+                    "shaderType": shader_type,
+                    "valid": valid,
+                    "diagnostics": diagnostics,
+                    "validationMethod": "td_errors",
+                }
+            )
+
+        # Strategy 2: Fall back to glslangValidator
+        validator_path = shutil.which("glslangValidator")
+        if validator_path is not None and text.strip():
+            diagnostics, valid = self._run_glslang_validator(text, shader_type, validator_path)
+            return success_result(
+                {
+                    "path": path,
+                    "name": name,
+                    "shaderType": shader_type,
+                    "valid": valid,
+                    "diagnostics": diagnostics,
+                    "validationMethod": "glslangValidator",
+                }
+            )
+
+        # No validation method available
+        return success_result(
+            {
+                "path": path,
+                "name": name,
+                "shaderType": shader_type,
+                "valid": True,
+                "diagnostics": [],
+                "validationMethod": "none",
+            }
+        )
+
+    def _check_glsl_td_errors(self, dat_node: Any) -> tuple[list[dict[str, object]], bool] | None:
+        """Check for GLSL errors via connected GLSL TOP/MAT in the same parent.
+
+        Returns (diagnostics, valid) or None if no GLSL operator found.
+        """
+        parent_attr = getattr(dat_node, "parent", None)
+        parent = parent_attr() if parent_attr is not None and callable(parent_attr) else None
+        if parent is None:
+            return None
+
+        children = getattr(parent, "children", None)
+        if children is None:
+            return None
+
+        dat_name = getattr(dat_node, "name", "")
+        glsl_op_types = ("glslTOP", "glslmultiTOP", "glslMAT")
+        glsl_op = None
+
+        for child in children:
+            op_type = getattr(child, "OPType", "")
+            if op_type not in glsl_op_types:
+                continue
+            # Check if this GLSL operator references our DAT
+            # by looking at its parameters (dat, glsldat, pixeldat, vertexdat, etc.)
+            for par_name in ("dat", "glsldat", "pixeldat", "vertexdat", "computedat"):
+                par = getattr(child.par, par_name, None) if hasattr(child, "par") else None
+                if par is not None:
+                    par_val = getattr(par, "eval", lambda: None)()
+                    if par_val is not None:
+                        ref_path = getattr(par_val, "path", str(par_val))
+                        if ref_path == getattr(dat_node, "path", ""):
+                            glsl_op = child
+                            break
+                        # Also check by name reference
+                        ref_name = getattr(par_val, "name", str(par_val))
+                        if ref_name == dat_name:
+                            glsl_op = child
+                            break
+            if glsl_op is not None:
+                break
+
+        if glsl_op is None:
+            return None
+
+        # Get errors from the GLSL operator
+        diagnostics: list[dict[str, object]] = []
+        error_output: str = ""
+        errors_fn = getattr(glsl_op, "errors", None)
+        if errors_fn is not None and callable(errors_fn):
+            with contextlib.suppress(Exception):
+                error_output = str(errors_fn() or "")
+
+        if not error_output:
+            return ([], True)
+
+        # Parse error lines into diagnostics
+        for line in error_output.strip().split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            diag: dict[str, object] = self._parse_glsl_error_line(line)
+            diagnostics.append(diag)
+
+        return (diagnostics, len(diagnostics) == 0)
+
+    @staticmethod
+    def _parse_glsl_error_line(line: str) -> dict[str, object]:
+        """Parse a GLSL error line into structured diagnostic.
+
+        Common formats:
+        - 'ERROR: 0:5: ...' (glsl compiler)
+        - Plain text error message
+        """
+        import re
+
+        # Try to match 'ERROR: <file>:<line>: <message>' or 'WARNING: <file>:<line>: <message>'
+        m = re.match(r"(ERROR|WARNING|INFO):\s*\d+:(\d+):\s*(.*)", line)
+        if m:
+            severity = m.group(1).lower()
+            line_num = int(m.group(2))
+            message = m.group(3)
+            return {
+                "line": line_num,
+                "column": 1,
+                "message": message,
+                "severity": severity,
+            }
+
+        # Fallback: treat as error with no line info
+        return {
+            "line": 1,
+            "column": 1,
+            "message": line,
+            "severity": "error",
+        }
+
+    def _run_glslang_validator(
+        self, text: str, shader_type: str, validator_path: str
+    ) -> tuple[list[dict[str, object]], bool]:
+        """Run glslangValidator on shader text. Returns (diagnostics, valid)."""
+        # Map shader type to file extension
+        ext_map = {
+            "pixel": ".frag",
+            "vertex": ".vert",
+            "compute": ".comp",
+            "unknown": ".frag",  # default to fragment
+        }
+        ext = ext_map.get(shader_type, ".frag")
+
+        fd = -1
+        tmp_path = ""
+        try:
+            fd, tmp_path = tempfile.mkstemp(suffix=ext, prefix="glsl_validate_")
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            fd = -1  # fd is closed by os.fdopen
+
+            proc = subprocess.run(
+                [validator_path, tmp_path],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            diagnostics: list[dict[str, object]] = []
+            output = (proc.stdout or "") + (proc.stderr or "")
+            for line in output.strip().split("\n"):
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith(("ERROR:", "WARNING:")):
+                    diag = self._parse_glsl_error_line(line)
+                    diagnostics.append(diag)
+
+            valid = proc.returncode == 0
+            return (diagnostics, valid)
+
+        except subprocess.TimeoutExpired:
+            return (
+                [
+                    {
+                        "line": 1,
+                        "column": 1,
+                        "message": "glslangValidator timed out",
+                        "severity": "error",
+                    }
+                ],
+                False,
+            )
+        except Exception as exc:
+            return (
+                [
+                    {
+                        "line": 1,
+                        "column": 1,
+                        "message": f"glslangValidator error: {exc!s}",
+                        "severity": "error",
+                    }
+                ],
+                False,
+            )
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                if tmp_path:
+                    os.unlink(tmp_path)
+
     @staticmethod
     def _safe_par_value(par, mode: str = "eval"):
         """Safely read a par's current or default value.
@@ -1211,6 +1707,116 @@ class TouchDesignerApiService(IApiService):
             }
         )
 
+    def lint_dats(
+        self,
+        parent_path: str,
+        pattern: str = "*",
+        purpose: str = "python",
+        recursive: bool = False,
+    ) -> Result:
+        """Batch-lint DAT operators under a parent path.
+
+        Calls discover_dat_candidates then lint_dat on each result.
+        Returns per-DAT breakdown and summary counters.
+        """
+        discover_result = self.discover_dat_candidates(
+            parent_path, recursive=recursive, purpose=purpose
+        )
+        if not discover_result.get("success"):
+            return discover_result
+
+        candidates = discover_result.get("data", {}).get("candidates", [])
+
+        # Apply name pattern filter
+        if pattern and pattern != "*":
+            candidates = [c for c in candidates if fnmatch.fnmatch(c["name"], pattern)]
+
+        results: list[dict[str, Any]] = []
+        total_issues = 0
+        fixable_count = 0
+        dats_with_errors = 0
+        by_severity: dict[str, int] = {"error": 0, "warning": 0, "info": 0}
+
+        for candidate in candidates:
+            lint_result = self.lint_dat(candidate["path"])
+            if not lint_result.get("success"):
+                # Record the failure but continue
+                results.append(
+                    {
+                        "path": candidate["path"],
+                        "name": candidate["name"],
+                        "diagnosticCount": 0,
+                        "diagnostics": [],
+                        "error": lint_result.get("error", "lint failed"),
+                    }
+                )
+                continue
+
+            lint_data = lint_result.get("data", {})
+            diag_count = lint_data.get("diagnosticCount", 0)
+            diagnostics = lint_data.get("diagnostics", [])
+
+            results.append(
+                {
+                    "path": lint_data.get("path", candidate["path"]),
+                    "name": lint_data.get("name", candidate["name"]),
+                    "diagnosticCount": diag_count,
+                    "diagnostics": diagnostics,
+                }
+            )
+
+            total_issues += diag_count
+            if diag_count > 0:
+                dats_with_errors += 1
+
+            for d in diagnostics:
+                if d.get("fixable"):
+                    fixable_count += 1
+                code = d.get("code") or ""
+                first_char = code[0].upper() if code else ""
+                if first_char == "E":
+                    by_severity["error"] += 1
+                elif first_char == "W":
+                    by_severity["warning"] += 1
+                else:
+                    by_severity["info"] += 1
+
+        total_scanned = len(results)
+        dats_clean = total_scanned - dats_with_errors
+        manual_count = total_issues - fixable_count
+
+        # Worst offenders: top 5 DATs sorted by issue count desc
+        worst_offenders = sorted(
+            [r for r in results if r["diagnosticCount"] > 0],
+            key=lambda r: r["diagnosticCount"],
+            reverse=True,
+        )[:5]
+        worst_offenders_summary = [
+            {
+                "path": r["path"],
+                "name": r["name"],
+                "diagnosticCount": r["diagnosticCount"],
+            }
+            for r in worst_offenders
+        ]
+
+        return success_result(
+            {
+                "parentPath": parent_path,
+                "summary": {
+                    "totalDatsScanned": total_scanned,
+                    "datsWithErrors": dats_with_errors,
+                    "datsClean": dats_clean,
+                    "totalIssues": total_issues,
+                    "fixableCount": fixable_count,
+                    "manualCount": manual_count,
+                    "bySeverity": by_severity,
+                    "worstOffenders": worst_offenders_summary,
+                },
+                "results": results,
+            }
+        )
+
     def _find_ruff(self) -> str | None:
         """Locate the ruff binary on PATH or in the project .venv."""
         found = shutil.which("ruff")
@@ -1227,6 +1833,117 @@ class TouchDesignerApiService(IApiService):
             return str(candidate)
 
         return None
+
+    def _find_pyright(self) -> str | None:
+        """Locate the pyright executable (or pyright-python wrapper)."""
+        project_root = Path(__file__).resolve().parents[3]
+        venv_bin = project_root / ".venv" / ("Scripts" if os.name == "nt" else "bin")
+        candidates = [venv_bin / "pyright", venv_bin / "pyright.exe"]
+        for c in candidates:
+            if c.is_file():
+                return str(c)
+        return shutil.which("pyright")
+
+    @staticmethod
+    def _parse_pyright_diagnostics(output: dict) -> list[dict]:
+        """Parse pyright --outputjson output into a flat diagnostic list."""
+        diagnostics: list[dict] = []
+        for diag in output.get("generalDiagnostics", []):
+            rng = diag.get("range", {})
+            start = rng.get("start", {})
+            diagnostics.append(
+                {
+                    "severity": diag.get("severity", "error"),
+                    "message": diag.get("message", ""),
+                    "line": start.get("line", 0),
+                    "column": start.get("character", 0),
+                    "rule": diag.get("rule", ""),
+                }
+            )
+        return diagnostics
+
+    def typecheck_dat(self, node_path: str) -> Result:
+        """Typecheck the .text content of a DAT operator using pyright."""
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        pyright = self._find_pyright()
+        if pyright is None:
+            return error_result(
+                "pyright not found. Install it with 'uv add pyright' or ensure it is on PATH."
+            )
+
+        code = node.text
+        project_root = Path(__file__).resolve().parents[3]
+        stubs_dir = project_root / "modules"  # td.pyi lives here
+
+        fd, tmp_path = tempfile.mkstemp(suffix=".py")
+        try:
+            os.write(fd, code.encode("utf-8"))
+            os.close(fd)
+            fd = -1
+
+            # Write a temp pyrightconfig.json so pyright resolves import td via stubs
+            tmp_dir = Path(tmp_path).parent
+            pyright_config = tmp_dir / "pyrightconfig.json"
+            wrote_config = False
+            if not pyright_config.exists():
+                pyright_config.write_text(
+                    json.dumps(
+                        {
+                            "pythonVersion": "3.11",
+                            "extraPaths": [str(stubs_dir)],
+                            "typeCheckingMode": "basic",
+                        }
+                    )
+                )
+                wrote_config = True
+
+            cmd = [pyright, "--outputjson", tmp_path]
+
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(tmp_dir),
+                    timeout=60,
+                )
+            except subprocess.TimeoutExpired:
+                return error_result("pyright timed out after 60s")
+            finally:
+                if wrote_config:
+                    with contextlib.suppress(OSError):
+                        pyright_config.unlink()
+
+            # pyright exit codes: 0=clean, 1=diagnostics, 2+=fatal
+            if proc.returncode >= 2:
+                stderr_msg = proc.stderr.strip() if proc.stderr else "unknown error"
+                return error_result(f"pyright failed (exit {proc.returncode}): {stderr_msg}")
+
+            try:
+                output = json.loads(proc.stdout) if proc.stdout.strip() else {}
+            except json.JSONDecodeError:
+                return error_result(f"pyright returned invalid JSON: {proc.stdout[:200]}")
+
+            diagnostics = self._parse_pyright_diagnostics(output)
+
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "diagnosticCount": len(diagnostics),
+                    "diagnostics": diagnostics,
+                }
+            )
+        finally:
+            if fd >= 0:
+                os.close(fd)
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
 
     def configure_instancing(
         self,

@@ -11,20 +11,20 @@ class TestSuccessResult:
     def test_none_data(self):
         r = success_result(None)
         assert r["success"] is True
-        assert r["data"] is None
+        assert r["data"] is None  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     def test_dict_data(self):
         r = success_result({"key": "val"})
-        assert r["data"] == {"key": "val"}
+        assert r["data"] == {"key": "val"}  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     def test_list_data(self):
         r = success_result([1, 2, 3])
-        assert r["data"] == [1, 2, 3]
+        assert r["data"] == [1, 2, 3]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     def test_nested_data(self):
         data = {"a": [{"b": 1}]}
         r = success_result(data)
-        assert r["data"] == data
+        assert r["data"] == data  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
 
 class TestErrorResult:
@@ -35,7 +35,7 @@ class TestErrorResult:
     def test_with_metadata(self):
         r = error_result("fail", {"code": 42})
         assert r["success"] is False
-        assert r["error"] == "fail"
+        assert r["error"] == "fail"  # pyright: ignore[reportTypedDictNotRequiredAccess]
         assert r["code"] == 42  # type: ignore[typeddict-item]
 
     def test_without_metadata(self):
