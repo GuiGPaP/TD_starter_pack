@@ -65,6 +65,7 @@ class IApiService(Protocol):
     def set_dat_text(self, node_path: str, text: str) -> Result: ...
     def lint_dat(self, node_path: str, fix: bool = ..., dry_run: bool = ...) -> Result: ...
     def format_dat(self, node_path: str, dry_run: bool = ...) -> Result: ...
+    def validate_json_dat(self, node_path: str) -> Result: ...
     def discover_dat_candidates(
         self,
         parent_path: str,
@@ -926,6 +927,108 @@ class TouchDesignerApiService(IApiService):
                 os.close(fd)
             with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
+
+    def validate_json_dat(self, node_path: str) -> Result:
+        """Validate JSON or YAML content in a DAT operator.
+
+        Auto-detects format: tries JSON first, then YAML (if available).
+        Returns structured diagnostics with line/column positions.
+        """
+        node = td.op(node_path)
+        if node is None or not node.valid:
+            return error_result(f"Node not found: {node_path}")
+        if not hasattr(node, "text"):
+            return error_result(f"Node has no .text attribute: {node_path}")
+
+        text = node.text
+        if not text.strip():
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "format": "unknown",
+                    "valid": True,
+                    "diagnostics": [],
+                }
+            )
+
+        # Try JSON first
+        json_error = None
+        try:
+            json.loads(text)
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "format": "json",
+                    "valid": True,
+                    "diagnostics": [],
+                }
+            )
+        except json.JSONDecodeError as e:
+            json_error = {
+                "line": e.lineno,
+                "column": e.colno,
+                "message": e.msg,
+            }
+
+        # Try YAML if available
+        yaml_error = None
+        yaml_available = False
+        try:
+            import yaml
+
+            yaml_available = True
+            yaml.safe_load(text)
+            return success_result(
+                {
+                    "path": node.path,
+                    "name": node.name,
+                    "format": "yaml",
+                    "valid": True,
+                    "diagnostics": [],
+                }
+            )
+        except ImportError:
+            pass
+        except Exception as e:
+            if yaml_available:
+                line = 1
+                column = 1
+                msg = str(e)
+                # yaml.YAMLError subclasses may have problem_mark
+                if hasattr(e, "problem_mark") and e.problem_mark is not None:
+                    mark = e.problem_mark
+                    line = mark.line + 1  # 0-based to 1-based
+                    column = mark.column + 1
+                if hasattr(e, "problem") and e.problem:
+                    msg = e.problem
+                yaml_error = {
+                    "line": line,
+                    "column": column,
+                    "message": msg,
+                }
+
+        # Both failed (or only JSON tried)
+        diagnostics: list[dict[str, object]] = []
+        if json_error is not None:
+            diagnostics.append(json_error)
+        if yaml_error is not None:
+            diagnostics.append(yaml_error)
+
+        detected_format = "unknown"
+        if json_error is not None and yaml_error is None and not yaml_available:
+            detected_format = "json"
+
+        return success_result(
+            {
+                "path": node.path,
+                "name": node.name,
+                "format": detected_format,
+                "valid": False,
+                "diagnostics": diagnostics,
+            }
+        )
 
     @staticmethod
     def _safe_par_value(par, mode: str = "eval"):
