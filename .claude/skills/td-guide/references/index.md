@@ -10,4 +10,5 @@ Pick the ONE file that matches your task. If unsure, start with @basics/index.md
 | Operator families, cross-family conversion, available operator lists | @operator-families.md |
 | Feedback loops, simulations, accumulation effects | @operator-tips.md |
 | GLSL orientation and routing to shader skills | @glsl.md |
+| Python environment, bundled packages, threading, subprocess | @python-environment.md |
 | MCP API endpoints, tool usage, semantic introspection | @project-api.md |
