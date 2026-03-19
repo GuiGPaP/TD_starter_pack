@@ -148,45 +148,9 @@ void main() {
 
 ## Performance issues / shader runs slowly
 
-**Common causes**:
-1. Too many texture lookups
-2. Complex conditionals (if/else)
-3. Dynamic loops
-4. Expensive math operations
+**Cause**: Too many texture lookups, branching, dynamic loops, or unoptimized math.
 
-**Optimizations**:
-
-```glsl
-// ❌ SLOW - Multiple texture lookups
-for(int i = 0; i < 100; i++) {
-    color += texture(sTD2DInputs[0], uv + offset[i]);
-}
-
-// ✅ FASTER - Fewer lookups, fixed iterations
-color += texture(sTD2DInputs[0], uv + offset1);
-color += texture(sTD2DInputs[0], uv + offset2);
-color += texture(sTD2DInputs[0], uv + offset3);
-
-// ❌ SLOW - Conditional branching
-if(uv.x > 0.5) {
-    color = red;
-} else {
-    color = blue;
-}
-
-// ✅ FASTER - Use mix/step
-color = mix(blue, red, step(0.5, uv.x));
-
-// ❌ SLOW - Expensive operations in loop
-for(int i = 0; i < 10; i++) {
-    float expensive = pow(sin(x * 3.14159), 2.0);
-}
-
-// ✅ FASTER - Precompute constants
-const float PI = 3.14159;
-float base = sin(x * PI);
-float result = base * base;
-```
+**Fix**: See @references/BEST-PRACTICES.md — the "Performance Optimization" section covers cache-and-reuse, branchless alternatives, loop optimization, and math optimization in detail.
 
 ---
 
@@ -194,18 +158,9 @@ float result = base * base;
 
 **Cause**: Dividing by zero or very small numbers.
 
-**Fix**: Add safety checks:
+**Fix**: `float result = value / max(denominator, 0.0001);`
 
-```glsl
-// ❌ Dangerous
-float result = value / denominator;
-
-// ✅ Safe
-float result = value / max(denominator, 0.0001);
-
-// Or with conditional
-float result = denominator != 0.0 ? value / denominator : 0.0;
-```
+For the full Safe Division and Safe Normalize patterns, see @references/BEST-PRACTICES.md — "Precision and Stability" section.
 
 ---
 
