@@ -117,6 +117,10 @@ class TestRouteExistence:
         routes = extract_routes(_load_schema())
         assert "lint_dat" in {r.operation_id for r in routes}
 
+    def test_format_dat_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "format_dat" in {r.operation_id for r in routes}
+
     def test_discover_dat_candidates_route_exists(self):
         routes = extract_routes(_load_schema())
         assert "discover_dat_candidates" in {r.operation_id for r in routes}
@@ -140,6 +144,18 @@ class TestRouteExistence:
     def test_get_comp_extensions_route_exists(self):
         routes = extract_routes(_load_schema())
         assert "get_comp_extensions" in {r.operation_id for r in routes}
+
+    def test_typecheck_dat_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "typecheck_dat" in {r.operation_id for r in routes}
+
+    def test_get_health_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_health" in {r.operation_id for r in routes}
+
+    def test_get_capabilities_route_exists(self):
+        routes = extract_routes(_load_schema())
+        assert "get_capabilities" in {r.operation_id for r in routes}
 
 
 # ── End-to-end tests ──────────────────────────────────────────────
@@ -419,6 +435,76 @@ class TestEndToEnd:
         assert r3["success"] is True
         assert r3["data"]["applied"] is True
 
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_format_dat_end_to_end(self, _mock_which, mock_run, integration_router, mock_td):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x=1\n"
+        mock_td.op.return_value = dat
+
+        def side_effect(*args, **kwargs):
+            tmp = args[0][-1]
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write("x = 1\n")
+            return MagicMock(returncode=0, stdout="", stderr="")
+
+        mock_run.side_effect = side_effect
+
+        body = json.dumps({"nodePath": "/project1/script1"})
+        result = integration_router.route_request("POST", "/api/nodes/dat-format", {}, body)
+        assert result["success"] is True
+        assert result["data"]["changed"] is True
+        assert result["data"]["applied"] is True
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_format_dat_dry_run_end_to_end(
+        self, _mock_which, mock_run, integration_router, mock_td
+    ):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x=1\n"
+        mock_td.op.return_value = dat
+
+        def side_effect(*args, **kwargs):
+            tmp = args[0][-1]
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write("x = 1\n")
+            return MagicMock(returncode=0, stdout="", stderr="")
+
+        mock_run.side_effect = side_effect
+
+        body = json.dumps({"nodePath": "/project1/script1", "dryRun": True})
+        result = integration_router.route_request("POST", "/api/nodes/dat-format", {}, body)
+        assert result["success"] is True
+        assert result["data"]["changed"] is True
+        assert result["data"]["applied"] is False
+        assert "diff" in result["data"]
+        assert len(result["data"]["diff"]) > 0
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/pyright")
+    def test_typecheck_dat_end_to_end(self, _mock_which, mock_run, integration_router, mock_td):
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/script1"
+        dat.name = "script1"
+        dat.text = "x: int = 1\n"
+        mock_td.op.return_value = dat
+
+        pyright_output = json.dumps({"generalDiagnostics": []})
+        mock_run.return_value = MagicMock(returncode=0, stdout=pyright_output, stderr="")
+
+        body = json.dumps({"nodePath": "/project1/script1"})
+        result = integration_router.route_request("POST", "/api/nodes/dat-typecheck", {}, body)
+        assert result["success"] is True
+        assert result["data"]["diagnosticCount"] == 0
+
     def test_discover_dat_candidates_end_to_end(self, integration_router, mock_td):
         parent = MagicMock()
         parent.valid = True
@@ -555,3 +641,20 @@ class TestEndToEnd:
         )
         assert result["success"] is True
         assert result["data"]["extensions"] == []
+
+    def test_get_health_end_to_end(self, integration_router, mock_td):
+        result = integration_router.route_request("GET", "/api/health", {}, None)
+        assert result["success"] is True
+        assert result["data"]["status"] == "ok"
+        assert result["data"]["tdVersion"] == "2023.30000"
+        assert result["data"]["tdBuild"] == "30000"
+        assert "pythonVersion" in result["data"]
+
+    @patch("mcp.services.api_service.subprocess.run")
+    @patch("mcp.services.api_service.shutil.which", return_value="/usr/bin/ruff")
+    def test_get_capabilities_end_to_end(self, _mock_which, mock_run, integration_router, mock_td):
+        mock_run.return_value = MagicMock(returncode=0, stdout="ruff 0.8.6", stderr="")
+        result = integration_router.route_request("GET", "/api/capabilities", {}, None)
+        assert result["success"] is True
+        assert result["data"]["lint_dat"] is True
+        assert result["data"]["tools"]["ruff"]["installed"] is True

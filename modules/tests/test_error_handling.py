@@ -66,7 +66,7 @@ class TestHandleServiceErrors:
 
         r = good()
         assert r["success"] is True
-        assert r["data"] == "ok"
+        assert r["data"] == "ok"  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     @patch("utils.error_handling.log_message")
     def test_exception_returns_error_result(self, mock_log):
@@ -76,8 +76,8 @@ class TestHandleServiceErrors:
 
         r = bad()
         assert r["success"] is False
-        assert "nope" in r["error"]
-        assert "VALIDATION" in r["error"]
+        assert "nope" in r["error"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+        assert "VALIDATION" in r["error"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     @patch("utils.error_handling.log_message")
     def test_preserves_function_name(self, mock_log):

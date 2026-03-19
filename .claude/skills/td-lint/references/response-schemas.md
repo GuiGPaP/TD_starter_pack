@@ -207,3 +207,146 @@ No errors (healthy state):
 ```
 
 Use `hasErrors` as the quick check — if `true` after a fix, rollback immediately.
+
+---
+
+## `get_capabilities`
+
+Call: `get_capabilities()`
+
+```json
+{
+  "lint_dat": true,
+  "format_dat": true,
+  "typecheck_dat": true,
+  "validate_json_dat": true,
+  "validate_glsl_dat": true,
+  "lint_dats": true
+}
+```
+
+Fields:
+- Each key corresponds to a tool. `true` means the backing binary (ruff, pyright, glslangValidator) is available on the server.
+- Check before running any workflow — if a required tool is `false`, abort early with a clear message.
+
+---
+
+## `format_dat`
+
+Call: `format_dat({ nodePath: '/project1/script1' })` or `format_dat({ nodePath: '/project1/script1', dryRun: true })`
+
+```json
+{
+  "path": "/project1/script1",
+  "name": "script1",
+  "changed": true,
+  "diff": "--- original\n+++ formatted\n@@ ...",
+  "applied": true
+}
+```
+
+Fields:
+- `changed` — `true` if ruff format would alter the code
+- `diff` — unified diff (present in dry-run mode)
+- `applied` — `true` if changes were written to the DAT (`false` in dry-run)
+
+---
+
+## `typecheck_dat`
+
+Call: `typecheck_dat({ nodePath: '/project1/script1' })`
+
+```json
+{
+  "path": "/project1/script1",
+  "name": "script1",
+  "diagnosticCount": 1,
+  "diagnostics": [
+    {
+      "severity": "error",
+      "message": "Cannot access member \"foo\" for type \"str\"",
+      "line": 10,
+      "column": 5,
+      "rule": "reportAttributeAccessIssue"
+    }
+  ]
+}
+```
+
+Fields:
+- `diagnostics[].severity` — `"error"`, `"warning"`, or `"information"`
+- `diagnostics[].rule` — pyright rule name
+- Pyright diagnostics are informational — no auto-fix available.
+
+---
+
+## `lint_dats`
+
+Call: `lint_dats({ parentPath: '/project1', recursive: true })`
+
+```json
+{
+  "parentPath": "/project1",
+  "totalDatsScanned": 5,
+  "datsWithErrors": 2,
+  "datsClean": 3,
+  "bySeverity": { "error": 3, "warning": 1, "info": 0 },
+  "worstOffenders": [
+    { "path": "/project1/script2", "diagnosticCount": 4 }
+  ],
+  "results": [
+    {
+      "path": "/project1/script1",
+      "diagnosticCount": 2,
+      "diagnostics": [ ... ]
+    }
+  ]
+}
+```
+
+---
+
+## `validate_json_dat`
+
+Call: `validate_json_dat({ nodePath: '/project1/config1' })`
+
+```json
+{
+  "path": "/project1/config1",
+  "valid": true,
+  "format": "json",
+  "diagnostics": []
+}
+```
+
+Fields:
+- `format` — `"json"`, `"yaml"`, or `"unknown"` (auto-detected)
+- `diagnostics` — parse errors with `line`, `column`, `message`
+
+---
+
+## `validate_glsl_dat`
+
+Call: `validate_glsl_dat({ nodePath: '/project1/shader_pixel' })`
+
+```json
+{
+  "path": "/project1/shader_pixel",
+  "valid": false,
+  "shaderType": "pixel",
+  "validationMethod": "glslangValidator",
+  "diagnostics": [
+    {
+      "line": 12,
+      "column": 1,
+      "message": "syntax error: unexpected token",
+      "severity": "error"
+    }
+  ]
+}
+```
+
+Fields:
+- `shaderType` — `"pixel"`, `"vertex"`, `"compute"` (auto-detected from DAT name suffix)
+- `validationMethod` — `"glslangValidator"` or `"connected_top"` (uses GLSL TOP errors)
+- `diagnostics` — shader compilation errors
