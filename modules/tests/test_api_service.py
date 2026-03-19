@@ -619,6 +619,130 @@ class TestLintDats:
         assert r["data"]["results"][0]["name"] == "ext_script"
 
 
+class TestValidateJsonDat:
+    def test_node_not_found(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        mock_td.op.return_value = None
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_json_dat("/bad")
+        assert r["success"] is False
+
+    def test_no_text_attribute(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        node = MagicMock(spec=[])  # no .text attribute
+        node.valid = True
+        mock_td.op.return_value = node
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_json_dat("/project1/data1")
+        assert r["success"] is False
+
+    def test_valid_json(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/data1"
+        dat.name = "data1"
+        dat.text = '{"key": "value", "num": 42}'
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_json_dat("/project1/data1")
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["valid"] is True
+        assert data["format"] == "json"
+        assert data["diagnostics"] == []
+
+    def test_invalid_json_with_line_col(self, api_service_module):
+        """Test that invalid JSON returns diagnostics with line/col."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/data1"
+        dat.name = "data1"
+        # This is invalid JSON. Patch yaml to also fail so we get diagnostics.
+        dat.text = '{"key": value}'
+        mock_td.op.return_value = dat
+
+        # Mock yaml to be unavailable so only JSON is tried
+        with patch.dict("sys.modules", {"yaml": None}):
+            import importlib
+
+            importlib.reload(sys.modules["mcp.services.api_service"])
+            svc = sys.modules["mcp.services.api_service"].TouchDesignerApiService()
+            r = svc.validate_json_dat("/project1/data1")
+
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["valid"] is False
+        assert len(data["diagnostics"]) >= 1
+        diag = data["diagnostics"][0]
+        assert "line" in diag
+        assert "column" in diag
+        assert "message" in diag
+
+    def test_empty_text(self, api_service_module):
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/data1"
+        dat.name = "data1"
+        dat.text = "   "
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_json_dat("/project1/data1")
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["valid"] is True
+        assert data["format"] == "unknown"
+
+    def test_valid_yaml_fallback(self, api_service_module):
+        """If text is not valid JSON but is valid YAML, report yaml format."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/data1"
+        dat.name = "data1"
+        dat.text = "key: value\nlist:\n  - item1\n  - item2\n"
+        mock_td.op.return_value = dat
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_json_dat("/project1/data1")
+        assert r["success"] is True
+        data = r.get("data", {})
+        # Result depends on yaml availability in test env
+        if data["format"] == "yaml":
+            assert data["valid"] is True
+        else:
+            # yaml not installed — falls through to unknown/json error
+            assert data["valid"] is False
+
+    @patch.dict("sys.modules", {"yaml": None})
+    def test_yaml_unavailable_fallback(self, api_service_module):
+        """When yaml is not importable, only JSON validation runs."""
+        mock_td = api_service_module._mock_td
+        dat = MagicMock()
+        dat.valid = True
+        dat.path = "/project1/data1"
+        dat.name = "data1"
+        dat.text = "not: json: or: anything"
+        mock_td.op.return_value = dat
+
+        # Reload to pick up the yaml import mock
+        import importlib
+
+        importlib.reload(api_service_module)
+
+        svc = api_service_module.TouchDesignerApiService()
+        r = svc.validate_json_dat("/project1/data1")
+        assert r["success"] is True
+        data = r.get("data", {})
+        assert data["valid"] is False
+        # Should have at least a JSON diagnostic
+        assert len(data["diagnostics"]) >= 1
+
+
 class TestConfigureInstancing:
     def test_geo_not_found(self, api_service_module):
         mock_td = api_service_module._mock_td
