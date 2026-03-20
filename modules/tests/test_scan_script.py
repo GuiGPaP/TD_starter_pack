@@ -50,8 +50,14 @@ class TestGenerateScanScript:
         """The result dict in the script must have all expected keys."""
         script = generate_scan_script()
         expected_keys = (
-            "ops", "extensions", "customPars", "shortcuts",
-            "warnings", "truncated", "totalFound", "scanned",
+            "ops",
+            "extensions",
+            "customPars",
+            "shortcuts",
+            "warnings",
+            "truncated",
+            "totalFound",
+            "scanned",
         )
         for key in expected_keys:
             assert f'"{key}"' in script, f"Missing key {key!r} in result dict"

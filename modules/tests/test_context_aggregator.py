@@ -48,7 +48,9 @@ class TestAggregateContext:
     def test_partial_failure_produces_warnings(self):
         svc = _make_service()
         svc.get_chop_channels.return_value = {
-            "success": False, "data": None, "error": "not a CHOP",
+            "success": False,
+            "data": None,
+            "error": "not a CHOP",
         }
         r = aggregate_context(svc, "/project1/geo1")
         assert r["success"] is True

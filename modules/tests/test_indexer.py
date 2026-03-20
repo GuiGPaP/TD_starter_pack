@@ -78,9 +78,14 @@ class TestBuildIndex:
 
     def test_empty_scan_data(self):
         empty = {
-            "ops": [], "extensions": {}, "customPars": {},
-            "shortcuts": {}, "warnings": [], "truncated": False,
-            "totalFound": 0, "scanned": 0,
+            "ops": [],
+            "extensions": {},
+            "customPars": {},
+            "shortcuts": {},
+            "warnings": [],
+            "truncated": False,
+            "totalFound": 0,
+            "scanned": 0,
         }
         r = build_index(empty)
         assert r["stats"]["opCount"] == 0
@@ -89,9 +94,14 @@ class TestBuildIndex:
     def test_builtins_section_always_present(self):
         """Builtins section is present even with empty scan data."""
         empty = {
-            "ops": [], "extensions": {}, "customPars": {},
-            "shortcuts": {}, "warnings": [], "truncated": False,
-            "totalFound": 0, "scanned": 0,
+            "ops": [],
+            "extensions": {},
+            "customPars": {},
+            "shortcuts": {},
+            "warnings": [],
+            "truncated": False,
+            "totalFound": 0,
+            "scanned": 0,
         }
         md = build_index(empty)["markdown"]
         assert "# Builtins Anti-Erreurs" in md
@@ -101,8 +111,7 @@ class TestBuildIndex:
     def test_compact_limits_ops_display(self):
         """Compact mode should limit displayed ops to 50."""
         many_ops = [
-            {"path": f"/project1/op{i}", "opType": "nullTOP", "family": "TOP"}
-            for i in range(100)
+            {"path": f"/project1/op{i}", "opType": "nullTOP", "family": "TOP"} for i in range(100)
         ]
         data = _make_scan_data(ops=many_ops)
         md = build_index(data, mode="compact")["markdown"]
@@ -110,8 +119,7 @@ class TestBuildIndex:
 
     def test_full_mode_shows_all_ops(self):
         many_ops = [
-            {"path": f"/project1/op{i}", "opType": "nullTOP", "family": "TOP"}
-            for i in range(100)
+            {"path": f"/project1/op{i}", "opType": "nullTOP", "family": "TOP"} for i in range(100)
         ]
         data = _make_scan_data(ops=many_ops)
         md = build_index(data, mode="full")["markdown"]
