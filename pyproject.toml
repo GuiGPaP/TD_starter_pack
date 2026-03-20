@@ -84,7 +84,10 @@ ignore = [
 "modules/tests/*" = ["T20", "S", "ARG"]
 
 [tool.ruff.format]
-exclude = ["modules/td_server/openapi_server/*"]
+exclude = [
+  "modules/td_server/openapi_server/*",
+  "modules/mcp/controllers/generated_handlers.py",
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["mcp", "utils"]
