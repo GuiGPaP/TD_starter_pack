@@ -15,19 +15,21 @@ description: Write GLSL vertex shaders for TouchDesigner's GLSL MAT operator. Us
 
 ## Critical Guardrails
 
-1. **Never declare TD attributes.** `P`, `N`, `uv[0]`, `Cd`, `T` are auto-injected. Declaring them causes `'P' : redefinition` errors.
+1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, consider running `index_td_project` first. Use `@td-context` for the full workflow.
 
-2. **Always call `TDDeform(P)`.** Without it, instancing and skinning are silently bypassed — geometry renders at origin. Every vertex shader must route positions through `TDDeform` before `TDWorldToProj`.
+2. **Never declare TD attributes.** `P`, `N`, `uv[0]`, `Cd`, `T` are auto-injected. Declaring them causes `'P' : redefinition` errors.
 
-3. **Always match varyings exactly.** Every `out` in the vertex shader needs a corresponding `in` in the pixel shader with the same name and type. Mismatches cause link errors.
+3. **Always call `TDDeform(P)`.** Without it, instancing and skinning are silently bypassed — geometry renders at origin. Every vertex shader must route positions through `TDDeform` before `TDWorldToProj`.
 
-4. **No `#version` directive.** TouchDesigner injects it automatically. Adding one causes a compile error.
+4. **Always match varyings exactly.** Every `out` in the vertex shader needs a corresponding `in` in the pixel shader with the same name and type. Mismatches cause link errors.
 
-5. **Use `layout(location = 0)` on pixel output.** GLSL MAT requires `layout(location = 0) out vec4 fragColor;` — unlike GLSL TOP which omits the layout qualifier.
+5. **No `#version` directive.** TouchDesigner injects it automatically. Adding one causes a compile error.
 
-6. **Transform normals with `worldForNormals`.** Using `mat3(world)` breaks under non-uniform scale. Use `uTDMats[TDCameraIndex()].worldForNormals * N` or `TDDeformNorm(N)` for instanced geometry.
+6. **Use `layout(location = 0)` on pixel output.** GLSL MAT requires `layout(location = 0) out vec4 fragColor;` — unlike GLSL TOP which omits the layout qualifier.
 
-7. **Custom VS replaces default varyings.** Once you supply a vertex shader, `vUV`, `vP`, `vN`, `vColor` stop existing. Declare and write every varying your pixel shader reads.
+7. **Transform normals with `worldForNormals`.** Using `mat3(world)` breaks under non-uniform scale. Use `uTDMats[TDCameraIndex()].worldForNormals * N` or `TDDeformNorm(N)` for instanced geometry.
+
+8. **Custom VS replaces default varyings.** Once you supply a vertex shader, `vUV`, `vP`, `vN`, `vColor` stop existing. Declare and write every varying your pixel shader reads.
 
 ## Fetching Documentation
 

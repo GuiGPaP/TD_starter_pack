@@ -15,25 +15,27 @@ description: "Python DAT linting, code quality, and ruff-based correction loops 
 
 ## Critical Guardrails
 
-1. **Python DATs only.** Ruff parses Python. Running it on GLSL, data, or text DATs produces garbage diagnostics. Always verify `kindGuess == "python"` from `discover_dat_candidates` before linting. WHY: GLSL syntax overlaps with Python keywords enough that ruff won't crash — it will silently produce wrong fixes.
+1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, consider running `index_td_project` first. Use `@td-context` for the full workflow.
 
-2. **Never skip the diagnostic step.** Always run `lint_dat({ fix: false })` before any fix attempt. WHY: You need the full diagnostic picture to decide which fixes are safe. Jumping to `fix: true` on unfamiliar code risks applying partial fixes that break runtime behavior.
+2. **Python DATs only.** Ruff parses Python. Running it on GLSL, data, or text DATs produces garbage diagnostics. Always verify `kindGuess == "python"` from `discover_dat_candidates` before linting. WHY: GLSL syntax overlaps with Python keywords enough that ruff won't crash — it will silently produce wrong fixes.
 
-3. **Dry-run before applying on unknown code.** Use `lint_dat({ fix: true, dryRun: true })` to preview the unified diff before committing changes. WHY: Ruff auto-fixes can remove imports that TD injects at runtime, or collapse expressions the user intentionally expanded for readability.
+3. **Never skip the diagnostic step.** Always run `lint_dat({ fix: false })` before any fix attempt. WHY: You need the full diagnostic picture to decide which fixes are safe. Jumping to `fix: true` on unfamiliar code risks applying partial fixes that break runtime behavior.
 
-4. **Save original text before fixing.** Call `get_dat_text` and store the result before any `lint_dat({ fix: true })` call. WHY: If the fix introduces TD runtime errors, you need the original to rollback via `set_dat_text`. There is no undo in the MCP API.
+4. **Dry-run before applying on unknown code.** Use `lint_dat({ fix: true, dryRun: true })` to preview the unified diff before committing changes. WHY: Ruff auto-fixes can remove imports that TD injects at runtime, or collapse expressions the user intentionally expanded for readability.
 
-5. **Verify runtime after every fix.** Call `get_node_errors` after applying fixes. If errors appear, rollback immediately with `set_dat_text` and report the failure. WHY: Ruff validates syntax, not TD runtime semantics. A syntactically valid fix can break a live operator.
+5. **Save original text before fixing.** Call `get_dat_text` and store the result before any `lint_dat({ fix: true })` call. WHY: If the fix introduces TD runtime errors, you need the original to rollback via `set_dat_text`. There is no undo in the MCP API.
 
-6. **Respect TD's false-positive globals.** `op`, `me`, `parent()`, `ipar`, `tdu`, `ext`, `mod`, `absTime` are injected by TD at runtime. Ruff flags these as F821 (undefined name) or F401 (unused import for `from TDStoreTools import *`). Suppress with `# noqa` or explain — never "fix" by removing them.
+6. **Verify runtime after every fix.** Call `get_node_errors` after applying fixes. If errors appear, rollback immediately with `set_dat_text` and report the failure. WHY: Ruff validates syntax, not TD runtime semantics. A syntactically valid fix can break a live operator.
 
-7. **One DAT at a time.** Process each DAT through the full correction loop individually. WHY: Batching fixes across DATs makes rollback ambiguous and error attribution impossible.
+7. **Respect TD's false-positive globals.** `op`, `me`, `parent()`, `ipar`, `tdu`, `ext`, `mod`, `absTime` are injected by TD at runtime. Ruff flags these as F821 (undefined name) or F401 (unused import for `from TDStoreTools import *`). Suppress with `# noqa` or explain — never "fix" by removing them.
 
-8. **Use the right tool for the language.** Do not use `lint_dat` (ruff) on GLSL or JSON/YAML DATs — use `validate_glsl_dat` or `validate_json_dat` instead. WHY: Ruff is a Python linter; it will parse non-Python content as broken Python and suggest destructive "fixes".
+8. **One DAT at a time.** Process each DAT through the full correction loop individually. WHY: Batching fixes across DATs makes rollback ambiguous and error attribution impossible.
 
-9. **Ruff version mismatch.** TD may have an older system ruff (e.g., 0.7.0) while the project's `.venv` has a newer version (>=0.8). The MCP server's `_find_ruff()` prioritizes the `.venv` binary over system PATH. If lint fails with "Unknown rule selector", check `get_capabilities()` for the ruff version — it may not support all `pyproject.toml` rules. WHY: Rules like `TC` (type-checking imports) require ruff >=0.8.
+9. **Use the right tool for the language.** Do not use `lint_dat` (ruff) on GLSL or JSON/YAML DATs — use `validate_glsl_dat` or `validate_json_dat` instead. WHY: Ruff is a Python linter; it will parse non-Python content as broken Python and suggest destructive "fixes".
 
-10. **Pyright may silently fail.** `typecheck_dat` returns 0 diagnostics when pyright can't run (e.g., `pyright-python` wrapper fails on Windows with "Failed to canonicalize script path"). Check `get_capabilities()` — if `tools.pyright.version` is `null`, typecheck results are unreliable. WHY: The endpoint returns `success: true` with empty diagnostics rather than an error.
+10. **Ruff version mismatch.** TD may have an older system ruff (e.g., 0.7.0) while the project's `.venv` has a newer version (>=0.8). The MCP server's `_find_ruff()` prioritizes the `.venv` binary over system PATH. If lint fails with "Unknown rule selector", check `get_capabilities()` for the ruff version — it may not support all `pyproject.toml` rules. WHY: Rules like `TC` (type-checking imports) require ruff >=0.8.
+
+11. **Pyright may silently fail.** `typecheck_dat` returns 0 diagnostics when pyright can't run (e.g., `pyright-python` wrapper fails on Windows with "Failed to canonicalize script path"). Check `get_capabilities()` — if `tools.pyright.version` is `null`, typecheck results are unreliable. WHY: The endpoint returns `success: true` with empty diagnostics rather than an error.
 
 ## Step 0: Preflight — Check Capabilities
 

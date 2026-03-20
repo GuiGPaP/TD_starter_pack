@@ -1114,6 +1114,138 @@ paths:
           description: Instancing configured successfully
       summary: Configure instancing on a Geometry COMP
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/project-index:
+    get:
+      description: |
+        Scan the operator tree starting at rootPath and build a Markdown index
+        for code-completion context. Cheap global scan — use get_td_context for
+        per-node deep inspection.
+      operationId: index_td_project
+      parameters:
+      - description: Root operator path to start scanning from
+        in: query
+        name: rootPath
+        required: false
+        schema:
+          default: /project1
+          type: string
+      - description: Maximum depth for findChildren
+        in: query
+        name: maxDepth
+        required: false
+        schema:
+          default: 10
+          type: integer
+      - description: Hard cap on operators scanned
+        in: query
+        name: opLimit
+        required: false
+        schema:
+          default: 500
+          type: integer
+      - description: "Index detail level: compact (~2k tokens) or full"
+        in: query
+        name: mode
+        required: false
+        schema:
+          default: compact
+          enum:
+          - compact
+          - full
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      markdown:
+                        type: string
+                      stats:
+                        type: object
+                        properties:
+                          opCount:
+                            type: integer
+                          compCount:
+                            type: integer
+                          extensionCount:
+                            type: integer
+                          warningCount:
+                            type: integer
+                      truncated:
+                        type: boolean
+                      warnings:
+                        type: array
+                        items:
+                          type: string
+                  error:
+                    type: string
+                    nullable: true
+          description: Project index built successfully
+      summary: Build project index for code completion
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/context:
+    get:
+      description: |
+        Aggregate contextual information for a single node. Fetches multiple
+        facets (parameters, channels, extensions, errors, etc.) in one call.
+        Use include to select specific facets; omit for all.
+      operationId: get_td_context
+      parameters:
+      - description: "Absolute path to the target node, e.g. \"/project1/geo1\""
+        in: query
+        name: nodePath
+        required: true
+        schema:
+          type: string
+      - description: Facets to include (omit for all)
+        in: query
+        name: include
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - parameters
+            - channels
+            - tableInfo
+            - extensions
+            - children
+            - errors
+            - datText
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      nodePath:
+                        type: string
+                      facets:
+                        type: object
+                      warnings:
+                        type: array
+                        items:
+                          type: string
+                  error:
+                    type: string
+                    nullable: true
+          description: Node context retrieved successfully
+      summary: Get contextual info for a node (aggregated)
+      x-openapi-router-controller: openapi_server.controllers.default_controller
 components:
   schemas:
     ParameterSchema:

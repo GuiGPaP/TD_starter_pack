@@ -25,21 +25,29 @@ For shader work, use the specialized skill — do not attempt GLSL in td-guide:
 
 ## Critical Guardrails
 
-1. **Pre-trained knowledge is wrong.** TD parameter names, operator types, and API patterns in your training data are frequently incorrect. Always read references and verify parameters with `get_node_parameter_schema` or `[p.name for p in op('/path').pars()]` before writing code.
+1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, consider running `index_td_project` first. Use `@td-context` for the full workflow.
 
-2. **`parent` is a string, not an OP.** In `execute_python_script`, `parent` is injected as a string path. `parent.create(...)` will crash. Always resolve to an OP first: `base = op('/project1/base1')`.
+2. **Pre-trained knowledge is wrong.** TD parameter names, operator types, and API patterns in your training data are frequently incorrect. Always read references and verify parameters with `get_node_parameter_schema` or `[p.name for p in op('/path').pars()]` before writing code.
 
-3. **Error cache is frame-delayed.** TD updates error state on frame boundaries. Fix errors in one `execute_python_script` call, then check errors in a separate call — same-call checks return stale state.
+3. **`parent` is a string, not an OP.** In `execute_python_script`, `parent` is injected as a string path. `parent.create(...)` will crash. Always resolve to an OP first: `base = op('/project1/base1')`.
 
-4. **Always set `viewer = True`.** Matches UI-created operator behavior. Without it, operators appear collapsed and are hard to debug visually.
+4. **Error cache is frame-delayed.** TD updates error state on frame boundaries. Fix errors in one `execute_python_script` call, then check errors in a separate call — same-call checks return stale state.
 
-5. **GLSL ops have docked DATs.** Setting `nodeX`/`nodeY` on a GLSL TOP/MAT does NOT move its docked DATs (`_pixel`, `_vertex`). Use `move_with_docked()` or `td_helpers.layout.move_with_docked`.
+5. **Always set `viewer = True`.** Matches UI-created operator behavior. Without it, operators appear collapsed and are hard to debug visually.
 
-6. **Geometry COMP: shapes go outside.** Create geometry at the parent level and pass it in via In/Out operators. Do not create shapes inside the COMP or reference parent ops with `../`.
+6. **GLSL ops have docked DATs.** Setting `nodeX`/`nodeY` on a GLSL TOP/MAT does NOT move its docked DATs (`_pixel`, `_vertex`). Use `move_with_docked()` or `td_helpers.layout.move_with_docked`.
 
-7. **Use Null as intermediary.** Before any reference connection, insert a Null operator. This makes networks modular and debuggable.
+7. **Geometry COMP: shapes go outside.** Create geometry at the parent level and pass it in via In/Out operators. Do not create shapes inside the COMP or reference parent ops with `../`.
 
-8. **Check parameter bindings before modifying.** Parameters can be bound by reference to a parent COMP or another operator (`par.mode == ParMode.BIND`). Modifying a bound parameter directly can break the binding or propagate the change unexpectedly. Before any `par.xxx = value`, check `par.mode` and `par.bindExpr` — if bound, modify the source instead.
+8. **Use Null as intermediary.** Before any reference connection, insert a Null operator. This makes networks modular and debuggable.
+
+9. **Check parameter bindings before modifying.** Parameters can be bound by reference to a parent COMP or another operator (`par.mode == ParMode.BIND`). Modifying a bound parameter directly can break the binding or propagate the change unexpectedly. Before any `par.xxx = value`, check `par.mode` and `par.bindExpr` — if bound, modify the source instead.
+
+## Python Utilities Routing
+
+| Task | Skill |
+|------|-------|
+| TDFunctions, TDJSON, TDStoreTools, TDResources usage | **td-python** |
 
 ## Fetching Documentation
 

@@ -15,19 +15,21 @@ description: Write GLSL pixel/fragment shaders for TouchDesigner's GLSL TOP oper
 
 ## Critical Guardrails
 
-1. **`out vec4 fragColor;` must be global.** Declaring it inside `main()` produces `'fragColor' : undeclared identifier`. WHY: GLSL requires output variables at file scope.
+1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, consider running `index_td_project` first. Use `@td-context` for the full workflow.
 
-2. **Never declare auto-injected variables.** `sTD2DInputs[]`, `vUV`, `vP`, `vN`, `vColor` are provided by TD. Redeclaring them causes `redefinition` errors.
+2. **`out vec4 fragColor;` must be global.** Declaring it inside `main()` produces `'fragColor' : undeclared identifier`. WHY: GLSL requires output variables at file scope.
 
-3. **Always wrap output with `TDOutputSwizzle()`.** `fragColor = color;` without swizzle produces incorrect colors or black output. WHY: TD needs to apply color space and channel mapping.
+3. **Never declare auto-injected variables.** `sTD2DInputs[]`, `vUV`, `vP`, `vN`, `vColor` are provided by TD. Redeclaring them causes `redefinition` errors.
 
-4. **No `#version` directive.** TouchDesigner injects its own `#version` header. Adding one causes `#version must occur before any other statement`. WHY: the TD compiler prepends its own version line.
+4. **Always wrap output with `TDOutputSwizzle()`.** `fragColor = color;` without swizzle produces incorrect colors or black output. WHY: TD needs to apply color space and channel mapping.
 
-5. **Uniforms require TD-side configuration.** Declaring `uniform float uTime;` in GLSL is not enough — you must also set the name, type, and value/expression on the GLSL TOP's parameter page. Unused uniforms get optimized away by the compiler.
+5. **No `#version` directive.** TouchDesigner injects its own `#version` header. Adding one causes `#version must occur before any other statement`. WHY: the TD compiler prepends its own version line.
 
-6. **Guard `normalize()` against zero-length vectors.** `normalize(vec2(0.0))` is undefined behavior and produces NaN. Always check `length() > 0.0` first. WHY: common in radial effects when UV equals center.
+6. **Uniforms require TD-side configuration.** Declaring `uniform float uTime;` in GLSL is not enough — you must also set the name, type, and value/expression on the GLSL TOP's parameter page. Unused uniforms get optimized away by the compiler.
 
-7. **Cache texture samples.** Each `texture()` call is a GPU memory fetch. Sample once into a variable, access `.rgb`/`.a` from the cached result. WHY: redundant fetches at the same UV are pure waste.
+7. **Guard `normalize()` against zero-length vectors.** `normalize(vec2(0.0))` is undefined behavior and produces NaN. Always check `length() > 0.0` first. WHY: common in radial effects when UV equals center.
+
+8. **Cache texture samples.** Each `texture()` call is a GPU memory fetch. Sample once into a variable, access `.rgb`/`.a` from the cached result. WHY: redundant fetches at the same UV are pure waste.
 
 ## Fetching Documentation
 
