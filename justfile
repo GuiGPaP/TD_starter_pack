@@ -21,8 +21,16 @@ typecheck:
 test:
     uv run pytest
 
+# Check module sync (root → submodule)
+sync-check:
+    uv run python scripts/sync_modules.py --check
+
+# Sync modules root → submodule
+sync:
+    uv run python scripts/sync_modules.py --sync
+
 # All checks
-check: lint typecheck
+check: lint typecheck sync-check
 
 # Install git hooks (requires lefthook)
 hooks:

@@ -31,3 +31,26 @@ jobs:
       - uses: astral-sh/setup-uv@v4
       - run: uv sync
       - run: uv run pytest --cov --cov-report=term-missing
+
+  sync-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --group dev
+      - run: uv run python scripts/sync_modules.py --check
+
+  generated-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cd _mcp_server && npm ci
+      - run: cd _mcp_server && npm run gen:handlers
+      - run: diff _mcp_server/td/modules/mcp/controllers/generated_handlers.py modules/mcp/controllers/generated_handlers.py
