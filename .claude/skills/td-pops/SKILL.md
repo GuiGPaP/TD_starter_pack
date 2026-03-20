@@ -24,21 +24,23 @@ description: Write GLSL compute shaders for TouchDesigner's POP (Point Operator)
 
 ## Critical Guardrails
 
-1. **No fragment-shader constructs.** There is no `out vec4 fragColor`, no `vUV`, no `sTD2DInputs`, no `TDOutputSwizzle()`. Those belong to GLSL TOPs/MATs. Using them produces compile errors that look unrelated to the real cause.
+1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, consider running `index_td_project` first. Use `@td-context` for the full workflow.
 
-2. **Always bounds-check.** `if (id >= TDNumElements()) return;` prevents out-of-bounds SSBO writes. Skipping this causes GPU hangs or crashes with no useful error message.
+2. **No fragment-shader constructs.** There is no `out vec4 fragColor`, no `vUV`, no `sTD2DInputs`, no `TDOutputSwizzle()`. Those belong to GLSL TOPs/MATs. Using them produces compile errors that look unrelated to the real cause.
 
-3. **Output attributes are arrays, inputs are functions.** Write `P[id] = value;`, read `TDIn_P()`. Confusing the two produces undeclared identifier errors.
+3. **Always bounds-check.** `if (id >= TDNumElements()) return;` prevents out-of-bounds SSBO writes. Skipping this causes GPU hangs or crashes with no useful error message.
 
-4. **List every output attribute.** Attributes must be listed in the operator's "Output Attributes" parameter or they won't exist as writable arrays. Missing this causes silent failures — the shader compiles but data disappears.
+4. **Output attributes are arrays, inputs are functions.** Write `P[id] = value;`, read `TDIn_P()`. Confusing the two produces undeclared identifier errors.
 
-5. **Initialize outputs or write every element.** Uninitialized output buffers contain garbage. Either enable "Initialize Output Attributes" in the operator parameters, or explicitly write every output element. Reading uninitialized data downstream causes crashes.
+5. **List every output attribute.** Attributes must be listed in the operator's "Output Attributes" parameter or they won't exist as writable arrays. Missing this causes silent failures — the shader compiles but data disappears.
 
-6. **Match syntax to operator type.** GLSL POP uses `TDIn_P()` / `P[id]`. GLSL Advanced POP uses `TDInPoint_P()` / `oTDPoint_P[id]`. Mixing them produces undeclared identifier errors.
+6. **Initialize outputs or write every element.** Uninitialized output buffers contain garbage. Either enable "Initialize Output Attributes" in the operator parameters, or explicitly write every output element. Reading uninitialized data downstream causes crashes.
 
-7. **Call `TDUpdatePointGroups()` in Copy POP.** Without this call, point group membership is silently lost across copies. Similarly, call `TDUpdateTopology()` in vertex shaders and `TDUpdatePrimGroups()` in primitive shaders.
+7. **Match syntax to operator type.** GLSL POP uses `TDIn_P()` / `P[id]`. GLSL Advanced POP uses `TDInPoint_P()` / `oTDPoint_P[id]`. Mixing them produces undeclared identifier errors.
 
-8. **Guard against division by zero in force calculations.** Clamp distances with `max(dist, EPSILON)` — zero-distance singularities produce NaN that propagates to every downstream attribute.
+8. **Call `TDUpdatePointGroups()` in Copy POP.** Without this call, point group membership is silently lost across copies. Similarly, call `TDUpdateTopology()` in vertex shaders and `TDUpdatePrimGroups()` in primitive shaders.
+
+9. **Guard against division by zero in force calculations.** Clamp distances with `max(dist, EPSILON)` — zero-distance singularities produce NaN that propagates to every downstream attribute.
 
 ## Fetching Documentation
 

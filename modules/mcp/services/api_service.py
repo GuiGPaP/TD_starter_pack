@@ -121,6 +121,18 @@ class IApiService(Protocol):
     def get_health(self) -> Result: ...
     def get_capabilities(self) -> Result: ...
     def typecheck_dat(self, node_path: str) -> Result: ...
+    def index_td_project(
+        self,
+        root_path: str = ...,
+        max_depth: int = ...,
+        op_limit: int = ...,
+        mode: str = ...,
+    ) -> Result: ...
+    def get_td_context(
+        self,
+        node_path: str,
+        include: list[str] | None = ...,
+    ) -> Result: ...
 
 
 class TouchDesignerApiService(IApiService):
@@ -2396,6 +2408,47 @@ class TouchDesignerApiService(IApiService):
             return safe_serialize(item)
         except Exception:
             return str(item)
+
+
+    def index_td_project(
+        self,
+        root_path: str = "/project1",
+        max_depth: int = 10,
+        op_limit: int = 500,
+        mode: str = "compact",
+    ) -> Result:
+        """Build a project index for code completion.
+
+        Generates a scan script, executes it in the TD runtime, then
+        feeds the result through the Markdown indexer.
+        """
+        from mcp.services.completion.indexer import build_index
+        from mcp.services.completion.scan_script import generate_scan_script
+
+        script = generate_scan_script(root_path, max_depth, op_limit)
+        exec_result = self.exec_python_script(script)
+
+        if not exec_result.get("success"):
+            return error_result(
+                f"Scan script failed: {exec_result.get('error', 'unknown')}"
+            )
+
+        scan_data = exec_result.get("data", {}).get("result")
+        if scan_data is None:
+            return error_result("Scan script returned no data")
+
+        index = build_index(scan_data, mode=mode)
+        return success_result(index)
+
+    def get_td_context(
+        self,
+        node_path: str,
+        include: list[str] | None = None,
+    ) -> Result:
+        """Get contextual info for a node (aggregated facets)."""
+        from mcp.services.completion.context_aggregator import aggregate_context
+
+        return aggregate_context(self, node_path, include)
 
 
 api_service = TouchDesignerApiService()

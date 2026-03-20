@@ -12,3 +12,4 @@ Pick the ONE file that matches your task. If unsure, start with @basics/index.md
 | GLSL orientation and routing to shader skills | @glsl.md |
 | Python environment, bundled packages, threading, subprocess | @python-environment.md |
 | MCP API endpoints, tool usage, semantic introspection | @project-api.md |
+| TDFunctions, TDJSON, TDStoreTools, TDResources detailed usage | Use **td-python** skill |
