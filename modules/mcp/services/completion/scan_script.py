@@ -11,25 +11,25 @@ from __future__ import annotations
 
 
 def generate_scan_script(
-	root_path: str = "/project1",
-	max_depth: int = 10,
-	op_limit: int = 500,
+    root_path: str = "/project1",
+    max_depth: int = 10,
+    op_limit: int = 500,
 ) -> str:
-	"""Return a Python script string that scans the TD operator tree.
+    """Return a Python script string that scans the TD operator tree.
 
-	Parameters
-	----------
-	root_path:
-		Root operator path to start the scan from.
-	max_depth:
-		Maximum depth for ``findChildren``.
-	op_limit:
-		Hard cap on the number of operators to scan.  When the total
-		children exceed this limit the scan is truncated and
-		``truncated`` is set to ``True``.
-	"""
+    Parameters
+    ----------
+    root_path:
+            Root operator path to start the scan from.
+    max_depth:
+            Maximum depth for ``findChildren``.
+    op_limit:
+            Hard cap on the number of operators to scan.  When the total
+            children exceed this limit the scan is truncated and
+            ``truncated`` is set to ``True``.
+    """
 
-	return f"""\
+    return f"""\
 import inspect as _inspect
 
 _root = op({root_path!r})

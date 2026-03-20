@@ -2409,7 +2409,6 @@ class TouchDesignerApiService(IApiService):
         except Exception:
             return str(item)
 
-
     def index_td_project(
         self,
         root_path: str = "/project1",
@@ -2429,9 +2428,7 @@ class TouchDesignerApiService(IApiService):
         exec_result = self.exec_python_script(script)
 
         if not exec_result.get("success"):
-            return error_result(
-                f"Scan script failed: {exec_result.get('error', 'unknown')}"
-            )
+            return error_result(f"Scan script failed: {exec_result.get('error', 'unknown')}")
 
         scan_data = exec_result.get("data", {}).get("result")
         if scan_data is None:
