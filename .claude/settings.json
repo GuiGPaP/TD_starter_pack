@@ -6,7 +6,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); f=$(echo \"$input\" | jq -r \".tool_input.file_path // empty\"); [[ \"$f\" == *.py && \"$f\" == */modules/* ]] && uv run ruff check --fix \"$f\" && uv run ruff format \"$f\" || true'",
+            "command": "bash -c 'f=$(grep -oP '\"'\"'\"file_path\"\\s*:\\s*\"\\K[^\"]*'\"'\"'); [[ \"$f\" == *.py && \"$f\" == */modules/* ]] && uv run ruff check --fix \"$f\" && uv run ruff format \"$f\" || true'",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'f=$(grep -oP '\"'\"'\"file_path\"\\s*:\\s*\"\\K[^\"]*'\"'\"'); [[ \"$f\" == *.ts && \"$f\" == */_mcp_server/* ]] && cd _mcp_server && npx biome check --write \"$f\" || true'",
             "timeout": 10
           }
         ]
@@ -17,8 +22,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run pyright 2>&1 | tail -3",
-            "timeout": 15
+            "command": "bash -c 'changed=$(git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null); py=$(echo \"$changed\" | grep \"^modules/.*\\.py$\" || true); ts=$(echo \"$changed\" | grep \"^_mcp_server/.*\\.ts$\" || true); ok=true; if [ -n \"$py\" ]; then echo \"=== Python checks ===\"; uv run ruff check modules/ || ok=false; uv run ruff format --check modules/ || ok=false; uv run pyright 2>&1 | tail -5 || ok=false; uv run python scripts/sync_modules.py --check || ok=false; fi; if [ -n \"$ts\" ]; then echo \"=== TypeScript checks ===\"; cd _mcp_server && npx tsc --noEmit || ok=false; npx biome check || ok=false; fi; $ok'",
+            "timeout": 30
           }
         ]
       }
