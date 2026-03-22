@@ -1,0 +1,201 @@
+<!-- session_id: 36620acd-2faa-472b-9dca-2c1263868f5d -->
+# Epic 8 — Issue #58 : Tools MCP get_glsl_pattern + search_glsl_patterns
+
+## Context
+
+Issue #57 a livré le catalogue (16 patterns JSON + schema Zod + registry). Issue #58 ajoute deux outils MCP read-only/offline pour interroger le catalogue. Suit le pattern exact de `assetTools.ts` (search/get).
+
+## Problème de plumbing
+
+Le `KnowledgeRegistry` est créé dans `registerResources()` (`resources/index.ts:17`) mais n'est pas passé à `registerTools()`. Il faut modifier la chaîne pour partager le registry.
+
+**Approche** : `registerResources()` retourne le `KnowledgeRegistry` → `registerAllFeatures()` le passe à `registerTools()`.
+
+---
+
+## Tâche 1 : Plumbing du KnowledgeRegistry
+
+### 1a. `_mcp_server/src/features/resources/index.ts`
+
+Modifier `registerResources()` pour retourner le registry :
+```typescript
+export function registerResources(...): KnowledgeRegistry {
+  const registry = new KnowledgeRegistry(logger);
+  // ... existing code ...
+  return registry;
+}
+```
+
+### 1b. `_mcp_server/src/server/touchDesignerServer.ts`
+
+Capturer le registry et le passer aux tools :
+```typescript
+private registerAllFeatures(): void {
+  registerPrompts(this.server, this.logger);
+  const knowledgeRegistry = registerResources(this.server, this.logger, this.tdClient, this.serverMode);
+  registerTools(this.server, this.logger, this.tdClient, this.serverMode, knowledgeRegistry);
+}
+```
+
+### 1c. `_mcp_server/src/features/tools/register.ts`
+
+Ajouter le paramètre `knowledgeRegistry` :
+```typescript
+export function registerTools(
+  server: McpServer,
+  logger: ILogger,
+  tdClient: TouchDesignerClient,
+  serverMode: ServerMode,
+  knowledgeRegistry: KnowledgeRegistry,
+): void {
+  registerTdTools(server, logger, tdClient, serverMode);
+  // ... existing asset registry code ...
+  registerGlslPatternTools(server, logger, knowledgeRegistry, serverMode);
+}
+```
+
+---
+
+## Tâche 2 : Constants
+
+**Fichier** : `_mcp_server/src/core/constants.ts`
+
+Ajouter dans `TOOL_NAMES` :
+```typescript
+GET_GLSL_PATTERN: "get_glsl_pattern",
+SEARCH_GLSL_PATTERNS: "search_glsl_patterns",
+```
+
+---
+
+## Tâche 3 : Formatter
+
+**Fichier** : `_mcp_server/src/features/tools/presenter/glslPatternFormatter.ts` (nouveau)
+
+Deux fonctions suivant le pattern de `templateFormatter.ts` :
+
+### `formatGlslPatternDetail(entry, options)`
+- Titre + summary + type + difficulty + GPU cost
+- Code GLSL (truncated si responseFormat != "json")
+- Setup operators/uniforms
+- Warnings
+- Utilise `finalizeFormattedText()`
+
+### `formatGlslPatternSearchResults(entries, options)`
+- Liste compacte : id | title | type | difficulty | summary
+- Utilise `finalizeFormattedText()`
+
+**Fichier** : `_mcp_server/src/features/tools/presenter/index.ts`
+- Ajouter exports pour les deux fonctions
+
+---
+
+## Tâche 4 : Tool handler
+
+**Fichier** : `_mcp_server/src/features/tools/handlers/glslPatternTools.ts` (nouveau)
+
+Suit exactement le pattern `assetTools.ts` :
+
+### `search_glsl_patterns`
+
+Schema (extend `detailOnlyFormattingSchema`) :
+```typescript
+{
+  query: z.string().min(1).optional(),
+  type: z.enum(["pixel", "vertex", "compute", "utility"]).optional(),
+  difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
+  tags: z.array(z.string()).optional(),
+  maxResults: z.number().int().min(1).max(50).default(10).optional(),
+}
+```
+
+Handler :
+1. Pre-filtre `registry.getByKind("glsl-pattern")` par type/difficulty si spécifié
+2. Si query fourni, filtre via text match (ou utilise `registry.search()`)
+3. Si tags fourni, filtre les entries dont `payload.tags` intersecte
+4. Slice à `maxResults`
+5. Formate via `formatGlslPatternSearchResults()`
+
+### `get_glsl_pattern`
+
+Schema :
+```typescript
+{
+  id: z.string().min(1),
+  includeSetup: z.boolean().default(true).optional(),
+  includeCode: z.boolean().default(true).optional(),
+}
+```
+
+Handler :
+1. `registry.getById(id)` → vérifie kind === "glsl-pattern"
+2. Si pas trouvé, retourne erreur
+3. Formate via `formatGlslPatternDetail()`
+4. Option pour omettre code/setup (réponse allégée)
+
+### Registration function
+
+```typescript
+export function registerGlslPatternTools(
+  server: McpServer,
+  logger: ILogger,
+  registry: KnowledgeRegistry,
+  serverMode: ServerMode,
+): void { ... }
+```
+
+---
+
+## Tâche 5 : Tests
+
+### 5a. `_mcp_server/tests/unit/tools/glslPatternTools.test.ts` (nouveau)
+
+- Mock `KnowledgeRegistry` avec des entries fabriquées
+- `get_glsl_pattern` : retourne entry connue, erreur pour ID inconnu, erreur pour kind != glsl-pattern
+- `search_glsl_patterns` : filtre par type, difficulty, tags, query
+- `search_glsl_patterns` : respecte maxResults
+- `search_glsl_patterns` : retourne vide si pas de match
+
+### 5b. `_mcp_server/tests/unit/presenters/glslPatternFormatter.test.ts` (nouveau)
+
+- `formatGlslPatternDetail` : contient title, summary, code, setup
+- `formatGlslPatternSearchResults` : contient entries avec id/title/type
+
+---
+
+## Tâche 6 : Gate finale
+
+```bash
+cd _mcp_server
+npx tsc --noEmit
+npx biome check <fichiers modifiés/créés>
+npm run test:unit
+```
+
+---
+
+## Fichiers modifiés/créés
+
+| Action | Fichier |
+|---|---|
+| Modifier | `_mcp_server/src/features/resources/index.ts` (return registry) |
+| Modifier | `_mcp_server/src/server/touchDesignerServer.ts` (pass registry) |
+| Modifier | `_mcp_server/src/features/tools/register.ts` (accept + pass registry) |
+| Modifier | `_mcp_server/src/core/constants.ts` (2 new TOOL_NAMES) |
+| Modifier | `_mcp_server/src/features/tools/presenter/index.ts` (exports) |
+| Créer | `_mcp_server/src/features/tools/handlers/glslPatternTools.ts` |
+| Créer | `_mcp_server/src/features/tools/presenter/glslPatternFormatter.ts` |
+| Créer | `_mcp_server/tests/unit/tools/glslPatternTools.test.ts` |
+| Créer | `_mcp_server/tests/unit/presenters/glslPatternFormatter.test.ts` |
+
+## Ordre d'exécution
+
+```
+1. Plumbing (resources/index.ts → touchDesignerServer.ts → register.ts) → tsc
+2. Constants (constants.ts) → tsc
+3. Formatter (glslPatternFormatter.ts + presenter/index.ts) → tsc + biome
+4. Tool handler (glslPatternTools.ts) → tsc + biome
+5. Tests → test:unit
+6. Gate finale
+7. Commit submodule + bump parent
+```
