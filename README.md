@@ -5,6 +5,8 @@
 Starter pack pour piloter TouchDesigner depuis Claude via le Model Context Protocol (MCP).
 Le serveur MCP fonctionne en **mode docs-only** (recherche d'opérateurs, GLSL patterns, assets) sans TouchDesigner, et passe automatiquement en **mode live** quand TD est connecté.
 
+**[Guide utilisateur complet](docs/user-guide.md)** | **[Full user guide (EN)](docs/user-guide.en.md)**
+
 ## Prérequis
 
 - **Node.js 18+** — requis pour le serveur MCP
