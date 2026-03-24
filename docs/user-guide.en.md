@@ -12,6 +12,7 @@
 - [Audit log](#audit-log)
 - [Operator search](#operator-search)
 - [Operator comparison](#operator-comparison)
+- [TD Project Catalogue](#td-project-catalogue)
 - [Version compatibility](#version-compatibility)
 - [Claude Skills](#claude-skills)
 - [Configuration](#configuration)
@@ -26,8 +27,10 @@ The MCP server runs in two auto-detected modes:
 ### Docs-only mode (no TouchDesigner)
 
 The server starts immediately without waiting for TD. Offline tools are available:
-- Operator, GLSL pattern, and asset search
+- Operator, GLSL pattern, asset, and project search
+- Side-by-side operator comparison
 - Knowledge catalogue browsing (operators, Python modules)
+- Scan and search your TD project library
 - Script analysis and preview (without execution)
 - Audit log viewing
 
@@ -35,9 +38,10 @@ The server starts immediately without waiting for TD. Offline tools are availabl
 
 When TD is connected (port 9981 by default), all tools become available:
 - Node creation, modification, deletion
-- Python script execution in TD
+- Python script execution in TD (with security modes)
 - DAT linting, formatting, validation
 - Asset and GLSL pattern deployment
+- Project packaging (manifest, README, thumbnail generation)
 
 Mode transitions are logged to stderr. Use `get_health` to check connection status.
 
@@ -111,6 +115,14 @@ Mode transitions are logged to stderr. Use `get_health` to check connection stat
 |------|------|-------------|
 | `deploy_td_asset` | live | Deploy a .tox asset into the project (dry-run, force) |
 | `deploy_glsl_pattern` | live | Deploy a GLSL pattern (creates ops, injects code, wires) |
+
+### Project Catalogue
+
+| Tool | Mode | Description |
+|------|------|-------------|
+| `package_project` | live | Generate a `.td-catalog.json` manifest, `.td-catalog.md` README, and `.td-catalog.png` thumbnail (best-effort) for the open TD project |
+| `scan_projects` | offline | Scan a directory for .toe files and list indexed vs non-indexed |
+| `search_projects` | offline | Scored search across catalogued manifests by name, tags, description |
 
 ### Introspection
 
@@ -256,6 +268,42 @@ compare_operators(op1="noise-top", op2="noise-chop", detailLevel="detailed")
 ```
 
 Returns: common and unique parameters, family, parameter count, version compatibility, descriptions. Works offline (static data) and better online (live enriched parameters).
+
+---
+
+## TD Project Catalogue
+
+A cataloguing system to organize and find your TouchDesigner projects.
+
+### Package a project
+
+With a `.toe` open in TD:
+
+```
+package_project(tags=["feedback", "glsl"], author="MyName")
+```
+
+Generates 3 sidecar files next to the `.toe`:
+- `{name}.td-catalog.json` — manifest with metadata (operators, components, tags, TD version)
+- `{name}.td-catalog.md` — auto-generated README
+- `{name}.td-catalog.png` — thumbnail from the first TOP with output (best-effort, may fail without blocking)
+
+### Scan a directory
+
+```
+scan_projects(rootDir="C:/Users/xxx/Documents/TouchDesigner")
+```
+
+Lists all `.toe` files found and indicates which ones have a manifest (indexed) or not.
+
+### Search projects
+
+```
+search_projects(query="feedback", rootDir="C:/Users/xxx/Documents/TouchDesigner")
+search_projects(query="", rootDir="...", tags=["glsl"])
+```
+
+Scored search by name, tags, description across catalogued manifests.
 
 ---
 

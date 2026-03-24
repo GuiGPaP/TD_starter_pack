@@ -13,6 +13,7 @@
   - [Operateurs DAT](#operateurs-dat)
   - [Assemblage reseau](#assemblage-reseau)
   - [Deploiement](#deploiement)
+  - [Catalogue de projets](#catalogue-de-projets)
   - [Introspection](#introspection)
 - [Resources MCP](#resources-mcp)
 - [Prompts MCP](#prompts-mcp)
@@ -20,6 +21,7 @@
 - [Audit log](#audit-log)
 - [Recherche d'operateurs](#recherche-doperateurs)
 - [Comparaison d'operateurs](#comparaison-doperateurs)
+- [Catalogue de projets TD](#catalogue-de-projets-td)
 - [Compatibilite de version](#compatibilite-de-version)
 - [Skills Claude](#skills-claude)
 - [Configuration](#configuration)
@@ -34,8 +36,10 @@ Le serveur MCP fonctionne en deux modes qui se detectent automatiquement :
 ### Mode docs-only (sans TouchDesigner)
 
 Le serveur demarre immediatement sans attendre TD. Les outils offline sont disponibles :
-- Recherche d'operateurs, patterns GLSL, assets
+- Recherche d'operateurs, patterns GLSL, assets, projets TD
+- Comparaison d'operateurs cote-a-cote
 - Consultation du catalogue de connaissances (operators, modules Python)
+- Scan et recherche dans votre bibliotheque de projets TD
 - Analyse et preview de scripts Python (sans execution)
 - Consultation de l'audit log
 
@@ -43,9 +47,10 @@ Le serveur demarre immediatement sans attendre TD. Les outils offline sont dispo
 
 Quand TD est connecte (port 9981 par defaut), tous les outils deviennent disponibles :
 - Creation, modification, suppression de nodes
-- Execution de scripts Python dans TD
+- Execution de scripts Python dans TD (avec modes de securite)
 - Linting, formatage, validation de DATs
 - Deploiement d'assets et patterns GLSL
+- Packaging de projet (generation de manifest, README, thumbnail)
 
 Le passage d'un mode a l'autre est affiche dans les logs stderr du serveur. Utilisez `get_health` pour verifier l'etat de la connexion.
 
@@ -119,6 +124,14 @@ Le passage d'un mode a l'autre est affiche dans les logs stderr du serveur. Util
 |-------|------|-------------|
 | `deploy_td_asset` | live | Deployer un asset .tox dans le projet (dry-run, force) |
 | `deploy_glsl_pattern` | live | Deployer un pattern GLSL (cree les ops, injecte le code, connecte) |
+
+### Catalogue de projets
+
+| Outil | Mode | Description |
+|-------|------|-------------|
+| `package_project` | live | Generer un manifest `.td-catalog.json`, un README `.td-catalog.md` et un thumbnail `.td-catalog.png` (best-effort) pour le projet TD ouvert |
+| `scan_projects` | offline | Scanner un dossier pour trouver les `.toe` et lister ceux qui sont indexes ou non |
+| `search_projects` | offline | Recherche scoree dans les manifests catalogues par nom, tags, description |
 
 ### Introspection
 
@@ -264,6 +277,42 @@ compare_operators(op1="noise-top", op2="noise-chop", detailLevel="detailed")
 ```
 
 Retourne : parametres communs et uniques a chaque operateur, famille, nombre de parametres, compatibilite de version, descriptions. Fonctionne offline (donnees statiques) et mieux online (parametres live enrichis).
+
+---
+
+## Catalogue de projets TD
+
+Systeme de catalogage pour organiser et retrouver vos projets TouchDesigner.
+
+### Packager un projet
+
+Avec un `.toe` ouvert dans TD :
+
+```
+package_project(tags=["feedback", "glsl"], author="MonNom")
+```
+
+Genere 3 fichiers sidecar a cote du `.toe` :
+- `{nom}.td-catalog.json` — manifest avec metadonnees (operateurs, composants, tags, version TD)
+- `{nom}.td-catalog.md` — README auto-genere
+- `{nom}.td-catalog.png` — thumbnail du premier TOP avec output (best-effort, peut echouer sans warning bloquant)
+
+### Scanner un dossier
+
+```
+scan_projects(rootDir="C:/Users/xxx/Documents/TouchDesigner")
+```
+
+Liste tous les `.toe` trouves et indique lesquels ont un manifest (indexes) ou non.
+
+### Rechercher un projet
+
+```
+search_projects(query="feedback", rootDir="C:/Users/xxx/Documents/TouchDesigner")
+search_projects(query="", rootDir="...", tags=["glsl"])
+```
+
+Recherche scoree par nom, tags, description dans les manifests catalogues.
 
 ---
 
