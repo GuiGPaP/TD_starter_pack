@@ -1,0 +1,36 @@
+{
+	"name": "TD Starter Pack",
+	"version": "1.0.0",
+	"description": "Starter pack pour piloter TouchDesigner depuis Claude via le Model Context Protocol (MCP). Mode docs-only + mode live.",
+	"author": "GuiGPaP",
+	"license": "MIT",
+	"tdVersion": "2025",
+	"pythonVersion": "3.11",
+	"tags": ["mcp", "ai", "claude", "automation", "touchdesigner", "creative-coding"],
+	"repository": "https://github.com/GuiGPaP/TD_starter_pack",
+	"components": [
+		{
+			"file": "mcp_webserver_base.tox",
+			"description": "Web bridge MCP — lance le serveur HTTP sur le port 9981 pour la communication avec le serveur MCP Node.js",
+			"placement": "/project1/mcp_webserver_base"
+		}
+	],
+	"entryPoint": "starter_pack.toe",
+	"features": [
+		"45 outils MCP (recherche, creation, introspection, linting, deploiement)",
+		"Mode docs-only : fonctionne sans TouchDesigner (recherche, patterns GLSL, assets)",
+		"Mode live : pilotage complet de TD (nodes, scripts, parametres)",
+		"Modes de securite execute_python_script (read-only, safe-write, full-exec)",
+		"Recherche scoree et comparaison d'operateurs",
+		"16 patterns GLSL deployables (pixel, vertex, compute)",
+		"Audit log des executions Python",
+		"7 skills Claude specialises (td-guide, td-glsl, td-pops, etc.)"
+	],
+	"quickStart": [
+		"git clone https://github.com/GuiGPaP/TD_starter_pack.git && cd TD_starter_pack",
+		"git submodule update --init",
+		"cd _mcp_server && npm ci && npm run build:dist && cd ..",
+		"Ouvrir starter_pack.toe dans TouchDesigner",
+		"Lancer Claude Code dans ce dossier"
+	]
+}
