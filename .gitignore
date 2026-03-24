@@ -1,5 +1,4 @@
 _tmp_*
-.mcp.json
 __pycache__
 *.pyc
 .env
