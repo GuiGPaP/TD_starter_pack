@@ -75,11 +75,15 @@ codex mcp add touchdesigner -- node /chemin/vers/TD_starter_pack/_mcp_server/dis
 | Catégorie | Outils | Mode |
 |-----------|--------|------|
 | **Santé** | `get_health`, `wait_for_td` | offline |
-| **Recherche** | `search_td_assets`, `search_glsl_patterns`, `describe_td_tools` | offline |
+| **Recherche** | `search_operators`, `search_td_assets`, `search_glsl_patterns`, `search_projects`, `describe_td_tools` | offline |
+| **Comparaison** | `compare_operators` | offline |
 | **Catalogues** | `get_td_asset`, `get_glsl_pattern`, `get_capabilities` | offline |
+| **Catalogue projets** | `scan_projects`, `search_projects` | offline |
 | **Nodes** | `get_td_nodes`, `get_td_node_parameters`, `create_td_node`, `delete_td_node`, `update_td_node_parameters`, `get_td_node_errors` | live |
 | **Helpers** | `create_geometry_comp`, `create_feedback_loop`, `configure_instancing` | live |
-| **Exécution** | `execute_python_script`, `exec_node_method` | live |
+| **Exécution** | `execute_python_script` (modes: read-only/safe-write/full-exec), `exec_node_method` | live |
+| **Audit** | `get_exec_log` | offline |
+| **Packaging** | `package_project` | live |
 | **Introspection TD** | `get_td_info`, `get_td_classes`, `get_td_class_details`, `get_td_module_help` | live |
 | **Introspection noeuds** | `get_node_parameter_schema`, `complete_op_paths`, `get_chop_channels`, `get_dat_table_info`, `get_comp_extensions` | live |
 | **DAT** | `get_dat_text`, `set_dat_text`, `lint_dat`, `lint_dats`, `typecheck_dat`, `format_dat`, `discover_dat_candidates` | live |
