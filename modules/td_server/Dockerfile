@@ -9,6 +9,10 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . /usr/src/app
 
+# Run as non-root user
+RUN adduser -D -S app -G nogroup
+USER app
+
 EXPOSE 8080
 
 ENTRYPOINT ["python3"]

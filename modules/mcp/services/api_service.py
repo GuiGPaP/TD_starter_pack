@@ -7,6 +7,7 @@ import contextlib
 import datetime as _dt
 import difflib
 import fnmatch
+import hashlib
 import importlib
 import inspect
 import io
@@ -39,6 +40,110 @@ _GLSLANG_BASE_URL = (
 _GLSLANG_EXE = "glslangValidator.exe" if os.name == "nt" else "glslangValidator"
 _GLSLANG_FAIL_SENTINEL = ".glslang_download_failed"
 _GLSLANG_FAIL_COOLDOWN_S = 3600  # retry after 1 hour
+
+# ---------------------------------------------------------------------------
+# Script execution mode enforcement (mirrors TS scriptAnalyzer patterns)
+# ---------------------------------------------------------------------------
+import builtins as _builtins_mod  # noqa: E402
+import re as _re  # noqa: E402
+
+_VALID_MODES = frozenset({"read-only", "safe-write", "full-exec"})
+
+# Patterns that escalate from read-only → safe-write
+_SAFE_WRITE_PATTERNS: list[tuple[_re.Pattern[str], str]] = [
+    (_re.compile(r"\.par\.\w+\s*=[^=]"), "parameter assignment requires safe-write"),
+    (_re.compile(r"\.create\s*\("), ".create() requires safe-write"),
+    (_re.compile(r"\.copy\s*\("), ".copy() requires safe-write"),
+    (_re.compile(r"\.connect\s*\("), ".connect() requires safe-write"),
+    (_re.compile(r"\.text\s*=[^=]"), ".text assignment requires safe-write"),
+    (_re.compile(r"\.insertRow\s*\("), ".insertRow() requires safe-write"),
+    (_re.compile(r"\.appendRow\s*\("), ".appendRow() requires safe-write"),
+    (_re.compile(r"\.deleteRow\s*\("), ".deleteRow() requires safe-write"),
+]
+
+# Patterns that escalate to full-exec
+_FULL_EXEC_PATTERNS: list[tuple[_re.Pattern[str], str]] = [
+    (_re.compile(r"\.destroy\s*\("), ".destroy() requires full-exec"),
+    (_re.compile(r"os\.(remove|unlink|rmdir)\s*\("), "os.remove/unlink/rmdir requires full-exec"),
+    (_re.compile(r"shutil\.rmtree\s*\("), "shutil.rmtree requires full-exec"),
+    (_re.compile(r"\bsubprocess\b"), "subprocess usage requires full-exec"),
+    (_re.compile(r"os\.system\s*\("), "os.system() requires full-exec"),
+    (_re.compile(r"\beval\s*\("), "eval() requires full-exec"),
+    (_re.compile(r"\bexec\s*\("), "exec() requires full-exec"),
+    (_re.compile(r"\bcompile\s*\("), "compile() requires full-exec"),
+    (_re.compile(r"__import__\s*\("), "__import__() requires full-exec"),
+    (_re.compile(r"\bimportlib\b"), "importlib usage requires full-exec"),
+    (_re.compile(r"getattr\s*\(\s*__builtins__"), "getattr(__builtins__) requires full-exec"),
+    (_re.compile(r"\bopen\s*\([^)]*['\"][wab]"), "open() with write mode requires full-exec"),
+    (_re.compile(r"\bsocket\b"), "socket usage requires full-exec"),
+    (_re.compile(r"\burllib\b"), "urllib usage requires full-exec"),
+    (_re.compile(r"\brequests\."), "requests usage requires full-exec"),
+    (_re.compile(r"\b(sys\.exit|quit|exit)\s*\("), "sys.exit/quit/exit requires full-exec"),
+    (_re.compile(r"\bimport\s+(os|subprocess|shutil|pathlib|tempfile)\b"),
+     "import os/subprocess/shutil requires full-exec"),
+    (_re.compile(r"\bfrom\s+(os|subprocess|shutil|pathlib|tempfile)\b"),
+     "from os/subprocess/shutil requires full-exec"),
+]
+
+_MODE_RANK = {"read-only": 0, "safe-write": 1, "full-exec": 2}
+
+
+def _check_script_mode(script: str, requested_mode: str) -> tuple[bool, list[str]]:
+    """Check whether *script* is allowed under *requested_mode*.
+
+    Returns ``(allowed, violations)`` where *violations* is a list of
+    human-readable reasons when the script requires a higher mode.
+    """
+    if requested_mode == "full-exec":
+        return True, []
+
+    rank = _MODE_RANK[requested_mode]
+    violations: list[str] = []
+
+    # Strip Python comments before scanning
+    lines = script.split("\n")
+    stripped = "\n".join(
+        line.split("#")[0] if "#" in line else line for line in lines
+    )
+
+    if rank < _MODE_RANK["safe-write"]:
+        for pat, desc in _SAFE_WRITE_PATTERNS:
+            if pat.search(stripped):
+                violations.append(desc)
+
+    for pat, desc in _FULL_EXEC_PATTERNS:
+        if pat.search(stripped):
+            violations.append(desc)
+
+    return len(violations) == 0, violations
+
+
+# Builtins allowlist — excludes __import__, open, eval, exec, compile
+_SAFE_BUILTINS_NAMES = [
+    "True", "False", "None",
+    "abs", "all", "any", "bin", "bool", "bytearray", "bytes",
+    "callable", "chr", "classmethod", "complex",
+    "delattr", "dict", "dir", "divmod",
+    "enumerate", "filter", "float", "format", "frozenset",
+    "getattr", "globals", "hasattr", "hash", "hex",
+    "id", "int", "isinstance", "issubclass", "iter",
+    "len", "list", "map", "max", "memoryview", "min",
+    "next", "object", "oct", "ord", "pow", "print",
+    "property", "range", "repr", "reversed", "round",
+    "set", "setattr", "slice", "sorted", "staticmethod",
+    "str", "sum", "super", "tuple", "type", "vars", "zip",
+    # __import__ and open are needed for import statements and file reading.
+    # Dangerous usage is blocked by pattern enforcement:
+    #   - __import__() direct call → full-exec pattern
+    #   - import os/subprocess/shutil → full-exec pattern
+    #   - open() with write mode → full-exec pattern
+    "__import__", "open",
+]
+_SAFE_BUILTINS = {
+    name: getattr(_builtins_mod, name)
+    for name in _SAFE_BUILTINS_NAMES
+    if hasattr(_builtins_mod, name)
+}
 
 
 class IApiService(Protocol):
@@ -556,15 +661,32 @@ class TouchDesignerApiService(IApiService):
 
         return success_result({"result": processed_result})
 
-    def exec_python_script(self, script: str) -> Result:
+    def exec_python_script(self, script: str, mode: str = "safe-write") -> Result:
         """Execute a Python script directly in TouchDesigner
 
         Args:
             script (str): The Python script to execute
+            mode (str): Execution mode — "read-only", "safe-write", or "full-exec"
 
         Returns:
             Result: Success result with execution output or error result with message
         """
+        # Validate and enforce mode
+        if mode not in _VALID_MODES:
+            return error_result(
+                f"Invalid mode {mode!r}. Must be one of: {', '.join(sorted(_VALID_MODES))}"
+            )
+
+        allowed, violations = _check_script_mode(script, mode)
+        if not allowed:
+            needed = "full-exec" if any(
+                pat.search(script) for pat, _ in _FULL_EXEC_PATTERNS
+            ) else "safe-write"
+            return error_result(
+                f"Script blocked by mode={mode!r}. Violations:\n"
+                + "\n".join(f"  - {v}" for v in violations)
+                + f"\n\nUse mode={needed!r} to allow this script."
+            )
 
         no_result_sentinel = object()
         local_vars = {
@@ -576,7 +698,11 @@ class TouchDesignerApiService(IApiService):
             "td": td,
             "result": no_result_sentinel,
         }
-        namespace = dict(globals())
+        # Build namespace with restricted builtins for non-full-exec modes
+        if mode == "full-exec":
+            namespace = {"__builtins__": _builtins_mod.__dict__}
+        else:
+            namespace = {"__builtins__": _SAFE_BUILTINS}
         namespace.update(local_vars)
 
         stdout_capture = io.StringIO()
@@ -1355,9 +1481,25 @@ class TouchDesignerApiService(IApiService):
         if system and self._glslang_works(system):
             return system
 
-        # 3. User cache (already downloaded?)
+        # 3. User cache (already downloaded?) — verify integrity against stored SHA256
         cached = self._glslang_cache_dir() / _GLSLANG_EXE
         if cached.is_file() and self._glslang_works(str(cached)):
+            meta_file = cached.parent / "glslang.json"
+            if meta_file.is_file():
+                try:
+                    meta = json.loads(meta_file.read_text())
+                    expected_sha = meta.get("sha256")
+                    if expected_sha:
+                        actual_sha = hashlib.sha256(cached.read_bytes()).hexdigest()
+                        if actual_sha != expected_sha:
+                            log_message(
+                                f"glslangValidator integrity check failed: "
+                                f"expected {expected_sha[:16]}… got {actual_sha[:16]}…",
+                                LogLevel.WARNING,
+                            )
+                            return None
+                except (json.JSONDecodeError, OSError):
+                    pass  # metadata missing/corrupt — allow but log
             return str(cached)
 
         return None
@@ -1462,7 +1604,10 @@ class TouchDesignerApiService(IApiService):
 
                         os.replace(tmp_bin, str(dest))
 
-                        # Cache metadata for traceability
+                        # Compute SHA256 of the installed binary for integrity verification
+                        binary_sha256 = hashlib.sha256(dest.read_bytes()).hexdigest()
+
+                        # Cache metadata for traceability + integrity checks
                         meta = dest.parent / "glslang.json"
                         meta.write_text(
                             json.dumps(
@@ -1472,6 +1617,7 @@ class TouchDesignerApiService(IApiService):
                                     "asset": asset_name,
                                     "member": member,
                                     "platform": list(key),
+                                    "sha256": binary_sha256,
                                 }
                             )
                         )

@@ -12,21 +12,26 @@ class ExecPythonScriptRequest(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, script=None):  # noqa: E501
+    def __init__(self, script=None, mode=None):  # noqa: E501
         """ExecPythonScriptRequest - a model defined in OpenAPI
 
         :param script: The script of this ExecPythonScriptRequest.  # noqa: E501
         :type script: str
+        :param mode: The mode of this ExecPythonScriptRequest.  # noqa: E501
+        :type mode: str
         """
         self.openapi_types = {
-            'script': str
+            'script': str,
+            'mode': str
         }
 
         self.attribute_map = {
-            'script': 'script'
+            'script': 'script',
+            'mode': 'mode'
         }
 
         self._script = script
+        self._mode = mode
 
     @classmethod
     def from_dict(cls, dikt) -> 'ExecPythonScriptRequest':
@@ -63,3 +68,32 @@ class ExecPythonScriptRequest(Model):
             raise ValueError("Invalid value for `script`, must not be `None`")  # noqa: E501
 
         self._script = script
+
+    @property
+    def mode(self) -> str:
+        """Gets the mode of this ExecPythonScriptRequest.
+
+        Execution mode that restricts which operations the script may perform.  # noqa: E501
+
+        :return: The mode of this ExecPythonScriptRequest.
+        :rtype: str
+        """
+        return self._mode
+
+    @mode.setter
+    def mode(self, mode: str):
+        """Sets the mode of this ExecPythonScriptRequest.
+
+        Execution mode that restricts which operations the script may perform.  # noqa: E501
+
+        :param mode: The mode of this ExecPythonScriptRequest.
+        :type mode: str
+        """
+        allowed_values = ["read-only", "safe-write", "full-exec"]  # noqa: E501
+        if mode is not None and mode not in allowed_values:
+            raise ValueError(
+                "Invalid value for `mode` ({0}), must be one of {1}"
+                .format(mode, allowed_values)
+            )
+
+        self._mode = mode
