@@ -463,6 +463,8 @@ class TouchDesignerApiService(IApiService):
         node_type: str,
         node_name: str | None = None,
         parameters: dict[str, Any] | None = None,
+        x: int | float | None = None,
+        y: int | float | None = None,
     ) -> Result:
         """Create a new node under the specified parent path"""
 
@@ -476,6 +478,18 @@ class TouchDesignerApiService(IApiService):
 
         if new_node is None or not new_node.valid:
             return error_result(f"Failed to create node of type {node_type} under {parent_path}")
+
+        # Position the new node
+        if x is not None and y is not None:
+            new_node.nodeX = int(x)
+            new_node.nodeY = int(y)
+        else:
+            # Auto-position: place to the right of the rightmost sibling
+            siblings = [c for c in parent_node.children if c != new_node]
+            if siblings:
+                max_x = max(c.nodeX for c in siblings)
+                new_node.nodeX = max_x + 200
+                new_node.nodeY = siblings[0].nodeY
 
         if parameters and isinstance(parameters, dict):
             for prop_name, prop_value in parameters.items():
