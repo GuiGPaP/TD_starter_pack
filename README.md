@@ -28,19 +28,7 @@ npm run build:dist
 cd ..
 ```
 
-3. Copier le fichier de configuration MCP :
-
-```bash
-# bash / macOS / Linux
-cp .mcp.example.json .mcp.json
-```
-
-```powershell
-# PowerShell / Windows
-Copy-Item .mcp.example.json .mcp.json
-```
-
-4. Relancer Claude Code dans ce dossier — les tools de recherche sont disponibles immédiatement (opérateurs, GLSL patterns, assets).
+3. Relancer Claude Code dans ce dossier — la config MCP est incluse (`.mcp.json`), les tools de recherche sont disponibles immédiatement (opérateurs, GLSL patterns, assets).
 
 ### Mode live (avec TouchDesigner)
 
