@@ -1076,6 +1076,72 @@ def index_td_project(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'index_td_project' failed: {str(e)}")
+def copy_node(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: copy_node
+    """
+    try:
+        print(f"[DEBUG] Handler 'copy_node' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "copy_node", None)
+        if not callable(service_method):
+            return error_result("Service method 'copy_node' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'copy_node' failed: {str(e)}")
+def connect_nodes(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: connect_nodes
+    """
+    try:
+        print(f"[DEBUG] Handler 'connect_nodes' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "connect_nodes", None)
+        if not callable(service_method):
+            return error_result("Service method 'connect_nodes' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'connect_nodes' failed: {str(e)}")
 def get_td_context(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_td_context
@@ -1143,5 +1209,7 @@ __all__ = [
   "create_feedback_loop",
   "configure_instancing",
   "index_td_project",
+  "copy_node",
+  "connect_nodes",
   "get_td_context",
 ]

@@ -18,6 +18,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import traceback
+import types
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -146,6 +148,25 @@ _SAFE_BUILTINS = {
 }
 
 
+def _build_helpers_namespace():  # noqa: ANN202
+    """Build a SimpleNamespace of helper functions for script execution."""
+    from td_helpers.mcp_helpers import (
+        connect,
+        find_by_tag,
+        get_or_create,
+        safe_copy,
+        safe_destroy,
+    )
+
+    return types.SimpleNamespace(
+        safe_copy=safe_copy,
+        connect=connect,
+        find_by_tag=find_by_tag,
+        safe_destroy=safe_destroy,
+        get_or_create=get_or_create,
+    )
+
+
 class IApiService(Protocol):
     """API service interface"""
 
@@ -222,6 +243,21 @@ class IApiService(Protocol):
         comp_path: str,
         include_docs: bool = ...,
         max_methods: int = ...,
+    ) -> Result: ...
+    def copy_node(
+        self,
+        source_path: str,
+        target_parent_path: str,
+        name: str | None = ...,
+        x: int | float | None = ...,
+        y: int | float | None = ...,
+    ) -> Result: ...
+    def connect_nodes(
+        self,
+        from_path: str,
+        to_path: str,
+        from_output: int = ...,
+        to_input: int = ...,
     ) -> Result: ...
     def get_health(self) -> Result: ...
     def get_capabilities(self) -> Result: ...
@@ -632,6 +668,120 @@ class TouchDesignerApiService(IApiService):
         log_message(f"Failed to verify node deletion: {node_path}", LogLevel.WARNING)
         return error_result(f"Failed to delete node: {node_path}")
 
+    def copy_node(
+        self,
+        source_path: str,
+        target_parent_path: str,
+        name: str | None = None,
+        x: int | float | None = None,
+        y: int | float | None = None,
+    ) -> Result:
+        """Copy an operator to a new location.
+
+        Args:
+            source_path: Path to the source operator
+            target_parent_path: Path to the target parent COMP
+            name: Optional name for the copy (auto-generated if omitted)
+            x: Optional X position
+            y: Optional Y position
+        """
+        source = td.op(source_path)
+        if source is None or not source.valid:
+            return error_result(f"Source node not found: {source_path}")
+
+        target = td.op(target_parent_path)
+        if target is None or not target.valid:
+            return error_result(f"Target parent not found: {target_parent_path}")
+
+        if not target.isCOMP:
+            return error_result(
+                f"Target must be a COMP, got {target.OPType}: {target_parent_path}"
+            )
+
+        if name and td.op(f"{target_parent_path}/{name}"):
+            return error_result(
+                f"Name already taken in {target_parent_path}: {name}"
+            )
+
+        copied = target.copy(source, name=name)
+        if copied is None or not copied.valid:
+            return error_result(
+                f"Failed to copy {source_path} into {target_parent_path}"
+            )
+
+        if x is not None and y is not None:
+            copied.nodeX = int(x)
+            copied.nodeY = int(y)
+        else:
+            siblings = [c for c in target.children if c != copied]
+            if siblings:
+                max_x = max(c.nodeX for c in siblings)
+                copied.nodeX = max_x + 200
+                copied.nodeY = siblings[0].nodeY
+
+        node_info = self._get_node_summary(copied)
+        return success_result({"result": node_info})
+
+    def connect_nodes(
+        self,
+        from_path: str,
+        to_path: str,
+        from_output: int = 0,
+        to_input: int = 0,
+    ) -> Result:
+        """Connect two operators.
+
+        Args:
+            from_path: Path to the source operator
+            to_path: Path to the destination operator
+            from_output: Output connector index (default 0)
+            to_input: Input connector index (default 0)
+        """
+        from_node = td.op(from_path)
+        if from_node is None or not from_node.valid:
+            return error_result(f"Source node not found: {from_path}")
+
+        to_node = td.op(to_path)
+        if to_node is None or not to_node.valid:
+            return error_result(f"Destination node not found: {to_path}")
+
+        if from_path == to_path:
+            return error_result("Cannot connect a node to itself")
+
+        # Family compatibility: both must be in the same family
+        if from_node.family != to_node.family:
+            return error_result(
+                f"Incompatible families: {from_node.family} → {to_node.family}. "
+                f"Both nodes must belong to the same operator family."
+            )
+
+        # Index bounds
+        out_connectors = from_node.outputConnectors
+        if from_output < 0 or from_output >= len(out_connectors):
+            return error_result(
+                f"Output index {from_output} out of range "
+                f"(node has {len(out_connectors)} outputs)"
+            )
+
+        in_connectors = to_node.inputConnectors
+        if to_input < 0 or to_input >= len(in_connectors):
+            return error_result(
+                f"Input index {to_input} out of range "
+                f"(node has {len(in_connectors)} inputs)"
+            )
+
+        to_node.inputConnectors[to_input].connect(
+            from_node.outputConnectors[from_output]
+        )
+
+        return success_result({
+            "from": from_path,
+            "to": to_path,
+            "fromOutput": from_output,
+            "toInput": to_input,
+            "family": from_node.family,
+        })
+
     def exec_node_method(self, node_path: str, method: str, args: list, kwargs: dict) -> Result:
         """Call method on the specified node"""
 
@@ -697,6 +847,7 @@ class TouchDesignerApiService(IApiService):
             "project": td.project if hasattr(td, "project") else None,
             "td": td,
             "result": no_result_sentinel,
+            "helpers": _build_helpers_namespace(),
         }
         # Build namespace with restricted builtins for non-full-exec modes
         if mode == "full-exec":
@@ -780,7 +931,19 @@ class TouchDesignerApiService(IApiService):
                     }
                 )
             except Exception as exec_error:
-                raise Exception(f"Script execution failed: {exec_error!s}") from exec_error
+                tb = traceback.format_exc()
+                script_lines = script.split("\n")
+                numbered = "\n".join(
+                    f"  {i + 1}: {line}"
+                    for i, line in enumerate(script_lines[:30])
+                )
+                if len(script_lines) > 30:
+                    numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
+                return error_result(
+                    f"Script execution failed: {exec_error!s}\n\n"
+                    f"Traceback:\n{tb}\n"
+                    f"Script ({len(script_lines)} lines):\n{numbered}"
+                )
 
     def update_node(self, node_path: str, properties: dict[str, Any]) -> Result:
         """Update properties of the node at the specified path"""
