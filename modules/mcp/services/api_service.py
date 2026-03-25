@@ -259,6 +259,14 @@ class IApiService(Protocol):
         from_output: int = ...,
         to_input: int = ...,
     ) -> Result: ...
+    def layout_nodes(
+        self,
+        paths: list[str],
+        mode: str = ...,
+        spacing: int | None = ...,
+        start_x: int | None = ...,
+        start_y: int | None = ...,
+    ) -> Result: ...
     def get_health(self) -> Result: ...
     def get_capabilities(self) -> Result: ...
     def typecheck_dat(self, node_path: str) -> Result: ...
@@ -625,12 +633,9 @@ class TouchDesignerApiService(IApiService):
             new_node.nodeX = int(x)
             new_node.nodeY = int(y)
         else:
-            # Auto-position: place to the right of the rightmost sibling
-            siblings = [c for c in parent_node.children if c != new_node]
-            if siblings:
-                max_x = max(c.nodeX for c in siblings)
-                new_node.nodeX = max_x + 200
-                new_node.nodeY = siblings[0].nodeY
+            from td_helpers.layout import auto_position
+
+            auto_position(parent_node, new_node)
 
         if parameters and isinstance(parameters, dict):
             for prop_name, prop_value in parameters.items():
@@ -713,11 +718,9 @@ class TouchDesignerApiService(IApiService):
             copied.nodeX = int(x)
             copied.nodeY = int(y)
         else:
-            siblings = [c for c in target.children if c != copied]
-            if siblings:
-                max_x = max(c.nodeX for c in siblings)
-                copied.nodeX = max_x + 200
-                copied.nodeY = siblings[0].nodeY
+            from td_helpers.layout import auto_position
+
+            auto_position(target, copied)
 
         node_info = self._get_node_summary(copied)
         return success_result({"result": node_info})
@@ -780,6 +783,77 @@ class TouchDesignerApiService(IApiService):
             "fromOutput": from_output,
             "toInput": to_input,
             "family": from_node.family,
+        })
+
+    def layout_nodes(
+        self,
+        paths: list[str],
+        mode: str = "horizontal",
+        spacing: int | None = None,
+        start_x: int | None = None,
+        start_y: int | None = None,
+    ) -> Result:
+        """Reorganize nodes using a layout algorithm.
+
+        Args:
+            paths: List of node paths to lay out
+            mode: Layout mode — "horizontal", "vertical", or "grid"
+            spacing: Override spacing in pixels (default depends on mode)
+            start_x: Anchor X position (default: leftmost node)
+            start_y: Anchor Y position (default: topmost node)
+        """
+        valid_modes = {"horizontal", "vertical", "grid"}
+        if mode not in valid_modes:
+            return error_result(
+                f"Invalid mode {mode!r}. Must be one of: {', '.join(sorted(valid_modes))}"
+            )
+
+        if len(paths) < 2:
+            return error_result("layout_nodes requires at least 2 node paths")
+
+        # Resolve nodes
+        nodes = []
+        for p in paths:
+            node = td.op(p)
+            if node is None or not node.valid:
+                return error_result(f"Node not found: {p}")
+            nodes.append(node)
+
+        # All nodes must share the same parent
+        parents = set()
+        for n in nodes:
+            p = td.op(n.path + "/..")
+            if p:
+                parents.add(p.path)
+        if len(parents) > 1:
+            return error_result(
+                f"All nodes must share the same parent COMP. Found: {', '.join(sorted(parents))}"
+            )
+
+        from td_helpers.layout import layout_grid, layout_horizontal, layout_vertical
+
+        if mode == "horizontal":
+            sp = spacing if spacing is not None else 200
+            result = layout_horizontal(nodes, spacing=sp, start_x=start_x, start_y=start_y)
+        elif mode == "vertical":
+            sp = spacing if spacing is not None else 150
+            result = layout_vertical(nodes, spacing=sp, start_x=start_x, start_y=start_y)
+        else:
+            sp = spacing if spacing is not None else 200
+            result = layout_grid(
+                nodes, spacing_x=sp, spacing_y=150,
+                start_x=start_x, start_y=start_y,
+            )
+
+        positioned = [
+            {"path": n.path, "nodeX": x, "nodeY": y}
+            for n, x, y in result
+        ]
+
+        return success_result({
+            "nodes": positioned,
+            "mode": mode,
+            "spacing": sp,
         })
 
     def exec_node_method(self, node_path: str, method: str, args: list, kwargs: dict) -> Result:
