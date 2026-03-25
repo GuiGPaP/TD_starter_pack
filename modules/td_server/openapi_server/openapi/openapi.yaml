@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: OpenAPI schema for generating TouchDesigner API client code
   title: TouchDesigner API
-  version: 1.5.0
+  version: 1.6.0
 servers:
 - description: TouchDesigner Web Server
   url: "${process.env.TD_WEB_SERVER_HOST}:${process.env.TD_WEB_SERVER_PORT}"
@@ -1190,6 +1190,42 @@ paths:
           description: Project index built successfully
       summary: Build project index for code completion
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/copy:
+    post:
+      operationId: copy_node
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/copy_node_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/copy_node_200_response'
+          description: Node copied successfully
+      summary: Copy a node to a new location
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/connect:
+    post:
+      operationId: connect_nodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/connect_nodes_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect_nodes_200_response'
+          description: Nodes connected successfully
+      summary: Connect two nodes
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/context:
     get:
       description: |
@@ -1745,6 +1781,128 @@ components:
       - error
       - success
       title: get_nodes_200_response
+      type: object
+    copy_node_request:
+      properties:
+        sourcePath:
+          description: "Path to the source operator (e.g., /project1/geo1)"
+          title: sourcePath
+          type: string
+        targetParentPath:
+          description: "Path to the target parent COMP (e.g., /project1/container1)"
+          title: targetParentPath
+          type: string
+        name:
+          description: Optional name for the copy (auto-generated if omitted)
+          title: name
+          type: string
+        nodeX:
+          description: Optional X position for the copied node
+          title: nodeX
+          type: number
+        nodeY:
+          description: Optional Y position for the copied node
+          title: nodeY
+          type: number
+      required:
+      - sourcePath
+      - targetParentPath
+      title: copy_node_request
+      type: object
+    copy_node_200_response_data:
+      nullable: true
+      properties:
+        result:
+          $ref: '#/components/schemas/TdNode'
+      title: copy_node_200_response_data
+      type: object
+    copy_node_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/copy_node_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: copy_node_200_response
+      type: object
+    connect_nodes_request:
+      properties:
+        fromPath:
+          description: Path to the source operator
+          title: fromPath
+          type: string
+        toPath:
+          description: Path to the destination operator
+          title: toPath
+          type: string
+        fromOutput:
+          default: 0
+          description: Output connector index (default 0)
+          title: fromOutput
+          type: integer
+        toInput:
+          default: 0
+          description: Input connector index (default 0)
+          title: toInput
+          type: integer
+      required:
+      - fromPath
+      - toPath
+      title: connect_nodes_request
+      type: object
+    connect_nodes_200_response_data:
+      nullable: true
+      properties:
+        from:
+          description: Path of the source node
+          title: from
+          type: string
+        to:
+          description: Path of the destination node
+          title: to
+          type: string
+        fromOutput:
+          description: Output connector index used
+          title: fromOutput
+          type: integer
+        toInput:
+          description: Input connector index used
+          title: toInput
+          type: integer
+        family:
+          description: Operator family of the connected nodes
+          title: family
+          type: string
+      title: connect_nodes_200_response_data
+      type: object
+    connect_nodes_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/connect_nodes_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: connect_nodes_200_response
       type: object
     create_node_request:
       properties:
