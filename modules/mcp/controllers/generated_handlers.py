@@ -1142,6 +1142,39 @@ def connect_nodes(body: str = None, **kwargs) -> Result:
 
     except Exception as e:
         return error_result(f"Handler for 'connect_nodes' failed: {str(e)}")
+def layout_nodes(body: str = None, **kwargs) -> Result:
+    """
+    Auto-generated handler for operation: layout_nodes
+    """
+    try:
+        print(f"[DEBUG] Handler 'layout_nodes' called with body: {body}, kwargs: {kwargs}")
+        service_method = getattr(get_api_service(), "layout_nodes", None)
+        if not callable(service_method):
+            return error_result("Service method 'layout_nodes' not implemented")
+
+        # Merge body
+        if body:
+            try:
+                parsed_body = json.loads(body)
+                kwargs.update(parsed_body)
+            except Exception as e:
+                return error_result(f"Invalid JSON body: {str(e)}")
+
+        # CamelCase → SnakeCase 変換
+        kwargs_snake_case = {camel_to_snake(k): v for k, v in kwargs.items()}
+
+        sig = inspect.signature(service_method)
+
+        # Prepare args matching the function signature
+        call_args = {}
+        for param_name in sig.parameters:
+            if param_name in kwargs_snake_case:
+                call_args[param_name] = kwargs_snake_case[param_name]
+
+        return service_method(**call_args)
+
+    except Exception as e:
+        return error_result(f"Handler for 'layout_nodes' failed: {str(e)}")
 def get_td_context(body: str = None, **kwargs) -> Result:
     """
     Auto-generated handler for operation: get_td_context
@@ -1211,5 +1244,6 @@ __all__ = [
   "index_td_project",
   "copy_node",
   "connect_nodes",
+  "layout_nodes",
   "get_td_context",
 ]

@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: OpenAPI schema for generating TouchDesigner API client code
   title: TouchDesigner API
-  version: 1.6.0
+  version: 1.7.0
 servers:
 - description: TouchDesigner Web Server
   url: "${process.env.TD_WEB_SERVER_HOST}:${process.env.TD_WEB_SERVER_PORT}"
@@ -1226,6 +1226,24 @@ paths:
           description: Nodes connected successfully
       summary: Connect two nodes
       x-openapi-router-controller: openapi_server.controllers.default_controller
+  /api/nodes/layout:
+    post:
+      operationId: layout_nodes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/layout_nodes_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/layout_nodes_200_response'
+          description: Nodes repositioned successfully
+      summary: Reorganize nodes using a layout algorithm
+      x-openapi-router-controller: openapi_server.controllers.default_controller
   /api/nodes/context:
     get:
       description: |
@@ -1781,6 +1799,81 @@ components:
       - error
       - success
       title: get_nodes_200_response
+      type: object
+    layout_nodes_request:
+      properties:
+        paths:
+          description: Node paths to lay out (minimum 2)
+          items:
+            type: string
+          title: paths
+          type: array
+        mode:
+          default: horizontal
+          description: "Layout mode: horizontal, vertical, or grid"
+          enum:
+          - horizontal
+          - vertical
+          - grid
+          title: mode
+          type: string
+        spacing:
+          description: Override spacing in pixels (default depends on mode)
+          title: spacing
+          type: integer
+        startX:
+          description: Anchor X position (default uses leftmost node)
+          title: startX
+          type: integer
+        startY:
+          description: Anchor Y position (default uses topmost node)
+          title: startY
+          type: integer
+      required:
+      - paths
+      title: layout_nodes_request
+      type: object
+    layout_nodes_200_response_node:
+      properties:
+        path:
+          type: string
+        nodeX:
+          type: integer
+        nodeY:
+          type: integer
+      title: layout_nodes_200_response_node
+      type: object
+    layout_nodes_200_response_data:
+      nullable: true
+      properties:
+        nodes:
+          items:
+            $ref: '#/components/schemas/layout_nodes_200_response_node'
+          type: array
+        mode:
+          type: string
+        spacing:
+          type: integer
+      title: layout_nodes_200_response_data
+      type: object
+    layout_nodes_200_response:
+      properties:
+        success:
+          description: Whether the operation was successful
+          title: success
+          type: boolean
+        data:
+          $ref: '#/components/schemas/layout_nodes_200_response_data'
+        error:
+          description: Error message if the operation was not successful
+          nullable: true
+          title: error
+          type: string
+      required:
+      - data
+      - error
+      - success
+      title: layout_nodes_200_response
       type: object
     copy_node_request:
       properties:
