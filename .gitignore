@@ -17,3 +17,8 @@ build/
 
 # Third-party toolkit .tox files (proprietary, not redistributable)
 custom OP/
+olib/
+
+# TouchDesigner caches and backups
+Backup/
+TDImportCache/
