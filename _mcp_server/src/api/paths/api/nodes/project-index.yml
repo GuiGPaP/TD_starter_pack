@@ -1,0 +1,74 @@
+get:
+  summary: Build project index for code completion
+  description: |
+    Scan the operator tree starting at rootPath and build a Markdown index
+    for code-completion context. Cheap global scan — use get_td_context for
+    per-node deep inspection.
+  operationId: index_td_project
+  parameters:
+    - name: rootPath
+      description: Root operator path to start scanning from
+      in: query
+      required: false
+      schema:
+        type: string
+        default: /project1
+    - name: maxDepth
+      description: Maximum depth for findChildren
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 10
+    - name: opLimit
+      description: Hard cap on operators scanned
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 500
+    - name: mode
+      description: "Index detail level: compact (~2k tokens) or full"
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - compact
+          - full
+        default: compact
+  responses:
+    "200":
+      description: Project index built successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  markdown:
+                    type: string
+                  stats:
+                    type: object
+                    properties:
+                      opCount:
+                        type: integer
+                      compCount:
+                        type: integer
+                      extensionCount:
+                        type: integer
+                      warningCount:
+                        type: integer
+                  truncated:
+                    type: boolean
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+              error:
+                type: string
+                nullable: true

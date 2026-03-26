@@ -1,0 +1,59 @@
+{
+	"id": "select-chop",
+	"title": "Select CHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"select",
+		"reference",
+		"route",
+		"channel",
+		"pick"
+	],
+	"content": {
+		"summary": "References channels from another CHOP without a wire connection."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "selectCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "chop"
+			},
+			{
+				"name": "channames"
+			}
+		],
+		"examples": [
+			{
+				"label": "Reference another CHOP wirelessly",
+				"language": "python",
+				"code": "op('select1').par.chop = 'noise1'",
+				"description": "Pull channels from noise1 without a wire connection.",
+				"context": "textport"
+			},
+			{
+				"label": "Select specific channels by name",
+				"language": "python",
+				"code": "s = op('select1')\ns.par.chop = 'noise1'\ns.par.channames = 'tx tz'",
+				"description": "Only pick the tx and tz channels from the source.",
+				"context": "textport"
+			},
+			{
+				"label": "Select channels with wildcard",
+				"language": "python",
+				"code": "s = op('select1')\ns.par.chop = 'constant1'\ns.par.channames = 'r*'",
+				"description": "Select all channels starting with 'r'.",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+  "id": "instancing-scatter-pattern",
+  "title": "Instancing with Scattered Points",
+  "kind": "technique",
+  "aliases": ["gpu instancing", "scatter instances", "point instancing"],
+  "searchKeywords": ["instancing", "scatter", "points", "geometry", "gpu", "instances", "sop", "chop"],
+  "content": {
+    "summary": "Uses TouchDesigner's GPU instancing to efficiently render thousands of copies of a geometry at positions defined by scattered point data. A Scatter SOP generates random points on a surface, the point positions are extracted as CHOP channels or TOP textures, and a Geometry COMP with instancing enabled renders one copy per point. This is far more efficient than duplicating geometry nodes."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "intermediate",
+    "tags": ["instancing", "scatter", "geometry", "gpu", "particles", "3d", "performance"],
+    "operatorChain": [
+      { "family": "SOP", "opType": "gridSOP", "role": "base surface for scattering" },
+      { "family": "SOP", "opType": "scatterSOP", "role": "generate random points on surface" },
+      { "family": "SOP", "opType": "sortSOP", "role": "deterministic point order" },
+      { "family": "CHOP", "opType": "soptoChop", "role": "extract point positions as channels" },
+      { "family": "COMP", "opType": "geometryCOMP", "role": "renders instanced geometry" },
+      { "family": "SOP", "opType": "boxSOP", "role": "instance geometry template" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Configure instancing on a Geometry COMP",
+        "language": "python",
+        "code": "# Set up instancing on a Geometry COMP\ngeo = op('geo1')\n\n# Enable instancing\ngeo.par.instancing = True\n\n# Point to CHOP with instance positions\ngeo.par.instancechop = op('sopto1')\n\n# Map channels to transform\ngeo.par.instancetx = 'tx'\ngeo.par.instancety = 'ty'\ngeo.par.instancetz = 'tz'\n\n# Optional: map scale and rotation channels\n# geo.par.instancesx = 'sx'\n# geo.par.instancerz = 'rz'\n\nprint(f'Instancing {op(\"sopto1\").numSamples} copies')",
+        "description": "Enables GPU instancing on a Geometry COMP and maps SOP-to-CHOP position channels to instance transforms."
+      },
+      {
+        "label": "Add random scale and rotation per instance",
+        "language": "python",
+        "code": "# In a Script CHOP, add random scale/rotation per instance\nimport random\n\ndef onCook(scriptOp):\n\tscriptOp.clear()\n\t\n\t# Get instance count from scatter SOP\n\tnum_points = op('scatter1').numPoints\n\t\n\t# Create channels\n\tscale_chan = scriptOp.appendChan('uniform_scale')\n\trz_chan = scriptOp.appendChan('rz')\n\tscriptOp.numSamples = num_points\n\t\n\trandom.seed(42)  # Deterministic randomness\n\tfor i in range(num_points):\n\t\tscale_chan[i] = random.uniform(0.5, 2.0)\n\t\trz_chan[i] = random.uniform(0, 360)",
+        "description": "Generates random per-instance scale and rotation channels in a Script CHOP."
+      }
+    ],
+    "tips": [
+      "Use a SOP to CHOP to extract tx, ty, tz channels from the scatter points for the instance positions.",
+      "For thousands of instances, use texture-based instancing (CHOP to TOP) instead of CHOP-based for better GPU performance.",
+      "Add per-instance color by creating r, g, b channels and mapping them in the Geometry COMP's instance parameters.",
+      "Use a Noise CHOP added to the position channels for animated organic movement of all instances."
+    ]
+  }
+}

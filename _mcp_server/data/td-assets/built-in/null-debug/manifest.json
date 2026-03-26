@@ -1,0 +1,26 @@
+{
+	"aliases": ["debug null", "null chain", "debug viewer"],
+	"deploy": {
+		"containerName": "null_debug",
+		"mode": "import_tox"
+	},
+	"description": "Null TOP chain with an active viewer for quick visual debugging. Drop it next to any TOP to inspect the signal without disrupting the existing network.",
+	"id": "null-debug",
+	"kind": "tox-asset",
+	"postDeployChecks": ["recursive_error_check"],
+	"provenance": {
+		"license": "MIT",
+		"source": "project-original"
+	},
+	"sha256": "b088314a64262b1409bccad52d78a77975205032504a20f874d42a5c87e6b5df",
+	"tags": ["debug", "top", "viewer", "inspect"],
+	"tdVersion": {
+		"min": "2023.11000"
+	},
+	"title": "Null Debug Viewer",
+	"useCases": [
+		"Visual debugging of TOP signals",
+		"Quick inspect without modifying network"
+	],
+	"version": "1.0.0"
+}

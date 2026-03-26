@@ -1,0 +1,145 @@
+{
+	"schemaVersion": "1.0",
+	"currentStable": "2025",
+	"versions": [
+		{
+			"id": "2020",
+			"label": "TouchDesigner 2020",
+			"pythonVersion": "3.7",
+			"supportStatus": "legacy",
+			"releaseYear": 2020,
+			"highlights": [
+				"Python 3.7 upgrade (from 3.5)",
+				"Vulkan rendering preview",
+				"Operator Snippets system"
+			],
+			"newOperators": [],
+			"breakingChanges": [
+				"Python 3.5 → 3.7: async/await keywords reserved, some C extension rebuilds needed"
+			]
+		},
+		{
+			"id": "2021",
+			"label": "TouchDesigner 2021",
+			"pythonVersion": "3.9",
+			"supportStatus": "legacy",
+			"releaseYear": 2021,
+			"highlights": [
+				"Python 3.9 upgrade",
+				"NDI 5 support",
+				"WebRTC and WebSocket improvements",
+				"GPU Direct support for video I/O"
+			],
+			"newOperators": [
+				"webrtcDAT"
+			],
+			"breakingChanges": [
+				"Python 3.7 → 3.9: dictionary merge operator (|), removed deprecated collections ABCs from top-level",
+				"Some tscript commands deprecated in favor of Python equivalents"
+			]
+		},
+		{
+			"id": "2022",
+			"label": "TouchDesigner 2022",
+			"pythonVersion": "3.9",
+			"supportStatus": "legacy",
+			"releaseYear": 2022,
+			"highlights": [
+				"Vulkan graphics engine (replacing OpenGL)",
+				"New rendering pipeline",
+				"Improved GPU memory management",
+				"GLSL compute shader support expanded"
+			],
+			"newOperators": [],
+			"breakingChanges": [
+				"OpenGL → Vulkan: custom GLSL shaders may need adaptation for Vulkan pipeline",
+				"Some legacy rendering features removed with OpenGL backend"
+			]
+		},
+		{
+			"id": "2023",
+			"label": "TouchDesigner 2023",
+			"pythonVersion": "3.11",
+			"supportStatus": "maintenance",
+			"releaseYear": 2023,
+			"highlights": [
+				"Python 3.11 upgrade (major performance boost)",
+				"OAK-D camera integration",
+				"Project file format change (not backward compatible)"
+			],
+			"newOperators": [
+				"oakDeviceCHOP",
+				"oakSelectCHOP",
+				"oakSelectTOP"
+			],
+			"breakingChanges": [
+				"Python 3.9 → 3.11: exception groups, tomllib added, some deprecated APIs removed",
+				".toe files saved in 2023 cannot be loaded in 2022 or earlier"
+			]
+		},
+		{
+			"id": "2024",
+			"label": "TouchDesigner 2024",
+			"pythonVersion": "3.11",
+			"supportStatus": "active",
+			"releaseYear": 2024,
+			"highlights": [
+				"POP family preview (GLSL compute particles)",
+				"Vulkan renderer matured",
+				"Performance profiling improvements"
+			],
+			"newOperators": [
+				"glslPOP",
+				"glslAdvancedPOP",
+				"glslCopyPOP",
+				"glslSelectPOP"
+			],
+			"breakingChanges": [
+				"Deprecated OpenGL-only rendering path fully removed"
+			]
+		},
+		{
+			"id": "2025",
+			"label": "TouchDesigner 2025",
+			"pythonVersion": "3.11",
+			"supportStatus": "current",
+			"releaseYear": 2025,
+			"highlights": [
+				"Full POP (Point Operators) family — GPU-based 3D geometry",
+				"Color Space Workflows with HDR support",
+				"3D Texture and 2D Array support across most TOPs",
+				"Layer Mix TOP for unlimited layer compositing",
+				"NVIDIA RTX Video TOP for AI-enhanced processing",
+				"ST2110 professional media over IP",
+				"DMX fixture workflow with POPs",
+				"TDI Library for VSCode integration"
+			],
+			"newOperators": [
+				"textPOP",
+				"tracePOP",
+				"triangulatePOP",
+				"alembicInPOP",
+				"alembicOutPOP",
+				"fileOutPOP",
+				"pointFileInPOP",
+				"layerMixTOP",
+				"renderSimpleTOP",
+				"nvidiaRtxVideoTOP",
+				"st2110InTOP",
+				"st2110OutTOP",
+				"st2110DeviceCHOP",
+				"serialDevicesDAT",
+				"dmxFixturePOP",
+				"dmxOutPOP",
+				"panTiltCHOP",
+				"zedSelectTOP"
+			],
+			"breakingChanges": [
+				"Polygonize POP now accepts only 3D input (use Trace POP for 2D)",
+				"ZED operators require ZED TOP connection (workflow restructured)",
+				"Web Render TOP no longer supports shared cache between instances",
+				"File In CHOP now preserves channel names from .chan files"
+			]
+		}
+	]
+}

@@ -1,0 +1,34 @@
+{
+	"aliases": ["decay-blowout", "feedback-overflow"],
+	"content": {
+		"summary": "Setting feedback decay/multiply values above 1.0 causes exponential brightness growth, eventually blowing out to white. This is a common pitfall when tuning feedback loops.",
+		"warnings": [
+			"Always clamp decay uniforms to 0.0-1.0 range or use a Level TOP with post-multiply"
+		]
+	},
+	"id": "feedback-decay-above-one-blowout",
+	"kind": "lesson",
+	"payload": {
+		"category": "pitfall",
+		"cause": "A decay multiplier > 1.0 amplifies the feedback signal each frame, causing exponential growth that saturates to white within seconds.",
+		"difficulty": "beginner",
+		"fix": "Clamp the decay uniform to [0.0, 1.0] range. In GLSL: clamp(uDecay, 0.0, 1.0). In the parameter page: set Max to 1.0 with Clamp enabled.",
+		"operatorChain": [
+			{ "family": "TOP", "opType": "feedbackTOP" },
+			{ "family": "TOP", "opType": "glslTOP" }
+		],
+		"relatedPatternIds": ["feedback-decay"],
+		"symptom": "Feedback loop output gradually or instantly turns solid white/bright. Image blows out and never recovers.",
+		"tags": ["feedback", "decay", "blowout", "clamp", "overflow"]
+	},
+	"provenance": {
+		"confidence": "high",
+		"discoveredAt": "2026-03-25",
+		"discoveredIn": "starter_pack",
+		"license": "MIT",
+		"source": "manual",
+		"validationCount": 5
+	},
+	"searchKeywords": ["feedback", "decay", "blowout", "white", "overflow", "saturate", "clamp", "multiply"],
+	"title": "Feedback Decay Above 1.0 Causes Blowout"
+}

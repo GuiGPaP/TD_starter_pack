@@ -1,0 +1,41 @@
+{
+  "id": "mediapipe-skeleton-tracking",
+  "title": "MediaPipe Skeleton Tracking",
+  "kind": "technique",
+  "aliases": ["hand tracking", "pose estimation", "body tracking", "mediapipe"],
+  "searchKeywords": ["mediapipe", "skeleton", "tracking", "pose", "hand", "body", "ml", "computer-vision"],
+  "content": {
+    "summary": "Integrates Google MediaPipe hand and pose tracking into TouchDesigner using a Script CHOP that runs the MediaPipe Python API. A webcam feed is captured, processed through MediaPipe's pose or hand solutions, and the resulting landmark coordinates are output as CHOP channels for driving parameters, geometry, or instancing."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "ml",
+    "difficulty": "advanced",
+    "tags": ["mediapipe", "tracking", "pose", "hand", "ml", "computer-vision", "webcam"],
+    "operatorChain": [
+      { "family": "TOP", "opType": "videodevinTOP", "role": "webcam capture" },
+      { "family": "TOP", "opType": "resolutionTOP", "role": "downscale for ML performance" },
+      { "family": "TOP", "opType": "cropTOP", "role": "optional region of interest" },
+      { "family": "CHOP", "opType": "scriptCHOP", "role": "runs MediaPipe inference and outputs landmarks" },
+      { "family": "SOP", "opType": "addSOP", "role": "visualize landmarks as points" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Script CHOP for MediaPipe hand tracking",
+        "language": "python",
+        "code": "# Script CHOP callbacks for MediaPipe hand landmarks\n# Requires: pip install mediapipe in TD's Python\nimport numpy as np\n\ndef onSetupParameters(scriptOp):\n\tscriptOp.appendPar('Active', par={'default': True})\n\treturn\n\ndef onCook(scriptOp):\n\tscriptOp.clear()\n\t\n\t# Get frame from video device input\n\ttop_input = op('videodevin1')\n\tif top_input is None or top_input.width == 0:\n\t\treturn\n\t\n\t# Create channels for 21 hand landmarks (x, y, z each)\n\tfor i in range(21):\n\t\tscriptOp.appendChan(f'lm{i}_tx')\n\t\tscriptOp.appendChan(f'lm{i}_ty')\n\t\tscriptOp.appendChan(f'lm{i}_tz')\n\t\n\t# Landmark data would be filled from MediaPipe results\n\t# This is the channel structure; actual inference runs\n\t# in a separate thread to avoid blocking the cook cycle\n\tscriptOp.numSamples = 1",
+        "description": "Sets up the Script CHOP channel structure for 21 hand landmarks with x/y/z coordinates."
+      }
+    ],
+    "tips": [
+      "Downscale the webcam feed to 320x240 or 640x480 before passing to MediaPipe to maintain real-time performance.",
+      "Run MediaPipe inference in a separate thread using TD's threading module to avoid blocking the main cook loop.",
+      "Use a CHOP Trail to smooth jittery landmark data, or apply a Filter CHOP with lag.",
+      "MediaPipe must be installed in TouchDesigner's Python environment — use TD's pip or set the sys.path manually."
+    ]
+  }
+}

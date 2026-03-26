@@ -1,0 +1,63 @@
+{
+	"id": "ramp-top",
+	"title": "Ramp TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"ramp",
+		"gradient",
+		"linear",
+		"radial",
+		"circular",
+		"mask"
+	],
+	"content": {
+		"summary": "Generates gradient ramps (linear, radial, circular) for masks, lookups, and color mapping."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "rampTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "type"
+			},
+			{
+				"name": "phase"
+			},
+			{
+				"name": "period"
+			}
+		],
+		"examples": [
+			{
+				"label": "Create radial gradient",
+				"language": "python",
+				"code": "op('ramp1').par.type = 'radial'",
+				"description": "Switch to radial mode for a circular gradient mask.",
+				"context": "textport"
+			},
+			{
+				"label": "Animate ramp phase",
+				"language": "python",
+				"code": "me.time.seconds * 0.2",
+				"description": "Use as a parameter expression on the phase parameter to scroll the gradient.",
+				"context": "parameter-expression"
+			},
+			{
+				"label": "Set ramp period for tiling",
+				"language": "python",
+				"code": "op('ramp1').par.period = 0.25",
+				"description": "Tile the ramp 4 times across the image.",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

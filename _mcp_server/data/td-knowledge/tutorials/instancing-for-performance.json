@@ -1,0 +1,48 @@
+{
+  "id": "instancing-for-performance",
+  "title": "Instancing for Performance",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["instancing", "instance", "performance", "GPU", "geometry", "rendering", "CHOP"],
+  "content": {
+    "summary": "Learn how to use instancing with Geometry COMPs to efficiently render thousands of objects in a single draw call. This tutorial covers setting up instance transforms from CHOPs and DATs, customizing per-instance color and scale, and optimizing rendering performance."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "intermediate",
+    "estimatedTime": "45 minutes",
+    "prerequisites": ["Basic 3D rendering in TD", "Understanding of SOPs and COMPs", "Familiarity with CHOPs"],
+    "relatedOperators": ["geometryCOMP", "cameraCOMP", "renderTOP", "boxSOP", "sphereSOP", "noiseCHOP", "mergeCHOP", "patternCHOP"],
+    "tags": ["instancing", "performance", "3D", "rendering", "GPU", "optimization"],
+    "sections": [
+      {
+        "title": "Why Instancing?",
+        "content": "Without instancing, rendering 1000 cubes means 1000 draw calls — each one a CPU-GPU round trip. With instancing, the same geometry is rendered 1000 times in a **single draw call**, with only the transform (position, rotation, scale) varying per instance.\n\nThis is the single most impactful optimization for scenes with many repeated objects. Performance can improve by 10-100x compared to duplicating Geometry COMPs."
+      },
+      {
+        "title": "Prepare Instance Data with CHOPs",
+        "content": "Instance transforms are driven by CHOP channels. Each sample in the CHOP represents one instance. You need channels named `tx`, `ty`, `tz` for position (and optionally `rx`, `ry`, `rz` for rotation and `sx`, `sy`, `sz` for scale).\n\nUse a **Pattern CHOP** to generate a grid of positions, or a **Noise CHOP** for organic arrangements.",
+        "code": "# Create a grid of instance positions using Script CHOP approach\nimport math\n\ncount = 400  # 20x20 grid\nspacing = 0.5\nside = int(math.sqrt(count))\n\nscript = op('/project1/script_chop1')\n# You can also build this with Pattern + Math CHOPs:\n# Pattern CHOP (ramp 0-19, 20 samples) -> Math CHOP (* spacing)"
+      },
+      {
+        "title": "Enable Instancing on Geometry COMP",
+        "content": "Create a **Geometry COMP** with a **Box SOP** or **Sphere SOP** inside. On the Geometry COMP's `Instance` parameter page:\n\n1. Toggle **Instancing** to `On`\n2. Set **Instance CHOP/DAT** to your CHOP with the position channels\n3. Map **Translate X/Y/Z** to the `tx`, `ty`, `tz` channels\n4. Optionally map **Rotate** and **Scale** channels\n\nYou should immediately see multiple copies of your geometry.",
+        "code": "# Configure instancing via Python\ngeo = op('/project1/geo1')\ngeo.par.instancing = True\ngeo.par.instancechop = op('/project1/instance_positions').path\ngeo.par.instancetx = 'tx'\ngeo.par.instancety = 'ty'\ngeo.par.instancetz = 'tz'"
+      },
+      {
+        "title": "Per-Instance Color and Scale",
+        "content": "Add channels for per-instance color (`cr`, `cg`, `cb`) and scale (`sx`, `sy`, `sz`) to your instance CHOP using a **Merge CHOP**. Map these in the Geometry COMP's instance parameters.\n\nFor color, you can use a **Noise CHOP** with 3 channels renamed to `cr`, `cg`, `cb`. For animated scale, try a **LFO CHOP** with a phase offset per instance.",
+        "code": "# Add color channels to instances\ngeo = op('/project1/geo1')\n\n# Map color channels\ngeo.par.instancecr = 'cr'\ngeo.par.instancecg = 'cg'\ngeo.par.instancecb = 'cb'\n\n# Map scale channels\ngeo.par.instancesx = 'sx'\ngeo.par.instancesy = 'sy'\ngeo.par.instancesz = 'sz'"
+      },
+      {
+        "title": "Render and Optimize",
+        "content": "Add a **Camera COMP** and **Render TOP** to see your instanced scene. For maximum performance:\n\n- Use the simplest geometry possible (low poly count per instance)\n- Keep the instance CHOP cooking only when values change\n- Use a **Null CHOP** with `Cook Type` set to `Static` if positions don't animate\n- Consider using a **DAT** instead of a CHOP for very large instance counts (100K+) as DAT table lookup can be more memory-efficient\n- Monitor draw calls in the **Performance Monitor** (F2) to verify instancing is working",
+        "code": "# Set up render pipeline\ncam = op('/project1/cam1')\ncam.par.tz = 15  # Pull back to see the grid\n\nrender = op('/project1/render1')\nrender.par.camera = cam.path\nrender.par.geometry = op('/project1/geo1').path\nrender.par.lights = op('/project1/light1').path"
+      }
+    ]
+  }
+}

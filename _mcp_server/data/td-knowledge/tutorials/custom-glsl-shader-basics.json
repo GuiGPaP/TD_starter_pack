@@ -1,0 +1,47 @@
+{
+  "id": "custom-glsl-shader-basics",
+  "title": "Custom GLSL Shader Basics",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["GLSL", "shader", "pixel", "fragment", "TOP", "custom", "generative"],
+  "content": {
+    "summary": "Write your first custom GLSL pixel shader in a GLSL TOP. This tutorial walks through the GLSL TOP setup, TouchDesigner's shader conventions, uniforms, texture sampling, and building a simple animated generative pattern from scratch."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "intermediate",
+    "estimatedTime": "30 minutes",
+    "prerequisites": ["Basic understanding of TOPs", "Elementary programming concepts"],
+    "relatedOperators": ["glslTOP", "textDAT", "noiseTOP", "constantTOP"],
+    "tags": ["GLSL", "shader", "fragment", "pixel", "generative", "TOP"],
+    "sections": [
+      {
+        "title": "Understanding the GLSL TOP",
+        "content": "The **GLSL TOP** lets you write custom pixel (fragment) shaders that run on the GPU. Each pixel of the output texture runs your shader code independently and in parallel.\n\nCreate a GLSL TOP — it automatically creates a companion **Text DAT** containing the shader source. TouchDesigner uses its own shader framework with specific variable names and conventions that differ from raw OpenGL."
+      },
+      {
+        "title": "TouchDesigner Shader Conventions",
+        "content": "TD provides several built-in variables and functions in its GLSL environment:\n\n- `vUV.st` — normalized UV coordinates (0 to 1) of the current pixel\n- `uTDOutputInfo.res` — output resolution as a `vec4`\n- `sTD2DInputs[0]` — sampler for the first input texture\n- `texture(sampler, uv)` — standard GLSL texture lookup\n- Output is written to `fragColor` (or a layout location)\n\nThe shader must define a `main()` function with an output assignment.",
+        "code": "# The default GLSL TOP shader in its Text DAT looks like:\ndefault_shader = '''\nout vec4 fragColor;\n\nvoid main()\n{\n    vec4 color = texture(sTD2DInputs[0], vUV.st);\n    fragColor = TDOutputSwizzle(color);\n}\n'''"
+      },
+      {
+        "title": "Create an Animated Pattern",
+        "content": "Replace the default shader with a generative pattern. We'll create animated concentric rings using `sin()` and the distance from the center. The `uTDCurrentFrame` uniform provides animation over time.\n\nThis demonstrates coordinate math, trigonometric functions, and time-based animation — the core building blocks of generative shaders.",
+        "code": "# Set the shader code on the Text DAT\nshader = '''\nout vec4 fragColor;\nuniform float uTime;\n\nvoid main()\n{\n    // Center UV coordinates\n    vec2 uv = vUV.st - 0.5;\n    \n    // Distance from center\n    float dist = length(uv);\n    \n    // Animated concentric rings\n    float rings = sin(dist * 30.0 - uTime * 2.0);\n    rings = smoothstep(0.0, 0.1, rings);\n    \n    // Color based on angle\n    float angle = atan(uv.y, uv.x);\n    vec3 col = vec3(\n        0.5 + 0.5 * sin(angle + uTime),\n        0.5 + 0.5 * sin(angle + uTime + 2.094),\n        0.5 + 0.5 * sin(angle + uTime + 4.189)\n    );\n    \n    fragColor = TDOutputSwizzle(vec4(col * rings, 1.0));\n}\n'''\nop('/project1/glsl1_shader').text = shader"
+      },
+      {
+        "title": "Add Custom Uniforms",
+        "content": "You can pass values from TouchDesigner into your shader using **uniforms**. On the GLSL TOP's `Vectors 1` page, add custom uniform names and values. These become available as `uniform float` or `uniform vec4` variables in your shader.\n\nThis lets you control shader parameters from CHOPs, Python, or the parameter UI without editing shader code.",
+        "code": "# Configure a custom uniform on the GLSL TOP\nglsl = op('/project1/glsl1')\n# Set uniform name and value on Vectors page\nglsl.par.uniname0 = 'uTime'\nglsl.par.value0x = absTime.seconds  # This could be an expression"
+      },
+      {
+        "title": "Use Input Textures",
+        "content": "Connect a texture (any TOP) to the GLSL TOP's first input. Access it in the shader with `texture(sTD2DInputs[0], vUV.st)`. You can connect up to 16 inputs.\n\nTry connecting a **Noise TOP** and blending it with your procedural pattern. Combining procedural math with sampled textures is a powerful technique for creating complex visual effects."
+      }
+    ]
+  }
+}

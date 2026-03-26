@@ -1,0 +1,88 @@
+{
+	"id": "camera-comp",
+	"title": "Camera COMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"camera",
+		"view",
+		"perspective",
+		"orthographic",
+		"projection"
+	],
+	"content": {
+		"summary": "Virtual camera for Render TOP. Controls view, projection, FOV."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cameraCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "tx"
+			},
+			{
+				"name": "ty"
+			},
+			{
+				"name": "tz"
+			},
+			{
+				"name": "rx"
+			},
+			{
+				"name": "ry"
+			},
+			{
+				"name": "rz"
+			},
+			{
+				"name": "projection"
+			},
+			{
+				"name": "fov"
+			},
+			{
+				"name": "near"
+			},
+			{
+				"name": "far"
+			}
+		],
+		"examples": [
+			{
+				"label": "Position camera for top-down view",
+				"language": "python",
+				"code": "c = op('cam1')\nc.par.tx = 0\nc.par.ty = 5\nc.par.tz = 0\nc.par.rx = -90\nc.par.ry = 0\nc.par.rz = 0",
+				"context": "textport"
+			},
+			{
+				"label": "Set field of view",
+				"language": "python",
+				"code": "op('cam1').par.fov = 60",
+				"description": "Set a 60-degree field of view for natural perspective.",
+				"context": "textport"
+			},
+			{
+				"label": "Set clipping planes for large scene",
+				"language": "python",
+				"code": "c = op('cam1')\nc.par.near = 0.01\nc.par.far = 1000",
+				"context": "textport"
+			},
+			{
+				"label": "Orbit camera with time",
+				"language": "python",
+				"code": "math.sin(me.time.seconds * 0.5) * 3",
+				"description": "Use as expression on tx to orbit the camera horizontally.",
+				"context": "parameter-expression"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

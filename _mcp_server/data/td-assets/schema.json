@@ -1,0 +1,124 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://github.com/GuiGPaP/touchdesigner-mcp/td-asset-manifest",
+	"title": "TD Asset Manifest",
+	"description": "Manifest for a reusable TouchDesigner asset (.tox or external reference)",
+	"type": "object",
+	"required": ["id", "title", "kind", "description"],
+	"properties": {
+		"aliases": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Alternative names for search discovery"
+		},
+		"deploy": {
+			"type": "object",
+			"properties": {
+				"containerName": {
+					"type": "string",
+					"description": "Default name for the container created in TD"
+				},
+				"mode": {
+					"type": "string",
+					"enum": ["import_tox"],
+					"description": "Deployment strategy"
+				}
+			},
+			"required": ["mode", "containerName"]
+		},
+		"deployable": {
+			"type": "boolean",
+			"description": "Whether this asset can be deployed (false for external-ref)"
+		},
+		"description": {
+			"type": "string",
+			"description": "Human-readable description of the asset"
+		},
+		"id": {
+			"type": "string",
+			"pattern": "^[a-z0-9][a-z0-9-]*$",
+			"description": "Unique identifier (kebab-case)"
+		},
+		"kind": {
+			"type": "string",
+			"enum": ["tox-asset", "external-ref"],
+			"description": "Asset kind: tox-asset (deployable) or external-ref (documentation only)"
+		},
+		"postDeployChecks": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Checks to run after deployment"
+		},
+		"provenance": {
+			"type": "object",
+			"properties": {
+				"license": {
+					"type": "string",
+					"description": "License identifier (e.g. MIT)"
+				},
+				"source": {
+					"type": "string",
+					"enum": ["project-original", "community", "palette"],
+					"description": "Origin of the asset"
+				}
+			},
+			"required": ["source", "license"]
+		},
+		"requirements": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Runtime requirements or dependencies"
+		},
+		"sha256": {
+			"type": "string",
+			"pattern": "^[a-f0-9]{64}$",
+			"description": "SHA-256 hash of asset.tox"
+		},
+		"tags": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Searchable tags"
+		},
+		"tdVersion": {
+			"type": "object",
+			"properties": {
+				"min": {
+					"type": "string",
+					"description": "Minimum compatible TouchDesigner version"
+				}
+			},
+			"required": ["min"]
+		},
+		"title": {
+			"type": "string",
+			"description": "Human-readable display name"
+		},
+		"useCases": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Common use cases for discovery"
+		},
+		"version": {
+			"type": "string",
+			"pattern": "^\\d+\\.\\d+\\.\\d+$",
+			"description": "Semantic version of the asset"
+		}
+	},
+	"if": {
+		"properties": { "kind": { "const": "tox-asset" } }
+	},
+	"then": {
+		"required": ["id", "title", "kind", "description", "version", "sha256", "tdVersion", "deploy", "provenance"]
+	},
+	"else": {
+		"if": {
+			"properties": { "kind": { "const": "external-ref" } }
+		},
+		"then": {
+			"required": ["id", "title", "kind", "description", "deployable"],
+			"properties": {
+				"deployable": { "const": false }
+			}
+		}
+	}
+}

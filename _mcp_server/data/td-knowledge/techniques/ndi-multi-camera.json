@@ -1,0 +1,41 @@
+{
+  "id": "ndi-multi-camera",
+  "title": "NDI Multi-Camera Setup",
+  "kind": "technique",
+  "aliases": ["ndi input", "ndi output", "multi camera", "live production"],
+  "searchKeywords": ["ndi", "camera", "multi", "live", "production", "video", "streaming", "network"],
+  "content": {
+    "summary": "Sets up NDI (Network Device Interface) for receiving and sending multiple video streams over a local network in TouchDesigner. NDI In TOPs receive feeds from cameras, other TD instances, or NDI-enabled software, while NDI Out TOPs broadcast processed visuals. This technique is essential for multi-machine live production setups, LED wall driving, and distributed rendering."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "networking",
+    "difficulty": "intermediate",
+    "tags": ["ndi", "video", "networking", "live-production", "multi-camera", "streaming"],
+    "operatorChain": [
+      { "family": "TOP", "opType": "ndiinTOP", "role": "receive NDI video streams" },
+      { "family": "TOP", "opType": "switchTOP", "role": "switch between camera feeds" },
+      { "family": "TOP", "opType": "compositeTOP", "role": "combine multiple feeds" },
+      { "family": "TOP", "opType": "resolutionTOP", "role": "normalize resolution across feeds" },
+      { "family": "TOP", "opType": "ndioutTOP", "role": "broadcast output to network" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Create multi-camera NDI input setup",
+        "language": "python",
+        "code": "# Create multiple NDI inputs and a switcher\nbase = op('/project1')\ncamera_names = ['Camera_1', 'Camera_2', 'Camera_3']\n\nfor i, name in enumerate(camera_names):\n\t# Create NDI In for each camera\n\tndi_in = base.create(ndiinTOP, f'ndi_cam{i+1}')\n\tndi_in.par.sourcename = name\n\t\n\t# Normalize resolution\n\tres = base.create(resolutionTOP, f'res_cam{i+1}')\n\tres.par.resolutionw = 1920\n\tres.par.resolutionh = 1080\n\tres.inputConnectors[0].connect(ndi_in)\n\n# Create switch for live cutting\nswitch = base.create(switchTOP, 'camera_switch')\nfor i in range(len(camera_names)):\n\tswitch.inputConnectors[i].connect(op(f'res_cam{i+1}'))\n\n# NDI output for downstream\nndi_out = base.create(ndioutTOP, 'ndi_program')\nndi_out.inputConnectors[0].connect(switch)",
+        "description": "Creates NDI inputs for multiple cameras, normalizes their resolution, routes through a switch, and outputs the program feed via NDI."
+      }
+    ],
+    "tips": [
+      "All machines must be on the same subnet for NDI auto-discovery to work.",
+      "Use the NDI Access Manager on Windows to control which sources are visible across the network.",
+      "Set NDI In TOPs to low bandwidth mode during setup to reduce network load, then switch to full bandwidth for production.",
+      "NDI adds 1-3 frames of latency — account for this in time-critical synchronized setups."
+    ]
+  }
+}

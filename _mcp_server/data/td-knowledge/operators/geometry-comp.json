@@ -1,0 +1,65 @@
+{
+	"id": "geometry-comp",
+	"title": "Geometry COMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"geometry",
+		"3d",
+		"render",
+		"mesh",
+		"instancing",
+		"material"
+	],
+	"content": {
+		"summary": "Renders 3D geometry. Contains SOPs and MATs. Supports instancing."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "geometryCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "material"
+			},
+			{
+				"name": "rendermode"
+			},
+			{
+				"name": "instanceop"
+			},
+			{
+				"name": "instancing"
+			}
+		],
+		"examples": [
+			{
+				"label": "Assign a material",
+				"language": "python",
+				"code": "op('geo1').par.material = 'phong1'",
+				"description": "Apply a Phong MAT to the geometry.",
+				"context": "textport"
+			},
+			{
+				"label": "Enable instancing from a CHOP",
+				"language": "python",
+				"code": "g = op('geo1')\ng.par.instancing = True\ng.par.instanceop = 'null_chop1'",
+				"description": "Enable GPU instancing driven by a CHOP.",
+				"context": "textport"
+			},
+			{
+				"label": "Set wireframe render mode",
+				"language": "python",
+				"code": "op('geo1').par.rendermode = 'wireframe'",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

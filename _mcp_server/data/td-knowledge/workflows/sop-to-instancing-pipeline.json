@@ -1,0 +1,33 @@
+{
+  "kind": "workflow",
+  "id": "sop-to-instancing-pipeline",
+  "title": "SOP to Instancing Pipeline",
+  "searchKeywords": ["sop", "instancing", "grid", "noise", "script", "3d", "gpu"],
+  "content": {
+    "summary": "Process SOP geometry through noise and sorting to generate instance data for GPU rendering"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "3d-rendering",
+    "difficulty": "advanced",
+    "operators": [
+      { "opType": "gridSOP", "family": "SOP", "role": "generator" },
+      { "opType": "noiseSOP", "family": "SOP", "role": "modifier" },
+      { "opType": "sortSOP", "family": "SOP", "role": "modifier" },
+      { "opType": "scriptSOP", "family": "SOP", "role": "processor" },
+      { "opType": "geometryCOMP", "family": "COMP", "role": "geometry" },
+      { "opType": "renderTOP", "family": "TOP", "role": "renderer" }
+    ],
+    "connections": [
+      { "from": "gridSOP", "to": "noiseSOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "noiseSOP", "to": "sortSOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "sortSOP", "to": "scriptSOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "geometryCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["instancing", "sop", "3d", "gpu"]
+  }
+}

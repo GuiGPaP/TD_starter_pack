@@ -1,0 +1,35 @@
+{
+  "kind": "workflow",
+  "id": "audio-reactive-visuals",
+  "title": "Audio Reactive Visuals",
+  "searchKeywords": ["audio", "reactive", "music", "sound", "spectrum", "chop", "live"],
+  "content": {
+    "summary": "Drive visual parameters from live audio input using CHOP exports"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "audio-visual",
+    "difficulty": "intermediate",
+    "operators": [
+      { "opType": "audioDeviceInCHOP", "family": "CHOP", "role": "input" },
+      { "opType": "audioSpectrumCHOP", "family": "CHOP", "role": "analyzer" },
+      { "opType": "mathCHOP", "family": "CHOP", "role": "modifier" },
+      { "opType": "nullCHOP", "family": "CHOP", "role": "output" },
+      { "opType": "noiseTOP", "family": "TOP", "role": "generator" },
+      { "opType": "levelTOP", "family": "TOP", "role": "modifier" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "audioDeviceInCHOP", "to": "audioSpectrumCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "audioSpectrumCHOP", "to": "mathCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "mathCHOP", "to": "nullCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "noiseTOP", "to": "levelTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "levelTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["audio", "chop", "reactive", "live"]
+  }
+}

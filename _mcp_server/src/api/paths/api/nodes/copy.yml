@@ -1,0 +1,54 @@
+post:
+  summary: Copy a node to a new location
+  operationId: copy_node
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - sourcePath
+            - targetParentPath
+          properties:
+            sourcePath:
+              type: string
+              description: Path to the source operator (e.g., "/project1/geo1")
+            targetParentPath:
+              type: string
+              description: Path to the target parent COMP (e.g., "/project1/container1")
+            name:
+              type: string
+              description: Optional name for the copy (auto-generated if omitted)
+            nodeX:
+              type: number
+              description: Optional X position for the copied node
+            nodeY:
+              type: number
+              description: Optional Y position for the copied node
+  responses:
+    "200":
+      description: Node copied successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                properties:
+                  result:
+                    description: Information about the copied node
+                    $ref: ../../../index.yml#/components/schemas/TdNode
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful

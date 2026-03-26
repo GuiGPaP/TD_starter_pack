@@ -1,0 +1,55 @@
+{
+	"aliases": [],
+	"content": {
+		"summary": "Setting a fixed seed on Noise TOP produces deterministic output, essential for reproducible generative art. Without a seed, the noise changes on every cook, making it impossible to recreate a specific visual."
+	},
+	"id": "noise-top-seed-for-reproducible-generative-art",
+	"kind": "lesson",
+	"payload": {
+		"category": "pattern",
+		"operatorChain": [
+			{
+				"family": "TOP",
+				"opType": "noiseTOP",
+				"role": "primary"
+			}
+		],
+		"recipe": {
+			"description": "Set the Noise TOP seed parameter to a fixed integer value instead of leaving it at 0 (random).",
+			"steps": [
+				"Create Noise TOP",
+				"Set par.seed to a fixed value (e.g., 42)",
+				"The output is now deterministic and reproducible across sessions"
+			]
+		},
+		"tags": [
+			"noise",
+			"seed",
+			"generative",
+			"reproducible",
+			"deterministic"
+		],
+		"skillUpdateProposal": {
+			"proposedAddition": "✅ **Noise TOP Seed for Reproducible Generative Art** — Setting a fixed seed on Noise TOP produces deterministic output, essential for reproducible generative art. Without a seed, the noise changes on every cook, making it impossible to recreate a specific visual.",
+			"section": "Critical Guardrails",
+			"status": "proposed",
+			"targetFile": "td-guide"
+		}
+	},
+	"provenance": {
+		"confidence": "medium",
+		"discoveredAt": "2026-03-24",
+		"discoveredIn": "starter_pack",
+		"license": "MIT",
+		"source": "manual",
+		"validationCount": 0
+	},
+	"searchKeywords": [
+		"noise",
+		"seed",
+		"generative",
+		"reproducible",
+		"deterministic"
+	],
+	"title": "Noise TOP Seed for Reproducible Generative Art"
+}

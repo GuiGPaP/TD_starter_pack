@@ -1,0 +1,54 @@
+get:
+  summary: Get contextual info for a node (aggregated)
+  description: |
+    Aggregate contextual information for a single node. Fetches multiple
+    facets (parameters, channels, extensions, errors, etc.) in one call.
+    Use include to select specific facets; omit for all.
+  operationId: get_td_context
+  parameters:
+    - name: nodePath
+      description: 'Absolute path to the target node, e.g. "/project1/geo1"'
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: include
+      description: Facets to include (omit for all)
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - parameters
+            - channels
+            - tableInfo
+            - extensions
+            - children
+            - errors
+            - datText
+  responses:
+    "200":
+      description: Node context retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  nodePath:
+                    type: string
+                  facets:
+                    type: object
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+              error:
+                type: string
+                nullable: true

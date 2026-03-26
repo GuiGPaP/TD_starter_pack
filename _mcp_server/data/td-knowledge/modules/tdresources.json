@@ -1,0 +1,116 @@
+{
+	"id": "tdresources",
+	"title": "TDResources",
+	"kind": "python-module",
+	"aliases": ["op.TDResources"],
+	"content": {
+		"summary": "Singleton system COMP providing UI popups (PopMenu, PopDialog), HTTP client (WebClient), file download (FileDownloader), and mouse input (MouseCHOP). Accessed via op.TDResources.",
+		"warnings": [
+			"Access via op.TDResources — do NOT use 'import TDResources'. This is a singleton COMP, not a Python module.",
+			"PopMenu supports max 2 nesting levels for submenus.",
+			"PopDialog supports max 4 buttons — additional buttons are silently ignored.",
+			"WebClient callback receives statusCode=None on timeout/connection failure — always check before using.",
+			"FileDownloader with force=False skips download if localPath already exists."
+		]
+	},
+	"provenance": {
+		"source": "skills-reference",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"searchKeywords": [
+		"PopMenu", "PopDialog", "WebClient", "FileDownloader", "MouseCHOP",
+		"popup", "menu", "dialog", "HTTP", "request", "download", "mouse",
+		"op.TDResources", "Open", "Request", "Download", "UI"
+	],
+	"payload": {
+		"canonicalName": "TDResources",
+		"accessPattern": "op.TDResources",
+		"members": [
+			{
+				"name": "PopMenu.Open",
+				"signature": "op.TDResources.op('popMenu').Open(menuItems, callback, callbackDetails=None, autoClose=True, rolloverOpen=False)",
+				"returns": "None",
+				"description": "Opens a popup menu. Submenus via nested lists (max 2 levels). Callback receives info dict with index (-1 if dismissed) and item.",
+				"parameters": [
+					{ "name": "menuItems", "type": "list", "description": "List of str or nested lists for submenus (max 2 levels)" },
+					{ "name": "callback", "type": "callable", "description": "function(info) where info = {'index': int, 'item': str, ...}" },
+					{ "name": "callbackDetails", "type": "any", "default": "None", "description": "Arbitrary data passed through to callback" },
+					{ "name": "autoClose", "type": "bool", "default": "True", "description": "Auto-close menu after selection" },
+					{ "name": "rolloverOpen", "type": "bool", "default": "False", "description": "Open submenus on rollover" }
+				],
+				"warnings": ["Max 2 nesting levels for submenus", "Callback receives index=-1 when dismissed without selection"]
+			},
+			{
+				"name": "PopDialog.Open",
+				"signature": "op.TDResources.op('popDialog').Open(text='', title='', buttons=['OK'], callback=None, textEntry=False, default='', escButton=2, enterButton=1, escOnClickAway=True)",
+				"returns": "None",
+				"description": "Opens a popup dialog with configurable buttons and optional text entry field.",
+				"parameters": [
+					{ "name": "text", "type": "str", "default": "''", "description": "Dialog body text" },
+					{ "name": "title", "type": "str", "default": "''", "description": "Title bar text" },
+					{ "name": "buttons", "type": "list[str]", "default": "['OK']", "description": "Button labels (max 4)" },
+					{ "name": "callback", "type": "callable", "default": "None", "description": "function(info) where info = {'button': str, 'buttonNum': int, 'enteredText': str}" },
+					{ "name": "textEntry", "type": "bool", "default": "False", "description": "Show text input field" },
+					{ "name": "default", "type": "str", "default": "''", "description": "Default text entry value" },
+					{ "name": "escButton", "type": "int", "default": "2", "description": "Button index for Escape key (1-based)" },
+					{ "name": "enterButton", "type": "int", "default": "1", "description": "Button index for Enter key (1-based)" },
+					{ "name": "escOnClickAway", "type": "bool", "default": "True", "description": "Close on click outside dialog" }
+				],
+				"warnings": ["Max 4 buttons — additional buttons are silently ignored"]
+			},
+			{
+				"name": "WebClient.Request",
+				"signature": "op.TDResources.op('webClient').Request(callback, url, method='GET', header=None, data=None, contentType=None, id=None)",
+				"returns": "None",
+				"description": "Sends an HTTP request. Callback receives (statusCode, headerDict, data, id). statusCode is None on timeout/connection failure. data is bytes.",
+				"parameters": [
+					{ "name": "callback", "type": "callable", "description": "function(statusCode, headerDict, data, id)" },
+					{ "name": "url", "type": "str", "description": "Request URL" },
+					{ "name": "method", "type": "str", "default": "'GET'", "description": "HTTP method: GET, POST, PUT, DELETE, HEAD" },
+					{ "name": "header", "type": "dict", "default": "None", "description": "Request headers" },
+					{ "name": "data", "type": "str or bytes", "default": "None", "description": "Request body" },
+					{ "name": "contentType", "type": "str", "default": "None", "description": "Content-Type header" },
+					{ "name": "id", "type": "any", "default": "None", "description": "Arbitrary id passed to callback" }
+				],
+				"examples": [
+					{
+						"code": "def onResponse(status, headers, data, id):\n    if status is None:\n        debug('Request timed out')\n        return\n    if status != 200:\n        debug(f'HTTP {status}')\n        return\n    result = data.decode('utf-8')",
+						"label": "Handle None status on timeout"
+					}
+				],
+				"warnings": ["statusCode is None on timeout/connection failure — always check", "data is bytes — decode with data.decode('utf-8') for text"]
+			},
+			{
+				"name": "FileDownloader.Download",
+				"signature": "op.TDResources.op('fileDownloader').Download(url, localPath, callback=None, dwnldCopy=False, force=False, uploadFile=None)",
+				"returns": "None",
+				"description": "Downloads a file from URL to localPath. dwnldCopy=True uses temp file to avoid partial writes. uploadFile repurposes as PUT upload.",
+				"parameters": [
+					{ "name": "url", "type": "str", "description": "Download URL" },
+					{ "name": "localPath", "type": "str", "description": "Local file path to save to" },
+					{ "name": "callback", "type": "callable", "default": "None", "description": "function(info) — info has 'success', 'localPath', 'url'" },
+					{ "name": "dwnldCopy", "type": "bool", "default": "False", "description": "Download to temp first, then copy (safer for large files)" },
+					{ "name": "force", "type": "bool", "default": "False", "description": "Overwrite existing file" },
+					{ "name": "uploadFile", "type": "str", "default": "None", "description": "Path to file — sends PUT with file body (upload, not download)" }
+				],
+				"warnings": ["force=False skips download if localPath already exists", "uploadFile repurposes this as a PUT upload — url becomes the upload target"]
+			},
+			{
+				"name": "ButtonPopMenu",
+				"description": "Variant of PopMenu attached to a button widget. Does NOT support submenus.",
+				"warnings": ["Does NOT support submenus"]
+			},
+			{
+				"name": "MouseCHOP",
+				"description": "A Mouse In CHOP providing mouse position (tx, ty), button state (lselect, mselect, rselect), and scroll wheel delta. Access via op.TDResources.op('mouseCHOP').",
+				"examples": [
+					{
+						"code": "mouse = op.TDResources.op('mouseCHOP')\nx = mouse['tx']\ny = mouse['ty']\nleft_click = mouse['lselect']",
+						"label": "Read mouse position and button state"
+					}
+				]
+			}
+		]
+	}
+}

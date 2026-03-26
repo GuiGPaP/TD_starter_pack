@@ -1,0 +1,44 @@
+{
+  "id": "threaded-web-requests",
+  "title": "Threaded Web Requests",
+  "kind": "technique",
+  "aliases": ["async http", "non-blocking requests", "background http"],
+  "searchKeywords": ["thread", "web", "http", "request", "async", "api", "non-blocking", "python"],
+  "content": {
+    "summary": "Performs non-blocking HTTP requests in TouchDesigner using Python threading so that network latency does not stall the main cook loop. A background thread executes the HTTP request, and the result is passed back to the main thread using TD's run() function with delayed frames. This pattern is essential for integrating REST APIs, fetching remote data, or posting telemetry without dropping frames."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "python-advanced",
+    "difficulty": "advanced",
+    "tags": ["thread", "http", "web", "api", "async", "non-blocking", "python", "network"],
+    "operatorChain": [
+      { "family": "DAT", "opType": "textDAT", "role": "extension or module with threading code" },
+      { "family": "DAT", "opType": "tableDAT", "role": "store response data" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Non-blocking HTTP GET with threading",
+        "language": "python",
+        "code": "import threading\nimport urllib.request\nimport json\n\ndef fetch_api_data(url, callback_dat):\n\t\"\"\"Fetch data from URL in a background thread.\"\"\"\n\t\n\tdef _worker():\n\t\ttry:\n\t\t\treq = urllib.request.Request(url)\n\t\t\twith urllib.request.urlopen(req, timeout=10) as response:\n\t\t\t\tdata = json.loads(response.read().decode())\n\t\t\t\n\t\t\t# Pass result back to main thread via run()\n\t\t\trun('op(\"' + callback_dat + '\").text = ' + repr(json.dumps(data)),\n\t\t\t    delayFrames=1)\n\t\texcept Exception as e:\n\t\t\trun('op(\"' + callback_dat + '\").text = ' + repr(f'ERROR: {e}'),\n\t\t\t    delayFrames=1)\n\t\n\tt = threading.Thread(target=_worker, daemon=True)\n\tt.start()\n\n# Usage:\nfetch_api_data('https://api.example.com/data', 'response_text')",
+        "description": "Performs an HTTP GET in a background thread and writes the JSON response to a Text DAT on the main thread using run()."
+      },
+      {
+        "label": "Threaded POST request with JSON body",
+        "language": "python",
+        "code": "import threading\nimport urllib.request\nimport json\n\ndef post_json(url, payload, callback_dat):\n\t\"\"\"POST JSON data in a background thread.\"\"\"\n\t\n\tdef _worker():\n\t\ttry:\n\t\t\tdata = json.dumps(payload).encode('utf-8')\n\t\t\treq = urllib.request.Request(\n\t\t\t\turl, data=data,\n\t\t\t\theaders={'Content-Type': 'application/json'}\n\t\t\t)\n\t\t\twith urllib.request.urlopen(req, timeout=10) as response:\n\t\t\t\tresult = response.read().decode()\n\t\t\t\n\t\t\trun('op(\"' + callback_dat + '\").text = ' + repr(result),\n\t\t\t    delayFrames=1)\n\t\texcept Exception as e:\n\t\t\trun('op(\"' + callback_dat + '\").text = ' + repr(f'ERROR: {e}'),\n\t\t\t    delayFrames=1)\n\t\n\tt = threading.Thread(target=_worker, daemon=True)\n\tt.start()",
+        "description": "Sends a POST request with a JSON payload without blocking TouchDesigner's cook cycle."
+      }
+    ],
+    "tips": [
+      "Always use run() with delayFrames to pass data back to the main thread — never modify TD operators directly from a background thread.",
+      "Set daemon=True on threads so they do not prevent TD from closing if a request is still pending.",
+      "Use urllib.request (built into TD's Python) rather than the requests library, which requires separate installation.",
+      "Add a timeout to urlopen() to prevent threads from hanging indefinitely on unresponsive servers."
+    ]
+  }
+}

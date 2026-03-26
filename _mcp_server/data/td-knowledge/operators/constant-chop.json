@@ -1,0 +1,63 @@
+{
+	"id": "constant-chop",
+	"title": "Constant CHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"constant",
+		"value",
+		"static",
+		"parameter",
+		"default"
+	],
+	"content": {
+		"summary": "Outputs channels with constant values. Useful for parameters, defaults, and static data."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "constantCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "name0"
+			},
+			{
+				"name": "value0"
+			},
+			{
+				"name": "name1"
+			},
+			{
+				"name": "value1"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set a named constant value",
+				"language": "python",
+				"code": "c = op('constant1')\nc.par.name0 = 'speed'\nc.par.value0 = 2.5",
+				"description": "Create a channel named 'speed' with value 2.5.",
+				"context": "textport"
+			},
+			{
+				"label": "Define two parameter channels",
+				"language": "python",
+				"code": "c = op('constant1')\nc.par.name0 = 'width'\nc.par.value0 = 1920\nc.par.name1 = 'height'\nc.par.value1 = 1080",
+				"context": "textport"
+			},
+			{
+				"label": "Read a constant value in a script",
+				"language": "python",
+				"code": "speed = op('constant1')['speed'].eval()\nprint(speed)",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

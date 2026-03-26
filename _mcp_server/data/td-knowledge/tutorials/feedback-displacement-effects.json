@@ -1,0 +1,48 @@
+{
+  "id": "feedback-displacement-effects",
+  "title": "Advanced Feedback Displacement Effects",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["feedback", "displacement", "distortion", "generative", "advanced", "GLSL", "displace"],
+  "content": {
+    "summary": "Create advanced generative visuals by combining feedback loops with pixel displacement. This tutorial teaches you to use the Displace TOP within a feedback chain, drive displacement with noise and audio, and build complex self-evolving visual systems that produce organic, fluid motion and intricate patterns."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "advanced",
+    "estimatedTime": "45 minutes",
+    "prerequisites": ["Feedback loop basics", "Understanding of TOPs", "Basic GLSL knowledge helpful"],
+    "relatedOperators": ["feedbackTOP", "displaceTOP", "noiseTOP", "compositeTOP", "levelTOP", "hsvTOP", "glslTOP", "blurTOP", "transformTOP"],
+    "tags": ["feedback", "displacement", "generative", "advanced", "distortion", "organic"],
+    "sections": [
+      {
+        "title": "The Displacement Feedback Concept",
+        "content": "Standard feedback loops apply simple transforms (scale, rotate) to the fed-back image. **Displacement feedback** replaces this with per-pixel displacement — each pixel is shifted by an amount determined by a displacement map (typically a Noise TOP).\n\nThis creates organic, fluid motion where different parts of the image move in different directions and speeds. The result is far more complex and visually rich than uniform transforms. The self-referential nature of feedback means small displacement patterns amplify into large-scale structures over many frames."
+      },
+      {
+        "title": "Build the Core Feedback-Displace Chain",
+        "content": "Create the fundamental chain: **Feedback TOP** -> **Displace TOP** -> **Composite TOP** (with seed input) -> back to Feedback.\n\nThe Displace TOP takes two inputs: the image to displace (from Feedback) and the displacement map (a Noise TOP). Set the Displace TOP's `Displace Weight` to a small value (0.01-0.05) — even tiny per-pixel offsets compound dramatically through feedback.",
+        "code": "# Configure the displace TOP\ndisplace = op('/project1/displace1')\n# Input 0: image from feedback TOP\n# Input 1: displacement map (noise)\ndisplace.par.displaceweightx = 0.02\ndisplace.par.displaceweighty = 0.02\n\n# Set the feedback target to the composite output\nfeedback = op('/project1/feedback1')\nfeedback.par.top = op('/project1/comp1').path"
+      },
+      {
+        "title": "Design the Displacement Map",
+        "content": "The displacement map controls the motion field. Create a **Noise TOP** with:\n- `Type` set to `Simplex` for smooth, organic flow\n- `Transform > Translate Z` driven by `absTime.seconds` for animation\n- Resolution matching your main chain (e.g., 1280x720)\n- `Monochrome` off — the R and G channels drive X and Y displacement independently\n\nLower noise periods create fine, turbulent motion. Higher periods create large, sweeping flows. Animate the noise slowly for best results.",
+        "code": "# Configure the displacement noise\nnoise = op('/project1/noise_displace')\nnoise.par.type = 'sparse'\nnoise.par.amp = 1\nnoise.par.period = 500\nnoise.par.harmonics = 3\nnoise.par.mono = False\n# Animate through Z for time evolution\nnoise.par.tz.expr = 'absTime.seconds * 0.1'"
+      },
+      {
+        "title": "Add Decay and Color Processing",
+        "content": "Without decay, the feedback image quickly becomes a uniform blur. Add a **Level TOP** after the Displace TOP to slightly reduce brightness each frame (`Brightness` = 0.995). This creates natural trail fading.\n\nFor color effects, insert an **HSV Adjust TOP** to slowly rotate hue each frame, creating rainbow trails. A subtle `Hue Offset` of 0.001-0.005 per frame produces beautiful color cycling without overwhelming the image.",
+        "code": "# Add brightness decay\nlevel = op('/project1/level1')\nlevel.par.postb = 0.995  # Subtle per-frame decay\nlevel.par.contrast = 1.01  # Slight contrast boost keeps edges sharp\n\n# Add hue rotation for color cycling\nhsv = op('/project1/hsvadjust1')\nhsv.par.hueoffset = 0.002  # Subtle hue shift per frame"
+      },
+      {
+        "title": "Advanced: GLSL Displacement for Custom Flow Fields",
+        "content": "For ultimate control, replace the Displace TOP with a **GLSL TOP** that implements custom displacement logic. This lets you create curl noise flow fields, attractor-based motion, or displacement driven by the image's own luminance.\n\nFeedback-driven self-displacement (where the image displaces itself) creates especially compelling emergent behavior — bright areas might flow differently than dark areas, creating self-organizing patterns.",
+        "code": "# GLSL shader for self-displacement with curl noise\nshader = '''\nout vec4 fragColor;\nuniform float uDisplaceAmt;\nuniform float uTime;\n\nvec2 curl(vec2 p) {\n    float eps = 0.01;\n    float n1 = sin(p.x * 10.0 + uTime) * cos(p.y * 10.0);\n    float a = sin(p.x * 10.0 + uTime) * cos((p.y + eps) * 10.0);\n    float b = sin((p.x + eps) * 10.0 + uTime) * cos(p.y * 10.0);\n    return vec2(a - n1, -(b - n1)) / eps;\n}\n\nvoid main()\n{\n    vec2 uv = vUV.st;\n    \n    // Self-displacement: use image brightness to modulate\n    vec4 selfColor = texture(sTD2DInputs[0], uv);\n    float luma = dot(selfColor.rgb, vec3(0.299, 0.587, 0.114));\n    \n    // Curl noise displacement modulated by brightness\n    vec2 offset = curl(uv * 3.0) * uDisplaceAmt * (0.5 + luma);\n    \n    vec4 displaced = texture(sTD2DInputs[0], uv + offset);\n    fragColor = TDOutputSwizzle(displaced);\n}\n'''\nop('/project1/glsl_displace_shader').text = shader"
+      }
+    ]
+  }
+}

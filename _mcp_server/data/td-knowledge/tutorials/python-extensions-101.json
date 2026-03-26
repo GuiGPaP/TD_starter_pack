@@ -1,0 +1,48 @@
+{
+  "id": "python-extensions-101",
+  "title": "Python Extensions 101",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["python", "extension", "COMP", "class", "OOP", "reusable", "module"],
+  "content": {
+    "summary": "Learn how to create reusable Python extensions for COMPs in TouchDesigner. Extensions let you attach custom Python classes to components, providing clean APIs, encapsulated state, and reusable behavior that persists across frames and can be promoted as custom parameters."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "intermediate",
+    "estimatedTime": "30 minutes",
+    "prerequisites": ["Basic Python programming", "Understanding of COMPs in TouchDesigner"],
+    "relatedOperators": ["baseCOMP", "textDAT", "opexecuteDAT", "parameterexecuteDAT"],
+    "tags": ["python", "extension", "COMP", "OOP", "scripting", "reusable"],
+    "sections": [
+      {
+        "title": "What Are Extensions?",
+        "content": "Extensions are Python classes that attach to a COMP, giving it custom methods and properties. When you call `op('/project1/myComp').MyMethod()`, you're calling an extension method.\n\nExtensions are the recommended way to organize complex Python logic in TouchDesigner. They provide:\n- **Encapsulation**: State and methods live together\n- **Persistence**: The class instance survives across frames\n- **Promotion**: Methods can be called from anywhere via `op()` references\n- **Clean API**: Better than loose scripts in Execute DATs"
+      },
+      {
+        "title": "Create the Extension Class",
+        "content": "Create a **Base COMP** and inside it, create a **Text DAT** named `MyExtensionExt`. Write a Python class that inherits from nothing (plain class) and takes the COMP as its first argument in `__init__`.\n\nThe class name should match what you'll register in the COMP's extension settings.",
+        "code": "# Content of the Text DAT named 'MyExtensionExt'\nclass MyExtensionExt:\n    def __init__(self, ownerComp):\n        self.ownerComp = ownerComp\n        # Initialize any state\n        self._count = 0\n    \n    @property\n    def Count(self):\n        \"\"\"Read-only property for current count.\"\"\"\n        return self._count\n    \n    def Increment(self):\n        \"\"\"Increment the counter and update display.\"\"\"\n        self._count += 1\n        self.ownerComp.par.Displaycount = self._count\n        return self._count\n    \n    def Reset(self):\n        \"\"\"Reset the counter to zero.\"\"\"\n        self._count = 0\n        self.ownerComp.par.Displaycount = 0"
+      },
+      {
+        "title": "Register the Extension",
+        "content": "On the Base COMP, go to the **Extensions** parameter page. In the `Extension Object 1` parameter, enter the path to your Text DAT and the class name in the format:\n\n`op('./MyExtensionExt').module.MyExtensionExt(me)`\n\nThis tells TouchDesigner to instantiate the class and attach it to the COMP. After setting this, the COMP gains all the public methods and properties from your class.",
+        "code": "# Register the extension on the Base COMP\nbase = op('/project1/base1')\n# Set the extension parameter\nbase.par.extension1 = \"op('./MyExtensionExt').module.MyExtensionExt(me)\"\n# Reinitialize extensions\nbase.par.reinitextensions.pulse()"
+      },
+      {
+        "title": "Call Extension Methods",
+        "content": "Once registered, you can call extension methods from anywhere in your project using the `op()` function. Methods that start with a capital letter are automatically promoted to the COMP's interface.\n\nYou can call these from parameter expressions, Script CHOPs, Execute DATs, or other extensions.",
+        "code": "# Call extension methods from anywhere\nmyComp = op('/project1/base1')\n\n# Call a method\nresult = myComp.Increment()\nprint(f'Count is now: {result}')\n\n# Access a property\nprint(f'Current count: {myComp.Count}')\n\n# Reset\nmyComp.Reset()"
+      },
+      {
+        "title": "Add Custom Parameters",
+        "content": "Extensions become more powerful when combined with **Custom Parameters**. Add custom parameters to your Base COMP (right-click > Customize Component) and reference them in your extension via `self.ownerComp.par`.\n\nThis lets users configure your extension through the familiar TouchDesigner parameter UI, and you can react to parameter changes using a **Parameter Execute DAT** inside the COMP.",
+        "code": "# Example extension that uses custom parameters\nclass ConfigurableExt:\n    def __init__(self, ownerComp):\n        self.ownerComp = ownerComp\n    \n    @property\n    def Speed(self):\n        \"\"\"Get the configured speed from custom parameter.\"\"\"\n        return self.ownerComp.par.Speed.eval()\n    \n    def Update(self):\n        \"\"\"Called each frame - uses custom parameters.\"\"\"\n        speed = self.ownerComp.par.Speed.eval()\n        scale = self.ownerComp.par.Scale.eval()\n        # Apply to child operators\n        self.ownerComp.op('transform1').par.r += speed\n        self.ownerComp.op('transform1').par.sx = scale"
+      }
+    ]
+  }
+}

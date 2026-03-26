@@ -1,0 +1,63 @@
+{
+	"id": "feedback-top",
+	"title": "Feedback TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"feedback",
+		"loop",
+		"trail",
+		"persistence",
+		"motion",
+		"iterative"
+	],
+	"content": {
+		"summary": "Creates a feedback loop by passing the previous frame output back as input. Essential for trails and iterative effects."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "feedbackTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "top"
+			},
+			{
+				"name": "resetcondition"
+			},
+			{
+				"name": "resetpulse"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set feedback target operator",
+				"language": "python",
+				"code": "op('feedback1').par.top = 'level1'",
+				"description": "Point the feedback TOP at the end of the processing chain.",
+				"context": "textport"
+			},
+			{
+				"label": "Reset feedback on trigger",
+				"language": "python",
+				"code": "op('feedback1').par.resetpulse.pulse()",
+				"description": "Clear the feedback buffer immediately.",
+				"context": "script-chop"
+			},
+			{
+				"label": "Configure feedback reset condition",
+				"language": "python",
+				"code": "op('feedback1').par.resetcondition = 'always'",
+				"description": "Set the feedback to reset every frame (useful for debugging).",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

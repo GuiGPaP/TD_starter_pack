@@ -1,0 +1,34 @@
+{
+  "kind": "workflow",
+  "id": "multi-camera-render",
+  "title": "Multi-Camera Render",
+  "searchKeywords": ["camera", "multi-view", "composite", "3d", "render", "split"],
+  "content": {
+    "summary": "Render a 3D scene from multiple camera angles and composite the views together"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "3d-rendering",
+    "difficulty": "intermediate",
+    "operators": [
+      { "opType": "cameraCOMP", "family": "COMP", "role": "camera" },
+      { "opType": "cameraCOMP", "family": "COMP", "role": "camera" },
+      { "opType": "renderTOP", "family": "TOP", "role": "renderer" },
+      { "opType": "renderTOP", "family": "TOP", "role": "renderer" },
+      { "opType": "compositeTOP", "family": "TOP", "role": "combiner" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "cameraCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "cameraCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "renderTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "renderTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 1 },
+      { "from": "compositeTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["camera", "multi-view", "composite", "3d"]
+  }
+}

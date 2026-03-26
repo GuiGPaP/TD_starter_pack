@@ -1,0 +1,133 @@
+{
+  "noiseTOP": {
+    "downstream": [
+      { "opType": "feedbackTOP", "family": "TOP", "port": 0, "reason": "Feedback loop for temporal evolution" },
+      { "opType": "compositeTOP", "family": "TOP", "port": 0, "reason": "Layer with other sources" },
+      { "opType": "levelTOP", "family": "TOP", "port": 0, "reason": "Adjust brightness/contrast" },
+      { "opType": "hsvAdjustTOP", "family": "TOP", "port": 0, "reason": "Color grading" },
+      { "opType": "nullTOP", "family": "TOP", "port": 0, "reason": "Reference point for downstream" }
+    ],
+    "upstream": [
+      { "opType": "constantTOP", "family": "TOP", "port": 0, "reason": "Seed or mask input" }
+    ]
+  },
+  "feedbackTOP": {
+    "downstream": [
+      { "opType": "levelTOP", "family": "TOP", "port": 0, "reason": "Control decay/brightness" },
+      { "opType": "displaceTOP", "family": "TOP", "port": 0, "reason": "Organic motion via displacement" },
+      { "opType": "compositeTOP", "family": "TOP", "port": 0, "reason": "Mix with new input" },
+      { "opType": "nullTOP", "family": "TOP", "port": 0, "reason": "Output reference" }
+    ],
+    "upstream": [
+      { "opType": "noiseTOP", "family": "TOP", "port": 0, "reason": "Generative seed" },
+      { "opType": "compositeTOP", "family": "TOP", "port": 0, "reason": "Processed mix back into loop" }
+    ]
+  },
+  "compositeTOP": {
+    "downstream": [
+      { "opType": "nullTOP", "family": "TOP", "port": 0, "reason": "Output reference" },
+      { "opType": "outTOP", "family": "TOP", "port": 0, "reason": "Component output" },
+      { "opType": "levelTOP", "family": "TOP", "port": 0, "reason": "Final color adjustment" }
+    ],
+    "upstream": [
+      { "opType": "noiseTOP", "family": "TOP", "port": 0, "reason": "Background layer" },
+      { "opType": "renderTOP", "family": "TOP", "port": 0, "reason": "3D render layer" },
+      { "opType": "movieFileInTOP", "family": "TOP", "port": 0, "reason": "Video layer" }
+    ]
+  },
+  "renderTOP": {
+    "downstream": [
+      { "opType": "compositeTOP", "family": "TOP", "port": 0, "reason": "Layer with other visuals" },
+      { "opType": "nullTOP", "family": "TOP", "port": 0, "reason": "Output reference" },
+      { "opType": "glslTOP", "family": "TOP", "port": 0, "reason": "Post-processing shader" }
+    ],
+    "upstream": [
+      { "opType": "cameraCOMP", "family": "COMP", "port": 0, "reason": "Camera for rendering" },
+      { "opType": "geometryCOMP", "family": "COMP", "port": 0, "reason": "Geometry to render" },
+      { "opType": "lightCOMP", "family": "COMP", "port": 0, "reason": "Scene lighting" }
+    ]
+  },
+  "audioDeviceInCHOP": {
+    "downstream": [
+      { "opType": "audioSpectrumCHOP", "family": "CHOP", "port": 0, "reason": "Frequency analysis" },
+      { "opType": "analyzeCHOP", "family": "CHOP", "port": 0, "reason": "Extract amplitude/RMS" },
+      { "opType": "mathCHOP", "family": "CHOP", "port": 0, "reason": "Scale/normalize signal" }
+    ],
+    "upstream": []
+  },
+  "audioSpectrumCHOP": {
+    "downstream": [
+      { "opType": "mathCHOP", "family": "CHOP", "port": 0, "reason": "Normalize frequency bands" },
+      { "opType": "selectCHOP", "family": "CHOP", "port": 0, "reason": "Pick specific bands" },
+      { "opType": "chopToTOP", "family": "TOP", "port": 0, "reason": "Visualize spectrum" }
+    ],
+    "upstream": [
+      { "opType": "audioDeviceInCHOP", "family": "CHOP", "port": 0, "reason": "Audio input source" }
+    ]
+  },
+  "geometryCOMP": {
+    "downstream": [
+      { "opType": "renderTOP", "family": "TOP", "port": 0, "reason": "Render the geometry" }
+    ],
+    "upstream": [
+      { "opType": "sphereSOP", "family": "SOP", "port": 0, "reason": "Sphere primitive" },
+      { "opType": "gridSOP", "family": "SOP", "port": 0, "reason": "Grid/plane primitive" },
+      { "opType": "circleSOP", "family": "SOP", "port": 0, "reason": "Circle/ring primitive" }
+    ]
+  },
+  "glslTOP": {
+    "downstream": [
+      { "opType": "nullTOP", "family": "TOP", "port": 0, "reason": "Output reference" },
+      { "opType": "compositeTOP", "family": "TOP", "port": 0, "reason": "Layer with scene" },
+      { "opType": "feedbackTOP", "family": "TOP", "port": 0, "reason": "Feed into feedback loop" }
+    ],
+    "upstream": [
+      { "opType": "noiseTOP", "family": "TOP", "port": 0, "reason": "Input texture" },
+      { "opType": "renderTOP", "family": "TOP", "port": 0, "reason": "Post-process 3D render" },
+      { "opType": "movieFileInTOP", "family": "TOP", "port": 0, "reason": "Process video" }
+    ]
+  },
+  "mathCHOP": {
+    "downstream": [
+      { "opType": "nullCHOP", "family": "CHOP", "port": 0, "reason": "Reference point" },
+      { "opType": "filterCHOP", "family": "CHOP", "port": 0, "reason": "Smooth values" },
+      { "opType": "renameCHOP", "family": "CHOP", "port": 0, "reason": "Rename channels for export" }
+    ],
+    "upstream": [
+      { "opType": "analyzeCHOP", "family": "CHOP", "port": 0, "reason": "Analysis values" },
+      { "opType": "audioSpectrumCHOP", "family": "CHOP", "port": 0, "reason": "Frequency data" },
+      { "opType": "noiseCHOP", "family": "CHOP", "port": 0, "reason": "Noise values" }
+    ]
+  },
+  "levelTOP": {
+    "downstream": [
+      { "opType": "nullTOP", "family": "TOP", "port": 0, "reason": "Output reference" },
+      { "opType": "outTOP", "family": "TOP", "port": 0, "reason": "Component output" }
+    ],
+    "upstream": [
+      { "opType": "noiseTOP", "family": "TOP", "port": 0, "reason": "Generative input" },
+      { "opType": "feedbackTOP", "family": "TOP", "port": 0, "reason": "Feedback control" },
+      { "opType": "renderTOP", "family": "TOP", "port": 0, "reason": "Rendered scene" }
+    ]
+  },
+  "selectCHOP": {
+    "downstream": [
+      { "opType": "mathCHOP", "family": "CHOP", "port": 0, "reason": "Transform values" },
+      { "opType": "nullCHOP", "family": "CHOP", "port": 0, "reason": "Export reference" }
+    ],
+    "upstream": [
+      { "opType": "audioSpectrumCHOP", "family": "CHOP", "port": 0, "reason": "Pick frequency bands" },
+      { "opType": "patternCHOP", "family": "CHOP", "port": 0, "reason": "Select pattern channels" }
+    ]
+  },
+  "transformSOP": {
+    "downstream": [
+      { "opType": "nullSOP", "family": "SOP", "port": 0, "reason": "Output reference" },
+      { "opType": "copySOP", "family": "SOP", "port": 0, "reason": "Copy with transforms" }
+    ],
+    "upstream": [
+      { "opType": "sphereSOP", "family": "SOP", "port": 0, "reason": "Transform geometry" },
+      { "opType": "gridSOP", "family": "SOP", "port": 0, "reason": "Transform grid" }
+    ]
+  }
+}

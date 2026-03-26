@@ -1,0 +1,44 @@
+{
+  "id": "extension-class-pattern",
+  "title": "Python Extension Class Pattern",
+  "kind": "technique",
+  "aliases": ["extensions", "comp extension", "custom component"],
+  "searchKeywords": ["extension", "class", "python", "comp", "component", "reusable", "oop", "pattern"],
+  "content": {
+    "summary": "Uses TouchDesigner's extension class system to attach Python classes to COMPs, enabling clean object-oriented logic encapsulation. An extension class is defined in a Text DAT inside the COMP, registered via the COMP's Extension parameters, and accessed via the COMP's ext attribute. This pattern is the standard way to create reusable, self-contained components with custom methods, properties, and state."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "python-advanced",
+    "difficulty": "intermediate",
+    "tags": ["extension", "python", "class", "comp", "oop", "reusable", "architecture"],
+    "operatorChain": [
+      { "family": "COMP", "opType": "baseCOMP", "role": "host component for the extension" },
+      { "family": "DAT", "opType": "textDAT", "role": "contains the extension class code" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Basic extension class template",
+        "language": "python",
+        "code": "# In a Text DAT named 'MyComponentExt' inside the COMP\n\nclass MyComponentExt:\n\t\"\"\"\n\tExtension class for a reusable component.\n\tAccess via: op('myComp').ext.MyComponentExt\n\tOr promoted: op('myComp').MyMethod()\n\t\"\"\"\n\t\n\tdef __init__(self, ownerComp):\n\t\t# ownerComp is the COMP this extension is attached to\n\t\tself.ownerComp = ownerComp\n\t\t# Initialize state\n\t\tself._count = 0\n\t\n\tdef Reset(self):\n\t\t\"\"\"Reset the counter. Promoted method.\"\"\"\n\t\tself._count = 0\n\t\tself.ownerComp.par.Count = 0\n\t\n\tdef Increment(self):\n\t\t\"\"\"Increment and return the new count. Promoted method.\"\"\"\n\t\tself._count += 1\n\t\tself.ownerComp.par.Count = self._count\n\t\treturn self._count\n\t\n\t@property\n\tdef Count(self):\n\t\t\"\"\"Read-only property for current count.\"\"\"\n\t\treturn self._count",
+        "description": "A minimal extension class showing the constructor pattern, promoted methods, and properties."
+      },
+      {
+        "label": "Register extension on COMP",
+        "language": "python",
+        "code": "# Configure a COMP to use an extension class\ncomp = op('myComp')\n# Set the extension DAT (the Text DAT containing the class)\ncomp.par.extension1 = 'MyComponentExt'\n# Enable promotion so methods are callable directly on the COMP\ncomp.par.promoteextension1 = True\n\n# Now you can call:\n# op('myComp').Increment()\n# op('myComp').Reset()\n# op('myComp').ext.MyComponentExt.Count",
+        "description": "Registers the extension class on the COMP and enables method promotion."
+      }
+    ],
+    "tips": [
+      "Always store the ownerComp reference in __init__ — it is your gateway to the component's operators and parameters.",
+      "Capitalize method names you want to promote (TD convention); private helpers should use _underscore prefix.",
+      "Use TDStoreTools.DependDict or DependList for state that other operators need to cook-depend on.",
+      "Avoid heavy computation in __init__ — use a separate Init() method called from an Init Script parameter."
+    ]
+  }
+}

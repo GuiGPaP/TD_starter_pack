@@ -1,0 +1,32 @@
+{
+  "kind": "workflow",
+  "id": "post-processing-chain",
+  "title": "Post-Processing Chain",
+  "searchKeywords": ["post-processing", "glsl", "color", "shader", "grading"],
+  "content": {
+    "summary": "Apply a chain of post-processing effects to a rendered image using GLSL and color adjustments"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "post-processing",
+    "difficulty": "intermediate",
+    "operators": [
+      { "opType": "renderTOP", "family": "TOP", "role": "input" },
+      { "opType": "glslTOP", "family": "TOP", "role": "shader" },
+      { "opType": "levelTOP", "family": "TOP", "role": "modifier" },
+      { "opType": "hsvAdjustTOP", "family": "TOP", "role": "modifier" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "renderTOP", "to": "glslTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "glslTOP", "to": "levelTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "levelTOP", "to": "hsvAdjustTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "hsvAdjustTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["post-processing", "glsl", "color", "shader"]
+  }
+}

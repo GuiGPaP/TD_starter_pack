@@ -1,0 +1,98 @@
+{
+	"content": {
+		"summary": "Vertex displacement shader using Simplex noise to push vertices along their normals. Displacement amount is animated over time. The pixel shader colorizes the surface based on displacement intensity using a two-color gradient with simple directional lighting.",
+		"warnings": [
+			"Use high-tessellation geometry for smooth results; low-poly meshes show faceting",
+			"Normal is approximate (uses original normal, not recomputed after displacement)"
+		]
+	},
+	"id": "displacement-noise",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "in vec3 vWorldPos;\nin vec3 vWorldNorm;\nin vec2 vTexCoord;\nin float vDisplace;\n\nlayout(location = 0) out vec4 fragColor;\n\nuniform vec3 uColorLow;\nuniform vec3 uColorHigh;\nuniform float uAmbient;\n\nvoid main() {\n    TDCheckDiscard();\n    vec3 norm = normalize(vWorldNorm);\n    float t = vDisplace * 0.5 + 0.5;\n    vec3 baseColor = mix(uColorLow, uColorHigh, t);\n    vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5));\n    float diff = max(dot(norm, lightDir), 0.0);\n    vec3 finalColor = baseColor * (diff + uAmbient);\n    fragColor = TDOutputSwizzle(vec4(finalColor, 1.0));\n}\n",
+			"vertexGlsl": "uniform float uDisplaceAmount;\nuniform float uFrequency;\nuniform float uTime;\nuniform float uSpeed;\n\nout vec3 vWorldPos;\nout vec3 vWorldNorm;\nout vec2 vTexCoord;\nout float vDisplace;\n\nvoid main() {\n    float noise = TDSimplexNoise(vec3(P * uFrequency + uTime * uSpeed));\n    vec3 displaced = P + N * noise * uDisplaceAmount;\n    vec4 worldPos = TDDeform(displaced);\n    vWorldNorm = normalize(uTDMats[TDCameraIndex()].worldForNormals * N);\n    vWorldPos  = worldPos.xyz;\n    vTexCoord  = uv[0].st;\n    vDisplace  = noise;\n    gl_Position = TDWorldToProj(worldPos);\n}\n"
+		},
+		"difficulty": "intermediate",
+		"estimatedGpuCost": "medium",
+		"setup": {
+			"operators": [
+				{
+					"family": "MAT",
+					"name": "glslMAT1",
+					"role": "primary",
+					"type": "glslMAT"
+				}
+			],
+			"uniforms": [
+				{
+					"default": "0.15",
+					"description": "Ambient light intensity",
+					"name": "uAmbient",
+					"type": "float"
+				},
+				{
+					"default": "0.9, 0.4, 0.1",
+					"description": "Color at maximum displacement",
+					"name": "uColorHigh",
+					"type": "vec3"
+				},
+				{
+					"default": "0.1, 0.3, 0.8",
+					"description": "Color at minimum displacement",
+					"name": "uColorLow",
+					"type": "vec3"
+				},
+				{
+					"default": "0.1",
+					"description": "Strength of vertex displacement",
+					"name": "uDisplaceAmount",
+					"type": "float"
+				},
+				{
+					"default": "3",
+					"description": "Noise frequency / scale",
+					"name": "uFrequency",
+					"type": "float"
+				},
+				{
+					"default": "0.5",
+					"description": "Animation speed multiplier",
+					"name": "uSpeed",
+					"type": "float"
+				},
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"displacement",
+			"noise",
+			"simplex",
+			"animated",
+			"vertex",
+			"material"
+		],
+		"type": "vertex"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"displacement",
+		"noise",
+		"simplex",
+		"vertex",
+		"deform",
+		"animated",
+		"normal",
+		"colorize"
+	],
+	"title": "Vertex Displacement Noise"
+}

@@ -1,0 +1,80 @@
+{
+	"id": "glsl-top",
+	"title": "GLSL TOP",
+	"kind": "operator",
+	"aliases": ["glsltop", "shader top", "pixel shader"],
+	"content": {
+		"summary": "Runs custom GLSL fragment shaders for real-time image processing. Supports multiple inputs as sampler2D uniforms and custom uniforms via CHOP/DAT references.",
+		"warnings": [
+			"Requires GLSL version matching your GPU driver.",
+			"Shader compilation errors appear in the node info DAT, not in the Python console."
+		]
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "Derivative"
+	},
+	"searchKeywords": [
+		"glsl",
+		"shader",
+		"fragment",
+		"pixel",
+		"gpu",
+		"post-processing",
+		"sampler2D",
+		"uniform"
+	],
+	"payload": {
+		"opType": "glslTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "glslversion",
+				"label": "GLSL Version",
+				"style": "Menu",
+				"description": "GLSL language version for shader compilation"
+			},
+			{
+				"name": "outputresolution",
+				"label": "Output Resolution",
+				"style": "Menu",
+				"description": "Resolution mode (e.g. Use Input, Custom Resolution)"
+			},
+			{
+				"name": "resolutionw",
+				"label": "Resolution W",
+				"style": "Int",
+				"default": 1280,
+				"description": "Output width in pixels"
+			},
+			{
+				"name": "resolutionh",
+				"label": "Resolution H",
+				"style": "Int",
+				"default": 720,
+				"description": "Output height in pixels"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set output resolution to 1920x1080",
+				"language": "python",
+				"code": "g = op('glsl1')\ng.par.outputresolution = 'usecustomres'\ng.par.resolutionw = 1920\ng.par.resolutionh = 1080",
+				"context": "textport"
+			},
+			{
+				"label": "Match input resolution",
+				"language": "python",
+				"code": "op('glsl1').par.outputresolution = 'useinput'",
+				"context": "textport"
+			},
+			{
+				"label": "Set GLSL version to 3.30",
+				"language": "python",
+				"code": "op('glsl1').par.glslversion = '330'",
+				"context": "textport"
+			}
+		]
+	}
+}

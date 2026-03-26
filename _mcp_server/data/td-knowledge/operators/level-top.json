@@ -1,0 +1,79 @@
+{
+	"id": "level-top",
+	"title": "Level TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"level",
+		"brightness",
+		"contrast",
+		"gamma",
+		"color",
+		"correction"
+	],
+	"content": {
+		"summary": "Adjusts brightness, contrast, gamma, and color range. Core color correction tool."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "levelTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "brightness1"
+			},
+			{
+				"name": "contrast"
+			},
+			{
+				"name": "gamma1"
+			},
+			{
+				"name": "black"
+			},
+			{
+				"name": "bright"
+			},
+			{
+				"name": "invert"
+			},
+			{
+				"name": "opacity"
+			}
+		],
+		"examples": [
+			{
+				"label": "Fade image to 50% opacity",
+				"language": "python",
+				"code": "op('level1').par.opacity = 0.5",
+				"context": "textport"
+			},
+			{
+				"label": "Increase brightness and contrast",
+				"language": "python",
+				"code": "l = op('level1')\nl.par.brightness1 = 1.2\nl.par.contrast = 1.5",
+				"context": "textport"
+			},
+			{
+				"label": "Invert image colors",
+				"language": "python",
+				"code": "op('level1').par.invert = True",
+				"context": "textport"
+			},
+			{
+				"label": "Animate opacity with CHOP",
+				"language": "python",
+				"code": "op('noise_chop1')['chan1']",
+				"description": "Use as a parameter expression on the opacity parameter.",
+				"context": "parameter-expression"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

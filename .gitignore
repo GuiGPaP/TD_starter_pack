@@ -22,3 +22,6 @@ olib/
 # TouchDesigner caches and backups
 Backup/
 TDImportCache/
+
+# Toolkit knowledge data (populated via live TD introspection, not committed)
+_mcp_server/data/td-knowledge/toolkits/

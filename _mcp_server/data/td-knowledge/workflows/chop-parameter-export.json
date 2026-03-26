@@ -1,0 +1,28 @@
+{
+  "kind": "workflow",
+  "id": "chop-parameter-export",
+  "title": "CHOP Parameter Export",
+  "searchKeywords": ["chop", "export", "parameter", "control", "lfo", "noise"],
+  "content": {
+    "summary": "Generate control signals with CHOPs and export them to operator parameters"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "control",
+    "difficulty": "beginner",
+    "operators": [
+      { "opType": "noiseCHOP", "family": "CHOP", "role": "generator" },
+      { "opType": "mathCHOP", "family": "CHOP", "role": "modifier" },
+      { "opType": "nullCHOP", "family": "CHOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "noiseCHOP", "to": "mathCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "mathCHOP", "to": "nullCHOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["chop", "export", "parameter", "control"]
+  }
+}

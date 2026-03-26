@@ -1,0 +1,37 @@
+{
+  "kind": "template",
+  "id": "feedback-loop",
+  "title": "Feedback Loop",
+  "searchKeywords": ["feedback", "loop", "generative", "recursive"],
+  "content": {
+    "summary": "Simple feedback loop with constant input and opacity-based decay"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "beginner",
+    "operators": [
+      { "name": "const1", "opType": "constantTOP", "family": "TOP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "feedback1", "opType": "feedbackTOP", "family": "TOP", "role": "filter", "x": 0, "y": 200 },
+      { "name": "comp1", "opType": "compositeTOP", "family": "TOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "level1", "opType": "levelTOP", "family": "TOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 600, "y": 0 }
+    ],
+    "connections": [
+      { "from": "const1", "to": "comp1", "fromOutput": 0, "toInput": 0 },
+      { "from": "feedback1", "to": "comp1", "fromOutput": 0, "toInput": 1 },
+      { "from": "comp1", "to": "level1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "out1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "feedback1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "const1": { "colorr": 0.0, "colorg": 0.0, "colorb": 0.0 },
+      "level1": { "opacity": 0.95 }
+    },
+    "tags": ["feedback", "loop", "generative"]
+  }
+}

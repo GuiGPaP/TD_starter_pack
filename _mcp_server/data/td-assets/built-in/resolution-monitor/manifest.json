@@ -1,0 +1,26 @@
+{
+	"aliases": ["res monitor", "fps overlay", "resolution display"],
+	"deploy": {
+		"containerName": "resolution_monitor",
+		"mode": "import_tox"
+	},
+	"description": "Overlay component that displays the current resolution, FPS, and cook time. Useful for performance monitoring during development.",
+	"id": "resolution-monitor",
+	"kind": "tox-asset",
+	"postDeployChecks": ["recursive_error_check"],
+	"provenance": {
+		"license": "MIT",
+		"source": "project-original"
+	},
+	"sha256": "4008258f4555dde0cfaf0c4c9222282da2bca2e601bfa798e1d291b785fe29ed",
+	"tags": ["monitor", "resolution", "fps", "performance", "overlay"],
+	"tdVersion": {
+		"min": "2023.11000"
+	},
+	"title": "Resolution Monitor",
+	"useCases": [
+		"Performance monitoring during development",
+		"Resolution verification for output pipelines"
+	],
+	"version": "1.0.0"
+}

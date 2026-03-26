@@ -1,0 +1,64 @@
+{
+	"content": {
+		"summary": "GLSL Copy POP that applies per-copy transforms to duplicate geometry. Each copy is offset along the X axis by a spacing factor multiplied by the copy index. Preserves point group membership across copies.",
+		"warnings": [
+			"TDCopyIndex() only works inside a GLSL Copy POP, not a regular GLSL POP",
+			"Call TDUpdatePointGroups() to maintain group membership after modifying positions"
+		]
+	},
+	"id": "copy-transforms",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uSpacing;\nuniform float uTime;\n\nvoid main() {\n    const uint id = TDIndex();\n    if (id >= TDNumPoints()) return;\n    vec3 pos = TDIn_P();\n    pos.x += float(TDCopyIndex()) * uSpacing;\n    P[id] = pos;\n    TDUpdatePointGroups();\n}\n"
+		},
+		"difficulty": "intermediate",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"operators": [
+				{
+					"family": "POP",
+					"name": "glslCopyPOP1",
+					"role": "primary",
+					"type": "glslCopyPOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Spacing between copies along X axis",
+					"name": "uSpacing",
+					"type": "float"
+				},
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"copy",
+			"transform",
+			"duplicate",
+			"spacing",
+			"compute"
+		],
+		"type": "compute"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"copy",
+		"transform",
+		"duplicate",
+		"spacing",
+		"per-copy",
+		"glsl copy pop",
+		"offset"
+	],
+	"title": "Copy Transforms"
+}

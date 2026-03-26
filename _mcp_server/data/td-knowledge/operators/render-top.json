@@ -1,0 +1,68 @@
+{
+	"id": "render-top",
+	"title": "Render TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"render",
+		"3d",
+		"camera",
+		"light",
+		"geometry",
+		"scene"
+	],
+	"content": {
+		"summary": "Renders 3D geometry from Geometry COMPs, cameras, and lights into a 2D image."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "renderTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "camera"
+			},
+			{
+				"name": "geometry"
+			},
+			{
+				"name": "lights"
+			},
+			{
+				"name": "outputresolution"
+			},
+			{
+				"name": "antialiasing"
+			}
+		],
+		"examples": [
+			{
+				"label": "Assign camera and geometry",
+				"language": "python",
+				"code": "r = op('render1')\nr.par.camera = 'cam1'\nr.par.geometry = 'geo1'",
+				"context": "textport"
+			},
+			{
+				"label": "Set render resolution to 1080p",
+				"language": "python",
+				"code": "r = op('render1')\nr.par.outputresolution = 'custom'\nr.par.antialiasing = '8x'",
+				"description": "Enable 8x antialiasing for smoother edges.",
+				"context": "textport"
+			},
+			{
+				"label": "Assign lights to render",
+				"language": "python",
+				"code": "op('render1').par.lights = 'light*'",
+				"description": "Use a wildcard pattern to include all light COMPs.",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

@@ -1,0 +1,49 @@
+{
+  "id": "audio-reactive-visuals-intro",
+  "title": "Audio-Reactive Visuals Introduction",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["audio", "reactive", "visuals", "music", "CHOP", "microphone", "FFT"],
+  "content": {
+    "summary": "Learn how to connect audio input to visual parameters to create visuals that respond to music and sound. This tutorial covers capturing audio with Audio Device In CHOP, analyzing it with Audio Spectrum CHOP, and driving TOP parameters with the extracted audio data."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "beginner",
+    "estimatedTime": "30 minutes",
+    "prerequisites": ["Basic TouchDesigner navigation", "Understanding of CHOPs and TOPs"],
+    "relatedOperators": ["audiodeviceinCHOP", "audiospectrumCHOP", "analyzeCHOP", "mathCHOP", "noiseTOP", "circleTOP"],
+    "tags": ["audio", "reactive", "music", "CHOP", "visualization"],
+    "sections": [
+      {
+        "title": "Set Up Audio Input",
+        "content": "Create an **Audio Device In CHOP** to capture live audio from your microphone or audio interface. In the `Device` parameter, select your audio input device. Enable the channels you want to capture (typically the first stereo pair).\n\nIf you don't have a microphone, you can use an **Audio File In CHOP** instead and load an MP3 or WAV file for testing.",
+        "code": "# Create audio input node\naudio_in = op('/project1').create(audiodeviceinCHOP, 'audio_in')\n# You can check available devices\nprint(audio_in.par.device.menuNames)"
+      },
+      {
+        "title": "Analyze the Audio Spectrum",
+        "content": "Create an **Audio Spectrum CHOP** and connect it to your audio input. This performs an FFT (Fast Fourier Transform) to break the audio signal into frequency bands. You can then isolate bass, mid, and treble ranges.\n\nThe output is a single channel where each sample represents the amplitude at a specific frequency. Lower sample indices correspond to bass frequencies, higher indices to treble.",
+        "code": "# Create spectrum analyzer\nspectrum = op('/project1').create(audiospectrumCHOP, 'spectrum')\nspectrum.inputConnectors[0].connect(op('/project1/audio_in'))"
+      },
+      {
+        "title": "Extract Amplitude Values",
+        "content": "Use **Analyze CHOP** nodes to extract useful single values from the spectrum. Create one Analyze CHOP set to `Maximum` to get the overall loudness, and optionally use **Select CHOP** nodes to isolate frequency ranges before analyzing.\n\nThe Analyze CHOP reduces the many-sample spectrum down to a single value you can use to drive parameters.",
+        "code": "# Create an analyze CHOP to get peak amplitude\nanalyze = op('/project1').create(analyzeCHOP, 'analyze_peak')\nanalyze.par.function = 'max'\nanalyze.inputConnectors[0].connect(op('/project1/spectrum'))"
+      },
+      {
+        "title": "Drive Visual Parameters",
+        "content": "Now connect the analyzed audio values to visual parameters. Create a **Circle TOP** and use expressions or exports to link the audio amplitude to parameters like size, color, or position.\n\nYou can reference CHOP values in parameter expressions using the `op()` function. This creates a direct link between audio energy and visual output.",
+        "code": "# Create a circle TOP driven by audio\ncircle = op('/project1').create(circleTOP, 'audio_circle')\n# Set radius expression to be driven by audio amplitude\ncircle.par.radiusx.expr = \"op('analyze_peak')['chan1']\"\ncircle.par.radiusy.expr = \"op('analyze_peak')['chan1']\""
+      },
+      {
+        "title": "Smooth and Scale the Response",
+        "content": "Raw audio values often change too rapidly for pleasing visuals. Add a **Lag CHOP** or **Filter CHOP** between the Analyze and your visual parameters to smooth the response. Adjust the lag time to control how quickly visuals react and decay.\n\nAlso use a **Math CHOP** to remap the amplitude range. Audio values may be very small (0.0-0.1) and need scaling to a useful range for visual parameters (e.g., 0.0-1.0 or larger).",
+        "code": "# Add smoothing with a lag CHOP\nlag = op('/project1').create(lagCHOP, 'smooth')\nlag.par.lag1 = 0.2  # 200ms smoothing\nlag.inputConnectors[0].connect(op('/project1/analyze_peak'))\n\n# Remap range with math CHOP\nmath = op('/project1').create(mathCHOP, 'remap')\nmath.par.fromrange1 = 0\nmath.par.fromrange2 = 0.1\nmath.par.torange1 = 0\nmath.par.torange2 = 1\nmath.inputConnectors[0].connect(op('/project1/smooth'))"
+      }
+    ]
+  }
+}

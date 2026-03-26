@@ -1,0 +1,47 @@
+{
+  "id": "osc-parameter-mapping",
+  "title": "OSC Parameter Mapping",
+  "kind": "technique",
+  "aliases": ["osc control", "osc input", "open sound control"],
+  "searchKeywords": ["osc", "parameter", "mapping", "control", "midi", "remote", "touchosc"],
+  "content": {
+    "summary": "Maps incoming OSC (Open Sound Control) messages to TouchDesigner operator parameters for remote control from tablets, phones, or other software. An OSC In CHOP receives messages, a Select CHOP isolates specific addresses, and CHOP Exports or Python callbacks bind values to target parameters. This enables wireless control surfaces, inter-application communication, and audience interaction."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "networking",
+    "difficulty": "beginner",
+    "tags": ["osc", "networking", "control", "mapping", "remote", "touchosc", "midi"],
+    "operatorChain": [
+      { "family": "CHOP", "opType": "oscinCHOP", "role": "receive OSC messages" },
+      { "family": "CHOP", "opType": "selectCHOP", "role": "isolate specific OSC channels" },
+      { "family": "CHOP", "opType": "filterCHOP", "role": "smooth incoming values" },
+      { "family": "CHOP", "opType": "mathCHOP", "role": "remap value ranges" },
+      { "family": "DAT", "opType": "oscinDAT", "role": "monitor raw OSC messages for debugging" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Python callback for OSC message routing",
+        "language": "python",
+        "code": "# In an OSC In DAT callback or Execute DAT\ndef onReceiveOSC(dat, rowIndex, message, address, args, port):\n\t\"\"\"Route OSC messages to parameters based on address pattern.\"\"\"\n\t# Example: /slider/1 -> noise scale\n\tif address == '/slider/1' and len(args) > 0:\n\t\top('noise1').par.roughness = args[0]\n\t\n\t# Example: /button/1 -> toggle bypass\n\telif address == '/button/1' and len(args) > 0:\n\t\top('level1').par.opacity = 1.0 if args[0] > 0.5 else 0.0\n\t\n\t# Example: /xy/1 -> translate X/Y\n\telif address == '/xy/1' and len(args) >= 2:\n\t\top('transform1').par.tx = args[0]\n\t\top('transform1').par.ty = args[1]",
+        "description": "Routes incoming OSC messages to different operator parameters based on the OSC address pattern."
+      },
+      {
+        "label": "Configure OSC In CHOP for TouchOSC",
+        "language": "python",
+        "code": "# Set up OSC In CHOP to receive from TouchOSC\nosc_in = op('oscin1')\nosc_in.par.port = 9000\nosc_in.par.active = True",
+        "description": "Configures the OSC In CHOP to listen on port 9000, the default TouchOSC send port."
+      }
+    ],
+    "tips": [
+      "Use an OSC In DAT alongside the OSC In CHOP to monitor raw messages for debugging address patterns.",
+      "Apply a Filter CHOP after the OSC In to smooth out jittery controller data.",
+      "Use a Math CHOP to remap incoming 0-1 ranges to the parameter ranges you need.",
+      "Set the OSC In CHOP network port to match your sending application (TouchOSC default is 9000)."
+    ]
+  }
+}

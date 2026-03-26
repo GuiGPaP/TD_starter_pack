@@ -1,0 +1,53 @@
+{
+	"content": {
+		"summary": "Minimal GLSL MAT vertex and pixel shader pair. Passes UV coordinates and vertex color from vertex to pixel stage, samples a texture, and modulates by vertex color. The simplest starting point for custom materials.",
+		"warnings": [
+			"Requires at least one TOP connected to the GLSL MAT input for texture sampling"
+		]
+	},
+	"id": "basic-uvs",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "in vec2 vTexCoord;\nin vec4 vVertColor;\nin vec3 vWorldPos;\n\nlayout(location = 0) out vec4 fragColor;\n\nvoid main() {\n    vec4 color = texture(sTD2DInputs[0], vTexCoord);\n    color *= vVertColor;\n    fragColor = TDOutputSwizzle(color);\n}\n",
+			"vertexGlsl": "out vec2 vTexCoord;\nout vec4 vVertColor;\nout vec3 vWorldPos;\n\nvoid main() {\n    vec4 worldPos = TDDeform(P);\n    vTexCoord  = uv[0].st;\n    vVertColor = Cd;\n    vWorldPos  = worldPos.xyz;\n    gl_Position = TDWorldToProj(worldPos);\n}\n"
+		},
+		"difficulty": "beginner",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"operators": [
+				{
+					"family": "MAT",
+					"name": "glslMAT1",
+					"role": "primary",
+					"type": "glslMAT"
+				}
+			],
+			"uniforms": []
+		},
+		"tags": [
+			"basic",
+			"uv",
+			"vertex-color",
+			"material",
+			"template"
+		],
+		"type": "vertex"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"basic",
+		"uv",
+		"vertex",
+		"color",
+		"material",
+		"glsl mat",
+		"template",
+		"texture"
+	],
+	"title": "Basic UVs"
+}

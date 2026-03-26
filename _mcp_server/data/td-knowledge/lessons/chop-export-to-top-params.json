@@ -1,0 +1,46 @@
+{
+	"aliases": ["chop-export", "chop-driven-params"],
+	"content": {
+		"summary": "Using CHOP Export or expressions to drive TOP parameters (like transform, level, blur) from CHOP channels creates responsive, data-driven visuals. This is a fundamental TD pattern for audio-reactive and sensor-driven work.",
+		"warnings": [
+			"CHOP exports override parameter expressions — you cannot have both active simultaneously",
+			"High-frequency CHOP data may cause excessive cooking if exported to many TOPs"
+		]
+	},
+	"id": "chop-export-to-top-params",
+	"kind": "lesson",
+	"payload": {
+		"category": "pattern",
+		"difficulty": "beginner",
+		"operatorChain": [
+			{ "family": "CHOP", "opType": "audiodeviceCHOP", "role": "input" },
+			{ "family": "CHOP", "opType": "mathCHOP", "role": "processor" },
+			{ "family": "TOP", "opType": "transformTOP", "role": "target" }
+		],
+		"recipe": {
+			"description": "Create a CHOP chain that produces a 0-1 channel, then reference it from a TOP parameter expression.",
+			"example": {
+				"code": "op('math1')['chan1']",
+				"description": "Expression on a TOP parameter to read a CHOP channel value",
+				"language": "python"
+			},
+			"steps": [
+				"Create Audio Device CHOP or LFO CHOP as data source",
+				"Add Math CHOP to normalize range to 0-1",
+				"On the target TOP, set parameter expression to op('math1')['chan1']",
+				"Or use CHOP Export: right-click Math CHOP output → Export CHOP"
+			]
+		},
+		"tags": ["chop", "export", "expression", "audio-reactive", "data-driven", "parameter"]
+	},
+	"provenance": {
+		"confidence": "high",
+		"discoveredAt": "2026-03-25",
+		"discoveredIn": "starter_pack",
+		"license": "MIT",
+		"source": "manual",
+		"validationCount": 4
+	},
+	"searchKeywords": ["chop", "export", "expression", "audio", "reactive", "parameter", "data", "driven", "channel"],
+	"title": "CHOP Export to TOP Parameters"
+}

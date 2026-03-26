@@ -1,0 +1,32 @@
+{
+  "kind": "workflow",
+  "id": "audio-spectrum-visualization",
+  "title": "Audio Spectrum Visualization",
+  "searchKeywords": ["audio", "spectrum", "visualization", "chop-to-top", "frequency"],
+  "content": {
+    "summary": "Visualize audio frequency spectrum by converting CHOP data to a TOP texture"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "audio-visual",
+    "difficulty": "intermediate",
+    "operators": [
+      { "opType": "audioDeviceInCHOP", "family": "CHOP", "role": "input" },
+      { "opType": "audioSpectrumCHOP", "family": "CHOP", "role": "analyzer" },
+      { "opType": "chopToTOP", "family": "TOP", "role": "converter" },
+      { "opType": "levelTOP", "family": "TOP", "role": "modifier" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "audioDeviceInCHOP", "to": "audioSpectrumCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "audioSpectrumCHOP", "to": "chopToTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "chopToTOP", "to": "levelTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "levelTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["audio", "spectrum", "visualization", "chop-to-top"]
+  }
+}

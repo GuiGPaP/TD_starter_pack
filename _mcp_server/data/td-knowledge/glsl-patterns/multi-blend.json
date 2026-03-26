@@ -1,0 +1,66 @@
+{
+	"content": {
+		"summary": "Multi-input blend shader that mixes two input textures using a uniform blend factor. Simple but versatile for combining layers.",
+		"warnings": [
+			"Requires two inputs connected to the GLSL TOP"
+		]
+	},
+	"id": "multi-blend",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uBlend;\nuniform float uTime;\nout vec4 fragColor;\nvoid main() {\n    vec2 uv = vUV.st;\n    vec4 input1 = texture(sTD2DInputs[0], uv);\n    vec4 input2 = texture(sTD2DInputs[1], uv);\n    vec4 color = mix(input1, input2, uBlend);\n    fragColor = TDOutputSwizzle(color);\n}\n"
+		},
+		"difficulty": "beginner",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"connections": [],
+			"operators": [
+				{
+					"family": "TOP",
+					"name": "glsl1",
+					"role": "primary",
+					"type": "glslTOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Blend factor between input 1 and input 2 (0.0 = full input 1, 1.0 = full input 2)",
+					"expression": "0.5",
+					"name": "uBlend",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"page": "Vectors 1",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"blend",
+			"mix",
+			"multi-input",
+			"composite",
+			"layer"
+		],
+		"type": "pixel"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"blend",
+		"mix",
+		"multi-input",
+		"composite",
+		"layer",
+		"crossfade"
+	],
+	"title": "Multi-Input Blend"
+}

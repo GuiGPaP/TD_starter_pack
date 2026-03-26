@@ -1,0 +1,37 @@
+{
+  "kind": "template",
+  "id": "sop-to-top-pipeline",
+  "title": "SOP to TOP Pipeline",
+  "searchKeywords": ["sop", "conversion", "render", "geometry", "pipeline"],
+  "content": {
+    "summary": "SOP geometry pipeline with noise deformation rendered to TOP output"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "conversion",
+    "difficulty": "intermediate",
+    "operators": [
+      { "name": "sphere1", "opType": "sphereSOP", "family": "SOP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "noise_sop", "opType": "noiseSOP", "family": "SOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "null_sop", "opType": "nullSOP", "family": "SOP", "role": "output", "x": 400, "y": 0 },
+      { "name": "geo1", "opType": "geometryCOMP", "family": "COMP", "role": "filter", "x": 0, "y": 200 },
+      { "name": "cam1", "opType": "cameraCOMP", "family": "COMP", "role": "generator", "x": 200, "y": 200 },
+      { "name": "render1", "opType": "renderTOP", "family": "TOP", "role": "filter", "x": 400, "y": 200 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 600, "y": 200 }
+    ],
+    "connections": [
+      { "from": "sphere1", "to": "noise_sop", "fromOutput": 0, "toInput": 0 },
+      { "from": "noise_sop", "to": "null_sop", "fromOutput": 0, "toInput": 0 },
+      { "from": "geo1", "to": "render1", "fromOutput": 0, "toInput": 0 },
+      { "from": "render1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "render1": { "resolutionw": 1920, "resolutionh": 1080 }
+    },
+    "tags": ["sop", "conversion", "render", "geometry"]
+  }
+}
