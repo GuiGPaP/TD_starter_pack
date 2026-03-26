@@ -1,21 +1,24 @@
 {
 	"id": "circle-sop",
-	"title": "Circle SOP",
+	"title": "circleSOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"circle",
-		"arc",
-		"ellipse",
-		"ring",
-		"geometry"
+		"sop",
+		"circlesop",
+		"type",
+		"orient",
+		"modifybounds",
+		"reverseanchors",
+		"anchoru"
 	],
 	"content": {
-		"summary": "Creates circle, arc, or ellipse geometry."
+		"summary": "TouchDesigner circleSOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -23,19 +26,102 @@
 		"opFamily": "SOP",
 		"parameters": [
 			{
-				"name": "type"
+				"name": "type",
+				"label": "Primitive Type",
+				"style": "Menu",
+				"description": "For information on the different types, see the and articles. Depending on the primitive type chosen, some options may not apply. Using the ' ' primitive type is not recommended when using instancing."
 			},
 			{
-				"name": "radius"
+				"name": "orient",
+				"label": "Orientation",
+				"style": "Menu",
+				"description": "The plane on which the circle lies."
 			},
 			{
-				"name": "orient"
+				"name": "modifybounds",
+				"label": "Modify Bounds",
+				"style": "Toggle",
+				"description": "Available only when an input is connected to the Curcle to set bounds for the sphere. When Modify Bounds = On the transform parameters below will further modify the radius and position of the bounds."
 			},
 			{
-				"name": "arc"
+				"name": "reverseanchors",
+				"label": "Reverse Anchors",
+				"style": "Toggle",
+				"description": "Invert the direction of anchors."
 			},
 			{
-				"name": "divisions"
+				"name": "anchoru",
+				"label": "Anchor U",
+				"style": "Float",
+				"description": "Set the point in X about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "anchorv",
+				"label": "Anchor V",
+				"style": "Float",
+				"description": "Set the point in Y about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "order",
+				"label": "Order",
+				"style": "Int",
+				"description": "If a spline curve is selected, it is built at this order."
+			},
+			{
+				"name": "divs",
+				"label": "Divisions",
+				"style": "Int",
+				"description": "The number of edges (points +1) used to describe the circle. This option applies to polygons and imperfect splines. The more a circle has, the smoother it looks. Using three divisions makes a triangle"
+			},
+			{
+				"name": "arc",
+				"label": "Arc Type",
+				"style": "Menu",
+				"description": "Determines how the circle should be drawn. Applies to polygons and imperfect splines only."
+			},
+			{
+				"name": "imperfect",
+				"label": "Imperfect",
+				"style": "Toggle",
+				"description": "This option applies only to Bezier and NURBS circles. If selected, the circles are approximated non-rational curves, otherwise they are perfect rational closed curves."
+			},
+			{
+				"name": "rady",
+				"label": "Rady",
+				"style": "XYZW",
+				"description": "The Radius of the Circle in the X and Y directions."
+			},
+			{
+				"name": "endangle",
+				"label": "Endangle",
+				"style": "Float",
+				"description": "The beginning and ending angles of the arc. An arc will start at the beginning angle, and proceed towards the ending angle. If beginning=0 and end=360 it will be a full circle. As a reference:  Image:"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "beginangle",
+				"label": "Beginangle",
+				"style": "Float"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "The Center of the Circle in X, Y and Z."
+			},
+			{
+				"name": "radx",
+				"label": "Radx",
+				"style": "XYZW"
 			}
 		],
 		"examples": [
@@ -60,8 +146,6 @@
 				"context": "parameter-expression"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

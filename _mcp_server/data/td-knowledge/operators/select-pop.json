@@ -1,0 +1,69 @@
+{
+	"id": "select-pop",
+	"title": "selectPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"select",
+		"pop",
+		"selectpop",
+		"bypass",
+		"freeextragpumem",
+		"delinputattrs",
+		"primattribscope"
+	],
+	"content": {
+		"summary": "TouchDesigner selectPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "selectPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "pop",
+				"label": "POP",
+				"style": "POP",
+				"description": "to select attributes from."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "primattribscope",
+				"label": "Primattribscope",
+				"style": "StrMenu"
+			},
+			{
+				"name": "pointattribscope",
+				"label": "Pointattribscope",
+				"style": "StrMenu"
+			},
+			{
+				"name": "vertattribscope",
+				"label": "Vertattribscope",
+				"style": "StrMenu"
+			}
+		],
+		"versions": {}
+	}
+}

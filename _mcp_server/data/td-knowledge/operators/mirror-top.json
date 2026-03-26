@@ -14,7 +14,7 @@
 		"flipy"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner mirrorTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

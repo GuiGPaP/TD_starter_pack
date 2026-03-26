@@ -1,0 +1,139 @@
+{
+	"id": "oscout-chop",
+	"title": "oscoutCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"oscout",
+		"chop",
+		"oscoutchop",
+		"active",
+		"protocol",
+		"netaddress",
+		"port",
+		"localaddress"
+	],
+	"content": {
+		"summary": "TouchDesigner oscoutCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "oscoutCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "While On, the sends information to the network port. When Off, data is not sent."
+			},
+			{
+				"name": "protocol",
+				"label": "Protocol",
+				"style": "Menu",
+				"description": "Selects the network protocol to use. Refer to the article for more information."
+			},
+			{
+				"name": "netaddress",
+				"label": "Network Address",
+				"style": "Str",
+				"description": "The network address of the server computer. This address is a standard WWW address, such as 'foo' or 'foo.bar.com'. You can put an IP address (e.g. 100.123.45.78). If you put \"localhost\", it means the"
+			},
+			{
+				"name": "port",
+				"label": "Network Port",
+				"style": "Int",
+				"description": "The port which OSC Out will send packets to."
+			},
+			{
+				"name": "localaddress",
+				"label": "Local Address",
+				"style": "StrMenu",
+				"description": "Specify an IP address to send from, useful when the system has mulitple NICs (Network Interface Card) and you want to select which one to use."
+			},
+			{
+				"name": "maxsize",
+				"label": "Max Queue Size",
+				"style": "Float",
+				"description": "Specifies the maximum number of messages OSC Out will try to send at a single time."
+			},
+			{
+				"name": "maxsizeunit",
+				"label": "Max Queue Size Unit",
+				"style": "Menu",
+				"description": "Select the units to use for this parameter, Samples, Frames, or Seconds"
+			},
+			{
+				"name": "cookalways",
+				"label": "Cook Every Frame",
+				"style": "Toggle",
+				"description": "Specifies that this should be cooked every frame regardless of CHOPs below it are cooking."
+			},
+			{
+				"name": "numericformat",
+				"label": "Numeric Format",
+				"style": "Menu",
+				"description": "Choose the data format to send data between 32-bit integer, 32-bit float, or 64-bit double."
+			},
+			{
+				"name": "maxbytes",
+				"label": "Max Message Bytes",
+				"style": "Int",
+				"description": "Limits the size of the outgoing message packets and splits up the message accordingly."
+			},
+			{
+				"name": "sendevents",
+				"label": "Send Events Every Cook",
+				"style": "Toggle",
+				"description": "When on, OSC Out will send all channels every cook regardless if the value has changed. When off, OSC Out only sends data which has changed."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "sendrate",
+				"label": "Sendrate",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

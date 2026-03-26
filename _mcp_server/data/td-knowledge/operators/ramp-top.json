@@ -1,22 +1,23 @@
 {
 	"id": "ramp-top",
-	"title": "Ramp TOP",
+	"title": "rampTOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"ramp",
-		"gradient",
-		"linear",
-		"radial",
-		"circular",
-		"mask"
+		"top",
+		"ramptop",
+		"type",
+		"phase",
+		"period",
+		"extendleft"
 	],
 	"content": {
-		"summary": "Generates gradient ramps (linear, radial, circular) for masks, lookups, and color mapping."
+		"summary": "TouchDesigner rampTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -24,13 +25,132 @@
 		"opFamily": "TOP",
 		"parameters": [
 			{
-				"name": "type"
+				"name": "dat",
+				"label": "DAT",
+				"style": "DAT",
+				"description": "Specifies the which defines the entries in the ramp."
 			},
 			{
-				"name": "phase"
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The type of ramp, choose between vertical, horizontal, radial, and circular."
 			},
 			{
-				"name": "period"
+				"name": "phase",
+				"label": "Phase",
+				"style": "Float",
+				"description": "Offsets the beginning of the ramp."
+			},
+			{
+				"name": "period",
+				"label": "Period",
+				"style": "Float",
+				"description": "Adjusts the length of the ramp, similar to a UV scaling."
+			},
+			{
+				"name": "extendleft",
+				"label": "Extend Left",
+				"style": "Menu",
+				"description": "Sets the extend (or repeat) conditions of the ramp beyond the defined range. This parameter determines what happens at the edges of the ramp."
+			},
+			{
+				"name": "extendright",
+				"label": "Extend Right",
+				"style": "Menu",
+				"description": "Sets the extend (or repeat) conditions of the ramp beyond the defined range. This parameter determines what happens at the edges of the ramp."
+			},
+			{
+				"name": "tension",
+				"label": "Curve Tension",
+				"style": "Float",
+				"description": "Only enabled when using Hermite interpolation. Adjusts the tension bias of the Hermite curve used for interpolation."
+			},
+			{
+				"name": "antialias",
+				"label": "Anti-Alias",
+				"style": "Int",
+				"description": "Sets level of anti-aliasing for Radial and Circular type ramps."
+			},
+			{
+				"name": "fitaspect",
+				"label": "Fit Aspect",
+				"style": "Menu",
+				"description": "Adjusts the fit of Radial and Circular type ramps based on aspect ratio."
+			},
+			{
+				"name": "dither",
+				"label": "Dither",
+				"style": "Toggle",
+				"description": "Dithers the ramp to help deal with banding and other artifacts created by precision limitations."
+			},
+			{
+				"name": "operand",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Choose which composite operation is performed from this menu. Search the web for 'blend modes' for more detailed information on the effects of each type."
+			},
+			{
+				"name": "swaporder",
+				"label": "Swap Order",
+				"style": "Toggle",
+				"description": "Swaps the order of the composite with the input."
+			},
+			{
+				"name": "color1",
+				"label": "Color1",
+				"style": "Float"
+			},
+			{
+				"name": "combineinput",
+				"label": "Combineinput",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "position1",
+				"label": "Position1",
+				"style": "Float"
+			},
+			{
+				"name": "color2",
+				"label": "Color2",
+				"style": "Float"
+			},
+			{
+				"name": "color4",
+				"label": "Color4",
+				"style": "Float",
+				"description": "The color and alpha of each ramp keyframe can be set here. Select between an HSV or RGB colorpicker, or click the \"+\" button to open a color dialog box with predefined colors."
+			},
+			{
+				"name": "interpspace",
+				"label": "Interpspace",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "position2",
+				"label": "Position2",
+				"style": "Float",
+				"description": "Sets the center point for radial and circular ramps."
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "color3",
+				"label": "Color3",
+				"style": "Float"
+			},
+			{
+				"name": "interpnotches",
+				"label": "Interpnotches",
+				"style": "Menu",
+				"description": "Help Not Available."
 			}
 		],
 		"examples": [
@@ -56,8 +176,6 @@
 				"context": "textport"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

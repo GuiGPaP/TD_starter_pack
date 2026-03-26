@@ -1,0 +1,149 @@
+{
+	"id": "svg-top",
+	"title": "svgTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"svg",
+		"top",
+		"svgtop",
+		"file",
+		"reload",
+		"antialias",
+		"bgalpha"
+	],
+	"content": {
+		"summary": "TouchDesigner svgTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "svgTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "File",
+				"style": "File",
+				"description": "The path and name of the SVG file to load. File format .svg supported."
+			},
+			{
+				"name": "dat",
+				"label": "DAT",
+				"style": "DAT",
+				"description": "Not currently used."
+			},
+			{
+				"name": "reload",
+				"label": "Reload",
+				"style": "Toggle",
+				"description": "Change from 0 to 1 to force the file to reload, useful when the file changes or did not exist at first."
+			},
+			{
+				"name": "antialias",
+				"label": "Anti-Alias",
+				"style": "Menu",
+				"description": "Sets the level of anti-aliasing in the scene. Setting this to higher values uses more graphics memory."
+			},
+			{
+				"name": "bgalpha",
+				"label": "Background Alpha",
+				"style": "Float",
+				"description": "Sets the background alpha in the image."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "The menu attached to this parameter allows you to specify the order in which the changes to your will take place. Changing the Transform order will change where things go much the same way as going a "
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "The rotational matrix presented when you click on this option allows you to set the transform order for the 's rotations. As with transform order (above), changing the order in which the 's rotations "
+			},
+			{
+				"name": "tunit",
+				"label": "Translate Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "punit",
+				"label": "Pivot Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW",
+				"description": "The Pivot point edit fields allow you to define the point about which the TOP scales and rotates. Altering the pivot point of a TOP produces different results depending on the transformation performed"
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "The three fields for Rotate allow you to specify the amount of rotation along any of the three axes."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW",
+				"description": "The two fields for Translate allows you to specify transforms in x and y axes."
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "bgcolorr",
+				"label": "Bgcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "bgcolorb",
+				"label": "Bgcolorb",
+				"style": "RGBA",
+				"description": "Sets the background color in the image."
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW",
+				"description": "The two fields for Scale allows you to specify transforms in x and y axes."
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "bgcolorg",
+				"label": "Bgcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,187 @@
+{
+	"id": "dmxout-pop",
+	"title": "dmxoutPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"dmxout",
+		"pop",
+		"dmxoutpop",
+		"active",
+		"interface",
+		"rate",
+		"fixture",
+		"fixture0active"
+	],
+	"content": {
+		"summary": "TouchDesigner dmxoutPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "dmxoutPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When enabled, will be actively sending to the device."
+			},
+			{
+				"name": "interface",
+				"label": "Interface",
+				"style": "Menu",
+				"description": "Select the type of interface to connect to the device with."
+			},
+			{
+				"name": "rate",
+				"label": "Rate",
+				"style": "Int",
+				"description": "How often data is sent to the device (per second)."
+			},
+			{
+				"name": "fixture",
+				"label": "Fixture",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for DMX Fixture inputs, either wired or referenced."
+			},
+			{
+				"name": "fixture0active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When active, this Fixture is merged and sent."
+			},
+			{
+				"name": "fixture0pop",
+				"label": "DMX Fixture POPs",
+				"style": "POP",
+				"description": "A reference to one or more DMX Fixture POPs. The parameter is disabled if there is a corresponding wired input."
+			},
+			{
+				"name": "serialport",
+				"label": "Serial Port",
+				"style": "StrMenu",
+				"description": "When the Interface parameter is set to Generic Serial this parameter lets you select which Serial (COM) port to use."
+			},
+			{
+				"name": "dmxkingport",
+				"label": "DMXking Port",
+				"style": "Menu",
+				"description": "Select a DMXking port to send to."
+			},
+			{
+				"name": "device",
+				"label": "Device",
+				"style": "StrMenu",
+				"description": "Select a DMX device from the menu."
+			},
+			{
+				"name": "multicast",
+				"label": "Multicast",
+				"style": "Toggle",
+				"description": "Enable multicast for sACN. Multicast automatically builds the IP based on Net, Subnet, and Universe of the device. This allows for sending to multiple devices at once by specifying multiple universes."
+			},
+			{
+				"name": "netaddress",
+				"label": "Network Address",
+				"style": "Str",
+				"description": "Specify the IP address to use. This address corresponds to the receiving device address.  When the address is set to its default 255.255.255.255, the messages are instead broadcast to all devices on t"
+			},
+			{
+				"name": "localaddress",
+				"label": "Local Address",
+				"style": "StrMenu",
+				"description": "When the sending machine is equipped with multiple network adapters, this parameter can be used to choose which adapter to send the data from by specifying its IP address here."
+			},
+			{
+				"name": "localport",
+				"label": "Local Port",
+				"style": "Int",
+				"description": "In rare cases it can be necessary to supply a custom port from which the data should be sent. The default of means the O/S assigned port is being used."
+			},
+			{
+				"name": "customport",
+				"label": "Use Custom Port",
+				"style": "Toggle",
+				"description": "Enable the Network Port parameter to specify the port of the receiving hardware. When disabled, default port is 6454 for Art-Net, 5568 for sACN, and 6038 for KiNET."
+			},
+			{
+				"name": "netport",
+				"label": "Network Port",
+				"style": "Int",
+				"description": "Specify the port of the receiving hardware."
+			},
+			{
+				"name": "priority",
+				"label": "Priority",
+				"style": "Int",
+				"description": "The data priority, if there are multiple sources. Used with sACN and KiNET protocols."
+			},
+			{
+				"name": "sendartsync",
+				"label": "Send ArtSync",
+				"style": "Toggle",
+				"description": "When enabled will send out ArtSync packets. ArtSync packets are used to synchronize multiple universes together. It will do this by waiting for all ArtDmx packets to finish sending, then follow up by "
+			},
+			{
+				"name": "cid",
+				"label": "CID",
+				"style": "Str",
+				"description": "The unique ID of the sender."
+			},
+			{
+				"name": "source",
+				"label": "Source",
+				"style": "Str",
+				"description": "User assigned name of source (for informative purposes)."
+			},
+			{
+				"name": "kinetversion",
+				"label": "KiNET Version",
+				"style": "Menu",
+				"description": "Select the version of the KiNET protocol to use."
+			},
+			{
+				"name": "customkinetport",
+				"label": "Use Custom KiNET Port",
+				"style": "Toggle",
+				"description": "When enabled, can specify a custom port for the KiNET v2 interface. When disabled, the port will be the broadcast port: 255."
+			},
+			{
+				"name": "kinetport",
+				"label": "KiNET Port",
+				"style": "Int",
+				"description": "Specifies the port for KiNET v2 interface."
+			},
+			{
+				"name": "routingtable",
+				"label": "Routing Table",
+				"style": "DAT",
+				"description": "Use a to specify netaddress, source, cid, priority, and kinetport values for specific universes. The net, subnet, universe columns must be filled in with valid values. Note: the can override the netad"
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

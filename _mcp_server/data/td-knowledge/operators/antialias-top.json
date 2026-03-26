@@ -1,0 +1,73 @@
+{
+	"id": "antialias-top",
+	"title": "antialiasTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"antialias",
+		"top",
+		"antialiastop",
+		"quality",
+		"edgedetectsource",
+		"edgethreshold",
+		"maxsearchsteps",
+		"maxdiagsearchsteps"
+	],
+	"content": {
+		"summary": "TouchDesigner antialiasTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "antialiasTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "quality",
+				"label": "Quality",
+				"style": "Menu",
+				"description": "Controls the quality of the anti-alias process. A higher quality will require more power to compute."
+			},
+			{
+				"name": "edgedetectsource",
+				"label": "Edge Detect Source",
+				"style": "Menu",
+				"description": "This controls how edges are detected in the image. Anti-aliasing is only done along detected edges."
+			},
+			{
+				"name": "edgethreshold",
+				"label": "Edge Threshold",
+				"style": "Float",
+				"description": "Controls the sensitivity of edge detection. Use the \"Output Edges\" mode to see it in action."
+			},
+			{
+				"name": "maxsearchsteps",
+				"label": "Max Search Steps",
+				"style": "Int",
+				"description": "How many horizontal and vertical search steps are done when looking for edges."
+			},
+			{
+				"name": "maxdiagsearchsteps",
+				"label": "Max Diag Search Steps",
+				"style": "Int",
+				"description": "How many diagonal search steps are done when looking for edges."
+			},
+			{
+				"name": "cornerrounding",
+				"label": "Corner Rounding",
+				"style": "Int",
+				"description": "Control strength of rounding edge corners."
+			},
+			{
+				"name": "outputedges",
+				"label": "Output Edges",
+				"style": "Toggle",
+				"description": "For visualizing what parts of the image will be anti-aliased. This shows the edges that are being detected, so you can tell where the anti-aliasing is being applied."
+			}
+		],
+		"versions": {}
+	}
+}

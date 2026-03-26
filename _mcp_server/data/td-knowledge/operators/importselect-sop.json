@@ -1,0 +1,187 @@
+{
+	"id": "importselect-sop",
+	"title": "importselectSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"importselect",
+		"sop",
+		"importselectsop",
+		"parent",
+		"geometry",
+		"reload",
+		"comptang",
+		"useparentanim"
+	],
+	"content": {
+		"summary": "TouchDesigner importselectSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "importselectSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "parent",
+				"label": "Import Parent",
+				"style": "Object",
+				"description": "Specify the import parent (eg. USD/FBX ) to search for the asset. When no is specified it will by default search in the first import parent in its path."
+			},
+			{
+				"name": "geometry",
+				"label": "Geo Path",
+				"style": "StrMenu",
+				"description": "The geometry path from the imported file."
+			},
+			{
+				"name": "reload",
+				"label": "Reload",
+				"style": "Pulse",
+				"description": "Reloads the asset from the import parent."
+			},
+			{
+				"name": "comptang",
+				"label": "Compute Tangents",
+				"style": "Toggle",
+				"description": "A toggle to compute the tangents for this ."
+			},
+			{
+				"name": "useparentanim",
+				"label": "Use Parent Animation",
+				"style": "Toggle",
+				"description": "A toggle to specify whether to use the parent animation controls or have a custom setting for this ."
+			},
+			{
+				"name": "shiftanimationstart",
+				"label": "Shift Animation Start",
+				"style": "Toggle",
+				"description": "A toggle to specify whether to shift the animation to the start of animation indicated in the importing file."
+			},
+			{
+				"name": "sampleratemode",
+				"label": "Sample Rate Mode",
+				"style": "Menu",
+				"description": "A menu to choose between the or use a custom sample rate."
+			},
+			{
+				"name": "samplerate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "It is used to specify the sample rate ( ) for the animation. This parameter is disabled by default and can be enabled once the Custom option is selected from the Menu."
+			},
+			{
+				"name": "playmode",
+				"label": "Play Mode",
+				"style": "Menu",
+				"description": "A menu to specify the method used to play the animation."
+			},
+			{
+				"name": "initialize",
+				"label": "Initialize",
+				"style": "Pulse",
+				"description": "Resets the animation to its initial state."
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Pulse",
+				"description": "Resets the animation to its initial state and starts playback."
+			},
+			{
+				"name": "cue",
+				"label": "Cue",
+				"style": "Toggle",
+				"description": "A toggle to jump to Cue when it is set to ON and it stays at that position. Only available when Play Mode is Sequential."
+			},
+			{
+				"name": "cuepulse",
+				"label": "Cue Pulse",
+				"style": "Pulse",
+				"description": "When pressed the animation jumps to the Cue and continues from that point."
+			},
+			{
+				"name": "cuepoint",
+				"label": "Cue Point",
+				"style": "Float",
+				"description": "Set any index in the animation as a point to jump to."
+			},
+			{
+				"name": "cuepointunit",
+				"label": "Cue Point Unit",
+				"style": "Menu",
+				"description": "Specifies a unit type for Cue . Changing this will convert the previous unit to the selected unit."
+			},
+			{
+				"name": "play",
+				"label": "Play",
+				"style": "Toggle",
+				"description": "A toggle that makes the animation to play when it sets to ON. This Parameter is only available/enabled if the Sequential mode is selected from the Play Mode."
+			},
+			{
+				"name": "index",
+				"label": "Index",
+				"style": "Float",
+				"description": "This parameter explicitly sets the animation position when Play Mode is set to Specify Index. The units’ menu on the right lets you specify the index in the following units: Index, Frames, Seconds, an"
+			},
+			{
+				"name": "indexunit",
+				"label": "Index Unit",
+				"style": "Menu",
+				"description": "Specifies a unit type for Index. Changing this will convert the previous unit to the selected unit."
+			},
+			{
+				"name": "speed",
+				"label": "Speed",
+				"style": "Float",
+				"description": "This is a speed multiplier which only works when Play Mode is Sequential. A value of 1 is the default playback speed. A value of 2 is double speed, 0.5 is half speed and so on."
+			},
+			{
+				"name": "trim",
+				"label": "Trim",
+				"style": "Toggle",
+				"description": "A toggle to enable the Trim Start and Trim End parameters."
+			},
+			{
+				"name": "tstart",
+				"label": "Trim Start",
+				"style": "Float",
+				"description": "Sets an in point from the beginning of the animation, allowing you to trim the starting index of the animation. The units’ menu on the right let you specify this position by index, frames, seconds, or"
+			},
+			{
+				"name": "tstartunit",
+				"label": "Trim Start Unit",
+				"style": "Menu",
+				"description": "Specifies a unit type for Trim Start. Changing this will convert the previous unit to the selected unit."
+			},
+			{
+				"name": "tend",
+				"label": "Trim End",
+				"style": "Float",
+				"description": "Sets an end point from the end of the movie, allowing you to trim the ending index of the animation. The units’ menu on the right let you specify this position by index, frames, seconds, or fraction ("
+			},
+			{
+				"name": "tendunit",
+				"label": "Trim End Unit",
+				"style": "Menu",
+				"description": "Specifies a unit type for Trim End. Changing this will convert the previous unit to the selected unit."
+			},
+			{
+				"name": "textendleft",
+				"label": "Extend Left",
+				"style": "Menu",
+				"description": "Determines how the parent handles animation positions that lie before the Trim Start position. For example, if Trim Start is set to 1, and the animation current index is -10, the Extend Left menu dete"
+			},
+			{
+				"name": "textendright",
+				"label": "Extend Right",
+				"style": "Menu",
+				"description": "Determines how the parent handles animation positions that lie after the Trim End position. For example, if Trim End is set to 20, and the animation current index is 25, the Extend Right menu determin"
+			}
+		],
+		"versions": {}
+	}
+}

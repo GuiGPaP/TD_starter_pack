@@ -1,0 +1,247 @@
+{
+	"id": "audiodevicein-chop",
+	"title": "audiodeviceinCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"audiodevicein",
+		"chop",
+		"audiodeviceinchop",
+		"active",
+		"driver",
+		"device",
+		"errormissing",
+		"rate"
+	],
+	"content": {
+		"summary": "TouchDesigner audiodeviceinCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "audiodeviceinCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Turns the audio input on or off."
+			},
+			{
+				"name": "driver",
+				"label": "Driver",
+				"style": "Menu",
+				"description": "Select between default DirectSound/CoreAudio, ASIO, or native device supported drivers."
+			},
+			{
+				"name": "device",
+				"label": "Device",
+				"style": "Menu",
+				"description": "A menu of available audio devices to receive input from. Selecting"
+			},
+			{
+				"name": "errormissing",
+				"label": "Error if Missing",
+				"style": "Toggle",
+				"description": "The will error if the specified device is not found."
+			},
+			{
+				"name": "rate",
+				"label": "Rate",
+				"style": "Float",
+				"description": "Audio input sample rate expressed in samples per second."
+			},
+			{
+				"name": "bufferlength",
+				"label": "Buffer Length",
+				"style": "Float",
+				"description": "The size of the input buffer, will effect latency.  The larger the buffer the more latency is introduced."
+			},
+			{
+				"name": "numchan",
+				"label": "Number of Channels",
+				"style": "Int",
+				"description": "When using Driver Blackmagic or AJA, use this parameter to set the number of channels."
+			},
+			{
+				"name": "frontleft",
+				"label": "Front Left",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "frontright",
+				"label": "Front Right",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "frontcenter",
+				"label": "Front Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "lowfrequency",
+				"label": "Low Frequency",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "backleft",
+				"label": "Back Left",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "backright",
+				"label": "Back Right",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "frontleftcenter",
+				"label": "Front Left of Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "frontrightcenter",
+				"label": "Front Right of Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "backcenter",
+				"label": "Back Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "sideleft",
+				"label": "Side Left",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "sideright",
+				"label": "Side Right",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topcenter",
+				"label": "Top Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topfrontleft",
+				"label": "Top Front Left",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topfrontcenter",
+				"label": "Top Front Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topfrontright",
+				"label": "Top Front Right",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topbackleft",
+				"label": "Top Back Left",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topbackcenter",
+				"label": "Top Back Center",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "topbackright",
+				"label": "Top Back Right",
+				"style": "Toggle",
+				"description": "Enable this input if available (or simply adds another input channel)."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "inputindices",
+				"label": "Inputindices",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "refresh",
+				"label": "Refresh",
+				"style": "Pulse",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bufflenunit",
+				"label": "Bufflenunit",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "inputselect",
+				"label": "Inputselect",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ratemode",
+				"label": "Ratemode",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "inputnames",
+				"label": "Inputnames",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

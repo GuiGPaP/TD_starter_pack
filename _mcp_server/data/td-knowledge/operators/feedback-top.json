@@ -1,22 +1,21 @@
 {
 	"id": "feedback-top",
-	"title": "Feedback TOP",
+	"title": "feedbackTOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"feedback",
-		"loop",
-		"trail",
-		"persistence",
-		"motion",
-		"iterative"
+		"top",
+		"feedbacktop",
+		"reset",
+		"resetpulse"
 	],
 	"content": {
-		"summary": "Creates a feedback loop by passing the previous frame output back as input. Essential for trails and iterative effects."
+		"summary": "TouchDesigner feedbackTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -24,13 +23,22 @@
 		"opFamily": "TOP",
 		"parameters": [
 			{
-				"name": "top"
+				"name": "top",
+				"label": "Target TOP",
+				"style": "TOP",
+				"description": "Specifies a for feedback to use as its source when activated."
 			},
 			{
-				"name": "resetcondition"
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "Activates feedback when set to 0. Disables feedback when set to 1. When disabled, the Feedback passes thru the image connected to its input."
 			},
 			{
-				"name": "resetpulse"
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Resets the feedback in a single frame when clicked."
 			}
 		],
 		"examples": [
@@ -56,8 +64,6 @@
 				"context": "textport"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

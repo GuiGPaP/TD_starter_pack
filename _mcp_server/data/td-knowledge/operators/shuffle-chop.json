@@ -14,7 +14,7 @@
 		"scope"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner shuffleCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

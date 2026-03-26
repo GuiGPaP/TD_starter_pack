@@ -1,0 +1,382 @@
+{
+	"id": "topto-pop",
+	"title": "toptoPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"topto",
+		"pop",
+		"toptopop",
+		"rgba",
+		"maxpointsenable",
+		"input",
+		"input0top",
+		"input0chanscope"
+	],
+	"content": {
+		"summary": "TouchDesigner toptoPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "toptoPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "rgba",
+				"label": "First RGBA Contains",
+				"style": "Menu",
+				"description": "Determines how the 's pixels should be interpreted."
+			},
+			{
+				"name": "maxpointsenable",
+				"label": "Max Number of Points",
+				"style": "Toggle",
+				"description": "Enable the setting of the max number of points when First RGBA Contains is set to Position."
+			},
+			{
+				"name": "input",
+				"label": "TOP",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for TOPs to convert."
+			},
+			{
+				"name": "input0top",
+				"label": "TOP",
+				"style": "TOP",
+				"description": "Sets reference to a to convert."
+			},
+			{
+				"name": "input0chanscope",
+				"label": "Channel Scope",
+				"style": "StrMenu",
+				"description": "Color channels to sample."
+			},
+			{
+				"name": "input0attrscope",
+				"label": "Attribute Scope",
+				"style": "StrMenu",
+				"description": "A list of attributes to be created according to the channel scope."
+			},
+			{
+				"name": "input0filter",
+				"label": "Filter",
+				"style": "Menu",
+				"description": "The pixel filtering."
+			},
+			{
+				"name": "attr",
+				"label": "New Attribute",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks to create new attributes."
+			},
+			{
+				"name": "attr0name",
+				"label": "New Attribute Name",
+				"style": "Menu",
+				"description": "Choose to create a predefined attribute or a custom attribute."
+			},
+			{
+				"name": "attr0type",
+				"label": "Attribute Type",
+				"style": "Menu",
+				"description": "Determines the type."
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "Determines the primitive used to connect the points."
+			},
+			{
+				"name": "uniquepoints",
+				"label": "Unique Points",
+				"style": "Toggle",
+				"description": "Enable not sharing points between primitives."
+			},
+			{
+				"name": "pixelsamplingloc",
+				"label": "Pixel Sampling Location",
+				"style": "Menu",
+				"description": "Sets where the pixels are sampled."
+			},
+			{
+				"name": "texture",
+				"label": "Texture Coordinates",
+				"style": "Menu",
+				"description": "Sets the attribute class where the texture coordinates should be created."
+			},
+			{
+				"name": "dimension",
+				"label": "Append Dimension",
+				"style": "Menu",
+				"description": "Always add a dimension, or only add a dimesion when its size is 2 or more."
+			},
+			{
+				"name": "camera",
+				"label": "Camera",
+				"style": "Object",
+				"description": "Specify the camera component."
+			},
+			{
+				"name": "overridecamera",
+				"label": "Override Camera View",
+				"style": "Toggle",
+				"description": "When on, overrides the View settings from the selected camera object."
+			},
+			{
+				"name": "viewanglemethod",
+				"label": "View Angle Method",
+				"style": "Menu",
+				"description": "Sets the method to convert the depth ."
+			},
+			{
+				"name": "fov",
+				"label": "FOV Angle",
+				"style": "Float",
+				"description": "Determines the camera's field of view angle."
+			},
+			{
+				"name": "deletenear",
+				"label": "Delete Near Points",
+				"style": "Toggle",
+				"description": "Enable removal of points that are close to the camera."
+			},
+			{
+				"name": "depthnear",
+				"label": "Near Depth",
+				"style": "Float",
+				"description": "Depth of the near clipping plane."
+			},
+			{
+				"name": "deletefar",
+				"label": "Delete Far Points",
+				"style": "Toggle",
+				"description": "Enable removal of points that are far from the camera."
+			},
+			{
+				"name": "depthfar",
+				"label": "Far Depth",
+				"style": "Float",
+				"description": "Depth of the far clipping plane."
+			},
+			{
+				"name": "linestripbehavior",
+				"label": "Line Strip Behavior",
+				"style": "Menu",
+				"description": "What to do when points of a line strip are deleted."
+			},
+			{
+				"name": "dispscale",
+				"label": "Displacement Scale",
+				"style": "Float",
+				"description": "Sets the displacement scale when the pixels are interpreted as heights values"
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "overridesizey",
+				"label": "Overridesizey",
+				"style": "Toggle"
+			},
+			{
+				"name": "rerangefrommin",
+				"label": "Rerangefrommin",
+				"style": "Float"
+			},
+			{
+				"name": "attr0defaultval3",
+				"label": "Attr0Defaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "centery",
+				"label": "Centery",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizez",
+				"label": "Sizez",
+				"style": "XYZW"
+			},
+			{
+				"name": "overridesizez",
+				"label": "Overridesizez",
+				"style": "Toggle"
+			},
+			{
+				"name": "rerangetomax",
+				"label": "Rerangetomax",
+				"style": "Float"
+			},
+			{
+				"name": "rerangefrommax",
+				"label": "Rerangefrommax",
+				"style": "Float"
+			},
+			{
+				"name": "liney",
+				"label": "Liney",
+				"style": "Toggle"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "attr0defaultval1",
+				"label": "Attr0Defaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "maxpoints",
+				"label": "Maxpoints",
+				"style": "Int"
+			},
+			{
+				"name": "focallengthsy",
+				"label": "Focallengthsy",
+				"style": "XYZW"
+			},
+			{
+				"name": "attr0defaultval2",
+				"label": "Attr0Defaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "resx",
+				"label": "Resx",
+				"style": "Int"
+			},
+			{
+				"name": "overridesizex",
+				"label": "Overridesizex",
+				"style": "Toggle"
+			},
+			{
+				"name": "resz",
+				"label": "Resz",
+				"style": "Int"
+			},
+			{
+				"name": "overrideresz",
+				"label": "Overrideresz",
+				"style": "Toggle"
+			},
+			{
+				"name": "sizey",
+				"label": "Sizey",
+				"style": "XYZW"
+			},
+			{
+				"name": "focallengthsx",
+				"label": "Focallengthsx",
+				"style": "XYZW"
+			},
+			{
+				"name": "linez",
+				"label": "Linez",
+				"style": "Toggle"
+			},
+			{
+				"name": "resy",
+				"label": "Resy",
+				"style": "Int"
+			},
+			{
+				"name": "linex",
+				"label": "Linex",
+				"style": "Toggle"
+			},
+			{
+				"name": "planey",
+				"label": "Planey",
+				"style": "Toggle"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "overrideresx",
+				"label": "Overrideresx",
+				"style": "Toggle"
+			},
+			{
+				"name": "attr0numcomps",
+				"label": "Attr0Numcomps",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attr0customname",
+				"label": "Attr0Customname",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sizex",
+				"label": "Sizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "centerx",
+				"label": "Centerx",
+				"style": "XYZW"
+			},
+			{
+				"name": "planez",
+				"label": "Planez",
+				"style": "Toggle"
+			},
+			{
+				"name": "attr0defaultval0",
+				"label": "Attr0Defaultval0",
+				"style": "Float"
+			},
+			{
+				"name": "planex",
+				"label": "Planex",
+				"style": "Toggle"
+			},
+			{
+				"name": "rerangetomin",
+				"label": "Rerangetomin",
+				"style": "Float"
+			},
+			{
+				"name": "overrideresy",
+				"label": "Overrideresy",
+				"style": "Toggle"
+			}
+		],
+		"versions": {}
+	}
+}

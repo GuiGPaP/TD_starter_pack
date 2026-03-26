@@ -1,0 +1,138 @@
+{
+	"id": "audiooscillator-chop",
+	"title": "audiooscillatorCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"audiooscillator",
+		"chop",
+		"audiooscillatorchop",
+		"wavetype",
+		"frequency",
+		"octave",
+		"offset"
+	],
+	"content": {
+		"summary": "TouchDesigner audiooscillatorCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "audiooscillatorCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "wavetype",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The shape of the waveform to repeat, unless overridden by the Playback Source:"
+			},
+			{
+				"name": "frequency",
+				"label": "Base Frequency",
+				"style": "Float",
+				"description": "The cycles per second when the Pitch Control is zero."
+			},
+			{
+				"name": "octave",
+				"label": "Units per Octave",
+				"style": "Float",
+				"description": "Amount that the Pitch Control needs to increase by to raise the pitch by one octave. The default of 1 means that Pitch Control of 1 raises the pitch by 1 octave. Units per Octave of .08333 means that "
+			},
+			{
+				"name": "offset",
+				"label": "Offset",
+				"style": "Float",
+				"description": "Values output from the can have an offset added to them."
+			},
+			{
+				"name": "amp",
+				"label": "Amplitude",
+				"style": "Float",
+				"description": "Values output from the can be scaled."
+			},
+			{
+				"name": "bias",
+				"label": "Bias",
+				"style": "Float",
+				"description": "Shape control for Triangle, Gaussian and Square waves. For triangle waves, it moves the peak. For square waves, it alters the width of the peak. Zero means no bias."
+			},
+			{
+				"name": "phase",
+				"label": "Phase",
+				"style": "Float",
+				"description": "A value of .5 is a phase shift of 180 degrees, or one half cycle."
+			},
+			{
+				"name": "smooth",
+				"label": "Smooth Pitch Changes",
+				"style": "Toggle",
+				"description": "If the Pitch Control channel input to the Audio Oscillator is rising and is running at the Touch default of 60 frames per second, then the pitch will hold for 1/60 second before stepping up for anothe"
+			},
+			{
+				"name": "resetcondition",
+				"label": "Reset Condition",
+				"style": "Menu",
+				"description": "This menu determines how the Reset input triggers a reset of the channel(s)."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "This button resets the channel(s) to 0 when On."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Instantly resets the channel(s) to 0."
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "Set the sample rate of the in samples per second."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

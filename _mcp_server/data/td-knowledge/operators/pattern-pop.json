@@ -14,7 +14,7 @@
 		"seed"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner patternPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

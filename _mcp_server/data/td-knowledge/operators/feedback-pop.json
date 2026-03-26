@@ -14,7 +14,7 @@
 		"donepulse"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner feedbackPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

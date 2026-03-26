@@ -1,0 +1,97 @@
+{
+	"id": "texture3d-top",
+	"title": "texture3dTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"texture3d",
+		"top",
+		"texture3dtop",
+		"type",
+		"active",
+		"replacesingle",
+		"replacesinglepulse",
+		"replaceindex"
+	],
+	"content": {
+		"summary": "TouchDesigner texture3dTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "texture3dTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "Specifies the texture type to create."
+			},
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When set to 1, the Texture 3D will fill up it cache with images. The texture3D replaces a slice of its 3d data with its input every frame. When it has filled up all of its slices it wraps around and s"
+			},
+			{
+				"name": "replacesingle",
+				"label": "Replace Single",
+				"style": "Toggle",
+				"description": "While this is set > 0, the Texture 3D will replace the slice at 'Replace Index' with the input image. This allows you to replace specific slices of the 3D texture at will."
+			},
+			{
+				"name": "replacesinglepulse",
+				"label": "Replace Single Pulse",
+				"style": "Pulse",
+				"description": "Replace an image for the single frame this was pulsed."
+			},
+			{
+				"name": "replaceindex",
+				"label": "Replace Index",
+				"style": "Int",
+				"description": "Select the slice index that will be replaced by the input, when 'Replace Single' is turned on."
+			},
+			{
+				"name": "prefill",
+				"label": "Pre Fill",
+				"style": "Toggle",
+				"description": "This feature is used to pre-setup all of the slices of the 3D texture in a single cook. When set to 1, it will fill the cache. If set to 1 during playback, it will fill immediately. If set to 1 and sa"
+			},
+			{
+				"name": "prefillpulse",
+				"label": "Pre Fill Pulse",
+				"style": "Pulse",
+				"description": "Pre-fills a single image during the frame this was pulsed."
+			},
+			{
+				"name": "cachesize",
+				"label": "Cache Size",
+				"style": "Int",
+				"description": "The number of images the Texture 3D will hold. This is the number of 3D slices in the texture."
+			},
+			{
+				"name": "step",
+				"label": "Step Size",
+				"style": "Int",
+				"description": "This parameter sets how many frames pass before the grabs one into cache. A Sample Step of 1 will grab each consecutive frame, a Sample Step of 2 will grab every other frame, and so on."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "When set to 1, the cache is flushed and the is reset."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Instantly empty the cache."
+			}
+		],
+		"versions": {}
+	}
+}

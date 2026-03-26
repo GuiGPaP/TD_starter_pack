@@ -1,0 +1,396 @@
+{
+	"id": "glslmulti-top",
+	"title": "glslmultiTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"glslmulti",
+		"top",
+		"glslmultitop",
+		"glslversion",
+		"mode",
+		"predat",
+		"vertexdat",
+		"pixeldat"
+	],
+	"content": {
+		"summary": "TouchDesigner glslmultiTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "glslmultiTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "glslversion",
+				"label": "GLSL Version",
+				"style": "Menu",
+				"description": "Pick what version of GLSL to compile the shader with."
+			},
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "Choose what type of shader you are writing, vertex/pixel shader, or a compute shader."
+			},
+			{
+				"name": "predat",
+				"label": "Preprocess Directives",
+				"style": "DAT"
+			},
+			{
+				"name": "vertexdat",
+				"label": "Vertex Shader",
+				"style": "DAT",
+				"description": "Points to the holding the . Drag & Drop a here, or manually enter the path to the ."
+			},
+			{
+				"name": "pixeldat",
+				"label": "Pixel Shader",
+				"style": "DAT",
+				"description": "Points to the holding the Pixel . Drag & Drop a here, or manually enter the path to the ."
+			},
+			{
+				"name": "computedat",
+				"label": "Compute Shader",
+				"style": "DAT",
+				"description": "Points to the holding the . Drag & Drop a here, or manually enter the path to the ."
+			},
+			{
+				"name": "loaduniformnames",
+				"label": "Load Uniform Names",
+				"style": "Pulse",
+				"description": "When this button is pressed the node will try to pre-fill all it's uniform parameter with uniforms that are declare in the shader. Note that the shader compiler will likely not expose uniforms that ar"
+			},
+			{
+				"name": "autodispatchsize",
+				"label": "Auto Dispatch Size",
+				"style": "Toggle",
+				"description": "Automatically set the dispatch size based on the compute shader's local size and the output texture resolution. Ensures at least one thread per pixel will execute."
+			},
+			{
+				"name": "outputaccess",
+				"label": "Output Access",
+				"style": "Menu",
+				"description": "Controls how the output textures will be accessed. If the textures will be read from (such as using previous frame's values), then the access should be changed to Read-Write instead of Write Only."
+			},
+			{
+				"name": "type",
+				"label": "Output Type",
+				"style": "Menu",
+				"description": "Specify what type of texture to create. When creating  a 3D texture the will render once for every slice of the output. Refer to for more info."
+			},
+			{
+				"name": "depth",
+				"label": "Depth",
+				"style": "Menu",
+				"description": "Set the depth of the 3D texture from the or the parameter."
+			},
+			{
+				"name": "customdepth",
+				"label": "Custom Depth",
+				"style": "Int",
+				"description": "Manually set the depth of the 3D texture, otherwise it will use the depth of the input."
+			},
+			{
+				"name": "clearoutputs",
+				"label": "Clear Outputs",
+				"style": "Toggle"
+			},
+			{
+				"name": "inputmapping",
+				"label": "Input Mapping",
+				"style": "Menu",
+				"description": "Determines how the node's input(s) are passed into the shader for use when creating a 3D Texture. By default all of the inputs are passed to each slice. When using the mode, the first N inputs are pas"
+			},
+			{
+				"name": "nval",
+				"label": "N Value",
+				"style": "Int",
+				"description": "Determines how many inputs are passed to the shader per slice when using the mode for . If for example this is set to 2, then the first 2 inputs will be passed to the first slice, the next 2 inputs wi"
+			},
+			{
+				"name": "inputextenduv",
+				"label": "Input Extend Mode UV",
+				"style": "Menu",
+				"description": "Controls what is returned from your texture sampling functions when the U and V texture coordinates (called S and T in the shader) are outside [0-1] range."
+			},
+			{
+				"name": "inputextendw",
+				"label": "Input Extend Mode W",
+				"style": "Menu",
+				"description": "Controls what is returned from your texture sampling functions when the W texture coordinate (called W in the shader) are outside [0-1] range. Only useful for ."
+			},
+			{
+				"name": "numcolorbufs",
+				"label": "# of Color Buffers",
+				"style": "Int",
+				"description": "Any shader you write can output to more than one RGBA buffer at a time. Turn up this value to have more color buffers allocated for you, and refer to [Write_a_GLSL_ #Outputting_to_Multiple_Color_Buffe"
+			},
+			{
+				"name": "vec",
+				"label": "Vector",
+				"style": "Sequence",
+				"description": "Sequence of vector uniforms"
+			},
+			{
+				"name": "vec0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The uniform name, as declared in the shader"
+			},
+			{
+				"name": "array",
+				"label": "Array",
+				"style": "Sequence",
+				"description": "Sequence of array uniforms"
+			},
+			{
+				"name": "array0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the uniform. You can send up to 4 channels into the GLSL shader in a single uniform. The number of channels is determined by the float/vec2/vec3/vec4 menu to the right of the name. For a w"
+			},
+			{
+				"name": "array0type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The data type of the uniform in the shader."
+			},
+			{
+				"name": "array0chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "The channels from this will be sent to the GLSL shader."
+			},
+			{
+				"name": "array0arraytype",
+				"label": "Array Type",
+				"style": "Menu",
+				"description": "The type of the uniform."
+			},
+			{
+				"name": "matrix",
+				"label": "Matrix",
+				"style": "Sequence",
+				"description": "Sequence of matrix uniforms"
+			},
+			{
+				"name": "matrix0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the matrix uniform."
+			},
+			{
+				"name": "matrix0value",
+				"label": "Matrix",
+				"style": "CHOP",
+				"description": "The value to assign the matrix. For valid ways to specify this, see the article."
+			},
+			{
+				"name": "ac",
+				"label": "Atomic Counter",
+				"style": "Sequence",
+				"description": "Sequence of atomic counter uniforms"
+			},
+			{
+				"name": "ac0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the uniform."
+			},
+			{
+				"name": "ac0initvalue",
+				"label": "Initial Value Type",
+				"style": "Menu",
+				"description": "Specifies how the atomic counters receive their initial value, either through a single default value or a ."
+			},
+			{
+				"name": "ac0singlevalue",
+				"label": "Initial Value",
+				"style": "Int",
+				"description": "Specifies a single value that all atomic counters in this binding will be initialized to."
+			},
+			{
+				"name": "ac0chopvalue",
+				"label": "Initial Values CHOP",
+				"style": "CHOP",
+				"description": "A reference to the that will determine the initial values of the atomic counters in this binding. The will be spanned in track order, so the values from the first track will be read in order first, th"
+			},
+			{
+				"name": "const",
+				"label": "Constant",
+				"style": "Sequence",
+				"description": "Sequence of constant uniforms"
+			},
+			{
+				"name": "const0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The constant name, as declared in the shader."
+			},
+			{
+				"name": "const0value",
+				"label": "Value",
+				"style": "Float",
+				"description": "The value to give the constant."
+			},
+			{
+				"name": "color0rgbr",
+				"label": "Color0Rgbr",
+				"style": "RGBA"
+			},
+			{
+				"name": "clearvalueb",
+				"label": "Clearvalueb",
+				"style": "RGBA"
+			},
+			{
+				"name": "color0alpha",
+				"label": "Color0Alpha",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "buffer0attrclass",
+				"label": "Buffer0Attrclass",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "clearvaluea",
+				"label": "Clearvaluea",
+				"style": "RGBA"
+			},
+			{
+				"name": "buffer",
+				"label": "Buffer",
+				"style": "Sequence",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec0valuey",
+				"label": "Vec0Valuey",
+				"style": "XYZW"
+			},
+			{
+				"name": "errorbehavior",
+				"label": "Errorbehavior",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "buffer0name",
+				"label": "Buffer0Name",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "color0rgbb",
+				"label": "Color0Rgbb",
+				"style": "RGBA",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "dispatchsizey",
+				"label": "Dispatchsizey",
+				"style": "Int"
+			},
+			{
+				"name": "buffer0attr",
+				"label": "Buffer0Attr",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec0valuez",
+				"label": "Vec0Valuez",
+				"style": "XYZW"
+			},
+			{
+				"name": "clearvaluer",
+				"label": "Clearvaluer",
+				"style": "RGBA"
+			},
+			{
+				"name": "clearvalueg",
+				"label": "Clearvalueg",
+				"style": "RGBA"
+			},
+			{
+				"name": "color0rgbg",
+				"label": "Color0Rgbg",
+				"style": "RGBA"
+			},
+			{
+				"name": "color",
+				"label": "Color",
+				"style": "Sequence",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "simplexnoise",
+				"label": "Simplexnoise",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "compilebehavior",
+				"label": "Compilebehavior",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "dispatchsizex",
+				"label": "Dispatchsizex",
+				"style": "Int"
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "dispatchsizez",
+				"label": "Dispatchsizez",
+				"style": "Int",
+				"description": "The dispatch size to use when executing a compute shader."
+			},
+			{
+				"name": "vec0valuex",
+				"label": "Vec0Valuex",
+				"style": "XYZW"
+			},
+			{
+				"name": "buffer0pop",
+				"label": "Buffer0Pop",
+				"style": "POP",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "tops",
+				"label": "Tops",
+				"style": "TOP",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "color0name",
+				"label": "Color0Name",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec0valuew",
+				"label": "Vec0Valuew",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

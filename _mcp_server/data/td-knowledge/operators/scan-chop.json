@@ -14,7 +14,7 @@
 		"yscale"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner scanCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

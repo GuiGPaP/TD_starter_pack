@@ -1,0 +1,60 @@
+{
+	"id": "glslselect-pop",
+	"title": "glslselectPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"glslselect",
+		"pop",
+		"glslselectpop",
+		"name",
+		"bypass",
+		"freeextragpumem",
+		"delinputattrs"
+	],
+	"content": {
+		"summary": "TouchDesigner glslselectPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "glslselectPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "pop",
+				"label": "POP",
+				"style": "POP",
+				"description": "reference."
+			},
+			{
+				"name": "name",
+				"label": "Output Name",
+				"style": "Str",
+				"description": "Name of an extra output on the selected GLSL Advanced to select and output."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

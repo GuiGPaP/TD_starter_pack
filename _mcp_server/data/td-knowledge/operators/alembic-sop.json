@@ -1,0 +1,90 @@
+{
+	"id": "alembic-sop",
+	"title": "alembicSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"alembic",
+		"sop",
+		"alembicsop",
+		"file",
+		"objectpath",
+		"time",
+		"timeunit",
+		"xform"
+	],
+	"content": {
+		"summary": "TouchDesigner alembicSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "alembicSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "Alembic File",
+				"style": "File",
+				"description": "The file path to the Alembic file."
+			},
+			{
+				"name": "objectpath",
+				"label": "Object Path",
+				"style": "StrMenu",
+				"description": "Specify which geometry object to be loaded. Each geometry object can represent a hierarchies of multiple geometries. It is also possible to choose the \"All Objects\" option from the list of available o"
+			},
+			{
+				"name": "time",
+				"label": "Time",
+				"style": "Float",
+				"description": "Specify which part of the Alembic samples sequence is loaded. The time unit menu converts the current time units to the selected unit. The available options are Frames, Seconds, and Fraction."
+			},
+			{
+				"name": "timeunit",
+				"label": "Time Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "xform",
+				"label": "Transform",
+				"style": "Menu",
+				"description": "Select which transform is applied if the transform data is available from the input Alembic file."
+			},
+			{
+				"name": "interp",
+				"label": "Interpolation",
+				"style": "Menu",
+				"description": "Interpolate between the samples/keyframes in the Alembic file. This parameter only works if the selected geometries are defined as dynamic and the transformation information are available from the inp"
+			},
+			{
+				"name": "compnml",
+				"label": "Compute Normal",
+				"style": "Toggle",
+				"description": "Creates normals for the input geometry."
+			},
+			{
+				"name": "loadfile",
+				"label": "Unload",
+				"style": "Toggle",
+				"description": "Toggling the unload to \"on\" will unload the file and close it. By setting it to \"off\", the file will be loaded again. When the file is unloaded it can be overwritten by other applications or deleted."
+			},
+			{
+				"name": "directtogpu",
+				"label": "Directtogpu",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "fps",
+				"label": "Fps",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

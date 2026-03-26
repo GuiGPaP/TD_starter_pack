@@ -1,0 +1,180 @@
+{
+	"id": "align-sop",
+	"title": "alignSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"align",
+		"sop",
+		"alignsop",
+		"group",
+		"bias",
+		"individual"
+	],
+	"content": {
+		"summary": "TouchDesigner alignSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "alignSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "A subset of primitives to align (accepts patterns, as described in in the ). If blank, it aligns the entire input."
+			},
+			{
+				"name": "align",
+				"label": "Align",
+				"style": "Menu",
+				"description": "Can optionally align subgroups of"
+			},
+			{
+				"name": "inc",
+				"label": "N",
+				"style": "Int",
+				"description": "Determines the number of primitives to be either grouped or skipped."
+			},
+			{
+				"name": "bias",
+				"label": "Bias",
+				"style": "Float",
+				"description": "Determines which primitive remains unaffected: 0 Left, 1 Right."
+			},
+			{
+				"name": "individual",
+				"label": "Individual Alignment",
+				"style": "Toggle",
+				"description": "Causes each primitive of the input to be aligned. If unchecked, only the first primitive is aligned and all others are placed relative to it, preserving the spatial layout of the left primitives."
+			},
+			{
+				"name": "dotrans",
+				"label": "Translate",
+				"style": "Toggle",
+				"description": "When enabled, translates primitives during alignment by translating the left UV position to the right UV position."
+			},
+			{
+				"name": "dorotate",
+				"label": "Rotate",
+				"style": "Toggle",
+				"description": "When enabled, rotates primitives during alignment by aligning the left UV tangents (at the left UV position) to the right UV tangents (at the right UV position)."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Sets the overall transform and rotation order for the transformations. The transform and rotation order determines the order in which transformations take place. Depending on the order, you can achiev"
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Sets the overall transform and rotation order for the transformations. The transform and rotation order determines the order in which transformations take place. Depending on the order, you can achiev"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "Allows you to perform a post-alignment transformation. Specify the amount of translation about the local xyz axes."
+			},
+			{
+				"name": "rightuv1",
+				"label": "Rightuv1",
+				"style": "Float"
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "leftuv1",
+				"label": "Leftuv1",
+				"style": "Float"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW",
+				"description": "Allows you to perform a post-alignment transformation. Specify the amount of scaling about the local xyz axes."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW",
+				"description": "Allows you to perform a post-alignment transformation. Specify the amount of translation / rotation / scaling about the local xyz axes"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "Allows you to perform a post-alignment transformation. Specify the amount of rotation about the local xyz axes."
+			},
+			{
+				"name": "rightuv2",
+				"label": "Rightuv2",
+				"style": "Float",
+				"description": "Pivot location for each \"right\" primitive."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "rightuvend1",
+				"label": "Rightuvend1",
+				"style": "Float"
+			},
+			{
+				"name": "leftuv2",
+				"label": "Leftuv2",
+				"style": "Float",
+				"description": "Pivot Location for each \"left\" primitive."
+			},
+			{
+				"name": "rightuvend2",
+				"label": "Rightuvend2",
+				"style": "Float",
+				"description": "If an auxiliary input is used, this location specifies an end point for the alignment. Left primitives are then distributed uniformly between the Right UV and the Right UV End."
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,90 @@
+{
+	"id": "resample-sop",
+	"title": "resampleSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"resample",
+		"sop",
+		"resamplesop",
+		"group",
+		"edge",
+		"method",
+		"measure"
+	],
+	"content": {
+		"summary": "TouchDesigner resampleSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "resampleSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "Allows you to specify which primitives or group of primitives to resample. Accepts patterns, as described in ."
+			},
+			{
+				"name": "lod",
+				"label": "Level of Detail",
+				"style": "Float",
+				"description": "If the geometry you are performing this operation on is made up of something other than polygons (e.g. a NURBS circle), this parameter determines how detailed the conversion to polygons will be. The h"
+			},
+			{
+				"name": "edge",
+				"label": "Resample by Polygon Edge",
+				"style": "Toggle",
+				"description": "This toggle allows the resampling to be done on a per-edge basis of the polygon rather than on the polygon as a whole. This means that corners will be preserved in the resampling. When this parameter "
+			},
+			{
+				"name": "method",
+				"label": "Method",
+				"style": "Menu",
+				"description": "Specifies how the geometry is segmented."
+			},
+			{
+				"name": "measure",
+				"label": "Measure",
+				"style": "Menu",
+				"description": "Specifies how to measure along curved spline sections."
+			},
+			{
+				"name": "dolength",
+				"label": "Maximum Segment Length",
+				"style": "Toggle",
+				"description": "When this option is enabled, it overrides the value of the Arc/Chord length and allows you to specify your own values for the length of the segments in the resampled geometry. Smaller values produce s"
+			},
+			{
+				"name": "length",
+				"label": "Length",
+				"style": "Float",
+				"description": "This parameter lets you specify the length for the resampled geometry."
+			},
+			{
+				"name": "dosegs",
+				"label": "Maximum Segments",
+				"style": "Toggle",
+				"description": "When enabled, allows you to override the maximum number of segments used in the resampled geometry."
+			},
+			{
+				"name": "segs",
+				"label": "Segments",
+				"style": "Int",
+				"description": "Lets you specify the number of segments used when measuring along arc."
+			},
+			{
+				"name": "last",
+				"label": "Maintain Last Vertex",
+				"style": "Toggle",
+				"description": "If selected, the primitive's final CV is included in the resampled polygon, even if the final resulting edge is shorter then the given segment length."
+			}
+		],
+		"versions": {}
+	}
+}

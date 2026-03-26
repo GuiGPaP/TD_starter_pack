@@ -1,0 +1,97 @@
+{
+	"id": "sprite-sop",
+	"title": "spriteSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sprite",
+		"sop",
+		"spritesop",
+		"xyzchop",
+		"camera",
+		"widthchop",
+		"colorchop",
+		"alphachop"
+	],
+	"content": {
+		"summary": "TouchDesigner spriteSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "spriteSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "xyzchop",
+				"label": "XYZ CHOP",
+				"style": "CHOP",
+				"description": "A with 3 channels is required to specify the X, Y, and Z position of the quad to be generated. Each sample creates 1 quad. The created quads are centered at the points defined by each sample."
+			},
+			{
+				"name": "camera",
+				"label": "Camera",
+				"style": "Object",
+				"description": "The geometry will always face the specified here."
+			},
+			{
+				"name": "widthchop",
+				"label": "Width CHOP",
+				"style": "CHOP",
+				"description": "A 1 channel can be specified to set the width of the quad at that sample."
+			},
+			{
+				"name": "colorchop",
+				"label": "Color CHOP",
+				"style": "CHOP",
+				"description": "A 3 channel can be specified to set the R, G, and B color values of the quad at that sample."
+			},
+			{
+				"name": "alphachop",
+				"label": "Alpha CHOP",
+				"style": "CHOP",
+				"description": "A 1 channel can be specified to set the alpha of the quad at that sample."
+			},
+			{
+				"name": "perspectivewidth",
+				"label": "Perspective Width",
+				"style": "Float",
+				"description": "The width of the geometry created. This parameter only has an effect when the is less that 1.0."
+			},
+			{
+				"name": "constantwidth",
+				"label": "Use Constant Width",
+				"style": "Float",
+				"description": "This blends between using Perspective Width and Constant Width. When Use Constant Width = 0, width is determined only by Perspective Width, when Use Constant Width = 1, width is determined only by Con"
+			},
+			{
+				"name": "constantwidthnear",
+				"label": "Constant Width Near",
+				"style": "Float",
+				"description": "The width used for quads located at a position Constant Width Falloff Start or closer."
+			},
+			{
+				"name": "constantwitdhfar",
+				"label": "Constant Width Far",
+				"style": "Float",
+				"description": "The width used for quads located at a position Constant Width Falloff End or farther."
+			},
+			{
+				"name": "falloffstart",
+				"label": "Constant Width Falloff Start",
+				"style": "Float",
+				"description": "At this position the or closer the geometry uses the Constant Width Near parameter for its width."
+			},
+			{
+				"name": "falloffend",
+				"label": "Constant Width Falloff End",
+				"style": "Float",
+				"description": "At this position the or farther the geometry uses the Constant Width Far parameter for its width."
+			}
+		],
+		"versions": {}
+	}
+}

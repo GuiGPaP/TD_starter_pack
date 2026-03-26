@@ -1,0 +1,133 @@
+{
+	"id": "sweep-sop",
+	"title": "sweepSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sweep",
+		"sop",
+		"sweepsop",
+		"xgrp",
+		"pathgrp",
+		"refgrp",
+		"cycle",
+		"angle"
+	],
+	"content": {
+		"summary": "TouchDesigner sweepSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "sweepSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "xgrp",
+				"label": "X-Section Group",
+				"style": "StrMenu",
+				"description": "You can use only a subset of primitives from the Cross-section inputs by specifying a group here."
+			},
+			{
+				"name": "pathgrp",
+				"label": "Path Group",
+				"style": "StrMenu",
+				"description": "You can use only a subset of primitives from the Backbone inputs by specifying a group here."
+			},
+			{
+				"name": "refgrp",
+				"label": "Reference Group",
+				"style": "StrMenu",
+				"description": "You can use only a subset of primitives from the inputs by specifying a group here."
+			},
+			{
+				"name": "cycle",
+				"label": "Cycle Type",
+				"style": "Menu",
+				"description": "Determines the Cycle Type based on these menu options."
+			},
+			{
+				"name": "angle",
+				"label": "Angle Fix",
+				"style": "Toggle",
+				"description": "Attempts to fix buckling twists that may occur when sweeping."
+			},
+			{
+				"name": "noflip",
+				"label": "Fix Flipping",
+				"style": "Toggle",
+				"description": "Attempts to fix buckling twists that may occur when sweeping by fixing flipped normals."
+			},
+			{
+				"name": "skipcoin",
+				"label": "Remove Coincident Points on Path",
+				"style": "Toggle",
+				"description": "When selected, any points right on top of one another will be ignored."
+			},
+			{
+				"name": "aimatref",
+				"label": "Aim at Reference Points",
+				"style": "Toggle",
+				"description": "Points are used in conjunction with the backbone to control the orientation of the elements along the sweep. This is done by drawing a line between the reference point and corresponding backbone point"
+			},
+			{
+				"name": "usevtx",
+				"label": "Use Vertex",
+				"style": "Toggle",
+				"description": "Use vertex number of the incoming cross-section to place the cross-section on the backbone."
+			},
+			{
+				"name": "vertex",
+				"label": "Connection Vertex",
+				"style": "Int",
+				"description": "Specify a specific vertex to connect to the backbone."
+			},
+			{
+				"name": "scale",
+				"label": "Scale",
+				"style": "Float",
+				"description": "Scales the cross sections globally."
+			},
+			{
+				"name": "twist",
+				"label": "Twist",
+				"style": "Float",
+				"description": "Cumulative rotation of the cross sections around the backbone. If a value of five is specified, the cross section at the first point of the backbone is rotated five degrees, the next ten degrees, the "
+			},
+			{
+				"name": "roll",
+				"label": "Roll",
+				"style": "Float",
+				"description": "Non-cumulative rotation of the cross sections around the backbone. All cross sections get the same rotation."
+			},
+			{
+				"name": "newg",
+				"label": "Create Groups",
+				"style": "Toggle",
+				"description": "Selecting this option enables the creation of groups. A group is created for each backbone that is incoming. This allows for easy skinning in the ."
+			},
+			{
+				"name": "sweepgrp",
+				"label": "Sweep Groups",
+				"style": "Str",
+				"description": "Specify the name of your output groups in this field."
+			},
+			{
+				"name": "skin",
+				"label": "Skin Output",
+				"style": "Menu",
+				"description": "Determines the output based on these menu options."
+			},
+			{
+				"name": "fast",
+				"label": "Fast Sweep",
+				"style": "Toggle",
+				"description": "Enables an optimized skinning technique which speeds up output from 2 - 4 times in many cases at the expense of accuracy. In order for it to work correctly, the input topologies must remain consistent"
+			}
+		],
+		"versions": {}
+	}
+}

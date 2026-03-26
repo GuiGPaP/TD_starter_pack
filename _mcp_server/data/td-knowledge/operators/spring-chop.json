@@ -14,7 +14,7 @@
 		"condfromchan"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner springCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

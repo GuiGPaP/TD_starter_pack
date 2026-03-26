@@ -1,0 +1,161 @@
+{
+	"id": "webrender-top",
+	"title": "webrenderTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"webrender",
+		"top",
+		"webrendertop",
+		"active",
+		"source",
+		"reloadsrc"
+	],
+	"content": {
+		"summary": "TouchDesigner webrenderTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "webrenderTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Enables/disables the Web Render ."
+			},
+			{
+				"name": "source",
+				"label": "Source",
+				"style": "Menu",
+				"description": "Source of the webpage, which can be an address via URL or File, or data from a"
+			},
+			{
+				"name": "url",
+				"label": "URL or File",
+				"style": "File",
+				"description": "Uniform Resource Locator or the address of the web page"
+			},
+			{
+				"name": "dat",
+				"label": "DAT",
+				"style": "DAT",
+				"description": "Text to be loaded into a webpage"
+			},
+			{
+				"name": "reloadsrc",
+				"label": "Reload Source",
+				"style": "Pulse",
+				"description": "Reload source , URL or File."
+			},
+			{
+				"name": "reload",
+				"label": "Reload Current Page",
+				"style": "Pulse",
+				"description": "Reloads the current page, the same as refreshing a web browser."
+			},
+			{
+				"name": "resetcount",
+				"label": "Reset Update Count",
+				"style": "Pulse",
+				"description": "Reset the counter for the number of times the webpage has been updated (available via an Info )."
+			},
+			{
+				"name": "updatewhenloaded",
+				"label": "Only Update when Loaded",
+				"style": "Toggle",
+				"description": "Only shows the web page when it is full loaded."
+			},
+			{
+				"name": "alwayscook",
+				"label": "Cook Always",
+				"style": "Toggle",
+				"description": "every frame if on.  If off, the Web Render will cook for a 10 additional frames after the last update received to maintain continuity."
+			},
+			{
+				"name": "transparent",
+				"label": "Transparent Background",
+				"style": "Toggle",
+				"description": "Loads the webpage with a transparent background.  This option will restart the browser process."
+			},
+			{
+				"name": "audio",
+				"label": "Audio Options",
+				"style": "Menu",
+				"description": "Let the browser process play audio if the web page contains audio.  This option will restart the browser process."
+			},
+			{
+				"name": "mediastream",
+				"label": "Enable Media Stream",
+				"style": "Toggle",
+				"description": "Allows the web render instance to use the mic and the camera."
+			},
+			{
+				"name": "redirectpopups",
+				"label": "Redirect Popups",
+				"style": "Toggle",
+				"description": "Instead of ignorning popups, the Web Render switches to the url for the popup."
+			},
+			{
+				"name": "maxrenderrate",
+				"label": "Maximum Render Frame Rate",
+				"style": "Int",
+				"description": "Sets the maximum frame rate the page will be rendered at.  Can be higher than 60 but does not guarantee a frame rate."
+			},
+			{
+				"name": "numbuffers",
+				"label": "Number of Frame Buffers",
+				"style": "Int",
+				"description": "Sets the maximum number of cached images"
+			},
+			{
+				"name": "dpiscale",
+				"label": "DPI Scaling Factor",
+				"style": "Float",
+				"description": "Sets the DPI scaling factor for the rendered webpage.  Default expression matches the DPI Scale for monitor 0 of TouchDesigner."
+			},
+			{
+				"name": "sharedtexture",
+				"label": "Use Shared Texture",
+				"style": "Toggle",
+				"description": "Share a Direct3d 11 texture between TouchDesigner and TouchDesignerWebRender process instead of using shared memory, which is less efficient.  Windows only."
+			},
+			{
+				"name": "userdir",
+				"label": "User Cache Directory",
+				"style": "Folder",
+				"description": "Persistent directory used by cef for storing user data.  Note that the directory must be unique per Web Render , otherwise the will error.  By default, a temporary user cache directory is generated fo"
+			},
+			{
+				"name": "headerdat",
+				"label": "Modify Header DAT",
+				"style": "DAT",
+				"description": "Modify request headers for a given url.  Specify a table with columns Name, Value & URL.  For a matching URL in the url columen, the corresponding name and value will be inserted into the request head"
+			},
+			{
+				"name": "options",
+				"label": "Options",
+				"style": "Str",
+				"description": "Additional options that can be passed to the browser process.  This option will restart the browser process.  A list of options for the chromium browser can be found at .  Note that these options may "
+			},
+			{
+				"name": "autorestart",
+				"label": "Restart if Process Died",
+				"style": "Toggle",
+				"description": "Automatically restart the browser process if it died."
+			},
+			{
+				"name": "autorestartpulse",
+				"label": "Restart",
+				"style": "Pulse",
+				"description": "Triggers the Restart immediately on button release (button-up). This can be accessed in python using the pulse() method."
+			}
+		],
+		"versions": {}
+	}
+}

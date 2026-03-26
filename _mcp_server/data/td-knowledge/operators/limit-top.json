@@ -12,7 +12,7 @@
 		"normmin"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner limitTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

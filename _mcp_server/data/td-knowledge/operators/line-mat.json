@@ -1,0 +1,734 @@
+{
+	"id": "line-mat",
+	"title": "lineMAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"line",
+		"mat",
+		"linemat",
+		"depthinterpolationmodel",
+		"inversedistanceexponent",
+		"distancenear",
+		"distancefar",
+		"widthnear"
+	],
+	"content": {
+		"summary": "TouchDesigner lineMAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "lineMAT",
+		"opFamily": "MAT",
+		"parameters": [
+			{
+				"name": "depthinterpolationmodel",
+				"label": "Depth Interpolation Model",
+				"style": "Menu",
+				"description": "Depth Interpolation Model depthmodel – a menu to select how the width of line items changes by their distance from the camera."
+			},
+			{
+				"name": "inversedistanceexponent",
+				"label": "Inverse Distance Exponent",
+				"style": "Float",
+				"description": "When the Depth Interpolation Model is Inverse Distance, this determines how fast the widths/sizes decrease with distance. If it is set to 1 (default), the width goes down at the rate of 1/r. If it set"
+			},
+			{
+				"name": "distancenear",
+				"label": "Distance Near",
+				"style": "Float",
+				"description": "Specifies a near plane with a certain distance from the camera."
+			},
+			{
+				"name": "distancefar",
+				"label": "Distance Far",
+				"style": "Float",
+				"description": "Specifies a far plane with a certain distance from the camera."
+			},
+			{
+				"name": "widthnear",
+				"label": "Width Near",
+				"style": "Float",
+				"description": "Specifies a fixed width value when the distance from camera is less than or equal to Distance Near. See the Summary of this operator for an explantion of the treatment of line width."
+			},
+			{
+				"name": "widthfar",
+				"label": "Width Far",
+				"style": "Float",
+				"description": "Specifies a fixed width value when the distance from the camera is equal or bigger than the Distance Far. Note when the Near-Far Range option is selected as the Depth Model, any point in between Dista"
+			},
+			{
+				"name": "widthaffectedbyfov",
+				"label": "Width Affected by FOV/OrthoWidth",
+				"style": "Toggle",
+				"description": "With this off (default), looking at a rendered image of a certain resolution, a line of with w will always be the same # of pixels wide as you change the field-of-view or ortho width. With this parame"
+			},
+			{
+				"name": "widthbias",
+				"label": "Width Bias",
+				"style": "Float",
+				"description": "Moves the S Curve’s bias backward or forward for width interpolation (only S Curve depth model)."
+			},
+			{
+				"name": "widthsteepness",
+				"label": "Width Steepness",
+				"style": "Float",
+				"description": "Controls the steepness of the S Curve for width interpolation (only S Curve depth model). The higher the value of the steepness, you will notice more dramatic changes (higher slope) in the curve width"
+			},
+			{
+				"name": "widthlinearize",
+				"label": "Width Linearize",
+				"style": "Float",
+				"description": "Control the amount of curvature in the curve for width interpolation (only S Curve depth model)."
+			},
+			{
+				"name": "colorbias",
+				"label": "Color Bias",
+				"style": "Float",
+				"description": "Moves the S Curve’s bias backward or forward for color interpolation."
+			},
+			{
+				"name": "colorsteepness",
+				"label": "Color Steepness",
+				"style": "Float",
+				"description": "Controls the steepness of the S Curve for color interpolation."
+			},
+			{
+				"name": "colorlinearize",
+				"label": "Color Linearize",
+				"style": "Float",
+				"description": "Control the amount of curvature in the curve for color interpolation."
+			},
+			{
+				"name": "liftdirection",
+				"label": "Lift Direction",
+				"style": "Menu",
+				"description": "If a line is being drawn on a polygon or its edge (the polygon being in another Geometry + shader), and you need to lift it off the surface to be fully visible, this specifies whether to displace the "
+			},
+			{
+				"name": "liftscale",
+				"label": "Lift Scale",
+				"style": "Float",
+				"description": "For lines that are drawn on top of filled polygons or along their edges, they may be cut off because they are rendered in the same place. To make it look good, you want to lift the line toward the cam"
+			},
+			{
+				"name": "numptsincircle",
+				"label": "Num Points in Circle",
+				"style": "Int",
+				"description": "When drawing Points in Circle ( ) mode, or drawing end-caps, or elbows between edges, this determines how many points you would draw in a full-circle arc to simulate a circular shape. The lower the nu"
+			},
+			{
+				"name": "drawlines",
+				"label": "Draw Lines",
+				"style": "Toggle",
+				"description": "A toggle to draw the Line polygons."
+			},
+			{
+				"name": "linejointtype",
+				"label": "Line Joint Type",
+				"style": "Menu",
+				"description": "A menu to select the joint type where two lines segments meet."
+			},
+			{
+				"name": "miterthreshold",
+				"label": "Miter Threshold (deg)",
+				"style": "Int",
+				"description": "Specifies a threshold value in degrees for the Miter joint which alters the joint shape to Bevel joint if the angle between each two lines segments is bigger than this value."
+			},
+			{
+				"name": "linestartcaptype",
+				"label": "Line Start Cap Type",
+				"style": "Menu",
+				"description": "A menu to Specify the end cap type at the Line start. You can control the size of each end cap type in the Cap page."
+			},
+			{
+				"name": "lineendcaptype",
+				"label": "Line End Cap Type",
+				"style": "Menu",
+				"description": "A menu to Specify the end cap type at the Line end."
+			},
+			{
+				"name": "lineendtaperstrength",
+				"label": "Line End Taper Strength",
+				"style": "Float"
+			},
+			{
+				"name": "linenearalpha",
+				"label": "Line Near Alpha",
+				"style": "Float",
+				"description": "Specifies the alpha value for the Line at the Distance Near plane and any location closer to camera."
+			},
+			{
+				"name": "specifylinefarcolor",
+				"label": "Specify Line Far Color",
+				"style": "Toggle",
+				"description": "A toggle to use the far color and interpolate the values between near and far color."
+			},
+			{
+				"name": "linefaralpha",
+				"label": "Line Far Alpha",
+				"style": "Float",
+				"description": "Specifies the alpha value for the Line at the Distance Far plane and beyond (farther from camera)."
+			},
+			{
+				"name": "drawpoints",
+				"label": "Draw Points",
+				"style": "Toggle",
+				"description": "A toggle to draw the Points."
+			},
+			{
+				"name": "pointtype",
+				"label": "Point Type",
+				"style": "Menu",
+				"description": "A menu to select the type."
+			},
+			{
+				"name": "pointsizemultiplier",
+				"label": "Point Size Multiplier",
+				"style": "Float",
+				"description": "Specifies a scale coefficient to the size of the . By default, the point radius size equals to the width at the point’s location from the camera."
+			},
+			{
+				"name": "pointnearalpha",
+				"label": "Point Near Alpha",
+				"style": "Float",
+				"description": "Specifies the alpha value for the at the Distance Near plane and any location closer to camera."
+			},
+			{
+				"name": "specifypointfarcolor",
+				"label": "Specify Point Far Color",
+				"style": "Toggle",
+				"description": "A toggle to use the far color and interpolate the values between near and far color."
+			},
+			{
+				"name": "pointfaralpha",
+				"label": "Point Far Alpha",
+				"style": "Float",
+				"description": "Specifies the alpha value for the at the Distance Far plane and beyond (farther from camera)."
+			},
+			{
+				"name": "pointliftdirection",
+				"label": "Point Lift Direction",
+				"style": "Menu",
+				"description": "A menu to select the the dirction to lift points.  See parameter Lift Direction."
+			},
+			{
+				"name": "pointliftscale",
+				"label": "Point Lift Scale",
+				"style": "Float",
+				"description": "see parameter Lift Scale."
+			},
+			{
+				"name": "drawvectors",
+				"label": "Draw Vectors",
+				"style": "Toggle",
+				"description": "A toggle to draw the Vectors at each point."
+			},
+			{
+				"name": "scale",
+				"label": "Scale",
+				"style": "Float",
+				"description": "A scale value which applies on the length of the Vector."
+			},
+			{
+				"name": "roundwidth",
+				"label": "Round Width",
+				"style": "Float",
+				"description": "Specifies a scale to the width of Round end caps."
+			},
+			{
+				"name": "roundheight",
+				"label": "Round Height",
+				"style": "Float",
+				"description": "Specifies a scale to the height of Round end caps."
+			},
+			{
+				"name": "squarewidth",
+				"label": "Square Width",
+				"style": "Float",
+				"description": "Specifies a scale to the width of Square end caps."
+			},
+			{
+				"name": "squareheight",
+				"label": "Square Height",
+				"style": "Float",
+				"description": "Specifies a scale to the height of Square end caps."
+			},
+			{
+				"name": "trianglewidth",
+				"label": "Triangle Width",
+				"style": "Float",
+				"description": "Specifies a scale to the width of Triangle end caps."
+			},
+			{
+				"name": "triangleheight",
+				"label": "Triangle Height",
+				"style": "Float",
+				"description": "Specifies a scale to the height of Triangle end caps."
+			},
+			{
+				"name": "arrowwidth",
+				"label": "Arrow Width",
+				"style": "Float",
+				"description": "Specifies a scale to the width of Arrow end caps."
+			},
+			{
+				"name": "arrowheight",
+				"label": "Arrow Height",
+				"style": "Float",
+				"description": "Specifies a scale to the height (from the base of arrow to the head) of Arrow end caps."
+			},
+			{
+				"name": "arrowtaillength",
+				"label": "Arrow Tail Length",
+				"style": "Float",
+				"description": "Specifies a scale to the tail length of Arrow end caps (the longer the tail the sharper it will look like)."
+			},
+			{
+				"name": "endcapwidthmultiplier",
+				"label": "End Cap Width Multiplier",
+				"style": "Float",
+				"description": "Normally end caps are the same width as the line. This parameter lets you make the cap wider/narrower than the line."
+			},
+			{
+				"name": "endcapheightmultiplier",
+				"label": "End Cap Height Multiplier",
+				"style": "Float",
+				"description": "Normally the end caps extend farther than the end of the line by half of the width (making the end cap a half-circle, and similarly for square, triangular and arrow endcape). This parameter lets you p"
+			},
+			{
+				"name": "startcappullback",
+				"label": "Start Caps Pullback",
+				"style": "Float",
+				"description": "By default (0), the start cap goes beyond the start point of the line so that the center of a circular startcap is right at the start point. Setting this to 1 makes the tip of the end cap positioned e"
+			},
+			{
+				"name": "endcappullback",
+				"label": "End Caps Pullback",
+				"style": "Float",
+				"description": "By default (0), the end cap goes beyond the end point of the line so that the center of a circular endcap is right at the end point. Setting this to 1 makes the tip of the end cap positioned exactly a"
+			},
+			{
+				"name": "lineposatt",
+				"label": "Line Position Attribute",
+				"style": "Str"
+			},
+			{
+				"name": "linewidthatt",
+				"label": "Line Width Attribute",
+				"style": "Str"
+			},
+			{
+				"name": "linecoloratt",
+				"label": "Line Color Attribute",
+				"style": "Str"
+			},
+			{
+				"name": "pointposatt",
+				"label": "Point Position Attribute",
+				"style": "Str"
+			},
+			{
+				"name": "pointsizeatt",
+				"label": "Point Size Attribute",
+				"style": "Str"
+			},
+			{
+				"name": "pointcoloratt",
+				"label": "Point Color Attribute",
+				"style": "Str"
+			},
+			{
+				"name": "dodeform",
+				"label": "Deform",
+				"style": "Toggle",
+				"description": "Enables deforms on this material."
+			},
+			{
+				"name": "deformdata",
+				"label": "Get Bone Data:",
+				"style": "Menu",
+				"description": "Specifies where the deform bone data will be obtained."
+			},
+			{
+				"name": "targetsop",
+				"label": "SOP with Capture Data",
+				"style": "OP",
+				"description": "Specifies the that contains the deform capture attributes."
+			},
+			{
+				"name": "pcaptpath",
+				"label": "pCaptPath Attrib",
+				"style": "Str",
+				"description": "Specifies the name of the pCaptPath attribute to use. When your geometry has been put through a , the attributes will be split into names like pCaptPath0, pCaptPath1. You can only render 1 bone group "
+			},
+			{
+				"name": "pcaptdata",
+				"label": "pCaptData Attrib",
+				"style": "Str",
+				"description": "Much like pCaptPath Attrib."
+			},
+			{
+				"name": "skelrootpath",
+				"label": "Skeleton Root Path",
+				"style": "Object",
+				"description": "Specifies the path to the where the root of the skeleton is located."
+			},
+			{
+				"name": "mat",
+				"label": "MAT",
+				"style": "MAT",
+				"description": "When obtaining deform data from a or a Deform In , this is where that is specified."
+			},
+			{
+				"name": "blending",
+				"label": "Blending (Transparency)",
+				"style": "Toggle",
+				"description": "This toggle enables and disables blending. However see the wiki article ."
+			},
+			{
+				"name": "blendop",
+				"label": "Blend Operation",
+				"style": "Menu"
+			},
+			{
+				"name": "srcblend",
+				"label": "Source Color *",
+				"style": "Menu",
+				"description": "This value is multiplied by the color value of the pixel that is being written to the Color-Buffer (also know as the Source Color)."
+			},
+			{
+				"name": "destblend",
+				"label": "Destination Color *",
+				"style": "Menu",
+				"description": "This value is multiplied by the color value of the pixel currently in the Color-Buffer (also known as the Destination Color)."
+			},
+			{
+				"name": "separatealphafunc",
+				"label": "Separate Alpha Function",
+				"style": "Toggle",
+				"description": "This toggle enables and disables separate blending options for the alpha values."
+			},
+			{
+				"name": "blendopa",
+				"label": "Alpha Blend Operation",
+				"style": "Menu"
+			},
+			{
+				"name": "srcblenda",
+				"label": "Source Alpha *",
+				"style": "Menu",
+				"description": "This value is multiplied by the alpha value of the pixel that is being written to the Color-Buffer (also know as the Source Alpha)."
+			},
+			{
+				"name": "destblenda",
+				"label": "Destination Alpha *",
+				"style": "Menu",
+				"description": "This value is multiplied by the alpha value of the pixel currently in the Color-Buffer (also known as the Destination Alpha)."
+			},
+			{
+				"name": "blendconstanta",
+				"label": "Blend Constant Alpha",
+				"style": "Float"
+			},
+			{
+				"name": "legacyalphabehavior",
+				"label": "Legacy Alpha Behavior",
+				"style": "Toggle"
+			},
+			{
+				"name": "postmultalpha",
+				"label": "Post-Mult Color by Alpha",
+				"style": "Toggle",
+				"description": "Multiplies the color by alpha after all other operations have taken place."
+			},
+			{
+				"name": "pointcolorpremult",
+				"label": "Point Color Pre-Multiply",
+				"style": "Menu"
+			},
+			{
+				"name": "depthtest",
+				"label": "Depth Test",
+				"style": "Toggle",
+				"description": "Enables and disables the Depth-Test. If the depth-test is disabled, depths values aren't written to the Depth-Buffer."
+			},
+			{
+				"name": "depthfunc",
+				"label": "Depth Test Function",
+				"style": "Menu",
+				"description": "The depth value of the pixel being drawn is compared to the depth value currently in the depth-buffer using this function. If the test passes then the pixel is drawn to the Buffer. If the test fails t"
+			},
+			{
+				"name": "depthwriting",
+				"label": "Write Depth Values",
+				"style": "Toggle",
+				"description": "If Write Depth Values is on, pixels that pass the depth-test will write their depth value to the Depth-Buffer. If this isn't on then no changes will be made to the Depth-Buffer, regardless of if the p"
+			},
+			{
+				"name": "alphatest",
+				"label": "Discard Pixels Based on Alpha",
+				"style": "Toggle",
+				"description": "This enables or disables the pixel alpha test."
+			},
+			{
+				"name": "alphafunc",
+				"label": "Keep Pixels with Alpha",
+				"style": "Menu",
+				"description": "This menu works in conjunction with the Alpha Threshold parameter below in determining which pixels to keep based on their alpha value."
+			},
+			{
+				"name": "alphathreshold",
+				"label": "Alpha Threshold",
+				"style": "Float",
+				"description": "This value is what the pixel's alpha is compared to to determine if the pixel should be drawn. Pixels with alpha greater than the Alpha Threshold will be drawn. Pixels with alpha less than or equal to"
+			},
+			{
+				"name": "wireframe",
+				"label": "Wire Frame",
+				"style": "Menu",
+				"description": "Enables and disables wire-frame rendering with the option of OpenGL Tesselated or Topology based wireframes."
+			},
+			{
+				"name": "wirewidth",
+				"label": "Line Width",
+				"style": "Float",
+				"description": "This value is the width that the wires will be. This value is in pixels."
+			},
+			{
+				"name": "cullface",
+				"label": "Cull Face",
+				"style": "Menu",
+				"description": "Selects which faces to render."
+			},
+			{
+				"name": "polygonoffset",
+				"label": "Polygon Depth Offset",
+				"style": "Toggle",
+				"description": "Turns on the polygon offset feature."
+			},
+			{
+				"name": "polygonoffsetfactor",
+				"label": "Offset Factor",
+				"style": "Float"
+			},
+			{
+				"name": "polygonoffsetunits",
+				"label": "Offset Units",
+				"style": "Float"
+			},
+			{
+				"name": "pointfarcolorb",
+				"label": "Pointfarcolorb",
+				"style": "RGBA",
+				"description": "Specifies the color value for the Point at the Distance Far plane and beyond (farther from camera)."
+			},
+			{
+				"name": "vecdirattnorm",
+				"label": "Vecdirattnorm",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pointfarcolorg",
+				"label": "Pointfarcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "innersizeatt",
+				"label": "Innersizeatt",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecfaralpha",
+				"label": "Vecfaralpha",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecstartcaptype",
+				"label": "Vecstartcaptype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "blendconstantb",
+				"label": "Blendconstantb",
+				"style": "RGBA"
+			},
+			{
+				"name": "vecnearcolorg",
+				"label": "Vecnearcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "blendconstantg",
+				"label": "Blendconstantg",
+				"style": "RGBA"
+			},
+			{
+				"name": "linefarcolorg",
+				"label": "Linefarcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "linenearcolorr",
+				"label": "Linenearcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "vecfarcolorb",
+				"label": "Vecfarcolorb",
+				"style": "RGBA",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vectaperstrength",
+				"label": "Vectaperstrength",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "linenearcolorb",
+				"label": "Linenearcolorb",
+				"style": "RGBA",
+				"description": "Specifies the color value for the Line at the Distance Near plane and any location closer to camera."
+			},
+			{
+				"name": "vecendcaptype",
+				"label": "Vecendcaptype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "innerhueshift",
+				"label": "Innerhueshift",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pointnearcolorb",
+				"label": "Pointnearcolorb",
+				"style": "RGBA",
+				"description": "Specifies the color value for the Point at the Distance Near plane and any location closer to camera."
+			},
+			{
+				"name": "specifyvecfarcolor",
+				"label": "Specifyvecfarcolor",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "innercolormult",
+				"label": "Innercolormult",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecfarcolorr",
+				"label": "Vecfarcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "vecnearcolorr",
+				"label": "Vecnearcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "linenearcolorg",
+				"label": "Linenearcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "vecdircusattidx",
+				"label": "Vecdircusattidx",
+				"style": "Int",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecnearalpha",
+				"label": "Vecnearalpha",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "veclengatt",
+				"label": "Veclengatt",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecwidthatt",
+				"label": "Vecwidthatt",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "veccoloratt",
+				"label": "Veccoloratt",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecnearcolorb",
+				"label": "Vecnearcolorb",
+				"style": "RGBA",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vecdiratttype",
+				"label": "Vecdiratttype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pointnearcolorg",
+				"label": "Pointnearcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "blendconstantr",
+				"label": "Blendconstantr",
+				"style": "RGBA"
+			},
+			{
+				"name": "linefarcolorr",
+				"label": "Linefarcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "pointfarcolorr",
+				"label": "Pointfarcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "vecfarcolorg",
+				"label": "Vecfarcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "pointnearcolorr",
+				"label": "Pointnearcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "linefarcolorb",
+				"label": "Linefarcolorb",
+				"style": "RGBA",
+				"description": "Specifies the color value for the Line at the Distance Far plane and beyond (farther from camera)."
+			},
+			{
+				"name": "vecdiratt",
+				"label": "Vecdiratt",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

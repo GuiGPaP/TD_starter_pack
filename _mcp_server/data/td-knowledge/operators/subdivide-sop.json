@@ -1,0 +1,90 @@
+{
+	"id": "subdivide-sop",
+	"title": "subdivideSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"subdivide",
+		"sop",
+		"subdividesop",
+		"creases",
+		"iterations",
+		"overridecrease",
+		"creaseweight"
+	],
+	"content": {
+		"summary": "TouchDesigner subdivideSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "subdivideSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "subdivide",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "Subset of input to use as a polygonal mesh to subdivide. Accepts patterns, as described in ."
+			},
+			{
+				"name": "creases",
+				"label": "Creases",
+				"style": "StrMenu",
+				"description": "This field allows you to specify a subset of the second input to use as creases. The elements of the second input specified by the field are used as creases. Each edge in a crease polygon corresponds "
+			},
+			{
+				"name": "iterations",
+				"label": "Depth",
+				"style": "Int",
+				"description": "How many iterations to subdivide. Higher numbers give a smoother surface."
+			},
+			{
+				"name": "overridecrease",
+				"label": "Override Crease Weight Attribute",
+				"style": "Toggle",
+				"description": "Determine if the crease sharpness should be determined by the primitive or vertex attribute or by overridden by this ."
+			},
+			{
+				"name": "creaseweight",
+				"label": "Crease Weight",
+				"style": "Float",
+				"description": "If the crease weight is overriden, this is the weight used."
+			},
+			{
+				"name": "outputcrease",
+				"label": "Generate Resulting Creases",
+				"style": "Toggle",
+				"description": "If any creases are sharper than the , they will be left over in the resulting geometry. With this parameter enabled, these left over creases are created with the appropriate primitive attribute values"
+			},
+			{
+				"name": "outcreasegroup",
+				"label": "New Group",
+				"style": "Str",
+				"description": "Name of the group to place the generated creases into."
+			},
+			{
+				"name": "closeholes",
+				"label": "Close Cracks",
+				"style": "Menu",
+				"description": "Choose how gaps are handled in the output geometry."
+			},
+			{
+				"name": "surroundpoly",
+				"label": "Surrounding Faces",
+				"style": "Menu",
+				"description": "Choose how to handle the polygons on either side of a crack when pulling or stitching it closed."
+			},
+			{
+				"name": "bias",
+				"label": "Bias",
+				"style": "Float",
+				"description": "Determines which points are moved when pulling crack closed."
+			}
+		],
+		"versions": {}
+	}
+}

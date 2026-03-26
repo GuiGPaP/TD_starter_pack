@@ -1,0 +1,24 @@
+{
+	"id": "oak-select",
+	"title": "OAK_Select - Parameters",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"oak_select",
+		"comp"
+	],
+	"content": {
+		"summary": "Active active - When enabled, data from the specified OAK Device CHOP will be retrieved. OAK Device CHOP chop - Reference to the OAK Device CHOP running a depthai pipeline. Stream stream - The name of the stream to be received. Cache Size cachesize - The Cache Size parameter works like the Queue Siz"
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "OAK_Select",
+		"opFamily": "POP",
+		"parameters": [],
+		"versions": {}
+	}
+}

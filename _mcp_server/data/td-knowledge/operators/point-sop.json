@@ -1,0 +1,374 @@
+{
+	"id": "point-sop",
+	"title": "pointSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"point",
+		"sop",
+		"pointsop",
+		"group",
+		"doweight",
+		"weight",
+		"doclr",
+		"alpha"
+	],
+	"content": {
+		"summary": "TouchDesigner pointSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "pointSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "doweight",
+				"label": "Weight",
+				"style": "Menu",
+				"description": "Select between keeping the weight or adding a new weight."
+			},
+			{
+				"name": "weight",
+				"label": "Weight",
+				"style": "Float",
+				"description": "If you select 'New Weight' from the menu above, enter expressions here to control the values of the point weights here. The attribute to modify is: . Values for the weight of the point can range from "
+			},
+			{
+				"name": "doclr",
+				"label": "Color",
+				"style": "Menu",
+				"description": "Select between keeping the color, adding new color, or using no color."
+			},
+			{
+				"name": "alpha",
+				"label": "Alpha",
+				"style": "Float",
+				"description": "Control the alpha attribute in the same manner as the rgb colors above. Alpha is Cd[3] and comes from input via"
+			},
+			{
+				"name": "donml",
+				"label": "Normal",
+				"style": "Menu",
+				"description": "Select between keeping the normals, adding new normals, or using no normals."
+			},
+			{
+				"name": "douvw",
+				"label": "Texture",
+				"style": "Menu",
+				"description": "Select between keeping the texture coordinates, adding new texture coordinates, or using no texture coordinates."
+			},
+			{
+				"name": "dowidth",
+				"label": "Width(Line MAT)",
+				"style": "Menu",
+				"description": "Select between keeping the width attribute or adding a new width. This Width (width) attribute is used exclusively with to control line width when the material is rendered."
+			},
+			{
+				"name": "width",
+				"label": "Width(Line MAT)",
+				"style": "Float",
+				"description": "If you select 'New Width' from the menu above, width attribute will be added/modified in the . Enter expressions here to control the values of the point widths here. The attribute to modify is: ."
+			},
+			{
+				"name": "dopscale",
+				"label": "Scale",
+				"style": "Menu",
+				"description": "Select between keeping the scale attribute, adding new scale, or using no scale. This scale (pscale) attribute is used with the and acts as a multiplier for the size of particles. The value of this at"
+			},
+			{
+				"name": "pscale",
+				"label": "Scale",
+				"style": "Float",
+				"description": "If you select 'Add Scale' from the menu above, pscale attribute will be added/modified in the . Enter expressions here to control the values of the point particle scales here. The attribute to modify "
+			},
+			{
+				"name": "attr",
+				"label": "Custom Attribute",
+				"style": "Sequence",
+				"description": "Sequence of custom attributes to add"
+			},
+			{
+				"name": "attr0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Creates a custom attribute with this name."
+			},
+			{
+				"name": "attr0type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The type of attribute created can be selected from this menu."
+			},
+			{
+				"name": "domass",
+				"label": "Point Mass/Drag",
+				"style": "Menu",
+				"description": "Retains, adds, or removes mass and drag attributes for points."
+			},
+			{
+				"name": "mass",
+				"label": "Mass",
+				"style": "Float",
+				"description": "If you select 'Add Mass/Drag' from the menu above, mass attribute will be added/modified in the . If you select 'No Mass/Drag' from the menu above, the mass attribute will be removed from the ."
+			},
+			{
+				"name": "drag",
+				"label": "Drag",
+				"style": "Float",
+				"description": "If you select 'Add Mass/Drag' from the menu above, drag attribute will be added/modified in the . If you select 'No Mass/Drag' from the menu above, the drag attribute will be removed from the ."
+			},
+			{
+				"name": "dotension",
+				"label": "Tension",
+				"style": "Menu",
+				"description": "Tension affects the elasticity of the edges the point is connected to."
+			},
+			{
+				"name": "tension",
+				"label": "Tension",
+				"style": "Float",
+				"description": "If you select 'Add Tension' from the menu above, tension attribute will be added/modified in the . Enter expressions here to control the values of the tension here. The attribute to modify is: . If yo"
+			},
+			{
+				"name": "dospringk",
+				"label": "Spring K",
+				"style": "Menu",
+				"description": "Retains, adds, or removes spring constant attributes for points. The Spring Constant is a well known physical property affecting each point."
+			},
+			{
+				"name": "springk",
+				"label": "Spring K",
+				"style": "Float",
+				"description": "If you select 'Add Spring K' from the menu above, springk attribute will be added/modified in the . Enter expressions here to control the values of the springk here. The attribute to modify is: . If y"
+			},
+			{
+				"name": "dovel",
+				"label": "Velocity",
+				"style": "Menu",
+				"description": "Retains, adds, or removes the velocity of points. Defines the magnitude of the particle's velocity in the X, Y and Z directions."
+			},
+			{
+				"name": "doup",
+				"label": "Up Vector",
+				"style": "Menu",
+				"description": "Creates/Removes the \"up\" attribute for points. This attribute defines an up vector which is used to fully define the space around a point (for particle instancing or copying geometry). The up vector c"
+			},
+			{
+				"name": "doradius",
+				"label": "Radius",
+				"style": "Menu",
+				"description": "Retains, adds, or removes radiusf attributes for points, used to modify the distance roll-off effect. The roll-off is: Where is radius, and is distance from attractor point. If no radius is set, no at"
+			},
+			{
+				"name": "radiusf",
+				"label": "Radius",
+				"style": "Float",
+				"description": "If you select 'Add Radius' from the menu above, radiusf attribute will be added/modified in the . Enter expressions here to control the values of the distance roll-off here. If you select 'No Radius' "
+			},
+			{
+				"name": "doscale",
+				"label": "F Scale",
+				"style": "Menu",
+				"description": "Retains, adds, or removes scalef attributes for points, a multiplier for total force associated with this attractor point."
+			},
+			{
+				"name": "scalef",
+				"label": "F Scale",
+				"style": "Float",
+				"description": "If you select 'Add F Scale' from the menu above, scalef attribute will be added/modified in the . Enter expressions here to control the values of the force multiplier here. If you select 'No F scale' "
+			},
+			{
+				"name": "doradialf",
+				"label": "Radial F",
+				"style": "Menu",
+				"description": "Retains, adds, or removes radialf attributes for points, the force directed towards the attractor point. Positive multipliers are towards while negative are away."
+			},
+			{
+				"name": "radialf",
+				"label": "Radial F",
+				"style": "Float",
+				"description": "If you select 'Add Radial F' from the menu above, radialf attribute will be added/modified in the . Enter expressions here to control the values of the directed force here. If you select 'No Radial F'"
+			},
+			{
+				"name": "donormalf",
+				"label": "Normal F",
+				"style": "Menu",
+				"description": "Retains, adds, or removes normalf attributes for points, the force directed along the point normal direction."
+			},
+			{
+				"name": "normalf",
+				"label": "Normal F",
+				"style": "Float",
+				"description": "If you select 'Add Normal F' from the menu above, normalf attribute will be added/modified in the . Enter expressions here to control the values of the force in the normal direction here. If you selec"
+			},
+			{
+				"name": "doedgef",
+				"label": "Edge F",
+				"style": "Menu",
+				"description": "Retains, adds, or removes edgef attributes for points, which only works on primitive face types. The force is directed in the direction of the edge leading from that point. If multiple vertices refere"
+			},
+			{
+				"name": "edgef",
+				"label": "Edge F",
+				"style": "Float",
+				"description": "If you select 'Add Edge F' from the menu above, edgef attribute will be added/modified in the . Enter expressions here to control the values of the force in the normal direction here. If you select 'N"
+			},
+			{
+				"name": "dodirf",
+				"label": "Dir. F",
+				"style": "Menu",
+				"description": "Retains, adds, or removes dirf attributes for points, an arbitrary directional force still affected by the distance roll-off function."
+			},
+			{
+				"name": "nz",
+				"label": "Nz",
+				"style": "XYZW",
+				"description": "If you select 'Add Normal' from the menu above, N normal attributes will be added/modified in the SOP. Enter expressions to change a given point normal here. Point normals are directional vectors used"
+			},
+			{
+				"name": "attr0value1",
+				"label": "Attr0Value1",
+				"style": "Float"
+			},
+			{
+				"name": "dirfx",
+				"label": "Dirfx",
+				"style": "XYZW"
+			},
+			{
+				"name": "diffg",
+				"label": "Diffg",
+				"style": "RGBA"
+			},
+			{
+				"name": "nx",
+				"label": "Nx",
+				"style": "XYZW"
+			},
+			{
+				"name": "dirfy",
+				"label": "Dirfy",
+				"style": "XYZW"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "Expressions to translate the XYZ coordinates of a given point can be entered here. The attributes to modify here are: me.inputPoint.x, me.inputPoint.y and me.inputPoint.z.  Simply entering me.inputPoi"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "mapv",
+				"label": "Mapv",
+				"style": "UVW"
+			},
+			{
+				"name": "attr0value4",
+				"label": "Attr0Value4",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ny",
+				"label": "Ny",
+				"style": "XYZW"
+			},
+			{
+				"name": "vy",
+				"label": "Vy",
+				"style": "XYZW"
+			},
+			{
+				"name": "mapw",
+				"label": "Mapw",
+				"style": "UVW",
+				"description": "If you select 'Add Texture' from the menu above, uv texture coordinate attributes will be added/modified in the SOP. Enter expressions here to control the values of the texture coordinates here. The a"
+			},
+			{
+				"name": "dirfz",
+				"label": "Dirfz",
+				"style": "XYZW",
+				"description": "If you select 'Add Dir. F' from the menu above, dirf attribute will be added/modified in the SOP. Enter expressions here to control the values of the force in the arbitrary direction here. If you sele"
+			},
+			{
+				"name": "attr0value3",
+				"label": "Attr0Value3",
+				"style": "Float"
+			},
+			{
+				"name": "mapu",
+				"label": "Mapu",
+				"style": "UVW"
+			},
+			{
+				"name": "upx",
+				"label": "Upx",
+				"style": "XYZW"
+			},
+			{
+				"name": "diffb",
+				"label": "Diffb",
+				"style": "RGBA",
+				"description": "If you select 'Add Color' from the menu above, Cd color attributes will be added/modified in the SOP. Enter expressions below to control the values of the point colors. The attributes to modify are: m"
+			},
+			{
+				"name": "vz",
+				"label": "Vz",
+				"style": "XYZW",
+				"description": "If you select 'Add Velocity' from the menu above, v velocity attributes will be added/modified in the SOP. Enter expressions to change a given point velocity here. The attributes to modify here are: m"
+			},
+			{
+				"name": "vx",
+				"label": "Vx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "attr0value2",
+				"label": "Attr0Value2",
+				"style": "Float"
+			},
+			{
+				"name": "upz",
+				"label": "Upz",
+				"style": "XYZW",
+				"description": "If you select 'Add Up Vector' from the menu above, up attributes will be added/modified in the SOP. Enter expressions to change a given point up vector here. The attributes to modify here are: me.inpu"
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "upy",
+				"label": "Upy",
+				"style": "XYZW"
+			},
+			{
+				"name": "diffr",
+				"label": "Diffr",
+				"style": "RGBA"
+			}
+		],
+		"versions": {}
+	}
+}

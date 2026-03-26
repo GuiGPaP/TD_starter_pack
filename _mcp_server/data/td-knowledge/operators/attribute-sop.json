@@ -1,0 +1,126 @@
+{
+	"id": "attribute-sop",
+	"title": "attributeSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"attribute",
+		"sop",
+		"attributesop",
+		"ptdel",
+		"pt0from",
+		"pt0to",
+		"vertdel"
+	],
+	"content": {
+		"summary": "TouchDesigner attributeSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "attributeSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "ptdel",
+				"label": "Delete Attributes",
+				"style": "StrMenu",
+				"description": "Use the field to specify the point attributes to delete. Simply enter a list of the attributes (separated by spaces) to delete, for example entering: . You can also use the dropdown menu on the right "
+			},
+			{
+				"name": "pt",
+				"label": "Point Rename",
+				"style": "Sequence",
+				"description": "Sequence of point renames"
+			},
+			{
+				"name": "pt0from",
+				"label": "From Attribute",
+				"style": "StrMenu",
+				"description": "Specify the attribute you wish to rename, or select it from the dropdown menu on the right."
+			},
+			{
+				"name": "pt0to",
+				"label": "To Attribute",
+				"style": "Str",
+				"description": "Enter the new name for the attribute here."
+			},
+			{
+				"name": "vertdel",
+				"label": "Delete Attributes",
+				"style": "StrMenu",
+				"description": "Use the field to specify the vertex attributes to delete. Simply enter a list of the attributes (separated by spaces) to delete, for example entering: . You can also use the dropdown menu on the right"
+			},
+			{
+				"name": "vert",
+				"label": "Vertex Rename",
+				"style": "Sequence",
+				"description": "Sequence of vertex renames"
+			},
+			{
+				"name": "vert0from",
+				"label": "From Attribute",
+				"style": "StrMenu",
+				"description": "Specify the attribute you wish to rename, or select it from the dropdown menu on the right."
+			},
+			{
+				"name": "vert0to",
+				"label": "To Attribute",
+				"style": "Str",
+				"description": "Enter the new name for the attribute here."
+			},
+			{
+				"name": "primdel",
+				"label": "Delete Attributes",
+				"style": "StrMenu",
+				"description": "Use the field to specify the primitive attributes to delete. Simply enter a list of the attributes (separated by spaces) to delete, for example entering: . You can also use the dropdown menu on the ri"
+			},
+			{
+				"name": "prim",
+				"label": "Prim Rename",
+				"style": "Sequence",
+				"description": "Sequence of primitive renames"
+			},
+			{
+				"name": "prim0from",
+				"label": "From Attribute",
+				"style": "StrMenu",
+				"description": "Specify the attribute you wish to rename, or select it from the dropdown menu on the right."
+			},
+			{
+				"name": "prim0to",
+				"label": "To Attribute",
+				"style": "Str",
+				"description": "Enter the new name for the attribute here."
+			},
+			{
+				"name": "attrdel",
+				"label": "Delete Attributes",
+				"style": "StrMenu",
+				"description": "Use the field to specify the detail attributes to delete. Simply enter a list of the attributes (separated by spaces) to delete. You can also use the dropdown menu on the right to select them."
+			},
+			{
+				"name": "attr",
+				"label": "Detail Rename",
+				"style": "Sequence",
+				"description": "Sequence of detail renames"
+			},
+			{
+				"name": "attr0from",
+				"label": "From Attribute",
+				"style": "StrMenu",
+				"description": "Specify the attribute you wish to rename, or select it from the dropdown menu on the right."
+			},
+			{
+				"name": "attr0to",
+				"label": "To Attribute",
+				"style": "Str",
+				"description": "Enter the new name for the attribute here."
+			}
+		],
+		"versions": {}
+	}
+}

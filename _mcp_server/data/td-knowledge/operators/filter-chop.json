@@ -14,7 +14,7 @@
 		"spike"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner filterCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

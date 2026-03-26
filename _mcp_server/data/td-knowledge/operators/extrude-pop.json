@@ -1,0 +1,97 @@
+{
+	"id": "extrude-pop",
+	"title": "extrudePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"extrude",
+		"pop",
+		"extrudepop",
+		"group",
+		"distance",
+		"usedistanceattr",
+		"distanceattr",
+		"inset"
+	],
+	"content": {
+		"summary": "TouchDesigner extrudePOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "extrudePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified."
+			},
+			{
+				"name": "distance",
+				"label": "Distance",
+				"style": "Float",
+				"description": "Sets the distance to extrude"
+			},
+			{
+				"name": "usedistanceattr",
+				"label": "Use Distance Attribute",
+				"style": "Toggle",
+				"description": "Enables extrusion distance to be driven by an attribute."
+			},
+			{
+				"name": "distanceattr",
+				"label": "Distance Attribute",
+				"style": "StrMenu",
+				"description": "The attribute to use to set the extrude distance."
+			},
+			{
+				"name": "inset",
+				"label": "Inset",
+				"style": "Float",
+				"description": "Applies a scaling factor to extruded geometry."
+			},
+			{
+				"name": "keepconnected",
+				"label": "Keep Faces Connected",
+				"style": "Toggle",
+				"description": "When on, faces are extruded as a group instead of individually. Useful in particular when extruding an input group."
+			},
+			{
+				"name": "maxprimsperpoint",
+				"label": "Max Primitives per Point",
+				"style": "Int",
+				"description": "Used to allocate temporary storage when Keep Faces Connected is on, it should be set to the maximum number a primitives a point can be a part of in the input geometry."
+			},
+			{
+				"name": "cpureadback",
+				"label": "Copy Topology Info Back to CPU",
+				"style": "Toggle",
+				"description": "Enable copying the point count and topology information held on the to the CPU."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

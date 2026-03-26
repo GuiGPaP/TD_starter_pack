@@ -14,7 +14,7 @@
 		"numsteps"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner patternCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

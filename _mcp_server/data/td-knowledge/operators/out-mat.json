@@ -1,0 +1,243 @@
+{
+	"id": "out-mat",
+	"title": "outMAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"out",
+		"mat",
+		"outmat",
+		"label",
+		"dodeform",
+		"deformdata",
+		"targetsop",
+		"pcaptpath"
+	],
+	"content": {
+		"summary": "TouchDesigner outMAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "outMAT",
+		"opFamily": "MAT",
+		"parameters": [
+			{
+				"name": "label",
+				"label": "Label",
+				"style": "Str",
+				"description": "Creates a pop-up label when the cursor rolls over this output."
+			},
+			{
+				"name": "dodeform",
+				"label": "Deform",
+				"style": "Toggle",
+				"description": "Enables deforms on this material."
+			},
+			{
+				"name": "deformdata",
+				"label": "Get Bone Data:",
+				"style": "Menu",
+				"description": "Specifies where the deform bone data will be obtained."
+			},
+			{
+				"name": "targetsop",
+				"label": "SOP with Capture Data",
+				"style": "OP",
+				"description": "Specifies the that contains the deform capture attributes."
+			},
+			{
+				"name": "pcaptpath",
+				"label": "pCaptPath Attrib",
+				"style": "Str",
+				"description": "Specifies the name of the pCaptPath attribute to use. When your geometry has been put through a , the attributes will be split into names like pCaptPath0, pCaptPath1. You can only render 1 bone group "
+			},
+			{
+				"name": "pcaptdata",
+				"label": "pCaptData Attrib",
+				"style": "Str",
+				"description": "Much like pCaptPath Attrib."
+			},
+			{
+				"name": "skelrootpath",
+				"label": "Skeleton Root Path",
+				"style": "Object",
+				"description": "Specifies the path to the where the root of the skeleton is located."
+			},
+			{
+				"name": "mat",
+				"label": "MAT",
+				"style": "MAT",
+				"description": "When obtaining deform data from a or a Deform In , this is where that is specified."
+			},
+			{
+				"name": "blending",
+				"label": "Blending (Transparency)",
+				"style": "Toggle",
+				"description": "This toggle enables and disables blending. However see the wiki article ."
+			},
+			{
+				"name": "blendop",
+				"label": "Blend Operation",
+				"style": "Menu"
+			},
+			{
+				"name": "srcblend",
+				"label": "Source Color *",
+				"style": "Menu",
+				"description": "This value is multiplied by the color value of the pixel that is being written to the Color-Buffer (also know as the Source Color)."
+			},
+			{
+				"name": "destblend",
+				"label": "Destination Color *",
+				"style": "Menu",
+				"description": "This value is multiplied by the color value of the pixel currently in the Color-Buffer (also known as the Destination Color)."
+			},
+			{
+				"name": "separatealphafunc",
+				"label": "Separate Alpha Function",
+				"style": "Toggle",
+				"description": "This toggle enables and disables separate blending options for the alpha values."
+			},
+			{
+				"name": "blendopa",
+				"label": "Alpha Blend Operation",
+				"style": "Menu"
+			},
+			{
+				"name": "srcblenda",
+				"label": "Source Alpha *",
+				"style": "Menu",
+				"description": "This value is multiplied by the alpha value of the pixel that is being written to the Color-Buffer (also know as the Source Alpha)."
+			},
+			{
+				"name": "destblenda",
+				"label": "Destination Alpha *",
+				"style": "Menu",
+				"description": "This value is multiplied by the alpha value of the pixel currently in the Color-Buffer (also known as the Destination Alpha)."
+			},
+			{
+				"name": "blendconstanta",
+				"label": "Blend Constant Alpha",
+				"style": "Float"
+			},
+			{
+				"name": "legacyalphabehavior",
+				"label": "Legacy Alpha Behavior",
+				"style": "Toggle"
+			},
+			{
+				"name": "postmultalpha",
+				"label": "Post-Mult Color by Alpha",
+				"style": "Toggle",
+				"description": "Multiplies the color by alpha after all other operations have taken place."
+			},
+			{
+				"name": "pointcolorpremult",
+				"label": "Point Color Pre-Multiply",
+				"style": "Menu"
+			},
+			{
+				"name": "depthtest",
+				"label": "Depth Test",
+				"style": "Toggle",
+				"description": "Enables and disables the Depth-Test. If the depth-test is disabled, depths values aren't written to the Depth-Buffer."
+			},
+			{
+				"name": "depthfunc",
+				"label": "Depth Test Function",
+				"style": "Menu",
+				"description": "The depth value of the pixel being drawn is compared to the depth value currently in the depth-buffer using this function. If the test passes then the pixel is drawn to the Buffer. If the test fails t"
+			},
+			{
+				"name": "depthwriting",
+				"label": "Write Depth Values",
+				"style": "Toggle",
+				"description": "If Write Depth Values is on, pixels that pass the depth-test will write their depth value to the Depth-Buffer. If this isn't on then no changes will be made to the Depth-Buffer, regardless of if the p"
+			},
+			{
+				"name": "alphatest",
+				"label": "Discard Pixels Based on Alpha",
+				"style": "Toggle",
+				"description": "This enables or disables the pixel alpha test."
+			},
+			{
+				"name": "alphafunc",
+				"label": "Keep Pixels with Alpha",
+				"style": "Menu",
+				"description": "This menu works in conjunction with the Alpha Threshold parameter below in determining which pixels to keep based on their alpha value."
+			},
+			{
+				"name": "alphathreshold",
+				"label": "Alpha Threshold",
+				"style": "Float",
+				"description": "This value is what the pixel's alpha is compared to to determine if the pixel should be drawn. Pixels with alpha greater than the Alpha Threshold will be drawn. Pixels with alpha less than or equal to"
+			},
+			{
+				"name": "wireframe",
+				"label": "Wire Frame",
+				"style": "Menu",
+				"description": "Enables and disables wire-frame rendering with the option of OpenGL Tesselated or Topology based wireframes."
+			},
+			{
+				"name": "wirewidth",
+				"label": "Line Width",
+				"style": "Float",
+				"description": "This value is the width that the wires will be. This value is in pixels."
+			},
+			{
+				"name": "cullface",
+				"label": "Cull Face",
+				"style": "Menu",
+				"description": "Selects which faces to render."
+			},
+			{
+				"name": "polygonoffset",
+				"label": "Polygon Depth Offset",
+				"style": "Toggle",
+				"description": "Turns on the polygon offset feature."
+			},
+			{
+				"name": "polygonoffsetfactor",
+				"label": "Offset Factor",
+				"style": "Float"
+			},
+			{
+				"name": "polygonoffsetunits",
+				"label": "Offset Units",
+				"style": "Float"
+			},
+			{
+				"name": "selectmat",
+				"label": "Selectmat",
+				"style": "MAT",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "connectorder",
+				"label": "Connectorder",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "blendconstantb",
+				"label": "Blendconstantb",
+				"style": "RGBA"
+			},
+			{
+				"name": "blendconstantr",
+				"label": "Blendconstantr",
+				"style": "RGBA"
+			},
+			{
+				"name": "blendconstantg",
+				"label": "Blendconstantg",
+				"style": "RGBA"
+			}
+		],
+		"versions": {}
+	}
+}

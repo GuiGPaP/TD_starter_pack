@@ -13,7 +13,7 @@
 		"level"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner examineDAT operator."
 	},
 	"provenance": {
 		"source": "td-docs",

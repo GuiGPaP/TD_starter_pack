@@ -13,7 +13,7 @@
 		"rownamestart"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner selectDAT operator."
 	},
 	"provenance": {
 		"source": "td-docs",

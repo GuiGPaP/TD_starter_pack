@@ -1,0 +1,136 @@
+{
+	"id": "rails-sop",
+	"title": "railsSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"rails",
+		"sop",
+		"railssop",
+		"xsectgrp",
+		"railgrp",
+		"cycle",
+		"pairs",
+		"firstl"
+	],
+	"content": {
+		"summary": "TouchDesigner railsSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "railsSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "xsectgrp",
+				"label": "X-Section Groups",
+				"style": "StrMenu",
+				"description": "You can use a subset of primitives from the Cross-section input by specifying a group here. Accepts patterns, as described in ."
+			},
+			{
+				"name": "railgrp",
+				"label": "Rail Groups",
+				"style": "StrMenu",
+				"description": "You can use a subset of primitives from the Rails input by specifying a group here. Accepts patterns, as described in ."
+			},
+			{
+				"name": "cycle",
+				"label": "Cycle Type",
+				"style": "Menu",
+				"description": "Select how the cross=section is applied along the rails."
+			},
+			{
+				"name": "pairs",
+				"label": "Sweep along Pairs of Rails",
+				"style": "Toggle",
+				"description": "Sweeps along rail 1 & 2, 3 & 4, 5 & 6 etc. instead of 1 & 2, 2 & 3, 3 & 4 etc."
+			},
+			{
+				"name": "firstl",
+				"label": "Sweep along First and Last Rail",
+				"style": "Toggle",
+				"description": "Connects the cross-section between the first and last rails."
+			},
+			{
+				"name": "stretch",
+				"label": "Stretch to Rails",
+				"style": "Toggle",
+				"description": "Stretches the cross-section geometry to the rail geometry."
+			},
+			{
+				"name": "usevtx",
+				"label": "Use Vertex",
+				"style": "Toggle",
+				"description": "Specifies two vertices of the cross section polygon to be placed on rail1 and rail2 respectively. Very useful, for instance, to keep the first vertex on rail1 and the seventh vertex on rail2."
+			},
+			{
+				"name": "scale",
+				"label": "Scale",
+				"style": "Float",
+				"description": "Global scaling of the cross-sections."
+			},
+			{
+				"name": "roll",
+				"label": "Roll",
+				"style": "Float",
+				"description": "Non-cumulative rotation of the cross sections around the backbone. All cross sections get the same rotation."
+			},
+			{
+				"name": "noflip",
+				"label": "Fix Flipping",
+				"style": "Toggle",
+				"description": "Option to correct the flipping when no direction vector is used and the two rails happen to cross each other causing the normal to flip upside down."
+			},
+			{
+				"name": "usedir",
+				"label": "Use Direction",
+				"style": "Toggle",
+				"description": "Uses the direction vector specified in the X, Y and Z coordinates. Otherwise it will use the normals of the geometry."
+			},
+			{
+				"name": "newg",
+				"label": "Create Output Groups",
+				"style": "Toggle",
+				"description": "Selecting this option enables the creation of groups. A group is created for each backbone that is incoming. This allows for easy skinning in the ."
+			},
+			{
+				"name": "railname",
+				"label": "Group Name",
+				"style": "Str",
+				"description": "Specify the name of your output groups in this field. Accepts patterns, as described in ."
+			},
+			{
+				"name": "dirz",
+				"label": "Dirz",
+				"style": "XYZW",
+				"description": "The direction vector to use."
+			},
+			{
+				"name": "vertex1",
+				"label": "Vertex1",
+				"style": "Int"
+			},
+			{
+				"name": "dirx",
+				"label": "Dirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "vertex2",
+				"label": "Vertex2",
+				"style": "Int",
+				"description": "The vertices at which the cross-section is connected to the rails."
+			},
+			{
+				"name": "diry",
+				"label": "Diry",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

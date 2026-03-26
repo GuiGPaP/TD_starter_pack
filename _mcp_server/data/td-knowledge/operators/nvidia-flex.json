@@ -1,0 +1,24 @@
+{
+	"id": "nvidia-flex",
+	"title": "NVIDIA_Flex - Parameters",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"nvidia_flex",
+		"comp"
+	],
+	"content": {
+		"summary": "Actor COMP comp - The Actor COMP to grab simulation data from. Output output- - The simulation data to return. Positionposition - Will return the position of each particle in the Actor COMPVelocityvelocity - Will return the velocity of each particle in the Actor COMP"
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "NVIDIA_Flex",
+		"opFamily": "TOP",
+		"parameters": [],
+		"versions": {}
+	}
+}

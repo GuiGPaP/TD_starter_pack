@@ -14,7 +14,7 @@
 		"includewired"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner opfindDAT operator."
 	},
 	"provenance": {
 		"source": "td-docs",

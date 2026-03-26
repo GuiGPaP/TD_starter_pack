@@ -11,7 +11,7 @@
 		"source"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner pangolinCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

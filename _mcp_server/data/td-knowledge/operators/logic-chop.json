@@ -14,7 +14,7 @@
 		"match"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner logicCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

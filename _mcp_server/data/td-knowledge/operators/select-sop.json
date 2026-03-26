@@ -10,7 +10,7 @@
 		"sops"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner selectSOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

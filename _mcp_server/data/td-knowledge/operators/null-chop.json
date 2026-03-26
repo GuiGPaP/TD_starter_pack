@@ -14,7 +14,7 @@
 		"timeslice"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner nullCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -1,0 +1,471 @@
+{
+	"id": "glsl-pop",
+	"title": "glslPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"glsl",
+		"pop",
+		"glslpop",
+		"computedat",
+		"attrclass",
+		"numthreadsmode",
+		"threadsinput",
+		"numelems"
+	],
+	"content": {
+		"summary": "TouchDesigner glslPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "glslPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "computedat",
+				"label": "Compute Shader",
+				"style": "DAT",
+				"description": "Points to the holding the Compute . Drag & Drop a here, or manually enter the path to the ."
+			},
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "numthreadsmode",
+				"label": "Number of Threads",
+				"style": "Menu",
+				"description": "Selects how to set the number of threads for the custom compute shader dispatch."
+			},
+			{
+				"name": "threadsinput",
+				"label": "Threads Input",
+				"style": "Int",
+				"description": "Determines the input index that contains the number of elements."
+			},
+			{
+				"name": "numelems",
+				"label": "Number of Elements",
+				"style": "Int"
+			},
+			{
+				"name": "numelemspop",
+				"label": "POP",
+				"style": "POP",
+				"description": "reference when setting the number of elements from an attribute."
+			},
+			{
+				"name": "numelemsclass",
+				"label": "Num Elements Attrib",
+				"style": "Menu",
+				"description": "Sets the attribute class where the number of elements can be found."
+			},
+			{
+				"name": "outputattrs",
+				"label": "Output Attributes",
+				"style": "StrMenu",
+				"description": "The list of input attributes that will be allocated and can be written to."
+			},
+			{
+				"name": "outputaccess",
+				"label": "Output Access",
+				"style": "Menu",
+				"description": "Controls whether the attribute buffers can only be read from or read from and written to."
+			},
+			{
+				"name": "initoutputattrs",
+				"label": "Initialize Output Attributes",
+				"style": "Toggle",
+				"description": "Copy input attributes values for existing attributes, set the attributes values to their defaults for new attributes. It's a separate compute shader dispatch happening before the custom compute shader"
+			},
+			{
+				"name": "prevpassoutput",
+				"label": "Copy Previous Pass Output to Input",
+				"style": "Toggle",
+				"description": "Enable copying the previous pass outputs to the next pass inputs."
+			},
+			{
+				"name": "input",
+				"label": "Input",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks managing the inputs of the ."
+			},
+			{
+				"name": "input0pops",
+				"label": "In POPs",
+				"style": "POP",
+				"description": "Allows to specify additional input POPs besides connected POPs."
+			},
+			{
+				"name": "simplexnoise",
+				"label": "TDSimplexNoise()",
+				"style": "Menu",
+				"description": "Sets the implementation to use for a simplex noise method that can be called in the shader."
+			},
+			{
+				"name": "attr",
+				"label": "New Attribute",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks to create new attributes."
+			},
+			{
+				"name": "attr0name",
+				"label": "New Attribute Name",
+				"style": "Menu",
+				"description": "Choose to create a predefined attribute or a custom attribute."
+			},
+			{
+				"name": "attr0type",
+				"label": "New Attribute Type",
+				"style": "Menu",
+				"description": "Determines the type."
+			},
+			{
+				"name": "attr0isarray",
+				"label": "Array",
+				"style": "Toggle",
+				"description": "Attribute is an array, for example 5 float3 values is an array of size 5."
+			},
+			{
+				"name": "attr0arraysize",
+				"label": "Array Size",
+				"style": "Int",
+				"description": "Array Size of the new attribute."
+			},
+			{
+				"name": "matattr",
+				"label": "Matrix Attribute",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks to create new matrix attributes."
+			},
+			{
+				"name": "matattr0name",
+				"label": "Custom Matrix Name",
+				"style": "Str",
+				"description": "Determines the new matrix attribute name."
+			},
+			{
+				"name": "matattr0numrows",
+				"label": "Rows",
+				"style": "Int",
+				"description": "Number of rows in the matrix - 2, 3 or 4."
+			},
+			{
+				"name": "matattr0numcols",
+				"label": "Columns",
+				"style": "Int",
+				"description": "Number of columns in the matrix - 2, 3 or 4."
+			},
+			{
+				"name": "matattr0isarray",
+				"label": "Array",
+				"style": "Toggle",
+				"description": "Attribute is an array, for example 5 float3 values is an array of size 5."
+			},
+			{
+				"name": "matattr0arraysize",
+				"label": "Array Size",
+				"style": "Int",
+				"description": "Nunber of elements in the array of matrices."
+			},
+			{
+				"name": "matattr0qualifier",
+				"label": "Qualifier",
+				"style": "Menu",
+				"description": "Additional detail on how the attribute should be interpreted."
+			},
+			{
+				"name": "color",
+				"label": "Color",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for color uniforms."
+			},
+			{
+				"name": "color0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the color uniform."
+			},
+			{
+				"name": "color0alpha",
+				"label": "Alpha",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec",
+				"label": "Vector",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks to define uniform variables."
+			},
+			{
+				"name": "vec0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the vector uniform."
+			},
+			{
+				"name": "vec0type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The number of components for the array."
+			},
+			{
+				"name": "sampler",
+				"label": "Sampler",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for Samplers to read from the shader."
+			},
+			{
+				"name": "sampler0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the sampler uniform."
+			},
+			{
+				"name": "sampler0top",
+				"label": "TOP",
+				"style": "TOP",
+				"description": "Sets reference to a to sample."
+			},
+			{
+				"name": "sampler0extendu",
+				"label": "Extend U",
+				"style": "Menu",
+				"description": "Controls what is returned from the texture sampling functions when the U texture coordinates are outside [0-1] range."
+			},
+			{
+				"name": "sampler0extendv",
+				"label": "Extend V",
+				"style": "Menu",
+				"description": "Controls what is returned from the texture sampling functions when the V texture coordinates are outside [0-1] range."
+			},
+			{
+				"name": "sampler0extendw",
+				"label": "Extend W",
+				"style": "Menu",
+				"description": "Controls what is returned from the texture sampling functions when the W texture coordinates are outside [0-1] range."
+			},
+			{
+				"name": "sampler0filter",
+				"label": "Filter",
+				"style": "Menu",
+				"description": "Controls the pixel filtering on the input image of the ."
+			},
+			{
+				"name": "array",
+				"label": "Array",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for array uniforms."
+			},
+			{
+				"name": "array0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the array uniform."
+			},
+			{
+				"name": "array0type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The number of components for the array."
+			},
+			{
+				"name": "array0chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "The for the current uniform."
+			},
+			{
+				"name": "matrix",
+				"label": "Matrix",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks of matrix uniforms."
+			},
+			{
+				"name": "matrix0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the matrix uniform."
+			},
+			{
+				"name": "matrix0value",
+				"label": "Matrix",
+				"style": "CHOP",
+				"description": "Sets a reference to a matrix to pass to the shader."
+			},
+			{
+				"name": "tempbuffer",
+				"label": "Temp Buffer",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks forTemporary buffers used to pass information to the shader as uniforms."
+			},
+			{
+				"name": "tempbuffer0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the temporary buffer."
+			},
+			{
+				"name": "tempbuffer0initval",
+				"label": "Initial Value",
+				"style": "Int",
+				"description": "Initial value for the current temporary buffer."
+			},
+			{
+				"name": "const",
+				"label": "Constant",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for Specialization Constants."
+			},
+			{
+				"name": "const0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "The name of the constant."
+			},
+			{
+				"name": "const0value",
+				"label": "Value",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "numelemsattr",
+				"label": "Numelemsattr",
+				"style": "StrMenu"
+			},
+			{
+				"name": "color0rgbr",
+				"label": "Color0Rgbr",
+				"style": "RGBA"
+			},
+			{
+				"name": "attr0value1",
+				"label": "Attr0Value1",
+				"style": "Float"
+			},
+			{
+				"name": "workgroupsizex",
+				"label": "Workgroupsizex",
+				"style": "Int"
+			},
+			{
+				"name": "workgroupsizez",
+				"label": "Workgroupsizez",
+				"style": "Int"
+			},
+			{
+				"name": "vec0valuey",
+				"label": "Vec0Valuey",
+				"style": "XYZW"
+			},
+			{
+				"name": "attr0value3",
+				"label": "Attr0Value3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "color0rgbb",
+				"label": "Color0Rgbb",
+				"style": "RGBA",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "dispatchsizey",
+				"label": "Dispatchsizey",
+				"style": "Int"
+			},
+			{
+				"name": "vec0valuez",
+				"label": "Vec0Valuez",
+				"style": "XYZW"
+			},
+			{
+				"name": "color0rgbg",
+				"label": "Color0Rgbg",
+				"style": "RGBA"
+			},
+			{
+				"name": "attr0value2",
+				"label": "Attr0Value2",
+				"style": "Float"
+			},
+			{
+				"name": "attr0numcomps",
+				"label": "Attr0Numcomps",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attr0customname",
+				"label": "Attr0Customname",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "dispatchsizex",
+				"label": "Dispatchsizex",
+				"style": "Int"
+			},
+			{
+				"name": "dispatchsizez",
+				"label": "Dispatchsizez",
+				"style": "Int"
+			},
+			{
+				"name": "vec0valuex",
+				"label": "Vec0Valuex",
+				"style": "XYZW"
+			},
+			{
+				"name": "attr0value0",
+				"label": "Attr0Value0",
+				"style": "Float"
+			},
+			{
+				"name": "vec0valuew",
+				"label": "Vec0Valuew",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "workgroupsizey",
+				"label": "Workgroupsizey",
+				"style": "Int"
+			}
+		],
+		"versions": {}
+	}
+}

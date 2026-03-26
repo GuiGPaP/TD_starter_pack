@@ -14,7 +14,7 @@
 		"srselect"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner renameCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

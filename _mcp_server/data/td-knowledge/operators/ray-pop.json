@@ -14,7 +14,7 @@
 		"limitraylength"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner rayPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

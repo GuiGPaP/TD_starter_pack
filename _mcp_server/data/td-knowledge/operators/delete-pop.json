@@ -14,7 +14,7 @@
 		"attr"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner deletePOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

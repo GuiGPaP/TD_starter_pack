@@ -14,7 +14,7 @@
 		"mintrigger"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner triggerCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

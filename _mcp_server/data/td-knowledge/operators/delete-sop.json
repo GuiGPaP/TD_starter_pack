@@ -1,0 +1,191 @@
+{
+	"id": "delete-sop",
+	"title": "deleteSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"delete",
+		"sop",
+		"deletesop",
+		"group",
+		"negate",
+		"entity",
+		"geotype",
+		"usenumber"
+	],
+	"content": {
+		"summary": "TouchDesigner deleteSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "deleteSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "The name of the group to be created. The default name is set to match the name of the ."
+			},
+			{
+				"name": "negate",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Choose to Delete the Selected Geometry or Delete the Non-Selected ."
+			},
+			{
+				"name": "entity",
+				"label": "Entity",
+				"style": "Menu",
+				"description": "Choose to delete primitives or points."
+			},
+			{
+				"name": "geotype",
+				"label": "Geometry Type",
+				"style": "Menu",
+				"description": "Select the geometry type group. The selection will only pertain to the geometry type specified. e.g. If you only wanted to group polygons."
+			},
+			{
+				"name": "usenumber",
+				"label": "Use Number",
+				"style": "Toggle",
+				"description": "When the Enable button is checked under the Number button, the selection options become active and can be used to select entities. The fields available are listed below."
+			},
+			{
+				"name": "groupop",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "When the Number Enable button is checked, this option groups entities based on a defined Pattern or by a Range."
+			},
+			{
+				"name": "pattern",
+				"label": "Pattern",
+				"style": "Str",
+				"description": "Activated when Operation is set to by Pattern. In this field, enter the range of primitives to select. The required syntax is \" \", where is the index of the parent surface, and the profile index on th"
+			},
+			{
+				"name": "filter",
+				"label": "Filter Expression",
+				"style": "Int",
+				"description": "The Filter provided is evaluated for every point/primitive. Wherever it is true, the entity is added to the selection."
+			},
+			{
+				"name": "usebounds",
+				"label": "Use Bounds",
+				"style": "Toggle",
+				"description": "When the Enable button is checked under the Bounding button, the selection options become active and can be used to select entities. The fields available are listed below. The bounding volume can be s"
+			},
+			{
+				"name": "boundtype",
+				"label": "Bounding Type",
+				"style": "Menu",
+				"description": "Selects the type of bounding volume to use:"
+			},
+			{
+				"name": "usenormal",
+				"label": "Use Normal",
+				"style": "Toggle",
+				"description": "When the Enable button is checked under the Normal button, the selection options become active and can be used to select entities. The fields available are listed below."
+			},
+			{
+				"name": "angle",
+				"label": "Spread Angle",
+				"style": "Float",
+				"description": "The value entered in this field generates an angle of deviation from the primary axis. This can be visualized as a cone where the radius of the base of the cone is defined by the Spread Angle and the "
+			},
+			{
+				"name": "camera",
+				"label": "Backface from",
+				"style": "Object",
+				"description": "This menu allows you to select an object. Typically, a camera object would be chosen. The primitives which are backface when viewed from the object specified will be grouped or selected."
+			},
+			{
+				"name": "removegrp",
+				"label": "Delete Unused Groups",
+				"style": "Toggle",
+				"description": "If any group has 0 entries and if this parameter is enabled, then those groups are removed. If you want to keep empty groups, disable this parameter."
+			},
+			{
+				"name": "keeppoints",
+				"label": "Delete Geometry, Keep Points",
+				"style": "Toggle",
+				"description": "Deletes the geometry but keeps the points."
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "The X, Y, and Z coordinates of the center of the bounding volume."
+			},
+			{
+				"name": "rangeend",
+				"label": "Rangeend",
+				"style": "Int",
+				"description": "Activated when Operation is set to Group by Range. Select the start and end of the primitive/point number selection."
+			},
+			{
+				"name": "dirz",
+				"label": "Dirz",
+				"style": "XYZW",
+				"description": "The default values of 0, 1, 0 create a normal vector straight up in Y, which is perpendicular to the XZ plane, which becomes the primary axis. The 1, 0, 0 points the normal in positive X, giving a nor"
+			},
+			{
+				"name": "sizez",
+				"label": "Sizez",
+				"style": "XYZW",
+				"description": "Dimensions of either the Bounding Box or Bounding Sphere in X, Y and Z."
+			},
+			{
+				"name": "select2",
+				"label": "Select2",
+				"style": "Int",
+				"description": "Activated when Operation is set to Group by Range. Select every nth occurrence of every mth entity in the above Start/End range.  For example; entering 1 and 2 selects 1 out of every 2 entities"
+			},
+			{
+				"name": "rangestart",
+				"label": "Rangestart",
+				"style": "Int"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "select1",
+				"label": "Select1",
+				"style": "Int"
+			},
+			{
+				"name": "dirx",
+				"label": "Dirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizex",
+				"label": "Sizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizey",
+				"label": "Sizey",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "diry",
+				"label": "Diry",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

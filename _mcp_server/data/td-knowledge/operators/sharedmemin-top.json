@@ -1,0 +1,40 @@
+{
+	"id": "sharedmemin-top",
+	"title": "sharedmeminTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sharedmemin",
+		"top",
+		"sharedmemintop",
+		"name",
+		"memtype"
+	],
+	"content": {
+		"summary": "TouchDesigner sharedmeminTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "sharedmeminTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "name",
+				"label": "Shared Mem Name",
+				"style": "Str",
+				"description": "The name of the memory block it reads from."
+			},
+			{
+				"name": "memtype",
+				"label": "Shared Mem Type",
+				"style": "Menu",
+				"description": "Reads from a or a memory location."
+			}
+		],
+		"versions": {}
+	}
+}

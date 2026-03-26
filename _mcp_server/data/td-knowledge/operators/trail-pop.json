@@ -13,7 +13,7 @@
 		"reset"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner trailPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -1,0 +1,54 @@
+{
+	"id": "filein-sop",
+	"title": "fileinSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"filein",
+		"sop",
+		"fileinsop",
+		"file",
+		"flipfacing",
+		"normals",
+		"refresh"
+	],
+	"content": {
+		"summary": "TouchDesigner fileinSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fileinSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "Geometry File",
+				"style": "File",
+				"description": "Contains the full pathname of the geometry file to be read in."
+			},
+			{
+				"name": "flipfacing",
+				"label": "Flip Primitive Faces",
+				"style": "Toggle",
+				"description": "Flips the primitive faces of the geometry."
+			},
+			{
+				"name": "normals",
+				"label": "Compute Normals if None Exist",
+				"style": "Toggle",
+				"description": "Creates normals if the geometry does not have them."
+			},
+			{
+				"name": "refresh",
+				"label": "Refresh",
+				"style": "Toggle",
+				"description": "Reload the file when this parameter is set to On."
+			}
+		],
+		"versions": {}
+	}
+}

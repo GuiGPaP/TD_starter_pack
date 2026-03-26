@@ -1,0 +1,172 @@
+{
+	"id": "box-sop",
+	"title": "boxSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"box",
+		"sop",
+		"boxsop",
+		"orientbounds",
+		"modifybounds",
+		"rord",
+		"reverseanchors"
+	],
+	"content": {
+		"summary": "TouchDesigner boxSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "boxSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "orientbounds",
+				"label": "Orient Bounds",
+				"style": "Toggle",
+				"description": "Available only when an input is connected to the Box to set bounds for the box. When Orient Bounds = On it will rotate the geometry to match the orientation of the input used for bounds."
+			},
+			{
+				"name": "modifybounds",
+				"label": "Modify Bounds",
+				"style": "Toggle",
+				"description": "Available only when an input is connected to the Box to set bounds for the box. When Modify Bounds = On to enable the transform parameters below to further modify the position and scale of the bounds."
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Sets the order in which the rotations are applied."
+			},
+			{
+				"name": "s",
+				"label": "Scale",
+				"style": "Float",
+				"description": "Adjusts the uniform scale of the box."
+			},
+			{
+				"name": "reverseanchors",
+				"label": "Reverse Anchors",
+				"style": "Toggle",
+				"description": "Invert the direction of anchors."
+			},
+			{
+				"name": "anchoru",
+				"label": "Anchor U",
+				"style": "Float",
+				"description": "Set the point in X about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "anchorv",
+				"label": "Anchor V",
+				"style": "Float",
+				"description": "Set the point in Y about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "anchorw",
+				"label": "Anchor W",
+				"style": "Float",
+				"description": "Set the point in Z about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "dodivs",
+				"label": "Use Divisions",
+				"style": "Toggle",
+				"description": "If checked, it divides the box into the number of Divisions specified below. Boxes divided in this way do not appear when rendered because the Divisions consist of open polygons."
+			},
+			{
+				"name": "rebar",
+				"label": "Enforcement Bars",
+				"style": "Toggle",
+				"description": "Places four diagonal crossbars in each division of the Box."
+			},
+			{
+				"name": "consolidatepts",
+				"label": "Consolidate Corner Points",
+				"style": "Toggle",
+				"description": "Merges the corner points together.  Instead of the box being composed of 6 separate faces (resulting in 4 points per corner and a total of 24 points), the corner points are merged together and the box"
+			},
+			{
+				"name": "texture",
+				"label": "Texture Coordinates",
+				"style": "Menu",
+				"description": "Determines how the texture coordinates are applied to the box."
+			},
+			{
+				"name": "normals",
+				"label": "Compute Normals",
+				"style": "Toggle",
+				"description": "Checking this option on will compute surface normals."
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "These X,Y, and Z Values determine where the center of the Box is located."
+			},
+			{
+				"name": "divsx",
+				"label": "Divsx",
+				"style": "Int"
+			},
+			{
+				"name": "divsy",
+				"label": "Divsy",
+				"style": "Int"
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizez",
+				"label": "Sizez",
+				"style": "XYZW",
+				"description": "Size of the Box or Cube along the X, Y, and Z axes."
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "These three fields rotate the Box along the X, Y, and Z axes."
+			},
+			{
+				"name": "divsz",
+				"label": "Divsz",
+				"style": "Int",
+				"description": "The number of divisions in X, Y, and Z to split this Box into."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizex",
+				"label": "Sizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizey",
+				"label": "Sizey",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

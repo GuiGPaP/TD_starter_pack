@@ -13,7 +13,7 @@
 		"specdat"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner textTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

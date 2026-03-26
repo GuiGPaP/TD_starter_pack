@@ -14,7 +14,7 @@
 		"databits"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner serialCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

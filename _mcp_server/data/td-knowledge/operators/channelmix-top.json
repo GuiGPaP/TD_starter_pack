@@ -1,0 +1,136 @@
+{
+	"id": "channelmix-top",
+	"title": "channelmixTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"channelmix",
+		"top",
+		"channelmixtop",
+		"green4",
+		"alpha4",
+		"blue2",
+		"constant3",
+		"alpha3"
+	],
+	"content": {
+		"summary": "TouchDesigner channelmixTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "channelmixTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "green4",
+				"label": "Green4",
+				"style": "Float",
+				"description": "Green output mix. Use these 4 values to mix the RGBA inputs into the output's green channel."
+			},
+			{
+				"name": "alpha4",
+				"label": "Alpha4",
+				"style": "Float",
+				"description": "Alpha output mix. Use these 4 values to mix the RGBA inputs into the output's alpha channel."
+			},
+			{
+				"name": "blue2",
+				"label": "Blue2",
+				"style": "Float"
+			},
+			{
+				"name": "constant3",
+				"label": "Constant3",
+				"style": "Float"
+			},
+			{
+				"name": "alpha3",
+				"label": "Alpha3",
+				"style": "Float"
+			},
+			{
+				"name": "constant1",
+				"label": "Constant1",
+				"style": "Float"
+			},
+			{
+				"name": "blue1",
+				"label": "Blue1",
+				"style": "Float"
+			},
+			{
+				"name": "constant2",
+				"label": "Constant2",
+				"style": "Float"
+			},
+			{
+				"name": "red2",
+				"label": "Red2",
+				"style": "Float"
+			},
+			{
+				"name": "green2",
+				"label": "Green2",
+				"style": "Float"
+			},
+			{
+				"name": "red4",
+				"label": "Red4",
+				"style": "Float",
+				"description": "Red output mix. Use these 4 values to mix the RGBA inputs into the output's red channel."
+			},
+			{
+				"name": "blue3",
+				"label": "Blue3",
+				"style": "Float"
+			},
+			{
+				"name": "alpha2",
+				"label": "Alpha2",
+				"style": "Float"
+			},
+			{
+				"name": "constant4",
+				"label": "Constant4",
+				"style": "Float",
+				"description": "Use these 4 values to add or subtract a constant amount to the output channels."
+			},
+			{
+				"name": "red1",
+				"label": "Red1",
+				"style": "Float"
+			},
+			{
+				"name": "red3",
+				"label": "Red3",
+				"style": "Float"
+			},
+			{
+				"name": "alpha1",
+				"label": "Alpha1",
+				"style": "Float"
+			},
+			{
+				"name": "green1",
+				"label": "Green1",
+				"style": "Float"
+			},
+			{
+				"name": "blue4",
+				"label": "Blue4",
+				"style": "Float",
+				"description": "Blue output mix. Use these 4 values to mix the RGBA inputs into the output's blue channel."
+			},
+			{
+				"name": "green3",
+				"label": "Green3",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

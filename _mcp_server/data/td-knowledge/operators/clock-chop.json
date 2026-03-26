@@ -14,7 +14,7 @@
 		"msec"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner clockCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

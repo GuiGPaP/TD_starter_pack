@@ -14,7 +14,7 @@
 		"selnumbers"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner deleteCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

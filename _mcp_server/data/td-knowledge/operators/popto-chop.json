@@ -1,0 +1,151 @@
+{
+	"id": "popto-chop",
+	"title": "poptoCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"popto",
+		"chop",
+		"poptochop",
+		"active",
+		"downloadtype",
+		"extract",
+		"thinoutrange"
+	],
+	"content": {
+		"summary": "TouchDesigner poptoCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "poptoCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle"
+			},
+			{
+				"name": "pop",
+				"label": "POP",
+				"style": "POP"
+			},
+			{
+				"name": "downloadtype",
+				"label": "Download Type",
+				"style": "Menu"
+			},
+			{
+				"name": "extract",
+				"label": "Extract",
+				"style": "Menu"
+			},
+			{
+				"name": "thinoutrange",
+				"label": "Thin Out Range",
+				"style": "Toggle"
+			},
+			{
+				"name": "thinrangestart",
+				"label": "Thin Range Start",
+				"style": "Int"
+			},
+			{
+				"name": "thinrangelength",
+				"label": "Thin Range Length",
+				"style": "Int"
+			},
+			{
+				"name": "thinstep",
+				"label": "Thin Step",
+				"style": "Int"
+			},
+			{
+				"name": "thinrandom",
+				"label": "Thin Random",
+				"style": "Float"
+			},
+			{
+				"name": "thinrandomseed",
+				"label": "Thin Random Seed",
+				"style": "Float"
+			},
+			{
+				"name": "nameformat",
+				"label": "Name Format",
+				"style": "Menu"
+			},
+			{
+				"name": "typesuffix",
+				"label": "Type Suffix",
+				"style": "Toggle"
+			},
+			{
+				"name": "attribscope",
+				"label": "Attributes Scope",
+				"style": "StrMenu"
+			},
+			{
+				"name": "renscope",
+				"label": "Rename Scope",
+				"style": "Str"
+			},
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu"
+			},
+			{
+				"name": "invertgroup",
+				"label": "Invert Group",
+				"style": "Toggle"
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float"
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -14,7 +14,7 @@
 		"replace"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner normalizePOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

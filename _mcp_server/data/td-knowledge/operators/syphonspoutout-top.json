@@ -1,0 +1,40 @@
+{
+	"id": "syphonspoutout-top",
+	"title": "syphonspoutoutTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"syphonspoutout",
+		"top",
+		"syphonspoutouttop",
+		"active",
+		"sendername"
+	],
+	"content": {
+		"summary": "TouchDesigner syphonspoutoutTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "syphonspoutoutTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Turns the sending on or off."
+			},
+			{
+				"name": "sendername",
+				"label": "Sender Name",
+				"style": "Str",
+				"description": "The name of the Syphon/Spout sender you wish to output. This can be any text string."
+			}
+		],
+		"versions": {}
+	}
+}

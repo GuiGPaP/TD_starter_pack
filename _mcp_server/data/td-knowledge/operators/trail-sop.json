@@ -1,0 +1,90 @@
+{
+	"id": "trail-sop",
+	"title": "trailSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"trail",
+		"sop",
+		"trailsop",
+		"result",
+		"length",
+		"cache",
+		"evalframe"
+	],
+	"content": {
+		"summary": "TouchDesigner trailSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "trailSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "result",
+				"label": "Result Type",
+				"style": "Menu",
+				"description": "How to construct the trail geometry."
+			},
+			{
+				"name": "length",
+				"label": "Trail Length",
+				"style": "Int",
+				"description": "This sets the length of the trail by establishing the maximum number of frames for the Trail to use, i.e. a of will connect the geometry from the previous twenty-five frames."
+			},
+			{
+				"name": "inc",
+				"label": "Trail Increment",
+				"style": "Int",
+				"description": "This will skip the given number of frames to build a trail with fewer points in it, but the same length. This will lower the resolution of the trail by reducing the number of points in the trail. This"
+			},
+			{
+				"name": "cache",
+				"label": "Cache Size",
+				"style": "Int",
+				"description": "The number of frames to keep cached in available memory."
+			},
+			{
+				"name": "evalframe",
+				"label": "Evaluate Within Frame Range",
+				"style": "Toggle",
+				"description": "This option specifies that the Trail will only evaluate, or cook, within the current frame range ( , ). If this option is not enabled, the can evaluate prior to the start frame."
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "This option is used to select the type of surface, when using a ."
+			},
+			{
+				"name": "close",
+				"label": "Close Rows",
+				"style": "Toggle",
+				"description": "When selected, closes the rows in the output selection."
+			},
+			{
+				"name": "velscale",
+				"label": "Velocity Scale",
+				"style": "Float",
+				"description": "Scales the velocity by a specific value when is selected."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "While on, clears any cached geometries, resetting the trail to mirror the input."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Reset the geometry for a single frame."
+			}
+		],
+		"versions": {}
+	}
+}

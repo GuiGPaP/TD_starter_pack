@@ -1,0 +1,123 @@
+{
+	"id": "curveclay-sop",
+	"title": "curveclaySOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"curveclay",
+		"sop",
+		"curveclaysop",
+		"facegroup",
+		"surfgroup",
+		"divs",
+		"sharp",
+		"refine"
+	],
+	"content": {
+		"summary": "TouchDesigner curveclaySOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "curveclaySOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "facegroup",
+				"label": "Face Group",
+				"style": "StrMenu",
+				"description": "Subset of faces (NURBS, Bézier, Polygons) to project, or subset of proles to deform, depending on how many inputs are connected."
+			},
+			{
+				"name": "surfgroup",
+				"label": "Surface Group",
+				"style": "StrMenu",
+				"description": "Subset of spline surfaces to be deformed when all three inputs are connected."
+			},
+			{
+				"name": "divs",
+				"label": "Divisions on Face",
+				"style": "Int",
+				"description": "The number of points to evaluate on the proles or the faces. This works by using a straight line approximation of the given curve to deform the surface. Thus, more segments are slower, but the result "
+			},
+			{
+				"name": "sharp",
+				"label": "Sharpness",
+				"style": "Float",
+				"description": "Species the area around the face to deform. The larger the sharpness is, the smaller the deformation area around them (thus having a sharper pull on the surface)."
+			},
+			{
+				"name": "refine",
+				"label": "Refinement",
+				"style": "Float",
+				"description": "Usually, CurveClay automatically renes the surface. However, you may specify some degree of renement control. In general, the more rened the surface is, the smoother the result. Better renement result"
+			},
+			{
+				"name": "projop",
+				"label": "Projection Axis",
+				"style": "Menu",
+				"description": "Choice of several projection axes:"
+			},
+			{
+				"name": "deformop",
+				"label": "Displacement Axis",
+				"style": "Menu",
+				"description": "Choice of several projection axes:"
+			},
+			{
+				"name": "deformlen",
+				"label": "Distance",
+				"style": "Float",
+				"description": "Distance deformed along the vector."
+			},
+			{
+				"name": "deforminside",
+				"label": "Deform Inside of Loop",
+				"style": "Toggle",
+				"description": "Check if the inside of closed loops should be deformed."
+			},
+			{
+				"name": "individual",
+				"label": "Consider Profiles Individually",
+				"style": "Toggle",
+				"description": "Check if multiple curves form a closed loop."
+			},
+			{
+				"name": "deformdir3",
+				"label": "Deformdir3",
+				"style": "Float",
+				"description": "Specify the direction vector of the displacement."
+			},
+			{
+				"name": "deformdir2",
+				"label": "Deformdir2",
+				"style": "Float"
+			},
+			{
+				"name": "projdir3",
+				"label": "Projdir3",
+				"style": "Float",
+				"description": "Specify the direction vector of the projection."
+			},
+			{
+				"name": "deformdir1",
+				"label": "Deformdir1",
+				"style": "Float"
+			},
+			{
+				"name": "projdir2",
+				"label": "Projdir2",
+				"style": "Float"
+			},
+			{
+				"name": "projdir1",
+				"label": "Projdir1",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

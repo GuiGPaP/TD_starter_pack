@@ -14,7 +14,7 @@
 		"trimlength"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner spliceCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -1,0 +1,145 @@
+{
+	"id": "carve-sop",
+	"title": "carveSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"carve",
+		"sop",
+		"carvesop",
+		"group",
+		"firstu",
+		"domainu1",
+		"secondu",
+		"domainu2"
+	],
+	"content": {
+		"summary": "TouchDesigner carveSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "carveSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the specified. Accepts patterns, as described in the Scripting Guide under ."
+			},
+			{
+				"name": "firstu",
+				"label": "First U",
+				"style": "Toggle",
+				"description": "Enables the parameter to set the first position in U."
+			},
+			{
+				"name": "domainu1",
+				"label": "First U",
+				"style": "Float",
+				"description": "This specifies a starting location to begin the cut/extract. Select this and a parametric U location between 0 and 1."
+			},
+			{
+				"name": "secondu",
+				"label": "Second U",
+				"style": "Toggle",
+				"description": "Enables the parameter to set the second position in U."
+			},
+			{
+				"name": "domainu2",
+				"label": "Second U",
+				"style": "Float",
+				"description": "This specifies an ending location to complete the cut / extract. Select this and a parametric U location between 0 and 1."
+			},
+			{
+				"name": "firstv",
+				"label": "First V",
+				"style": "Toggle",
+				"description": "Enables the parameter to set the first position in V."
+			},
+			{
+				"name": "domainv1",
+				"label": "First V",
+				"style": "Float",
+				"description": "This specifies a starting location to begin the cut/extract. Select this and a parametric V location between 0 and 1. Applies only to surfaces."
+			},
+			{
+				"name": "secondv",
+				"label": "Second V",
+				"style": "Toggle",
+				"description": "Enables the parameter to set the second position in V."
+			},
+			{
+				"name": "domainv2",
+				"label": "Second V",
+				"style": "Float",
+				"description": "This specifies an ending location to complete the cut / extract. Select this and a parametric V location between 0 and 1. Applies only to surfaces."
+			},
+			{
+				"name": "method",
+				"label": "Carve Method",
+				"style": "Menu",
+				"description": "Select between Cut and Extract methods."
+			},
+			{
+				"name": "keepin",
+				"label": "Keep Inside",
+				"style": "Toggle",
+				"description": "Keep the primitives specified between the first and second locations."
+			},
+			{
+				"name": "keepout",
+				"label": "Keep Outside",
+				"style": "Toggle",
+				"description": "Keep the primitives lying outside the first and second locations."
+			},
+			{
+				"name": "extractop",
+				"label": "Extract Type",
+				"style": "Menu",
+				"description": "If enabled, it will extract a cross-section along each location specified above."
+			},
+			{
+				"name": "keeporiginal",
+				"label": "Keep Original",
+				"style": "Toggle",
+				"description": "If selected, it will not remove the original primitive."
+			},
+			{
+				"name": "location",
+				"label": "Location",
+				"style": "Menu",
+				"description": "Determines how the Cut/Extract is defined at the boundaries. Additionally, extra subdivisions can be added in two ways using the parameters below."
+			},
+			{
+				"name": "divsu",
+				"label": "U Divisions",
+				"style": "Int",
+				"description": "This specifies the number of cuts / extracts to be performed between first U and the second U."
+			},
+			{
+				"name": "divsv",
+				"label": "V Divisions",
+				"style": "Int",
+				"description": "Specifies the number of cuts/extracts to be performed between first V and second V."
+			},
+			{
+				"name": "allubreakpoints",
+				"label": "Cut at All Internal U Breakpoints",
+				"style": "Toggle",
+				"description": "When using Location = Breakpoints, the resulting primitive is divided at all U breakpoints into separate primitives."
+			},
+			{
+				"name": "allvbreakpoints",
+				"label": "Cut at All Internal V Breakpoints",
+				"style": "Toggle",
+				"description": "When using Location = Breakpoints, the resulting primitive is divided at all V breakpoints into separate primitives."
+			}
+		],
+		"versions": {}
+	}
+}

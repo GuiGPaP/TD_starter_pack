@@ -1,0 +1,125 @@
+{
+	"id": "midiinmap-chop",
+	"title": "midiinmapCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"midiinmap",
+		"chop",
+		"midiinmapchop",
+		"device",
+		"sliders",
+		"buttons",
+		"bvelocity"
+	],
+	"content": {
+		"summary": "TouchDesigner midiinmapCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "midiinmapCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "device",
+				"label": "Device Table",
+				"style": "DAT",
+				"description": "to the MIDI device ."
+			},
+			{
+				"name": "id",
+				"label": "Device ID",
+				"style": "Str",
+				"description": "Specify the id of which device to use."
+			},
+			{
+				"name": "sliders",
+				"label": "Sliders",
+				"style": "Str",
+				"description": "The slider controllers to import from the MIDI Mapper. For example to import the first 16 sliders, slider 20 and sliders 32 to 40, type:"
+			},
+			{
+				"name": "buttons",
+				"label": "Buttons",
+				"style": "Str",
+				"description": "The buttons to import from the MIDI Mapper. For example to import the first 16 buttons, button 20 and buttons 32 to 40, type:"
+			},
+			{
+				"name": "bvelocity",
+				"label": "Include Velocity in Buttons",
+				"style": "Toggle",
+				"description": "Enable velocity on button inputs if available."
+			},
+			{
+				"name": "squeue",
+				"label": "Queue Slider Events",
+				"style": "Toggle"
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "The sample rate of the channels, in samples per second."
+			},
+			{
+				"name": "left",
+				"label": "Extend Left",
+				"style": "Menu",
+				"description": "The left extend conditions (before range)."
+			},
+			{
+				"name": "right",
+				"label": "Extend Right",
+				"style": "Menu",
+				"description": "The right extend conditions (after range)."
+			},
+			{
+				"name": "defval",
+				"label": "Default Value",
+				"style": "Float",
+				"description": "The value used for the Default Value extend condition."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

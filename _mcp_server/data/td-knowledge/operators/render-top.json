@@ -14,7 +14,7 @@
 		"antialias"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner renderTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

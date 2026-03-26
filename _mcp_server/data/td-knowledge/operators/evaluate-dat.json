@@ -13,7 +13,7 @@
 		"outputsize"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner evaluateDAT operator."
 	},
 	"provenance": {
 		"source": "td-docs",

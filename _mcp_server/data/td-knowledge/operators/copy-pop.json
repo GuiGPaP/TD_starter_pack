@@ -13,7 +13,7 @@
 		"copyid"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner copyPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

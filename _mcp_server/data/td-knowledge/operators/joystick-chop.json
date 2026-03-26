@@ -14,7 +14,7 @@
 		"yaxis"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner joystickCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

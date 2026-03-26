@@ -1,0 +1,188 @@
+{
+	"id": "tube-sop",
+	"title": "tubeSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"tube",
+		"sop",
+		"tubesop",
+		"type",
+		"surftype",
+		"orient",
+		"orientbounds",
+		"modifybounds"
+	],
+	"content": {
+		"summary": "TouchDesigner tubeSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "tubeSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "type",
+				"label": "Primitive Type",
+				"style": "Menu",
+				"description": "Select from the following types. For information on the different types, see the category articles. Using the ' ' primitive type is not recommended when using instancing."
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "This option is used to select the type of surface, when using a Mesh Type."
+			},
+			{
+				"name": "orient",
+				"label": "Orientation",
+				"style": "Menu",
+				"description": "Primary axis of tube (long axis)."
+			},
+			{
+				"name": "orientbounds",
+				"label": "Orient Bounds",
+				"style": "Toggle",
+				"description": "Available only when an input is connected to the Tube to set bounds for the tube. When Orient Bounds = On it will rotate the geometry to match the orientation of the input used for bounds."
+			},
+			{
+				"name": "modifybounds",
+				"label": "Modify Bounds",
+				"style": "Toggle",
+				"description": "Enabled only when an input is connected to the Tube to set bounds for the tube. Turn Modify Bounds = On to enable the transform parameters below to further modify the position, scale, radius and heigh"
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Sets the order in which the rotations are applied."
+			},
+			{
+				"name": "height",
+				"label": "Height",
+				"style": "Float",
+				"description": "The height of the tube."
+			},
+			{
+				"name": "reverseanchors",
+				"label": "Reverse Anchors",
+				"style": "Toggle",
+				"description": "Invert the direction of anchors."
+			},
+			{
+				"name": "anchoru",
+				"label": "Anchor U",
+				"style": "Float",
+				"description": "Set the point in X about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "anchorv",
+				"label": "Anchor V",
+				"style": "Float",
+				"description": "Set the point in Y about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "anchorw",
+				"label": "Anchor W",
+				"style": "Float",
+				"description": "Set the point in Z about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "imperfect",
+				"label": "Imperfect",
+				"style": "Toggle",
+				"description": "This option applies only to Bezier and NURBS types. If selected, the tube is an approximated nonrational curve, otherwise it is a perfect rational curve."
+			},
+			{
+				"name": "rows",
+				"label": "Rows",
+				"style": "Int",
+				"description": "Number of rows in tube."
+			},
+			{
+				"name": "cols",
+				"label": "Columns",
+				"style": "Int",
+				"description": "Number of columns in tube."
+			},
+			{
+				"name": "orderu",
+				"label": "U Order",
+				"style": "Int",
+				"description": "If a spline surface is selected, it is built at this order for U."
+			},
+			{
+				"name": "orderv",
+				"label": "V Order",
+				"style": "Int",
+				"description": "If a spline surface is selected, it is built at this order for V."
+			},
+			{
+				"name": "cap",
+				"label": "End Caps",
+				"style": "Toggle",
+				"description": "If selected, it adds faceted end caps to the ends of the tube."
+			},
+			{
+				"name": "texture",
+				"label": "Texture Coordinates",
+				"style": "Menu",
+				"description": "Adds UV texture coordinates to the sphere."
+			},
+			{
+				"name": "normals",
+				"label": "Compute Normals",
+				"style": "Toggle",
+				"description": "Checking this option On will compute surface normals."
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "Location of the tube center from the object origin."
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "These three fields rotate the Tube along the X, Y, and Z axes."
+			},
+			{
+				"name": "rad1",
+				"label": "Rad1",
+				"style": "Float"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "rad2",
+				"label": "Rad2",
+				"style": "Float",
+				"description": "The first field is the radius of the top of the tube and the second field represents the radius of the bottom of the tube."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

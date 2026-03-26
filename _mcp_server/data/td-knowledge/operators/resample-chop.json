@@ -14,7 +14,7 @@
 		"startunit"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner resampleCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

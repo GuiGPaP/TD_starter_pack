@@ -14,7 +14,7 @@
 		"colormapextendv"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner phongMAT operator."
 	},
 	"provenance": {
 		"source": "td-docs",

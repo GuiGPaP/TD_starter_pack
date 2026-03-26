@@ -1,0 +1,107 @@
+{
+	"id": "joint-sop",
+	"title": "jointSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"joint",
+		"sop",
+		"jointsop",
+		"group",
+		"divs",
+		"preserve1",
+		"preserve2",
+		"orient"
+	],
+	"content": {
+		"summary": "TouchDesigner jointSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "jointSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field causes the to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "divs",
+				"label": "Divisions",
+				"style": "Int",
+				"description": "Allows you to specify the number of circles between each pair of input circles."
+			},
+			{
+				"name": "preserve1",
+				"label": "Preserve First Input",
+				"style": "Toggle",
+				"description": "Preserves the first input circle being fed into the ."
+			},
+			{
+				"name": "preserve2",
+				"label": "Preserve Last Input",
+				"style": "Toggle",
+				"description": "Preserves the last input circle."
+			},
+			{
+				"name": "orient",
+				"label": "Orient Circles",
+				"style": "Toggle",
+				"description": "This helps to create a joint that blends between the input circles without flattening or curving outwards. In order to do this, there may be a reversal of the normal of each input circle. For example,"
+			},
+			{
+				"name": "smoothpath",
+				"label": "Smooth Path",
+				"style": "Toggle",
+				"description": "If not on, the joint circles are blended linearly. Otherwise, they are placed along a cubic piece-wise Bzier curve between the circle centres. This is useful when the input contains more than two circ"
+			},
+			{
+				"name": "smoothtwist",
+				"label": "Smooth Twist",
+				"style": "Toggle",
+				"description": "Each joint circle is rotated slightly such that its X and Y axis align as it approaches an input circle. This toggle causes the adjustments to be an incremental, or piece-wise, Bzier function. Again t"
+			},
+			{
+				"name": "majoraxes",
+				"label": "Align Major Axes",
+				"style": "Toggle",
+				"description": "If enabled, this option aligns the first circle's largest axis to the last circle's largest axis. If disabled, the first and last circles' x axes are aligned. This option can help minimize the twist i"
+			},
+			{
+				"name": "mintwist",
+				"label": "Minimum Twist",
+				"style": "Toggle",
+				"description": "If on, the rotations of the added circles are calculated such that they never rotate further than one half turn in either direction. This leads to a visually continuous layout suitable for creating a "
+			},
+			{
+				"name": "lrscale2",
+				"label": "Lrscale2",
+				"style": "Float",
+				"description": "These parameters control the shape of the smooth path, varying the shape of the implied curve from the left or right. If the Orient Circles option is on, the sign of the scale has no effect. For a dis"
+			},
+			{
+				"name": "lrscale1",
+				"label": "Lrscale1",
+				"style": "Float"
+			},
+			{
+				"name": "lroffset1",
+				"label": "Lroffset1",
+				"style": "Float"
+			},
+			{
+				"name": "lroffset2",
+				"label": "Lroffset2",
+				"style": "Float",
+				"description": "These parameters allow you to override the distance between circles, thereby affecting the shape of the joint."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,423 @@
+{
+	"id": "force-comp",
+	"title": "forceCOMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"force",
+		"comp",
+		"forcecomp",
+		"active",
+		"impulse",
+		"ffactive",
+		"strength",
+		"radius"
+	],
+	"content": {
+		"summary": "TouchDesigner forceCOMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "forceCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Toggle the active force on/off in the simulation"
+			},
+			{
+				"name": "impulse",
+				"label": "Impulse Force",
+				"style": "Pulse",
+				"description": "Applies an impulse force in the simulation for 1 frame with the above parameters."
+			},
+			{
+				"name": "ffactive",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Toggle the force field on/off in the simulation"
+			},
+			{
+				"name": "strength",
+				"label": "Strength",
+				"style": "Float",
+				"description": "The strength of the force field. Positive strength pushes bodies outward and negative strength pulls bodies inward."
+			},
+			{
+				"name": "radius",
+				"label": "Radius",
+				"style": "Float",
+				"description": "The radius of the force field."
+			},
+			{
+				"name": "falloff",
+				"label": "Linear Falloff",
+				"style": "Toggle",
+				"description": "Applies linear falloff to the strength of the force field based on the distance from the center."
+			},
+			{
+				"name": "reinitextensions",
+				"label": "Re-Init Extensions",
+				"style": "Pulse",
+				"description": "Recompile all extension objects. Normally extension objects are compiled only when they are referenced and their definitions have changed."
+			},
+			{
+				"name": "initextonstart",
+				"label": "Init Extensions On Start",
+				"style": "Toggle",
+				"description": "Perform a Re-Init automatically when TouchDEsigner Starts"
+			},
+			{
+				"name": "ext",
+				"label": "Extension",
+				"style": "Sequence",
+				"description": "Sequence of info for creating extensions on this component"
+			},
+			{
+				"name": "ext0object",
+				"label": "Object",
+				"style": "Str",
+				"description": "A number of class instances that can be attached to the component."
+			},
+			{
+				"name": "ext0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Optional name to search by, instead of the instance class name."
+			},
+			{
+				"name": "ext0promote",
+				"label": "Promote",
+				"style": "Toggle",
+				"description": "Controls whether or not the extensions are visible directly at the component level, or must be accessed through the member.  Example: vs"
+			},
+			{
+				"name": "parentshortcut",
+				"label": "Parent Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as the path to that component. See ."
+			},
+			{
+				"name": "opshortcut",
+				"label": "Global OP Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere at all as the path to that component. See ."
+			},
+			{
+				"name": "iop",
+				"label": "Internal OP",
+				"style": "Sequence",
+				"description": "Sequence header for internal operators."
+			},
+			{
+				"name": "iop0shortcut",
+				"label": "Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as a path to \"Internal \" below. See ."
+			},
+			{
+				"name": "iop0op",
+				"label": "OP",
+				"style": "OP",
+				"description": "The path to the Internal OP inside this component. See ."
+			},
+			{
+				"name": "nodeview",
+				"label": "Node View",
+				"style": "Menu",
+				"description": "Determines what is displayed in the node viewer, also known as the . Some options will not be available depending on the type ( , , Misc.)"
+			},
+			{
+				"name": "opviewer",
+				"label": "Operator Viewer",
+				"style": "OP",
+				"description": "Select which operator's node viewer to use when the Node View parameter above is set to Operator ."
+			},
+			{
+				"name": "enablecloning",
+				"label": "Enable Cloning",
+				"style": "Toggle",
+				"description": "Control if the OP should be actively cloneing. Turning this off causes this node to stop cloning it's 'Clone Master'."
+			},
+			{
+				"name": "enablecloningpulse",
+				"label": "Enable Cloning Pulse",
+				"style": "Pulse",
+				"description": "Instantaneously clone the contents."
+			},
+			{
+				"name": "clone",
+				"label": "Clone Master",
+				"style": "COMP",
+				"description": "to a component used as the Master ."
+			},
+			{
+				"name": "loadondemand",
+				"label": "Load on Demand",
+				"style": "Toggle",
+				"description": "Loads the component into memory only when required. Good to use for components that are not always used in the project."
+			},
+			{
+				"name": "enableexternaltox",
+				"label": "Enable External .tox",
+				"style": "Toggle",
+				"description": "When on (default), the external file will be loaded when the starts and the contents of the will match that of the external . This can be turned off to avoid loading from the referenced external on st"
+			},
+			{
+				"name": "enableexternaltoxpulse",
+				"label": "Enable External .tox Pulse",
+				"style": "Pulse",
+				"description": "This button will re-load from the external file (if present)."
+			},
+			{
+				"name": "externaltox",
+				"label": "External .tox Path",
+				"style": "File",
+				"description": "to a file on disk which will source the component's contents upon start of a . This allows for components to contain networks that can be updated independently. If the file can not be found, whatever "
+			},
+			{
+				"name": "reloadcustom",
+				"label": "Reload Custom Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes inside the component ar"
+			},
+			{
+				"name": "reloadbuiltin",
+				"label": "Reload Built-In Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's built-in parameters are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes ins"
+			},
+			{
+				"name": "savebackup",
+				"label": "Save Backup of External",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, a backup copy of the component specified by the External parameter is saved in the file.  This backup copy will be used if the External can not be found. This may happen"
+			},
+			{
+				"name": "subcompname",
+				"label": "Sub-Component to Load",
+				"style": "Str",
+				"description": "When loading from an External file, this option allows you to reach into the and pull out a and make that the top-level , ignoring everything else in the file (except for the contents of that ). For e"
+			},
+			{
+				"name": "relpath",
+				"label": "Relative File Path Behavior",
+				"style": "Menu",
+				"description": "Set whether the child file paths within this are relative to the itself or the , or inherit from parent."
+			},
+			{
+				"name": "forcex",
+				"label": "Forcex",
+				"style": "XYZW"
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "forwarddir",
+				"label": "Forwarddir",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "offsety",
+				"label": "Offsety",
+				"style": "XYZW"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "bank",
+				"label": "Bank",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "torquey",
+				"label": "Torquey",
+				"style": "XYZW"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "torquex",
+				"label": "Torquex",
+				"style": "XYZW"
+			},
+			{
+				"name": "pathsop",
+				"label": "Pathsop",
+				"style": "SOP",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pathorient",
+				"label": "Pathorient",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "parentxformsrc",
+				"label": "Parentxformsrc",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "upx",
+				"label": "Upx",
+				"style": "XYZW"
+			},
+			{
+				"name": "pos",
+				"label": "Pos",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "lookat",
+				"label": "Lookat",
+				"style": "Object",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "scale",
+				"label": "Scale",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "lookup",
+				"label": "Lookup",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "roll",
+				"label": "Roll",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "upz",
+				"label": "Upz",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "xord",
+				"label": "Xord",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rord",
+				"label": "Rord",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "forcez",
+				"label": "Forcez",
+				"style": "XYZW",
+				"description": "The linear force in Newtons that will be applied."
+			},
+			{
+				"name": "upy",
+				"label": "Upy",
+				"style": "XYZW"
+			},
+			{
+				"name": "offsetz",
+				"label": "Offsetz",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "forcey",
+				"label": "Forcey",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "offsetx",
+				"label": "Offsetx",
+				"style": "XYZW"
+			},
+			{
+				"name": "torquez",
+				"label": "Torquez",
+				"style": "XYZW",
+				"description": "The rotational force in Newtons that will be applied."
+			},
+			{
+				"name": "parentobject",
+				"label": "Parentobject",
+				"style": "Object",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

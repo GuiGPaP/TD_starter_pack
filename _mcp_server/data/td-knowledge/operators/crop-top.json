@@ -14,7 +14,7 @@
 		"cropbottom"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner cropTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

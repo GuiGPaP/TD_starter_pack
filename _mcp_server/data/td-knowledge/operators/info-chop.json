@@ -13,7 +13,7 @@
 		"passive"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner infoCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

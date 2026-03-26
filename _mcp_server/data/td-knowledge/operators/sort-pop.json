@@ -14,7 +14,7 @@
 		"pointobj"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner sortPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -14,7 +14,7 @@
 		"justifyv"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner circleTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -1,0 +1,145 @@
+{
+	"id": "serial-dat",
+	"title": "serialDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"serial",
+		"dat",
+		"serialdat",
+		"active",
+		"port",
+		"baudrate",
+		"databits",
+		"parity"
+	],
+	"content": {
+		"summary": "TouchDesigner serialDAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "serialDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "This check box enables the serial connection."
+			},
+			{
+				"name": "port",
+				"label": "Port",
+				"style": "StrMenu",
+				"description": "Selects the COM port that the serial connection will use.  Default port names 1 through 8 are available in the popup menu, though any name can be manually entered in this field."
+			},
+			{
+				"name": "baudrate",
+				"label": "Baud Rate",
+				"style": "Int",
+				"description": "The maximum number of bits of information, including \"control\" bits, that are transmitted per second. Check your input device's default baud rate and set accordingly."
+			},
+			{
+				"name": "databits",
+				"label": "Data Bits",
+				"style": "Menu",
+				"description": "This parameter sets the number of data bits sent in each. Data bits are transmitted \"backwards\". Backwards refers to the order of transmission, which is from least significant bit (LSB) to most signif"
+			},
+			{
+				"name": "parity",
+				"label": "Parity",
+				"style": "Menu",
+				"description": "This parameter can be set to none, even, or odd. The optional parity bit follows the data bits and is included as a simple means of error checking. Parity bits work by specifying ahead of time whether"
+			},
+			{
+				"name": "stopbits",
+				"label": "Stop Bits",
+				"style": "Menu",
+				"description": "The last part of transmission packet consists of 1 or 2 Stop bits. The connection will now wait for the next Start bit."
+			},
+			{
+				"name": "dtr",
+				"label": "DTR",
+				"style": "Menu",
+				"description": "The DTR (data-terminal-ready) flow control. (Windows Only)."
+			},
+			{
+				"name": "rts",
+				"label": "RTS",
+				"style": "Menu",
+				"description": "The RTS (request-to-send) flow control. (Windows Only)."
+			},
+			{
+				"name": "callbacks",
+				"label": "Callbacks DAT",
+				"style": "DAT",
+				"description": "The Callbacks will execute once for each message received."
+			},
+			{
+				"name": "executeloc",
+				"label": "Execute from",
+				"style": "Menu",
+				"description": "Determines the location the script is run from."
+			},
+			{
+				"name": "fromop",
+				"label": "From Operator",
+				"style": "OP",
+				"description": "The path that the script will be executed from if the Execute From parameter is set to Specified ."
+			},
+			{
+				"name": "clamp",
+				"label": "Clamp Output",
+				"style": "Toggle",
+				"description": "The is limited to 100 messages by default but with Clamp Output, this can be set to anything including unlimited."
+			},
+			{
+				"name": "maxlines",
+				"label": "Maximum Lines",
+				"style": "Int",
+				"description": "Limits the number of messages, older messages are removed from the list first."
+			},
+			{
+				"name": "clear",
+				"label": "Clear Output",
+				"style": "Pulse",
+				"description": "Deletes all lines except the heading. To clear with a script command, here is an example:"
+			},
+			{
+				"name": "bytes",
+				"label": "Bytes Column",
+				"style": "Toggle",
+				"description": "Outputs the raw bytes of the message in a separate column."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			}
+		],
+		"versions": {}
+	}
+}

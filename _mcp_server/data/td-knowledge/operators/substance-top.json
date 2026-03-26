@@ -14,7 +14,7 @@
 		"invertnormal"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner substanceTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

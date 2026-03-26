@@ -1,0 +1,85 @@
+{
+	"id": "filein-dat",
+	"title": "fileinDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"filein",
+		"dat",
+		"fileindat",
+		"file",
+		"converttable",
+		"refresh",
+		"refreshpulse",
+		"language"
+	],
+	"content": {
+		"summary": "TouchDesigner fileinDAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fileinDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "File",
+				"style": "File",
+				"description": "The filesystem path and name of the file to load. Accepts files for regular text and files for text in table format."
+			},
+			{
+				"name": "converttable",
+				"label": "Convert Text to Table",
+				"style": "Toggle",
+				"description": "Converts the contents of the from regular text to table-formatted text (tab-delimited text, each <tab> is a new column in the table)."
+			},
+			{
+				"name": "refresh",
+				"label": "Refresh",
+				"style": "Toggle",
+				"description": "Reload the file when this parameter is set to On."
+			},
+			{
+				"name": "refreshpulse",
+				"label": "Refresh Pulse",
+				"style": "Pulse",
+				"description": "Instantly reload the file from disk."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			},
+			{
+				"name": "defaultreadencoding",
+				"label": "Defaultreadencoding",
+				"style": "Menu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

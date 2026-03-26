@@ -11,7 +11,7 @@
 		"alpha"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner monochromeTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

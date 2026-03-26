@@ -1,0 +1,1169 @@
+{
+	"id": "geotext-comp",
+	"title": "geotextCOMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"geotext",
+		"comp",
+		"geotextcomp",
+		"mode",
+		"text",
+		"specdat",
+		"specchop",
+		"sorted"
+	],
+	"content": {
+		"summary": "TouchDesigner geotextCOMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "geotextCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "Controls where text is generated from. Either from the 'Text' parameter, or a table provided via the 'Specification ' parameter."
+			},
+			{
+				"name": "text",
+				"label": "Text",
+				"style": "Str",
+				"description": "When in 'Text' mode, this specifies the text that will be rendered."
+			},
+			{
+				"name": "specdat",
+				"label": "Specification DAT",
+				"style": "DAT",
+				"description": "In this mode, the Text parameter is ignored and data is taken from a table given in the Specification parameter. Each row of the is a separate line of text, which can have different transforms, alignm"
+			},
+			{
+				"name": "specchop",
+				"label": "Specification CHOP",
+				"style": "CHOP",
+				"description": "Allows use of data to set parameters of text blocks defined in the Specification . Each sample of the corresponds to the data rows in the Specification . Only numerical data such as , etc can be provi"
+			},
+			{
+				"name": "sorted",
+				"label": "Sort by Depth",
+				"style": "Toggle",
+				"description": "Only available when using a Specification . When enabled, lines in the specification are rendered from back to front relative to the current camera to allow for proper alpha blending. Note: sorting a "
+			},
+			{
+				"name": "formatcodes",
+				"label": "Formatting Codes",
+				"style": "Toggle",
+				"description": "Enables the use of formatting codes in the text. For example, the code {#color(255, 0, 0);} will turn all text afterwards on that line red. See for all available codes."
+			},
+			{
+				"name": "escapeseq",
+				"label": "Parse Escape Sequences",
+				"style": "Toggle",
+				"description": "When enabled, '\\t' sequences will be converted to tabs and '\\r' or '\\n' to line breaks. This feature is only enabled when using the Specification . For Text mode, python expressions should be used whe"
+			},
+			{
+				"name": "smartpunct",
+				"label": "Smart Punctuation",
+				"style": "Toggle",
+				"description": "Enables the use of smart punctuation. For example, pairs of quotes will be replaced with appropriate angled quotes, 3 periods will be replaced with an ellipses character and two hypens will become an "
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Toggle",
+				"description": "Wrap lines of text if they go beyond the width of the layout box."
+			},
+			{
+				"name": "widthaffectedbyfov",
+				"label": "Width Affected by FOV/OrthoWidth",
+				"style": "Toggle",
+				"description": "With this off, looking at a rendered image of a certain resolution, the size of the text will remain the same # of pixels wide as you change the field-of-view or ortho width. With this parameter on (d"
+			},
+			{
+				"name": "facecam",
+				"label": "Face Camera",
+				"style": "Toggle",
+				"description": "Toggle this on to make the text face the camera no matter what the camera orientation."
+			},
+			{
+				"name": "depthScaleSCurve",
+				"label": "Depth Scale S-Curve",
+				"style": "Toggle",
+				"description": "With this off, the size of the text is inversely proportional to the distance from the camera, that is perspective based sizing. With the toggle on, an S-curve determines the scaling of the text based"
+			},
+			{
+				"name": "depthDistanceNear",
+				"label": "Depth Distance Near",
+				"style": "Float",
+				"description": "Specify a near plane with a certain distance from the camera. Used for Depth Scale S-Curve."
+			},
+			{
+				"name": "depthDistanceFar",
+				"label": "Depth Distance Far",
+				"style": "Float",
+				"description": "Specify a far plane with a certain distance from the camera. Used for Depth Scale S-Curve."
+			},
+			{
+				"name": "depthScaleNear",
+				"label": "Depth Scale Near",
+				"style": "Float",
+				"description": "When the camera distance is equal to the value of 'Depth Distance Near' parameter, the text will be scaled by this value. Used for Depth Scale S-Curve."
+			},
+			{
+				"name": "depthScaleFar",
+				"label": "Depth Scale Far",
+				"style": "Float",
+				"description": "When the camera distance is equal to the value of 'Depth Distance Far' parameter, the text will be scaled by this value. Used for Depth Scale S-Curve."
+			},
+			{
+				"name": "depthScaleBias",
+				"label": "Depth Scale Bias",
+				"style": "Float",
+				"description": "Moves the S Curve bias backward or forward for interpolation of the depth scale factor between the near and far planes. Used for Depth Scale S-Curve."
+			},
+			{
+				"name": "depthScaleSteepness",
+				"label": "Depth Scale Steepness",
+				"style": "Float",
+				"description": "Controls the steepness of the S Curve for interpolation of the depth scale factor between the near and far planes. The higher the value of the steepness, you will notice more dramatic changes (higher "
+			},
+			{
+				"name": "depthScaleLinearize",
+				"label": "Depth Scale Linearize",
+				"style": "Float",
+				"description": "Control the amount of curvature in the S Curve for interpolation of the depth scale factor between the near and far planes."
+			},
+			{
+				"name": "lifttowardscam",
+				"label": "Lift Towards Camera",
+				"style": "Float",
+				"description": "For text that may be rendered on top of filled polygons or along their edges, they may be cut off because they are rendered in the same place. To make it look good, you want to lift the text towards t"
+			},
+			{
+				"name": "font",
+				"label": "Font",
+				"style": "Menu",
+				"description": "Select the font to be used from the dropdown menu. Available fonts are those that have been registered with the operating system. There may be a delay when selecting fonts that have not been used befo"
+			},
+			{
+				"name": "fontfile",
+				"label": "Font File",
+				"style": "File",
+				"description": "Specify a font file to be used for rendering the text. This option can be used for fonts that are not registered with the operating system and do not appear in the drop down menu."
+			},
+			{
+				"name": "bold",
+				"label": "Bold",
+				"style": "Toggle",
+				"description": "Display the text in ."
+			},
+			{
+				"name": "italic",
+				"label": "Italic",
+				"style": "Toggle",
+				"description": "Display the text in italics."
+			},
+			{
+				"name": "fontsize",
+				"label": "Font Size",
+				"style": "Float",
+				"description": "The font size. This is in the same units as the geometry space. So it's arbitrary based on the size of your scene."
+			},
+			{
+				"name": "tracking",
+				"label": "Tracking",
+				"style": "Float",
+				"description": "Sets the horizontal spacing between characters, where 0 is default spacing, > 0 is increased spacing and < 0 is decreased spacing."
+			},
+			{
+				"name": "skew",
+				"label": "Skew",
+				"style": "Float",
+				"description": "Tilts the top of the characters forwards or backwards relative to the baseline."
+			},
+			{
+				"name": "horzstretch",
+				"label": "Horz Stretch",
+				"style": "Float",
+				"description": "Horizontally stretch the characters relative to their current alignment."
+			},
+			{
+				"name": "linespacing",
+				"label": "Line Spacing",
+				"style": "Float",
+				"description": "Adjust spacing between lines. The value is a multiplier of the default spacing defined by the font."
+			},
+			{
+				"name": "fontalpha",
+				"label": "Font Alpha",
+				"style": "Float",
+				"description": "The alpha value for the font."
+			},
+			{
+				"name": "layoutanchoru",
+				"label": "Layout Box Anchor U",
+				"style": "Float",
+				"description": "Along with the Box Anchor V, this allows shifting the layout box from it's current position left/down. It also controls how rotations will pivot around the layout box, so a 0.5, 0.5 anchor will cause "
+			},
+			{
+				"name": "layoutanchorv",
+				"label": "Layout Box Anchor V",
+				"style": "Float",
+				"description": "The V component of the Box Anchor pair."
+			},
+			{
+				"name": "cliptolayoutbox",
+				"label": "Clip to Layout Box",
+				"style": "Toggle",
+				"description": "When enabled, text that falls outside of the layout box will not be drawn."
+			},
+			{
+				"name": "alignx",
+				"label": "Horizontal Align",
+				"style": "Menu",
+				"description": "Controls the horizontal alignment of the text."
+			},
+			{
+				"name": "aligny",
+				"label": "Vertical Align",
+				"style": "Menu",
+				"description": "Controls the vertical alignment of the text."
+			},
+			{
+				"name": "alignymode",
+				"label": "Vertical Align Mode",
+				"style": "Menu",
+				"description": "Controls how the alignment is calculated for vertical alignment."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "This allows you to specify the order in which the changes to your will take place. Changing the Transform Order will change where things go much the same way as going a block and turning east gets you"
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "This allows you to set the transform order for the 's rotations. As with transform order (above), changing the order in which the 's rotations take place will alter the 's final position.\tA Rotation o"
+			},
+			{
+				"name": "scale",
+				"label": "Uniform Scale",
+				"style": "Float",
+				"description": "This field allows you to change the size of an uniformly along the three axes."
+			},
+			{
+				"name": "parentxformsrc",
+				"label": "Parent Transform Source",
+				"style": "Menu",
+				"description": "Select what position is used as the transform source for this obejct. Can be one of \"Parent (Hierarchy)\", \"Specify Parent Object\", or \"World Origin\"."
+			},
+			{
+				"name": "parentobject",
+				"label": "Parent Object",
+				"style": "Object",
+				"description": "Allows the location of the object to be constrained to any other object whose path is specified in this parameter."
+			},
+			{
+				"name": "lookat",
+				"label": "Look At",
+				"style": "Object",
+				"description": "Allows you to orient this by naming another 3D you would like it to , or point to. Once you have designated this to look at, it will continue to face that , even if you move it. This is useful if, for"
+			},
+			{
+				"name": "forwarddir",
+				"label": "Forward Direction",
+				"style": "Menu",
+				"description": "Sets which axis and direction is considered the forward direction."
+			},
+			{
+				"name": "lookup",
+				"label": "Look At Up Vector",
+				"style": "Menu",
+				"description": "When specifying a , it is possible to specify an up vector for the lookat. Without using an up vector, it is possible to get poor animation when the lookat , for example, passes through the Y axis of "
+			},
+			{
+				"name": "pathsop",
+				"label": "Path SOP",
+				"style": "SOP",
+				"description": "Names the that functions as the path you want this to move along. For instance, you can name a that provides a path for the camera to follow."
+			},
+			{
+				"name": "roll",
+				"label": "Roll",
+				"style": "Float",
+				"description": "Using the angle control you can specify a 's rotation as it animates along the path."
+			},
+			{
+				"name": "pos",
+				"label": "Position",
+				"style": "Float",
+				"description": "This parameter lets you specify the of the along the path. The values you can enter for this parameter range from to , where equals the starting point and equals the end point of the path. The value s"
+			},
+			{
+				"name": "pathorient",
+				"label": "Orient along Path",
+				"style": "Toggle",
+				"description": "If this option is selected, the will be oriented along the path. The positive Z axis of the will be pointing down the path."
+			},
+			{
+				"name": "bank",
+				"label": "Auto-Bank Factor",
+				"style": "Float",
+				"description": "The rolls the based on the curvature of the path at its current position. To turn off auto-banking, set the bank scale to ."
+			},
+			{
+				"name": "pxform",
+				"label": "Apply Pre-Transform",
+				"style": "Toggle",
+				"description": "Enables the transformation on this page."
+			},
+			{
+				"name": "pxord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "prord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "pscale",
+				"label": "Uniform Scale",
+				"style": "Float",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "preset",
+				"label": "Reset Transform",
+				"style": "Pulse",
+				"description": "This button will reset this page's transform so it has no translate/rotate/scale."
+			},
+			{
+				"name": "pcommit",
+				"label": "Commit to Main Transform",
+				"style": "Pulse",
+				"description": "This button will copy the transform from this page to the main Xform page, and reset this page's transform."
+			},
+			{
+				"name": "xformmatrixop",
+				"label": "Xform Matrix/CHOP/DAT",
+				"style": "CHOP",
+				"description": "This parameter can be used to transform using a 4x4 matrix directly. For information on ways to specify a matrix directly, refer to the page. This transform will be applied after the regular Pre-Trans"
+			},
+			{
+				"name": "instancing",
+				"label": "Instancing",
+				"style": "Toggle",
+				"description": "Turns on instancing for the Geometry ."
+			},
+			{
+				"name": "instancecountmode",
+				"label": "Instance Count Mode",
+				"style": "Menu",
+				"description": "Two modes to determine how many instances will be created."
+			},
+			{
+				"name": "numinstances",
+				"label": "Num Instances",
+				"style": "Int",
+				"description": "When using the Manual mode for Count, this parameter set the number of instances."
+			},
+			{
+				"name": "instanceop",
+				"label": "Default Instance OP",
+				"style": "SOP",
+				"description": "Specify a path to a or used to transform the instances. Number of samples/rows in this or determines the number of instances when using the Length/ Num Rows mode for Count."
+			},
+			{
+				"name": "instancefirstrow",
+				"label": "First Row is",
+				"style": "Menu",
+				"description": "What to do with the first row of a table when using rows for Count."
+			},
+			{
+				"name": "instxord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Controls the order the transform operations will be applied to each instance. Refer to the documentation for the Xform page for more details."
+			},
+			{
+				"name": "instrord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "The rotational matrix presented when you click on this option allows you to set the transform order for the 's rotations. As with transform order (above), changing the order in which the 's rotations "
+			},
+			{
+				"name": "instancetop",
+				"label": "Translate OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Translate instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instanceactive",
+				"label": "Active",
+				"style": "StrMenu",
+				"description": "Select the data channel that will be used to control which instances are rendered. Only instances with a non-zero value in this channel will be rendered; instances with a zero active channel value wil"
+			},
+			{
+				"name": "instancetx",
+				"label": "Translate X",
+				"style": "StrMenu",
+				"description": "Select what data to use to translate instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancety",
+				"label": "Translate Y",
+				"style": "StrMenu",
+				"description": "Select what data to use to translate instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancetz",
+				"label": "Translate Z",
+				"style": "StrMenu",
+				"description": "Select what data to use to translate instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerop",
+				"label": "Rotate OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Rotate instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancerx",
+				"label": "Rotate X",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancery",
+				"label": "Rotate Y",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerz",
+				"label": "Rotate Z",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancesop",
+				"label": "Scale OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Scale instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancesx",
+				"label": "Scale X",
+				"style": "StrMenu",
+				"description": "Select what data to use to scale instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancesy",
+				"label": "Scale Y",
+				"style": "StrMenu",
+				"description": "Select what data to use to scale instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancesz",
+				"label": "Scale Z",
+				"style": "StrMenu",
+				"description": "Select what data to use to scale instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancepop",
+				"label": "Pivot OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Pivot instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancepx",
+				"label": "Pivot X",
+				"style": "StrMenu",
+				"description": "Select what data to use for the pivot of the instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancepy",
+				"label": "Pivot Y",
+				"style": "StrMenu",
+				"description": "Select what data to use for the pivot of the instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancepz",
+				"label": "Pivot Z",
+				"style": "StrMenu",
+				"description": "Select what data to use for the pivot of the instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerottoorder",
+				"label": "Rotate to Vector: Order",
+				"style": "Menu",
+				"description": "Controls where in the transform equation the Rotate To Vector operation is applied."
+			},
+			{
+				"name": "instancerottoforward",
+				"label": "Rotate to Vector: Forward Direction",
+				"style": "Menu",
+				"description": "Determine which axis for the geometry original orientation is considered 'forward'. That is, it'll treat the part of the geometry that is looking down that axis as the front and rotate it so it's alig"
+			},
+			{
+				"name": "instancerottoop",
+				"label": "Rotate to OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Rotate to Vector instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancerottox",
+				"label": "Rotate to Vector X",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate to vector instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerottoy",
+				"label": "Rotate to Vector Y",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate to vector instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerottoz",
+				"label": "Rotate to Vector Z",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate to vector instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerotupop",
+				"label": "Rotate Up OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Rotate Up instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancerotupx",
+				"label": "Rotate Up X",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate up instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instancerotupy",
+				"label": "Rotate Up Y",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate up instances, use the drop-down menu on the right to easily select from the available options"
+			},
+			{
+				"name": "instancerotupz",
+				"label": "Rotate Up Z",
+				"style": "StrMenu",
+				"description": "Select what data to use to rotate up instances, use the drop-down menu on the right to easily select from the available options"
+			},
+			{
+				"name": "instanceorder",
+				"label": "Instance Order",
+				"style": "Menu",
+				"description": "Sets how transforms are applied to the instances."
+			},
+			{
+				"name": "instancetexmode",
+				"label": "Texture Mode",
+				"style": "Menu",
+				"description": "Set how the texture coordinates are applied to the instances."
+			},
+			{
+				"name": "instancetexcoordop",
+				"label": "Tex Coord OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Texture Coord instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instanceu",
+				"label": "U",
+				"style": "StrMenu",
+				"description": "Select what data to apply to texture coordinates of the instances, use the drop-down menu on the right to easily select from the available options. This interacts with the first texture layer coming f"
+			},
+			{
+				"name": "instancev",
+				"label": "V",
+				"style": "StrMenu",
+				"description": "Select what data to apply to texture coordinates of the instances, use the drop-down menu on the right to easily select from the available options. This interacts with the first texture layer coming f"
+			},
+			{
+				"name": "instancew",
+				"label": "W",
+				"style": "StrMenu",
+				"description": "Select what data to apply to texture coordinates of the instances, use the drop-down menu on the right to easily select from the available options. This interacts with the first texture layer coming f"
+			},
+			{
+				"name": "instancecolormode",
+				"label": "Color Mode",
+				"style": "Menu",
+				"description": "Controls how the instance color values interact with the SOPs attribute. If the doesn't have a 'Cd' attribute, then it will behave as if its 'Cd' is (1, 1, 1, 1)."
+			},
+			{
+				"name": "instancecolorop",
+				"label": "Color OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Color instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancer",
+				"label": "R",
+				"style": "StrMenu",
+				"description": "Select what data to apply to the diffuse color of the instances, use the drop-down menu on the right to easily select from the available options. These parameters will be combined/replaced with the SO"
+			},
+			{
+				"name": "instanceg",
+				"label": "G",
+				"style": "StrMenu",
+				"description": "Select what data to apply to the diffuse color of the instances, use the drop-down menu on the right to easily select from the available options. These parameters will be combined/replaced with the SO"
+			},
+			{
+				"name": "instanceb",
+				"label": "B",
+				"style": "StrMenu",
+				"description": "Select what data to apply to the diffuse color of the instances, use the drop-down menu on the right to easily select from the available options. These parameters will be combined/replaced with the SO"
+			},
+			{
+				"name": "instancea",
+				"label": "A",
+				"style": "StrMenu",
+				"description": "Select what data to apply to the diffuse color of the instances, use the drop-down menu on the right to easily select from the available options. These parameters will be combined/replaced with the SO"
+			},
+			{
+				"name": "instancetexs",
+				"label": "Instance Textures",
+				"style": "TOP",
+				"description": "Specify the paths one or more containing the textures to use with the instances. Wildcards and pattern matching is supported."
+			},
+			{
+				"name": "instancetexextendu",
+				"label": "Extend U",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancetexextendv",
+				"label": "Extend V",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancetexextendw",
+				"label": "Extend W",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancetexfilter",
+				"label": "Filter",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancetexanisotropy",
+				"label": "Anisotropic Filter",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancetexindexop",
+				"label": "Tex Index OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the Texture Index instance attribute below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instancetexindex",
+				"label": "Texture Index",
+				"style": "StrMenu",
+				"description": "Select what data to select which texture to use for the instances, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instance",
+				"label": "Custom Instance",
+				"style": "Sequence",
+				"description": "Sequence of arbitrary attributes to be assigned to instances"
+			},
+			{
+				"name": "instance0customop",
+				"label": "OP",
+				"style": "SOP",
+				"description": "Select a specific operator to get data from for the instance attributes below. If not specified, the the operator specified in the 'Default ' on the parameter page can be used."
+			},
+			{
+				"name": "instance0customx",
+				"label": "X",
+				"style": "StrMenu",
+				"description": "Select what data to use for this instance attribute, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instance0customy",
+				"label": "Y",
+				"style": "StrMenu",
+				"description": "Select what data to use for this instance attribute, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instance0customz",
+				"label": "Z",
+				"style": "StrMenu",
+				"description": "Select what data to use for this instance attribute, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "instance0customw",
+				"label": "W",
+				"style": "StrMenu",
+				"description": "Select what data to use for this instance attribute, use the drop-down menu on the right to easily select from the available options."
+			},
+			{
+				"name": "material",
+				"label": "Material",
+				"style": "MAT",
+				"description": "Selects a to apply to the geometry inside."
+			},
+			{
+				"name": "render",
+				"label": "Render",
+				"style": "Toggle",
+				"description": "Whether the 's geometry is visible in the . This parameter works in conjunction (logical AND) with the 's ."
+			},
+			{
+				"name": "drawpriority",
+				"label": "Draw Priority",
+				"style": "Float",
+				"description": "Determines the order in which the Components are drawn. Smaller values get drawn after larger values. The value is compared with other Components in the same parent , or if the is the top level one li"
+			},
+			{
+				"name": "pickpriority",
+				"label": "Pick Priority",
+				"style": "Float",
+				"description": "When using a or a , there is an option to have a 'Search Area'. If multiple objects are found within the search area, the pick priority can be used to select one object over another. A higher value wi"
+			},
+			{
+				"name": "lightmask",
+				"label": "Light Mask",
+				"style": "Object",
+				"description": "By default all lights used in the will affect geometry renderer. This parameter can be used to specify a sub-set of lights to be used for this particular geometry. The lights must be listed in the as "
+			},
+			{
+				"name": "reinitextensions",
+				"label": "Re-Init Extensions",
+				"style": "Pulse",
+				"description": "Recompile all extension objects. Normally extension objects are compiled only when they are referenced and their definitions have changed."
+			},
+			{
+				"name": "initextonstart",
+				"label": "Init Extensions On Start",
+				"style": "Toggle",
+				"description": "Perform a Re-Init automatically when TouchDEsigner Starts"
+			},
+			{
+				"name": "ext",
+				"label": "Extension",
+				"style": "Sequence",
+				"description": "Sequence of info for creating extensions on this component"
+			},
+			{
+				"name": "ext0object",
+				"label": "Object",
+				"style": "Str",
+				"description": "A number of class instances that can be attached to the component."
+			},
+			{
+				"name": "ext0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Optional name to search by, instead of the instance class name."
+			},
+			{
+				"name": "ext0promote",
+				"label": "Promote",
+				"style": "Toggle",
+				"description": "Controls whether or not the extensions are visible directly at the component level, or must be accessed through the member.  Example: vs"
+			},
+			{
+				"name": "parentshortcut",
+				"label": "Parent Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as the path to that component. See ."
+			},
+			{
+				"name": "opshortcut",
+				"label": "Global OP Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere at all as the path to that component. See ."
+			},
+			{
+				"name": "iop",
+				"label": "Internal OP",
+				"style": "Sequence",
+				"description": "Sequence header for internal operators."
+			},
+			{
+				"name": "iop0shortcut",
+				"label": "Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as a path to \"Internal \" below. See ."
+			},
+			{
+				"name": "iop0op",
+				"label": "OP",
+				"style": "OP",
+				"description": "The path to the Internal OP inside this component. See ."
+			},
+			{
+				"name": "nodeview",
+				"label": "Node View",
+				"style": "Menu",
+				"description": "Determines what is displayed in the node viewer, also known as the . Some options will not be available depending on the type ( , , Misc.)"
+			},
+			{
+				"name": "opviewer",
+				"label": "Operator Viewer",
+				"style": "OP",
+				"description": "Select which operator's node viewer to use when the Node View parameter above is set to Operator ."
+			},
+			{
+				"name": "enablecloning",
+				"label": "Enable Cloning",
+				"style": "Toggle",
+				"description": "Control if the OP should be actively cloneing. Turning this off causes this node to stop cloning it's 'Clone Master'."
+			},
+			{
+				"name": "enablecloningpulse",
+				"label": "Enable Cloning Pulse",
+				"style": "Pulse",
+				"description": "Instantaneously clone the contents."
+			},
+			{
+				"name": "clone",
+				"label": "Clone Master",
+				"style": "COMP",
+				"description": "to a component used as the Master ."
+			},
+			{
+				"name": "loadondemand",
+				"label": "Load on Demand",
+				"style": "Toggle",
+				"description": "Loads the component into memory only when required. Good to use for components that are not always used in the project."
+			},
+			{
+				"name": "enableexternaltox",
+				"label": "Enable External .tox",
+				"style": "Toggle",
+				"description": "When on (default), the external file will be loaded when the starts and the contents of the will match that of the external . This can be turned off to avoid loading from the referenced external on st"
+			},
+			{
+				"name": "enableexternaltoxpulse",
+				"label": "Enable External .tox Pulse",
+				"style": "Pulse",
+				"description": "This button will re-load from the external file (if present)."
+			},
+			{
+				"name": "externaltox",
+				"label": "External .tox Path",
+				"style": "File",
+				"description": "to a file on disk which will source the component's contents upon start of a . This allows for components to contain networks that can be updated independently. If the file can not be found, whatever "
+			},
+			{
+				"name": "reloadcustom",
+				"label": "Reload Custom Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes inside the component ar"
+			},
+			{
+				"name": "reloadbuiltin",
+				"label": "Reload Built-In Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's built-in parameters are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes ins"
+			},
+			{
+				"name": "savebackup",
+				"label": "Save Backup of External",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, a backup copy of the component specified by the External parameter is saved in the file.  This backup copy will be used if the External can not be found. This may happen"
+			},
+			{
+				"name": "subcompname",
+				"label": "Sub-Component to Load",
+				"style": "Str",
+				"description": "When loading from an External file, this option allows you to reach into the and pull out a and make that the top-level , ignoring everything else in the file (except for the contents of that ). For e"
+			},
+			{
+				"name": "relpath",
+				"label": "Relative File Path Behavior",
+				"style": "Menu",
+				"description": "Set whether the child file paths within this are relative to the itself or the , or inherit from parent."
+			},
+			{
+				"name": "pty",
+				"label": "Pty",
+				"style": "XYZW"
+			},
+			{
+				"name": "wcolorr",
+				"label": "Wcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "ppy",
+				"label": "Ppy",
+				"style": "XYZW"
+			},
+			{
+				"name": "wcolorb",
+				"label": "Wcolorb",
+				"style": "RGBA",
+				"description": "Use the R, G, and B fields to set the Component's color when displayed in wireframe shading mode."
+			},
+			{
+				"name": "fontcolorb",
+				"label": "Fontcolorb",
+				"style": "RGBA",
+				"description": "The color for the font."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "instancescaleu",
+				"label": "Instancescaleu",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancerotv",
+				"label": "Instancerotv",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "This allows you to specify the amount of movement along any of the three axes; the amount, in degrees, of rotation around any of the three axes; and a non-uniform scaling along the three axes. As an a"
+			},
+			{
+				"name": "fontcolorr",
+				"label": "Fontcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "fontcolorg",
+				"label": "Fontcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "prz",
+				"label": "Prz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW",
+				"description": "The Pivot point edit fields allow you to define the point about which a Component scales and rotates. Altering the pivot point of a Component produces different results depending on the transformation"
+			},
+			{
+				"name": "ppx",
+				"label": "Ppx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ppz",
+				"label": "Ppz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "prx",
+				"label": "Prx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ptx",
+				"label": "Ptx",
+				"style": "XYZW"
+			},
+			{
+				"name": "instancecolorpremult",
+				"label": "Instancecolorpremult",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "layoutsizew",
+				"label": "Layoutsizew",
+				"style": "WH"
+			},
+			{
+				"name": "upx",
+				"label": "Upx",
+				"style": "XYZW"
+			},
+			{
+				"name": "insttexxord",
+				"label": "Insttexxord",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "psz",
+				"label": "Psz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "layoutsizeh",
+				"label": "Layoutsizeh",
+				"style": "WH",
+				"description": "Text is aligned and word-wrapped within a virtual layout box. This box is what is transformed by the various transform parameters, and then the text is aligned and laid out within that. The width and "
+			},
+			{
+				"name": "psx",
+				"label": "Psx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "upz",
+				"label": "Upz",
+				"style": "XYZW",
+				"description": "When orienting a Component, the Up Vector is used to determine where the positive Y axis points."
+			},
+			{
+				"name": "textpaddingt",
+				"label": "Textpaddingt",
+				"style": "Float",
+				"description": "Extra padding to add to the sides of the layout box, pushing the text inwards for alignment."
+			},
+			{
+				"name": "textpaddingb",
+				"label": "Textpaddingb",
+				"style": "Float"
+			},
+			{
+				"name": "pry",
+				"label": "Pry",
+				"style": "XYZW"
+			},
+			{
+				"name": "upy",
+				"label": "Upy",
+				"style": "XYZW"
+			},
+			{
+				"name": "wcolorg",
+				"label": "Wcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW",
+				"description": "This specifies the amount of movement along any of the three axes; the amount, in degrees, of rotation around any of the three axes; and a non-uniform scaling along the three axes. As an alternative t"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "psy",
+				"label": "Psy",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "Theis specifies the amount of movement along any of the three axes; the amount, in degrees, of rotation around any of the three axes; and a non-uniform scaling along the three axes. As an alternative "
+			},
+			{
+				"name": "textpaddingr",
+				"label": "Textpaddingr",
+				"style": "Float"
+			},
+			{
+				"name": "instancerotw",
+				"label": "Instancerotw",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ptz",
+				"label": "Ptz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "instancescalev",
+				"label": "Instancescalev",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "insttexrord",
+				"label": "Insttexrord",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancescalew",
+				"label": "Instancescalew",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "instancerotu",
+				"label": "Instancerotu",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "textpaddingl",
+				"label": "Textpaddingl",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

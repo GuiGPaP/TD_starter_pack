@@ -1,0 +1,40 @@
+{
+	"id": "substanceselect-top",
+	"title": "substanceselectTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"substanceselect",
+		"top",
+		"substanceselecttop",
+		"substance",
+		"output"
+	],
+	"content": {
+		"summary": "TouchDesigner substanceselectTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "substanceselectTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "substance",
+				"label": "Substance TOP",
+				"style": "TOP",
+				"description": "a specific from which to select a texture."
+			},
+			{
+				"name": "output",
+				"label": "Output Channel",
+				"style": "Menu",
+				"description": "Choose which texture is being grabbed from the ."
+			}
+		],
+		"versions": {}
+	}
+}

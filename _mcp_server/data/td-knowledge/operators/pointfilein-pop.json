@@ -1,0 +1,216 @@
+{
+	"id": "pointfilein-pop",
+	"title": "pointfileinPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"pointfilein",
+		"pop",
+		"pointfileinpop",
+		"file",
+		"reload",
+		"createpointprim",
+		"maxpointsenable",
+		"maxpoints"
+	],
+	"content": {
+		"summary": "TouchDesigner pointfileinPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "pointfileinPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "File",
+				"style": "File",
+				"description": "The path and name of the point file to load."
+			},
+			{
+				"name": "reload",
+				"label": "Reload",
+				"style": "Toggle",
+				"description": "Re-import and load the geometry."
+			},
+			{
+				"name": "createpointprim",
+				"label": "Create Point Primitives",
+				"style": "Toggle",
+				"description": "Enable creating point primitives"
+			},
+			{
+				"name": "maxpointsenable",
+				"label": "Max Number of Points",
+				"style": "Toggle",
+				"description": "Enable the setting of the max number of points."
+			},
+			{
+				"name": "maxpoints",
+				"label": "Max Number of Points",
+				"style": "Int",
+				"description": "Sets the max number of points when the automatic max number of points is overriden."
+			},
+			{
+				"name": "positionfields",
+				"label": "Position Fields",
+				"style": "StrMenu",
+				"description": "Fields mapped to the position."
+			},
+			{
+				"name": "normalfields",
+				"label": "Normal Fields",
+				"style": "StrMenu",
+				"description": "Fields for the normal attribute."
+			},
+			{
+				"name": "texturefields",
+				"label": "Texture Fields",
+				"style": "StrMenu",
+				"description": "Fields mapped to the texture coordinates."
+			},
+			{
+				"name": "colorfields",
+				"label": "Color Fields",
+				"style": "StrMenu",
+				"description": "The fields to use for the color attribute."
+			},
+			{
+				"name": "attr",
+				"label": "Attribute",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for attribute conditions."
+			},
+			{
+				"name": "attr0fields",
+				"label": "Fields",
+				"style": "StrMenu",
+				"description": "Determines fields that can be used to create additional attributes."
+			},
+			{
+				"name": "attr0name",
+				"label": "Attribute Name",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attr0isarray",
+				"label": "Array",
+				"style": "Toggle",
+				"description": "Attribute is an array, for example 5 float3 values is an array of size 5."
+			},
+			{
+				"name": "attr0arraysize",
+				"label": "Array Size",
+				"style": "Int",
+				"description": "Nunber of elements in the array."
+			},
+			{
+				"name": "thinoutrange",
+				"label": "Thin Out Range",
+				"style": "Toggle",
+				"description": "Enable index-based point filtering."
+			},
+			{
+				"name": "thinrangestart",
+				"label": "Thin Range Start",
+				"style": "Int",
+				"description": "Determines the starting index for range-based point filtering."
+			},
+			{
+				"name": "thinrangelength",
+				"label": "Thin Range Length",
+				"style": "Int",
+				"description": "Determines the number of points being filtered by index range."
+			},
+			{
+				"name": "thinstep",
+				"label": "Thin Step",
+				"style": "Int",
+				"description": "Filters every Nth point."
+			},
+			{
+				"name": "thinrandom",
+				"label": "Thin Random",
+				"style": "Float",
+				"description": "Determines the proportion of points randomly filtered."
+			},
+			{
+				"name": "thinrandomseed",
+				"label": "Thin Random Seed",
+				"style": "Float",
+				"description": "Sets the random seed for points being randomly filtered."
+			},
+			{
+				"name": "rerange",
+				"label": "Rerange",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks to re-range created attributes."
+			},
+			{
+				"name": "rerange0scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "Rerange any attribute from the file."
+			},
+			{
+				"name": "rerange0parsize",
+				"label": "Parameter Size",
+				"style": "Menu",
+				"description": "Number of independent configurable parameter values."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "rerange0tohigh0",
+				"label": "Rerange0Tohigh0",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rerange0fromhigh0",
+				"label": "Rerange0Fromhigh0",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "reloadpulse",
+				"label": "Reloadpulse",
+				"style": "Pulse"
+			},
+			{
+				"name": "rerange0tolow0",
+				"label": "Rerange0Tolow0",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rerange0fromlow0",
+				"label": "Rerange0Fromlow0",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

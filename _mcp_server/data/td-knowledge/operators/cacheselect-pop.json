@@ -1,0 +1,61 @@
+{
+	"id": "cacheselect-pop",
+	"title": "cacheselectPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"cacheselect",
+		"pop",
+		"cacheselectpop",
+		"cachepop",
+		"index",
+		"bypass",
+		"freeextragpumem",
+		"delinputattrs"
+	],
+	"content": {
+		"summary": "TouchDesigner cacheselectPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cacheselectPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "cachepop",
+				"label": "Cache POP",
+				"style": "POP",
+				"description": "The Cache to fetch cache snapshots from."
+			},
+			{
+				"name": "index",
+				"label": "Cache Index",
+				"style": "Int",
+				"description": "The cache index to output."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

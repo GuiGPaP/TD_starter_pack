@@ -1,0 +1,127 @@
+{
+	"id": "fit-sop",
+	"title": "fitSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"fit",
+		"sop",
+		"fitsop",
+		"group",
+		"method",
+		"type",
+		"surftype",
+		"orderu"
+	],
+	"content": {
+		"summary": "TouchDesigner fitSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fitSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "method",
+				"label": "Method",
+				"style": "Menu",
+				"description": "Specifies one of two fitting styles: approximation or interpolation. Each style has a number of parameters that are accessible from the respective folder. For more information see the Approximation an"
+			},
+			{
+				"name": "type",
+				"label": "Primitive Type",
+				"style": "Menu",
+				"description": "The output of the Fit is a NURBS or Bzier primitive. All input faces are fitted to Spline curves, and all input surfaces are fitted to spline surfaces. The resulting shapes are identical whether creat"
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "This option is used to select the type of surface, when using a Mesh Type."
+			},
+			{
+				"name": "orderu",
+				"label": "U Order",
+				"style": "Int",
+				"description": "If the input is a face, this is the order of the Spline curve to be generated. If the input is a surface, this is the order of the fitted spline surface in the U parametric direction."
+			},
+			{
+				"name": "orderv",
+				"label": "V Order",
+				"style": "Int",
+				"description": "If the input is a surface, this is the order of the fitted Spline surface in the V parametric direction. The V order is irrelevant if the input is a face."
+			},
+			{
+				"name": "tol",
+				"label": "Tolerance",
+				"style": "Float",
+				"description": "This is the primary precision factor in approximation fitting. The smaller the tolerance, the closer the fit and the higher the number of generated vertices. If a small tolerance causes unwanted twist"
+			},
+			{
+				"name": "smooth",
+				"label": "Smoothness",
+				"style": "Float",
+				"description": "For a set tolerance, the smoothness factor allows for more or less roundness in the generated shape. If this parameter is zero, it does not mean that the fit will be sharp. It simply indicates that no"
+			},
+			{
+				"name": "multipleu",
+				"label": "U Multiple Knots",
+				"style": "Toggle",
+				"description": "Sometimes the data set has sharp bends that must be preserved in the fitted shape. In this case, inserting multiple knots in the areas of sharp curvature will usually produce the right effect. Sometim"
+			},
+			{
+				"name": "multiplev",
+				"label": "V Multiple Knots",
+				"style": "Toggle",
+				"description": "Sometimes the data set has sharp bends that must be preserved in the fitted shape. In this case, inserting multiple knots in the areas of sharp curvature will usually produce the right effect. Sometim"
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "Menu",
+				"description": "establishes the interpolation method."
+			},
+			{
+				"name": "dataparmu",
+				"label": "U Data Parameter",
+				"style": "Menu",
+				"description": "Specifies the parameterization of the data in the U direction (the only direction if the input is a curve). The data parameterization can be uniform, chord length, or centripetal."
+			},
+			{
+				"name": "dataparmv",
+				"label": "V Data Parameter",
+				"style": "Menu",
+				"description": "V data parameterization is identical to U data parameterization, but it affects the V direction when the input is a surface. It is not used when the input is a face."
+			},
+			{
+				"name": "closeu",
+				"label": "U Wrap",
+				"style": "Menu",
+				"description": "This menu determines whether the fitted curve should be closed, or whether the fitted surface should be wrapped in the U parametric direction. The options are to open (Off), close (On), or inherit the"
+			},
+			{
+				"name": "closev",
+				"label": "V Wrap",
+				"style": "Menu",
+				"description": "This menu determines whether the fitted surface should be wrapped in the V parametric direction. The options are to open (Off), close (On), or inherit the closure type from the input primitive. V Wrap"
+			},
+			{
+				"name": "corners",
+				"label": "Fit Corners",
+				"style": "Toggle",
+				"description": "Specifies whether corners in the data should be preserved when doing local curve interpolation."
+			}
+		],
+		"versions": {}
+	}
+}
