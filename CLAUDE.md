@@ -26,10 +26,14 @@ When working with TouchDesigner, pick the right skill:
 - `just check` — lint + typecheck only (does **not** run tests)
 - `just test` — run test suite
 
-## MCP Server (submodule)
+## MCP Server
 
-`_mcp_server/` is a git submodule pointing to `GuiGPaP/touchdesigner-mcp` (branch `td-starter-pack`).
-Run `git submodule update --init` after clone. See `.mcp.example.json` for local config.
+`_mcp_server/` contains the TouchDesigner MCP server (TypeScript + Python). It lives directly in the mono-repo — no submodule.
+
+- **Build:** `cd _mcp_server && npm run build`
+- **Test:** `cd _mcp_server && npm test`
+- **Toolkit data** (`_mcp_server/data/td-knowledge/toolkits/`) is gitignored — populated via live TD introspection, not committed.
+- **History:** Previously a submodule of `GuiGPaP/touchdesigner-mcp` (branch `td-starter-pack`). Inlined as of 2026-03-26.
 
 ## glslangValidator Auto-Provisioning
 
