@@ -1,0 +1,72 @@
+{
+	"id": "skin-pop",
+	"title": "skinPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"skin",
+		"pop",
+		"skinpop",
+		"skinops",
+		"closed",
+		"outputquads",
+		"bypass"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "skinPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "skinops",
+				"label": "Skin",
+				"style": "Menu",
+				"description": "Skin primitive method."
+			},
+			{
+				"name": "inc",
+				"label": "N",
+				"style": "Int",
+				"description": "N value when skinning groups of N input primitives or every N input primitives."
+			},
+			{
+				"name": "closed",
+				"label": "Closed",
+				"style": "Toggle",
+				"description": "The last vertex is connected to the first vertex."
+			},
+			{
+				"name": "outputquads",
+				"label": "Output Quads",
+				"style": "Toggle",
+				"description": "Whether to output quad primitives instead of triangle primitives."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

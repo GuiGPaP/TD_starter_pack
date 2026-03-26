@@ -1,0 +1,253 @@
+{
+	"id": "timecode-chop",
+	"title": "timecodeCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"timecode",
+		"chop",
+		"timecodechop",
+		"smpte",
+		"mode",
+		"rate",
+		"dropframe",
+		"index"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "timecodeCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "smpte",
+				"label": "SMPTE",
+				"style": "Toggle",
+				"description": "When enabled the generated timecode will follow the standard, meaning no negative timecodes, and the timecode will loop at 24 hours. When disabled, the format will be more general, allowing for negati"
+			},
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "The source used for generating the timecode"
+			},
+			{
+				"name": "rate",
+				"label": "Rate",
+				"style": "Float",
+				"description": "The timecode . The timecode's max frame value is equal to . If a fractional rate is provided then the rate is rounded up to the nearest whole number and drop-frames will be calculated if enabled on th"
+			},
+			{
+				"name": "dropframe",
+				"label": "Drop Frame",
+				"style": "Toggle",
+				"description": "Specify how to calculate . Drop frames are used when the is fractional. cannot increment a fractional amount per frame so is rounded to the next whole number and the accumulation of error is accommoda"
+			},
+			{
+				"name": "index",
+				"label": "Index",
+				"style": "Float",
+				"description": "The index used to generate the timecode. Value is used in conjunction with the specified units."
+			},
+			{
+				"name": "indexunit",
+				"label": "Index Unit",
+				"style": "Menu",
+				"description": "The index value units."
+			},
+			{
+				"name": "timecodestr",
+				"label": "Timecode String",
+				"style": "Str",
+				"description": "A timecode string following the format: or"
+			},
+			{
+				"name": "frame",
+				"label": "Frame",
+				"style": "Int",
+				"description": "Frame component of the timecode."
+			},
+			{
+				"name": "second",
+				"label": "Second",
+				"style": "Float",
+				"description": "Second component of the timecode."
+			},
+			{
+				"name": "minute",
+				"label": "Minute",
+				"style": "Float",
+				"description": "Minute component of the timecode. Allows for overflow."
+			},
+			{
+				"name": "hour",
+				"label": "Hour",
+				"style": "Float",
+				"description": "Hour component of the timecode."
+			},
+			{
+				"name": "init",
+				"label": "Initialize",
+				"style": "Pulse",
+				"description": "Used in sequential mode. Initializes the timecode value."
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Pulse",
+				"description": "Used in sequential mode. Starts the timecode sequential increment."
+			},
+			{
+				"name": "play",
+				"label": "Play",
+				"style": "Toggle",
+				"description": "When enabled, the sequential timecode will step forward."
+			},
+			{
+				"name": "timecodeobj",
+				"label": "Timecode Object",
+				"style": "Str",
+				"description": "A timecode object."
+			},
+			{
+				"name": "chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "A reference which contains some or all of the following channels: negative, hour, minute, second, frame."
+			},
+			{
+				"name": "op",
+				"label": "OP",
+				"style": "OP",
+				"description": "An OP reference that contains a timecode Python member: eg. ."
+			},
+			{
+				"name": "customlength",
+				"label": "Custom Length",
+				"style": "Toggle",
+				"description": "If set to \"By Value\", then the Length parameter is used. If set to \"By Timecode\", then the Length Timecode Object is used. If set to \"Off\", then the default length will be 23:59:59:ff-1 for a SMPTE ti"
+			},
+			{
+				"name": "length",
+				"label": "Length",
+				"style": "Float",
+				"description": "Specifies the custom length in either samples, frames, or seconds."
+			},
+			{
+				"name": "lengthunits",
+				"label": "Length Units",
+				"style": "Menu",
+				"description": "The unit of the custom length."
+			},
+			{
+				"name": "negativechan",
+				"label": "Negative Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the negative channel, which is true when the timecode is negative. Always false when using SMPTE standard."
+			},
+			{
+				"name": "framechan",
+				"label": "Frame Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the frame channel."
+			},
+			{
+				"name": "secondchan",
+				"label": "Second Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the second channel."
+			},
+			{
+				"name": "minutechan",
+				"label": "Minute Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the minute channel."
+			},
+			{
+				"name": "hourchan",
+				"label": "Hour Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the hour channel."
+			},
+			{
+				"name": "totalseconds",
+				"label": "Total Seconds Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the total_seconds channel, which is the timecode converted into seconds."
+			},
+			{
+				"name": "totalframes",
+				"label": "Total Frames Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the total_frames channel, which is the timecode into frames."
+			},
+			{
+				"name": "dropframechan",
+				"label": "Drop Frame Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the drop_frame channel, which is true when the timecode is drop-frame."
+			},
+			{
+				"name": "fpschan",
+				"label": "FPS Chan",
+				"style": "Toggle",
+				"description": "When enabled, outputs the fps channel."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "countdown",
+				"label": "Countdown",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "cycle",
+				"label": "Cycle",
+				"style": "Toggle",
+				"description": "When enabled, the timecode value will cycle back to 00:00:00:00 upon reaching the custom length, rather than holding the last value."
+			}
+		],
+		"versions": {}
+	}
+}

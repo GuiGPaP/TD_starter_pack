@@ -1,0 +1,174 @@
+{
+	"id": "select-dat",
+	"title": "selectDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"select",
+		"dat",
+		"selectdat",
+		"firstrow",
+		"firstcol",
+		"extractrows",
+		"rownamestart"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "selectDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "dat",
+				"label": "DAT",
+				"style": "DAT",
+				"description": "The of the being referenced."
+			},
+			{
+				"name": "firstrow",
+				"label": "Include First Row",
+				"style": "Toggle",
+				"description": "Forces the first row to be selected even if it is not specified by the Select Rows settings."
+			},
+			{
+				"name": "firstcol",
+				"label": "Include First Col",
+				"style": "Toggle",
+				"description": "Forces the first column to be selected even if it is not specified by the Select Cols settings."
+			},
+			{
+				"name": "extractrows",
+				"label": "Select Rows",
+				"style": "Menu",
+				"description": "This parameter allows you to pick different ways of specifying the rows selected."
+			},
+			{
+				"name": "rownamestart",
+				"label": "Start Row Name",
+				"style": "Str",
+				"description": "Specify the row name to start the selection range from."
+			},
+			{
+				"name": "rowindexstart",
+				"label": "Start Row Index",
+				"style": "Int",
+				"description": "Specify the row index to start the selection range from."
+			},
+			{
+				"name": "rownameend",
+				"label": "End Row  Name",
+				"style": "Str",
+				"description": "Specify the row name to end the selection range."
+			},
+			{
+				"name": "rowindexend",
+				"label": "End Row Index",
+				"style": "Int",
+				"description": "Specify the row index to end the selection range."
+			},
+			{
+				"name": "rownames",
+				"label": "Row Select Values",
+				"style": "Str",
+				"description": "Specify actual row names that you want to select. You can use TouchDesigner's pattern matching (see wiki page ), for example will select all the rows names thru . Some characters like need a in front "
+			},
+			{
+				"name": "rowexpr",
+				"label": "Row Select Condition",
+				"style": "Str",
+				"description": "Specify an expression that will be evaluated.  If the expression evaluates to true, the row will be selected."
+			},
+			{
+				"name": "fromcol",
+				"label": "From Column",
+				"style": "Int",
+				"description": "When selecting rows by values, this parameter selects which column to use when matching cell values to Selected Row Values to determine which rows are selected."
+			},
+			{
+				"name": "extractcols",
+				"label": "Select Cols",
+				"style": "Menu",
+				"description": "This parameter allows you to pick different ways of specifying the columns selected."
+			},
+			{
+				"name": "colnamestart",
+				"label": "Start Col Name",
+				"style": "Str",
+				"description": "Specify the column name to start the selection range from."
+			},
+			{
+				"name": "colindexstart",
+				"label": "Start Col Index",
+				"style": "Int",
+				"description": "Specify the column index to start the selection range from."
+			},
+			{
+				"name": "colnameend",
+				"label": "End Col Name",
+				"style": "Str",
+				"description": "Specify the column name to end the selection range."
+			},
+			{
+				"name": "colindexend",
+				"label": "End Col Index",
+				"style": "Int",
+				"description": "Specify the column index to end the selection range."
+			},
+			{
+				"name": "colnames",
+				"label": "Col Select Values",
+				"style": "Str",
+				"description": "Specify actual column names that you want to select. You can use TouchDesigner's pattern matching  (see wiki page ), for example will select all the columns named thru .\tMatching some characters like "
+			},
+			{
+				"name": "colexpr",
+				"label": "Col Select Condition",
+				"style": "Str",
+				"description": "Specify an expression that will be evaluated. If the expression evaluates to true, the column will be selected. See Row Select Condition for more details."
+			},
+			{
+				"name": "fromrow",
+				"label": "From Row",
+				"style": "Int",
+				"description": "When extracting columns by Specified Names, this parameter selects which row to use when matching cell values to Selected Col Values to determine which columns are selected."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Determines what format will be used for output from the ."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			}
+		],
+		"versions": {}
+	}
+}

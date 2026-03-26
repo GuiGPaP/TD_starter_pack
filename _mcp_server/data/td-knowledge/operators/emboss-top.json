@@ -1,0 +1,78 @@
+{
+	"id": "emboss-top",
+	"title": "embossTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"emboss",
+		"top",
+		"embosstop",
+		"select",
+		"method",
+		"midpoint",
+		"strength",
+		"offsetunit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "embossTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "select",
+				"label": "Select",
+				"style": "Menu",
+				"description": "This menu selects how the edges in the image are found. The edges will appear raised or depressed in the output image depending on their slope."
+			},
+			{
+				"name": "method",
+				"label": "Method",
+				"style": "Menu",
+				"description": "Determines what pixels to use when calculating the slope at each pixel in the image."
+			},
+			{
+				"name": "midpoint",
+				"label": "Midpoint",
+				"style": "Float",
+				"description": "Sets the greyscale color of the midpoint of the emboss. This is the color of any part in the image that is not raised or depressed."
+			},
+			{
+				"name": "strength",
+				"label": "Strength",
+				"style": "Float",
+				"description": "The depth of the emboss. Higher values make the output look more deeply etched."
+			},
+			{
+				"name": "offsetunit",
+				"label": "Sample Step Unit",
+				"style": "Menu",
+				"description": "Sets the units used in the Sample Step parameter."
+			},
+			{
+				"name": "direction",
+				"label": "Direction",
+				"style": "Float",
+				"description": "Controls the position of the light source, changing the direction of the highlights and shadows in the embossed output image."
+			},
+			{
+				"name": "offset1",
+				"label": "Offset1",
+				"style": "Float"
+			},
+			{
+				"name": "offset2",
+				"label": "Offset2",
+				"style": "Float",
+				"description": "When sampling the image, this determines the distance from each pixel to the sample pixel. When units are set to pixels, it is the number of pixels away from the current pixel which is sampled to find"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,143 @@
+{
+	"id": "resample-chop",
+	"title": "resampleCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"resample",
+		"chop",
+		"resamplechop",
+		"method",
+		"rate",
+		"relative",
+		"start",
+		"startunit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "resampleCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "method",
+				"label": "Method",
+				"style": "Menu",
+				"description": "The resample method to apply to the channels:"
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "The new sample rate."
+			},
+			{
+				"name": "relative",
+				"label": "Unit Values",
+				"style": "Menu",
+				"description": "Determines how the Start/End parameters are interpreted."
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Float",
+				"description": "The 's new start position."
+			},
+			{
+				"name": "startunit",
+				"label": "Start Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "end",
+				"label": "End",
+				"style": "Float",
+				"description": "The 's new end position."
+			},
+			{
+				"name": "endunit",
+				"label": "End Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "quatrot",
+				"label": "Quaternion Blend",
+				"style": "Toggle",
+				"description": "Uses quaternions to blend between samples."
+			},
+			{
+				"name": "interp",
+				"label": "Interpolation",
+				"style": "Menu",
+				"description": "The interpolation method to use when resampling:"
+			},
+			{
+				"name": "constarea",
+				"label": "Constant Area",
+				"style": "Toggle",
+				"description": "If enabled, keeps the area under the channel constant by scaling the values of the channel."
+			},
+			{
+				"name": "correct",
+				"label": "Correct for Cycles",
+				"style": "Toggle",
+				"description": "If enabled, compensates for cyclic channels (such as angles) by always choosing the shortest step between samples, like 360 to 0 for angles."
+			},
+			{
+				"name": "cyclelen",
+				"label": "Cycle Length",
+				"style": "Float",
+				"description": "The length of the cycle. 360 is typical for angles."
+			},
+			{
+				"name": "uselastframe",
+				"label": "Use Last Frame Only",
+				"style": "Toggle",
+				"description": "Trim to the input 's last frame and perform the resample on that"
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,118 @@
+{
+	"id": "stretch-chop",
+	"title": "stretchCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"stretch",
+		"chop",
+		"stretchchop",
+		"interp",
+		"constarea",
+		"relative",
+		"start"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "stretchCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "interp",
+				"label": "Interpolation",
+				"style": "Menu",
+				"description": "The interpolation method to use when resampling."
+			},
+			{
+				"name": "constarea",
+				"label": "Constant Area",
+				"style": "Toggle",
+				"description": "If enabled, keeps the area under the channel constant by scaling the values of the channel."
+			},
+			{
+				"name": "relative",
+				"label": "Unit Values",
+				"style": "Menu",
+				"description": "Determines how Start/End parameters are interpreted:"
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Float",
+				"description": "The 's new start position."
+			},
+			{
+				"name": "end",
+				"label": "End",
+				"style": "Float",
+				"description": "The 's new end position."
+			},
+			{
+				"name": "scale",
+				"label": "Length Scale",
+				"style": "Float",
+				"description": "Scales the length of the channel after determining the start/end interval. Good for doubling or halving the length."
+			},
+			{
+				"name": "reverse",
+				"label": "Reverse Interval",
+				"style": "Toggle",
+				"description": "Reverses the channel so that it plays backwards."
+			},
+			{
+				"name": "startunit",
+				"label": "Start Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "endunit",
+				"label": "End Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

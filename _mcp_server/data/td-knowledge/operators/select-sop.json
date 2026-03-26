@@ -1,0 +1,33 @@
+{
+	"id": "select-sop",
+	"title": "selectSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"select",
+		"sop",
+		"selectsop",
+		"sops"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "selectSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "sops",
+				"label": "Sops",
+				"style": "SOP",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

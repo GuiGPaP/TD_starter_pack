@@ -1,0 +1,145 @@
+{
+	"id": "tile-top",
+	"title": "tileTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"tile",
+		"top",
+		"tiletop",
+		"cropleft",
+		"cropleftunit",
+		"cropright",
+		"croprightunit",
+		"cropbottom"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "tileTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "cropleft",
+				"label": "Crop Left",
+				"style": "Float",
+				"description": "Positions the left edge of the image."
+			},
+			{
+				"name": "cropleftunit",
+				"label": "Crop Left Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "cropright",
+				"label": "Crop Right",
+				"style": "Float",
+				"description": "Positions the right edge of the image."
+			},
+			{
+				"name": "croprightunit",
+				"label": "Crop Right Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "cropbottom",
+				"label": "Crop Bottom",
+				"style": "Float",
+				"description": "Positions the bottom edge of the image."
+			},
+			{
+				"name": "cropbottomunit",
+				"label": "Crop Bottom Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "croptop",
+				"label": "Crop Top",
+				"style": "Float",
+				"description": "Positions the top edge of the image."
+			},
+			{
+				"name": "croptopunit",
+				"label": "Crop Top Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "This parameter determines what happens at the edges of the tiles."
+			},
+			{
+				"name": "flop",
+				"label": "Transpose",
+				"style": "Toggle",
+				"description": "Similar to performing a flop on the image (See ) without changing the resolution. It swaps the position of the bottom-right corner with the upper-left corner, while maintaining the original resolution"
+			},
+			{
+				"name": "repeatx",
+				"label": "Repeat X",
+				"style": "Int",
+				"description": "Number of tiles in X direction."
+			},
+			{
+				"name": "repeaty",
+				"label": "Repeat Y",
+				"style": "Int",
+				"description": "Number of tiles in Y direction."
+			},
+			{
+				"name": "flipx",
+				"label": "Flip X",
+				"style": "Toggle",
+				"description": "Flips the image in X."
+			},
+			{
+				"name": "flipy",
+				"label": "Flip Y",
+				"style": "Toggle",
+				"description": "Flips the image in Y."
+			},
+			{
+				"name": "reflectx",
+				"label": "Reflect X",
+				"style": "Toggle",
+				"description": "Reflects the tiles in X. Must have Tile Y set to 2."
+			},
+			{
+				"name": "reflecty",
+				"label": "Reflect Y",
+				"style": "Toggle",
+				"description": "Reflects the tiles in Y. Must have Tile X set to 2."
+			},
+			{
+				"name": "overlapu",
+				"label": "Overlap U",
+				"style": "Float",
+				"description": "Blends the edges together on the right and left edges of the tiles."
+			},
+			{
+				"name": "overlapuunit",
+				"label": "Overlap U Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "overlapv",
+				"label": "Overlap V",
+				"style": "Float",
+				"description": "Blends the edges together on the bottom and top edges of the tiles."
+			},
+			{
+				"name": "overlapvunit",
+				"label": "Overlap V Unit",
+				"style": "Menu"
+			}
+		],
+		"versions": {}
+	}
+}

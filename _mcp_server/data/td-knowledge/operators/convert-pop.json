@@ -1,0 +1,53 @@
+{
+	"id": "convert-pop",
+	"title": "convertPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"convert",
+		"pop",
+		"convertpop",
+		"bypass",
+		"freeextragpumem",
+		"delinputattrs"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "convertPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "convert",
+				"label": "Convert",
+				"style": "Menu",
+				"description": "Determines the converting operation to apply to the primitives or the points."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

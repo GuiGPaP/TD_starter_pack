@@ -1,23 +1,24 @@
 {
 	"id": "composite-top",
-	"title": "Composite TOP",
+	"title": "compositeTOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"composite",
-		"blend",
-		"layer",
-		"mix",
-		"over",
-		"add",
-		"multiply"
+		"top",
+		"compositetop",
+		"previewgrid",
+		"selectinput",
+		"inputindex",
+		"operand",
+		"swaporder"
 	],
 	"content": {
-		"summary": "Composites multiple input images using blend operations (over, add, multiply, screen)."
+		"summary": "TouchDesigner  COMP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -25,10 +26,144 @@
 		"opFamily": "TOP",
 		"parameters": [
 			{
-				"name": "operand"
+				"name": "previewgrid",
+				"label": "Preview Grid",
+				"style": "Toggle",
+				"description": "This outputs an image showing the effect of all operation types in a grid, with the inputs swapped on the right side of each tile."
 			},
 			{
-				"name": "chanmask"
+				"name": "selectinput",
+				"label": "Select Input",
+				"style": "Toggle",
+				"description": "Instead of doing the composites, this causes only one of the inputs to pass through."
+			},
+			{
+				"name": "inputindex",
+				"label": "Input Index",
+				"style": "Int",
+				"description": "When passing through an input with Select Input on, this is the index of the image that is passed through."
+			},
+			{
+				"name": "operand",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Choose which composite operation is performed from this menu. Search the web for 'blend modes' for more detailed information on the effects of each type."
+			},
+			{
+				"name": "swaporder",
+				"label": "Swap Operation Order",
+				"style": "Toggle",
+				"description": "Swaps the order of the input pairs. A operation B is changed to B operation A. Operations like Add don't matter, but many do, like Over and Hard Light."
+			},
+			{
+				"name": "size",
+				"label": "Fixed Layer",
+				"style": "Menu",
+				"description": "The selected input will become the fixed layer and the other input will be the overlay. This does not change the order of the composite (Input1 + Input2), only which layer is considered fixed and whic"
+			},
+			{
+				"name": "prefit",
+				"label": "Pre-Fit Overlay",
+				"style": "Menu",
+				"description": "Determines how the Overlay layer (Overlay layer is the input that is NOT the Fixed Layer) fills the composite."
+			},
+			{
+				"name": "justifyh",
+				"label": "Justify Horizontal",
+				"style": "Menu",
+				"description": "Specify the horizontal alignment of the Overlay."
+			},
+			{
+				"name": "justifyv",
+				"label": "Justify Vertical",
+				"style": "Menu",
+				"description": "Specify the vertical alignment of the Overlay."
+			},
+			{
+				"name": "extend",
+				"label": "Extend Overlay",
+				"style": "Menu",
+				"description": "Sets the extend (or repeat) conditions of the Overlay layer. This parameter determines what happens at the edges of the Overlay layer."
+			},
+			{
+				"name": "r",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "Rotates the Overlay layer. Increasing values rotate clockwise, decreasing values rotate counter-clockwise."
+			},
+			{
+				"name": "tunit",
+				"label": "Translate Units",
+				"style": "Menu",
+				"description": "Sets the units used in the Translate parameter."
+			},
+			{
+				"name": "punit",
+				"label": "Pivot Units",
+				"style": "Menu",
+				"description": "Sets the units used in the Pivot parameter."
+			},
+			{
+				"name": "tstepunit",
+				"label": "Translate Step Units",
+				"style": "Menu",
+				"description": "Sets the units used in the Translate Step parameter"
+			},
+			{
+				"name": "legacyxform",
+				"label": "Legacy Transform",
+				"style": "Toggle",
+				"description": "When enabled, will use the legacy method of building the transform matrix, which has inverted rotation and transform order."
+			},
+			{
+				"name": "tstepx",
+				"label": "Tstepx",
+				"style": "XYZW"
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW",
+				"description": "Allows you to define the point about which the Overlay layer scales and rotates. Altering the pivot point produces different results depending on the Transform Order."
+			},
+			{
+				"name": "tops",
+				"label": "Tops",
+				"style": "TOP",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW",
+				"description": "Translates the Overlay layer in x and y."
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW",
+				"description": "Scales the Overlay layer in x and y."
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "tstepy",
+				"label": "Tstepy",
+				"style": "XYZW",
+				"description": "Translates the Overlay layers cumulatively, starting at the 3rd input (index 2). That layer is translated by the amount specified, the next layer is translated by 2 times that amount, the following la"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
 			}
 		],
 		"examples": [
@@ -54,8 +189,6 @@
 				"context": "textport"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

@@ -1,0 +1,66 @@
+{
+	"id": "sopto-pop",
+	"title": "soptoPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sopto",
+		"pop",
+		"soptopop",
+		"polygons",
+		"mesh",
+		"bypass",
+		"freeextragpumem"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "soptoPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "sop",
+				"label": "SOP",
+				"style": "SOP",
+				"description": "to a that will have its geometry converted to geometry."
+			},
+			{
+				"name": "polygons",
+				"label": "5+ Points Polygons",
+				"style": "Menu",
+				"description": "Select what to do with 5+ points polygons."
+			},
+			{
+				"name": "mesh",
+				"label": "Meshes",
+				"style": "Menu",
+				"description": "Choose what to do with meshes in the input ."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

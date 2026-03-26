@@ -1,0 +1,108 @@
+{
+	"id": "orbbec-top",
+	"title": "orbbecTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"orbbec",
+		"top",
+		"orbbectop",
+		"active",
+		"device",
+		"specifyip",
+		"colorres"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "orbbecTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Turn this parameter off to disable communication with the camera. This will also stop any that rely on this ."
+			},
+			{
+				"name": "device",
+				"label": "Device",
+				"style": "Menu",
+				"description": "Use this parameter to select the serial number of the camera you wish to connect to. Only one Orbbec can connect to any camera at one time. Use an to obtain additional video streams from the same came"
+			},
+			{
+				"name": "specifyip",
+				"label": "Specify IP",
+				"style": "Toggle",
+				"description": "Enable this parameter to connect to a camera over ethernet."
+			},
+			{
+				"name": "ip",
+				"label": "IP",
+				"style": "Str",
+				"description": "The IP address of the camera to connect to. You must turn on the 'Specify IP' parameter to enter an IP address. This is not necessary for cameras connected by USB."
+			},
+			{
+				"name": "colorres",
+				"label": "Color Resolution",
+				"style": "Menu",
+				"description": "Select the resolution of the sensor's color camera. Every camera has a default resolution that it will use automatically. Additional options will appear in the menu depending on the camera model. Not "
+			},
+			{
+				"name": "colorfps",
+				"label": "Color FPS",
+				"style": "Menu",
+				"description": "Set the frame rate in frames-per-second for the color camera. The camera will assume a default frame rate automatically, but additional rates will appear in this list depending on the camera model. No"
+			},
+			{
+				"name": "depthres",
+				"label": "Depth Resolution",
+				"style": "Menu",
+				"description": "Select the resolution of the sensor's depth camera. Every camera has a default resolution that it will use automatically. Additional options will appear in the menu depending on the camera model. Not "
+			},
+			{
+				"name": "depthfps",
+				"label": "Depth FPS",
+				"style": "Menu",
+				"description": "Set the frame rate in frames-per-second for the depth camera. The camera will assume a default frame rate automatically, but additional rates will appear in this list depending on the camera model. No"
+			},
+			{
+				"name": "depthalignmode",
+				"label": "Depth Align Mode",
+				"style": "Menu",
+				"description": "This parameter can be used to transform the depth image to match the resolution of the color camera. This may be done in either hardware or software depending on the camera model. Some resolutions may"
+			},
+			{
+				"name": "image",
+				"label": "Image",
+				"style": "Menu",
+				"description": "Select which of the camera's video streams to display in the node's output image. Additional streams can be obtained for the same camera using the ."
+			},
+			{
+				"name": "gyro",
+				"label": "Enable Gyro Sensor",
+				"style": "Toggle",
+				"description": "Enable rotational IMU data from the gyro sensor if it is available on the current camera. The data is measured in degrees/sec and accessible as channels by attaching an ."
+			},
+			{
+				"name": "accel",
+				"label": "Enable Accel Sensor",
+				"style": "Toggle",
+				"description": "Enable linear acceleration IMU data from the accel sensor if it is available on the current camera. The data is measured in m/s^2 and accessible as channels by attaching an ."
+			},
+			{
+				"name": "propschop",
+				"label": "Properties CHOP",
+				"style": "CHOP",
+				"description": "The path of the properties being referenced.  Each channel of the represents an which can be used to control camera settings. The channel name must be all lowercase and cannot include the 'OB_PROP_' p"
+			}
+		],
+		"versions": {}
+	}
+}

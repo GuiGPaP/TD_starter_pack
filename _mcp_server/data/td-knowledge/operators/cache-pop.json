@@ -1,0 +1,99 @@
+{
+	"id": "cache-pop",
+	"title": "cachePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"cache",
+		"pop",
+		"cachepop",
+		"active",
+		"cachesize",
+		"step",
+		"outputindex",
+		"reset"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cachePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When enabled, the cache will capture input frames."
+			},
+			{
+				"name": "cachesize",
+				"label": "Cache Size",
+				"style": "Float",
+				"description": "The maximum number of snapshots to hold in the cache. When full, oldest ones are replaced with the newest ones."
+			},
+			{
+				"name": "step",
+				"label": "Step Size",
+				"style": "Float",
+				"description": "Time steps between snapshots into cache."
+			},
+			{
+				"name": "outputindex",
+				"label": "Output Index",
+				"style": "Float",
+				"description": "Specify tbe index of to output - 0 is current, negative is farther into past."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "Resets cache and holds one snapshot."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "stepunit",
+				"label": "Stepunit",
+				"style": "Menu"
+			},
+			{
+				"name": "outputindexunit",
+				"label": "Outputindexunit",
+				"style": "Menu"
+			},
+			{
+				"name": "resetpulse",
+				"label": "Resetpulse",
+				"style": "Pulse"
+			},
+			{
+				"name": "cachesizeunit",
+				"label": "Cachesizeunit",
+				"style": "Menu"
+			}
+		],
+		"versions": {}
+	}
+}

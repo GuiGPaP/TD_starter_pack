@@ -1,0 +1,114 @@
+{
+	"id": "function-top",
+	"title": "functionTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"function",
+		"top",
+		"functiontop",
+		"funcrgba",
+		"funcrgb",
+		"funcr",
+		"funcg",
+		"funcb"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "functionTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "funcrgba",
+				"label": "Function RGBA",
+				"style": "Menu",
+				"description": "Applies the selected function to the R, G, B, and A channels."
+			},
+			{
+				"name": "funcrgb",
+				"label": "Function RGB",
+				"style": "Menu",
+				"description": "Applies the selected function to the R, G, and B channels."
+			},
+			{
+				"name": "funcr",
+				"label": "Function R",
+				"style": "Menu",
+				"description": "Applies the selected function to the R (red) channel."
+			},
+			{
+				"name": "funcg",
+				"label": "Function G",
+				"style": "Menu",
+				"description": "Applies the selected function to the G (green) channel."
+			},
+			{
+				"name": "funcb",
+				"label": "Function B",
+				"style": "Menu",
+				"description": "Applies the selected function to the B (blue) channel."
+			},
+			{
+				"name": "funca",
+				"label": "Function A",
+				"style": "Menu",
+				"description": "Applies the selected function to the A (alpha) channel."
+			},
+			{
+				"name": "baseval",
+				"label": "Base Value",
+				"style": "Float",
+				"description": "Supplies the base value for functions like 'Log Base N' and 'Base ^ Input'"
+			},
+			{
+				"name": "expval",
+				"label": "Exponent Value",
+				"style": "Float",
+				"description": "Supplies the exponent value for the function 'Input ^ Base'."
+			},
+			{
+				"name": "constval",
+				"label": "Constant Value",
+				"style": "Float",
+				"description": "Allows setting the output to a specific constant value using the 'Constant' function."
+			},
+			{
+				"name": "angunit",
+				"label": "Angle Units",
+				"style": "Menu",
+				"description": "Determines whether the input values are measured in degrees, radians, etc for functions that require an angle input e.g. sine, cosine, etc."
+			},
+			{
+				"name": "replace",
+				"label": "Replace Errors",
+				"style": "Toggle",
+				"description": "When enabled, output values that would otherwise be invalid will be replaced with the value of the 'Error Value' parameter. For example, when using the log function, the output will be replaced whenev"
+			},
+			{
+				"name": "errval",
+				"label": "Error Value",
+				"style": "Float",
+				"description": "The output value to use when an input error is detected e.g. log(-1)."
+			},
+			{
+				"name": "rerange2",
+				"label": "Rerange2",
+				"style": "Float",
+				"description": "Applies a scale and shift to the input values before the function is calculated i.e. input = (input * rerange2) + rerange1. Note: This feature only affects integer texture formats and is not used on f"
+			},
+			{
+				"name": "rerange1",
+				"label": "Rerange1",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,132 @@
+{
+	"id": "cycle-chop",
+	"title": "cycleCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"cycle",
+		"chop",
+		"cyclechop",
+		"before",
+		"after",
+		"mirror",
+		"extremes",
+		"blendmethod"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cycleCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "before",
+				"label": "Cycles Before",
+				"style": "Float",
+				"description": "The number of cycles to loop before the input . This parameter can be fractional."
+			},
+			{
+				"name": "after",
+				"label": "Cycles After",
+				"style": "Float",
+				"description": "The number of cycles to loop after the input . This parameter can be fractional."
+			},
+			{
+				"name": "mirror",
+				"label": "Mirror Cycles",
+				"style": "Toggle",
+				"description": "If enabled, consecutive cycles are mirror images (reversed) of each another. The first cycle is never mirrored."
+			},
+			{
+				"name": "extremes",
+				"label": "Blend Start to End",
+				"style": "Toggle",
+				"description": "If on, the end of the is blended into the start of the to produce a smooth loop. If Cycles Before and Cycles After are 0, Region is non-zero, and are \"Cycle\", it loops smoothly forever."
+			},
+			{
+				"name": "blendmethod",
+				"label": "Method",
+				"style": "Menu",
+				"description": "How to blend between cycles:"
+			},
+			{
+				"name": "blendfunc",
+				"label": "Shape",
+				"style": "Menu",
+				"description": "The shape of the blending function:"
+			},
+			{
+				"name": "blendregion",
+				"label": "Region",
+				"style": "Float",
+				"description": "The size of the blend region, in either seconds, samples or frames (set with Units in the Common page)."
+			},
+			{
+				"name": "blendregionunit",
+				"label": "Blend Region Units",
+				"style": "Menu"
+			},
+			{
+				"name": "blendbias",
+				"label": "Bias",
+				"style": "Float",
+				"description": "The bias of the blend. A -1 biases the blend toward the beginning of the blend region, 0 is no bias and +1 biases towards the end of the blend region."
+			},
+			{
+				"name": "step",
+				"label": "Step",
+				"style": "Float",
+				"description": "If set to 1, the next cycle will be shifted up or down in value, so that it begins where the last cycle ended. Suitable for the root object of walk cycles."
+			},
+			{
+				"name": "stepscope",
+				"label": "Step Scope",
+				"style": "Str",
+				"description": "The names of those channels that will be affected by the Step parameter."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -11,7 +11,7 @@ description: Write GLSL pixel/fragment shaders for TouchDesigner's GLSL TOP oper
 - TouchDesigner auto-injects variables (`sTD2DInputs`, `vUV`, `vP`, `vN`, `vColor`) — declaring them yourself causes redefinition errors.
 - Uniforms are a two-step contract: declare in GLSL (`uniform float uTime;`) **and** configure in the TD parameter UI (Vectors/Colors/CHOP Uniforms page). Missing either side = silent failure.
 - `TDOutputSwizzle()` is mandatory on final output — it handles color space conversion. Omitting it produces wrong colors.
-- TouchDesigner uses GLSL 3.30+ internally. Do NOT add `#version` directives — TD injects its own and a second one causes a compilation error.
+- TouchDesigner uses **GLSL 4.60** (Vulkan). Support for 3.30 and earlier was removed. Do NOT add `#version` directives — TD injects its own and a second one causes a compilation error.
 
 ## Critical Guardrails
 
@@ -31,21 +31,71 @@ description: Write GLSL pixel/fragment shaders for TouchDesigner's GLSL TOP oper
 
 8. **Cache texture samples.** Each `texture()` call is a GPU memory fetch. Sample once into a variable, access `.rgb`/`.a` from the cached result. WHY: redundant fetches at the same UV are pure waste.
 
+## TD Built-in GLSL Reference (from official docs)
+
+### Samplers (auto-declared — do NOT redeclare)
+```glsl
+uniform sampler2D sTD2DInputs[TD_NUM_2D_INPUTS];
+uniform sampler3D sTD3DInputs[TD_NUM_3D_INPUTS];
+uniform sampler2DArray sTD2DArrayInputs[TD_NUM_2D_ARRAY_INPUTS];
+uniform samplerCube sTDCubeInputs[TD_NUM_CUBE_INPUTS];
+uniform sampler2D sTDNoiseMap;     // 256x256 random data
+uniform sampler1D sTDSineLookup;   // 0→1 sine shape
+```
+
+### TDTexInfo struct (resolution info)
+```glsl
+struct TDTexInfo { vec4 res; vec4 depth; };  // res = (1/w, 1/h, w, h)
+uniform TDTexInfo uTD2DInfos[TD_NUM_2D_INPUTS];
+uniform TDTexInfo uTDOutputInfo;   // output resolution
+uniform int uTDCurrentDepth;       // current slice index (3D/2DArray output)
+uniform int uTDPass;               // current pass (multi-pass)
+```
+
+### Built-in Functions
+```glsl
+vec4 TDOutputSwizzle(vec4 c);           // MANDATORY on pixel shader output
+float TDPerlinNoise(vec2/vec3/vec4 v);  // [-1, 1]
+float TDSimplexNoise(vec2/vec3/vec4 v); // [-1, 1]
+vec3 TDHSVToRGB(vec3 c);  vec3 TDRGBToHSV(vec3 c);
+vec4 TDDither(vec4 color);              // anti-banding noise
+mat4 TDTranslate(float x, float y, float z);
+mat3 TDRotateX/Y/Z(float radians);
+mat3 TDRotateOnAxis(float radians, vec3 axis); // axis must be normalized
+mat3 TDScale(float x, float y, float z);
+mat3 TDRotateToVector(vec3 forward, vec3 up);
+```
+
+### Compute Shader Mode
+Set GLSL TOP Mode to `Compute Shader`. No `fragColor` — use `TDImageStoreOutput`:
+```glsl
+void TDImageStoreOutput(uint index, ivec3 coord, vec4 color); // auto-applies swizzle
+vec4 TDImageLoadOutput(uint index, ivec3 coord);
+```
+
+### Multiple Color Buffers
+Set `# of Color Buffers` > 1. Declare extra outputs: `layout(location = 1) out vec4 buf1;`. Access extras via Render Select TOP.
+
+### Non-uniform Sampler Access
+Dynamic sampler indexing requires `nonuniformEXT()`: `texture(sTD2DInputs[nonuniformEXT(idx)], uv);`
+
 ## Fetching Documentation
 
 ### Which tool for which question
 
 | Question domain | Tool to use | How |
 |---|---|---|
-| TD built-in GLSL functions, sTD2DInputs, TDOutputSwizzle | `mcp__Context7__query-docs` | Resolve `"touchdesigner"`, query with function name |
-| GLSL language features, built-in functions | `mcp__exa__get_code_context_exa` | `"GLSL [function] specification"` |
-| Shader techniques, algorithms, visual effects | `mcp__exa__get_code_context_exa` | `"GLSL [effect name] shader tutorial"` |
-| General shader concepts, GPU architecture | `mcp__exa__web_search_exa` | Semantic query |
+| GLSL patterns in our knowledge base | `search_glsl_patterns` | query + type/difficulty/tags filters |
+| Operator params, examples | `search_operators` | query "glsl" or "noise" etc. |
+| TD techniques (audio-reactive, feedback, etc.) | `search_techniques` | query + category filter |
+| TD version features, breaking changes | `get_version_info` / `list_versions` | version ID |
+| GLSL language spec, advanced features | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | `"GLSL [function] specification"` |
+| Shader algorithms, visual effects | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | `"GLSL [effect name] shader tutorial"` |
 
 ### When to trust this skill vs. fetch fresh docs
 
-- **Trust the skill** for: guardrails, TD-specific patterns, uniform workflow, code organization, templates
-- **Fetch fresh docs** for: specific TD function signatures not listed here, advanced GLSL features, new TD version changes, unfamiliar shader algorithms
+- **Trust the skill** for: guardrails, built-in reference above, TD-specific patterns, uniform workflow, templates
+- **Fetch fresh docs** for: specific function signatures not listed here, advanced GLSL features, new TD version changes, unfamiliar shader algorithms
 
 ## Loading References
 

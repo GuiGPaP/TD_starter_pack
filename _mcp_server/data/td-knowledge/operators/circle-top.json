@@ -1,0 +1,244 @@
+{
+	"id": "circle-top",
+	"title": "circleTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"circle",
+		"top",
+		"circletop",
+		"radiusunit",
+		"rotate",
+		"centerunit",
+		"justifyh",
+		"justifyv"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "circleTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "radiusunit",
+				"label": "Radius Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "rotate",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "Rotates the shape by the specified number of degrees."
+			},
+			{
+				"name": "centerunit",
+				"label": "Center Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "justifyh",
+				"label": "Justify Horizontal",
+				"style": "Menu",
+				"description": "Specify the horizontal alignment of the circle."
+			},
+			{
+				"name": "justifyv",
+				"label": "Justify Vertical",
+				"style": "Menu",
+				"description": "Specify the vertical alignment of the circle."
+			},
+			{
+				"name": "fillalpha",
+				"label": "Fill Alpha",
+				"style": "Float",
+				"description": "Alpha of the fill color."
+			},
+			{
+				"name": "borderalpha",
+				"label": "Border Alpha",
+				"style": "Float",
+				"description": "Alpha of the border color."
+			},
+			{
+				"name": "bgalpha",
+				"label": "Background Alpha",
+				"style": "Float",
+				"description": "Alpha of the background color."
+			},
+			{
+				"name": "borderwidth",
+				"label": "Border Width",
+				"style": "Float",
+				"description": "Width of the border to draw on the shape."
+			},
+			{
+				"name": "borderwidthunit",
+				"label": "Border Width Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "borderoffset",
+				"label": "Border Offset",
+				"style": "Float",
+				"description": "Value from 0 to 1 indicating the fraction of the border that extends beyond the radius of the shape. Effectively sets the radius to ."
+			},
+			{
+				"name": "antialias",
+				"label": "Anti-Alias",
+				"style": "Toggle",
+				"description": "When on, the shape will be anti-aliased."
+			},
+			{
+				"name": "softness",
+				"label": "Softness",
+				"style": "Float",
+				"description": "Specifies the amount that the background color should be blended into the shape."
+			},
+			{
+				"name": "softnessunit",
+				"label": "Softness Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "ispolygon",
+				"label": "Polygon",
+				"style": "Toggle",
+				"description": "When on, a polygon will be drawn. Otherwise a circle is drawn."
+			},
+			{
+				"name": "sides",
+				"label": "Sides",
+				"style": "Int",
+				"description": "When drawing a polygon, this corresponds to the number of sides the polygon should have."
+			},
+			{
+				"name": "operand",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Choose which composite operation is performed from this menu. Search the web for 'blend modes' for more detailed information on the effects of each type."
+			},
+			{
+				"name": "swaporder",
+				"label": "Swap Order",
+				"style": "Toggle",
+				"description": "Swaps the order of the composite with the input."
+			},
+			{
+				"name": "fillcolorg",
+				"label": "Fillcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "centery",
+				"label": "Centery",
+				"style": "XYZW",
+				"description": "Coordinates of the center of the shape. (0,0) corresponds to a perfectly centered shape."
+			},
+			{
+				"name": "combineinput",
+				"label": "Combineinput",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bgcolorr",
+				"label": "Bgcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "beginarcangle",
+				"label": "Beginarcangle",
+				"style": "Float"
+			},
+			{
+				"name": "bgcolorg",
+				"label": "Bgcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "endarcangle",
+				"label": "Endarcangle",
+				"style": "Float",
+				"description": "Specifies the angles at which the shape is to start and end. The region between beginarcangle and endarcangle, with clockwise rotation, will not be drawn."
+			},
+			{
+				"name": "borderg",
+				"label": "Borderg",
+				"style": "RGBA"
+			},
+			{
+				"name": "radiusy",
+				"label": "Radiusy",
+				"style": "XYZW",
+				"description": "X and Y radii of the Circle. For polygons, only the X radius is used."
+			},
+			{
+				"name": "softnessoffset",
+				"label": "Softnessoffset",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bgcolorb",
+				"label": "Bgcolorb",
+				"style": "RGBA",
+				"description": "Color to use for the background."
+			},
+			{
+				"name": "fillcolorr",
+				"label": "Fillcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "radiusx",
+				"label": "Radiusx",
+				"style": "XYZW"
+			},
+			{
+				"name": "borderb",
+				"label": "Borderb",
+				"style": "RGBA",
+				"description": "Color to use for the border of the shape."
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "centerx",
+				"label": "Centerx",
+				"style": "XYZW"
+			},
+			{
+				"name": "softnesstype",
+				"label": "Softnesstype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "borderr",
+				"label": "Borderr",
+				"style": "RGBA"
+			},
+			{
+				"name": "fillcolorb",
+				"label": "Fillcolorb",
+				"style": "RGBA",
+				"description": "Color to use for the fill of the shape."
+			}
+		],
+		"versions": {}
+	}
+}

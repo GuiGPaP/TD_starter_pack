@@ -1,0 +1,385 @@
+{
+	"id": "field-pop",
+	"title": "fieldPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"field",
+		"pop",
+		"fieldpop",
+		"attrclass",
+		"fieldattrscope",
+		"specpop",
+		"mode",
+		"height"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fieldPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "fieldattrscope",
+				"label": "Field Attribute Scope",
+				"style": "StrMenu",
+				"description": "Determines the scope of the attribute used to output the weight."
+			},
+			{
+				"name": "specpop",
+				"label": "Specification POP",
+				"style": "POP",
+				"description": "to a where each point is a specification defining a separate field."
+			},
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "Select the shape of the field."
+			},
+			{
+				"name": "height",
+				"label": "Height",
+				"style": "Float",
+				"description": "The height of the tube."
+			},
+			{
+				"name": "roundness",
+				"label": "Roundness",
+				"style": "Float",
+				"description": "Roundness factor for rounded fields modes."
+			},
+			{
+				"name": "exponent",
+				"label": "Exponent",
+				"style": "Float",
+				"description": "Sets the exponent on parabola fields."
+			},
+			{
+				"name": "transitionrange",
+				"label": "Transition Range",
+				"style": "Float",
+				"description": "Determines a transition range for weights."
+			},
+			{
+				"name": "transitionalign",
+				"label": "Transition Align",
+				"style": "Float",
+				"description": "Determines a transition offset for weights."
+			},
+			{
+				"name": "transitiontype",
+				"label": "Transition Type",
+				"style": "Menu",
+				"description": "Determines a transition function for weights."
+			},
+			{
+				"name": "absvalue",
+				"label": "Absolute Value",
+				"style": "Toggle",
+				"description": "Enable using the absolute value on the transitioned weight."
+			},
+			{
+				"name": "invert",
+				"label": "Invert",
+				"style": "Toggle",
+				"description": "Invert the attribute value resulting from the field."
+			},
+			{
+				"name": "deletezeros",
+				"label": "Delete Zeros",
+				"style": "Toggle",
+				"description": "Enable removal of points with weigth zero."
+			},
+			{
+				"name": "linestripbehavior",
+				"label": "Line Strip Behavior",
+				"style": "Menu",
+				"description": "What to do when points of a line strip are deleted."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Sets the overall transform order for the transformations."
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Sets the order of the rotations within the overall transform order."
+			},
+			{
+				"name": "weight",
+				"label": "Weight",
+				"style": "Toggle",
+				"description": "Output a field weight attribute."
+			},
+			{
+				"name": "signeddistance",
+				"label": "Signed Distance",
+				"style": "Toggle",
+				"description": "Output a signed distance attribute for each point."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "pointbz",
+				"label": "Pointbz",
+				"style": "XYZW"
+			},
+			{
+				"name": "sdattrnumcomps",
+				"label": "Sdattrnumcomps",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "torangemax",
+				"label": "Torangemax",
+				"style": "Float"
+			},
+			{
+				"name": "sizez",
+				"label": "Sizez",
+				"style": "XYZW"
+			},
+			{
+				"name": "attrnumcomps",
+				"label": "Attrnumcomps",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attrtype",
+				"label": "Attrtype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sdoutputattrscope",
+				"label": "Sdoutputattrscope",
+				"style": "StrMenu"
+			},
+			{
+				"name": "pointaz",
+				"label": "Pointaz",
+				"style": "XYZW"
+			},
+			{
+				"name": "attrdefaultval2",
+				"label": "Attrdefaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "sdattrdefaultval3",
+				"label": "Sdattrdefaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "outputattrscope",
+				"label": "Outputattrscope",
+				"style": "StrMenu"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "rady",
+				"label": "Rady",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointbx",
+				"label": "Pointbx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sdattrdefaultval2",
+				"label": "Sdattrdefaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW"
+			},
+			{
+				"name": "attrdefaultval0",
+				"label": "Attrdefaultval0",
+				"style": "Float"
+			},
+			{
+				"name": "sdoverrideautoattrib",
+				"label": "Sdoverrideautoattrib",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "torangemin",
+				"label": "Torangemin",
+				"style": "Float"
+			},
+			{
+				"name": "sizey",
+				"label": "Sizey",
+				"style": "XYZW"
+			},
+			{
+				"name": "radz",
+				"label": "Radz",
+				"style": "XYZW"
+			},
+			{
+				"name": "radx",
+				"label": "Radx",
+				"style": "XYZW"
+			},
+			{
+				"name": "attrdefaultval3",
+				"label": "Attrdefaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attrdefaultval1",
+				"label": "Attrdefaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "sdattrdefaultval0",
+				"label": "Sdattrdefaultval0",
+				"style": "Float"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointay",
+				"label": "Pointay",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizex",
+				"label": "Sizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "sdattrdefaultval1",
+				"label": "Sdattrdefaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "strengthy",
+				"label": "Strengthy",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointax",
+				"label": "Pointax",
+				"style": "XYZW"
+			},
+			{
+				"name": "strengthx",
+				"label": "Strengthx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sdattrtype",
+				"label": "Sdattrtype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW"
+			},
+			{
+				"name": "overrideautoattr",
+				"label": "Overrideautoattr",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pointby",
+				"label": "Pointby",
+				"style": "XYZW"
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,106 @@
+{
+	"id": "trim-chop",
+	"title": "trimCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"trim",
+		"chop",
+		"trimchop",
+		"relative",
+		"start",
+		"startunit",
+		"endunit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "trimCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "relative",
+				"label": "Unit Values",
+				"style": "Menu",
+				"description": "Determines whether the Start/End parameters are expressed as absolute numbers (relative to time 0) or numbers that are relative to the start and end of the input channels."
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Float",
+				"description": "The start of the range to trim. The numbers are expressed in seconds, frames or samples, depending on units menu for each parameter."
+			},
+			{
+				"name": "startunit",
+				"label": "Start Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "end",
+				"label": "End",
+				"style": "Float",
+				"description": "The end of the range to trim. The numbers are expressed in seconds, frames or samples, depending on units menu for each parameter."
+			},
+			{
+				"name": "endunit",
+				"label": "End Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "discard",
+				"label": "Discard",
+				"style": "Menu",
+				"description": "Which part of the channel to discard:"
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "shiftstart",
+				"label": "Shiftstart",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

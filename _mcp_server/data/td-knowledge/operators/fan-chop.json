@@ -1,0 +1,97 @@
+{
+	"id": "fan-chop",
+	"title": "fanCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"fan",
+		"chop",
+		"fanchop",
+		"fanop",
+		"channame",
+		"range",
+		"alloff",
+		"quantize"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fanCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "fanop",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Selects either Fan In or Fan Out."
+			},
+			{
+				"name": "channame",
+				"label": "Channel Names",
+				"style": "Str",
+				"description": "The names for the output channels that this creates. This also controls how many output channels are created (one for each name) in Fan Out mode. In Fan In mode, only one channel is created, and its n"
+			},
+			{
+				"name": "range",
+				"label": "Outside Range",
+				"style": "Menu",
+				"description": "Determines how to handle input values that are outside the index range (0 to N-1)."
+			},
+			{
+				"name": "alloff",
+				"label": "All Channels Off",
+				"style": "Menu",
+				"description": "For a Fan In operation, when all input channels are off, set the output to -1 or 0."
+			},
+			{
+				"name": "quantize",
+				"label": "Quantize Output",
+				"style": "Toggle",
+				"description": "On by default. Channels are quatized to the nearest integer. For example, if the input channel's value is 5.6 and 6 channels are created, channel 5 is 1, while the rest are 0."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

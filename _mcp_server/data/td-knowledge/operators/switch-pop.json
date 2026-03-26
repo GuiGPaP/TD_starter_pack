@@ -1,0 +1,102 @@
+{
+	"id": "switch-pop",
+	"title": "switchPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"switch",
+		"pop",
+		"switchpop",
+		"index",
+		"blend",
+		"lengthmismatchnotif",
+		"pointattrscope",
+		"primattrscope"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "switchPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "index",
+				"label": "Index",
+				"style": "Float",
+				"description": "Input index to output."
+			},
+			{
+				"name": "blend",
+				"label": "Blend between Inputs",
+				"style": "Toggle",
+				"description": "Blends the input POPs attributes when using floating point numbers in the index parameter."
+			},
+			{
+				"name": "lengthmismatchnotif",
+				"label": "Length Mismatch",
+				"style": "Menu",
+				"description": "Length mis-match motification action."
+			},
+			{
+				"name": "pointattrscope",
+				"label": "Point Attribute Scope",
+				"style": "StrMenu",
+				"description": "The Point attribute scope to blend."
+			},
+			{
+				"name": "primattrscope",
+				"label": "Primitive Attribute Scope",
+				"style": "StrMenu",
+				"description": "The attribute scope to blend."
+			},
+			{
+				"name": "vertattrscope",
+				"label": "Vertex Attribute Scope",
+				"style": "StrMenu",
+				"description": "The attribute scope to blend."
+			},
+			{
+				"name": "input",
+				"label": "Input",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks managing the inputs of the ."
+			},
+			{
+				"name": "input0pop",
+				"label": "In POP(s)",
+				"style": "POP",
+				"description": "Input POPs for the current sequence block."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "lengthmismatchaction",
+				"label": "Lengthmismatchaction",
+				"style": "Menu"
+			}
+		],
+		"versions": {}
+	}
+}

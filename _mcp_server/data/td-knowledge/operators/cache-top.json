@@ -1,0 +1,127 @@
+{
+	"id": "cache-top",
+	"title": "cacheTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"cache",
+		"top",
+		"cachetop",
+		"active",
+		"activepulse",
+		"cacheonce",
+		"replace",
+		"replacespulse"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cacheTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "While this is On, the Cache will capture images into its memory."
+			},
+			{
+				"name": "activepulse",
+				"label": "Active Pulse",
+				"style": "Pulse",
+				"description": "Captures an image for the single frame this was pulsed."
+			},
+			{
+				"name": "cacheonce",
+				"label": "Get One Image on Startup",
+				"style": "Toggle",
+				"description": "Checking this On will cook the once after startup to load an initial image."
+			},
+			{
+				"name": "replace",
+				"label": "Replace Single",
+				"style": "Toggle",
+				"description": "While this is On, the Cache will replace the image at 'Replace Index' with the input image. This allows you to replace specific images in the cache at will."
+			},
+			{
+				"name": "replacespulse",
+				"label": "Replace Pulse",
+				"style": "Pulse",
+				"description": "Replace an image for the single frame this was pulsed."
+			},
+			{
+				"name": "replaceindex",
+				"label": "Replace Index",
+				"style": "Int",
+				"description": "Select the image index that will be replaced by the input, when 'Replace Single' is turned on."
+			},
+			{
+				"name": "prefill",
+				"label": "Pre-Fill",
+				"style": "Toggle",
+				"description": "Cooks 'Cache Size' number of times to fill the Cache with images. When set to 1, it will fill the cache. If set to 1 during playback, it will fill immediately. If set to 1 and saved out, then next tim"
+			},
+			{
+				"name": "prefillpulse",
+				"label": "Pre-Fill Pulse",
+				"style": "Pulse",
+				"description": "Pre-fills a single image during the frame this was pulsed."
+			},
+			{
+				"name": "cachesize",
+				"label": "Cache Size",
+				"style": "Int",
+				"description": "Determines the number of images that can be stored in this Cache ."
+			},
+			{
+				"name": "step",
+				"label": "Step Size",
+				"style": "Int",
+				"description": "The number of cooks that go by before the Cache grabs an image. A Step Size of 2 will cache an image every 2nd cook, a Step Size of 3 will cache every 3rd cook, and so on."
+			},
+			{
+				"name": "outputindex",
+				"label": "Output Index",
+				"style": "Float",
+				"description": "Determines which image in cache the outputs. 0 is the most recent image, negative integers output image further back in time."
+			},
+			{
+				"name": "outputindexunit",
+				"label": "Output Index Unit",
+				"style": "Menu",
+				"description": "Sets the units used in the Output Index parameter."
+			},
+			{
+				"name": "interp",
+				"label": "Interpolate Frames",
+				"style": "Toggle",
+				"description": "When On (On = 1), the Cache will interpolate between frames when non-integer values are used in the Output Index parameter. For example, a value of -0.5 in Output Index will output a blended image of "
+			},
+			{
+				"name": "alwayscook",
+				"label": "Always Cook",
+				"style": "Toggle",
+				"description": "Forces the operator to cook every frame."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "While On this will empty the cache of stored images and release the memory held by the ."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset",
+				"style": "Pulse",
+				"description": "Instantly empty the cache."
+			}
+		],
+		"versions": {}
+	}
+}

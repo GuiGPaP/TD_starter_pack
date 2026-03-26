@@ -1,0 +1,47 @@
+{
+	"id": "flip-top",
+	"title": "flipTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"flip",
+		"top",
+		"fliptop",
+		"flipx",
+		"flipy",
+		"flop"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "flipTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "flipx",
+				"label": "Flip X",
+				"style": "Toggle",
+				"description": "Flips the image in X."
+			},
+			{
+				"name": "flipy",
+				"label": "Flip Y",
+				"style": "Toggle",
+				"description": "Flips the image in Y."
+			},
+			{
+				"name": "flop",
+				"label": "Flop",
+				"style": "Menu",
+				"description": "Flops the image. Flop is a combination of a flip and a rotation."
+			}
+		],
+		"versions": {}
+	}
+}

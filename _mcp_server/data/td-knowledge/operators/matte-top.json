@@ -1,0 +1,40 @@
+{
+	"id": "matte-top",
+	"title": "matteTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"matte",
+		"top",
+		"mattetop",
+		"switchinputs",
+		"mattechannel"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "matteTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "switchinputs",
+				"label": "Switch Inputs",
+				"style": "Float",
+				"description": "Changes which image is composited over the other. This has the same effect as physically swapping input1 and input2. Also the same as inverting the alpha channel to input3."
+			},
+			{
+				"name": "mattechannel",
+				"label": "Matte Channel",
+				"style": "Menu",
+				"description": "Select which channel from input3 is used to create the matte."
+			}
+		],
+		"versions": {}
+	}
+}

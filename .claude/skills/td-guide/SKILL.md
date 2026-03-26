@@ -69,12 +69,19 @@ For shader work, use the specialized skill — do not attempt GLSL in td-guide:
 
 | Question domain | Tool to use | How |
 |---|---|---|
-| TD Python API (`op`, `par`, `COMP` methods) | `mcp__Context7__query-docs` | Resolve `"derivative/touchdesigner"`, then query |
-| Parameter names, types, ranges for a node | `get_node_parameter_schema` | Pass `nodePath` + optional `pattern` filter |
+| Operator knowledge, examples, families | `search_operators` | query + optional `family`/`version` filters |
+| TD techniques (audio, networking, generative...) | `search_techniques` | query + optional `category`/`difficulty` |
+| Step-by-step tutorials | `search_tutorials` | query + optional `difficulty`/`tags` |
+| GLSL shader patterns | `search_glsl_patterns` | query + optional `type`/`difficulty` |
+| Workflow patterns and connections | `search_workflow_patterns` | query + optional `category`/`tags` |
+| Network templates (deployable) | `search_network_templates` | query + optional `category` |
+| TD version features, breaking changes | `list_versions` / `get_version_info` | version ID (e.g. "2025") |
+| Third-party toolkit info (POPx, T3D, LOPs) | `search_toolkits` | query toolkit name |
+| Lessons learned (pitfalls, patterns) | `search_lessons` | query + optional `category` |
+| Parameter names, types, ranges for a live node | `get_node_parameter_schema` | Pass `nodePath` + optional `pattern` filter |
 | Operator paths and references | `complete_op_paths` | Pass `contextNodePath` + `prefix` |
 | CHOP channel names and stats | `get_chop_channels` | Pass `nodePath`, set `includeStats=true` |
-| TD patterns, community examples | `mcp__exa__get_code_context_exa` | Natural language query |
-| General TD research, changelogs | `mcp__exa__web_search_exa` | Semantic search |
+| TD patterns, community examples (external) | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | Natural language query |
 
 ### When to trust this skill vs. fetch fresh docs
 

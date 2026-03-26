@@ -1,0 +1,79 @@
+{
+	"id": "chopto-dat",
+	"title": "choptoDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"chopto",
+		"dat",
+		"choptodat",
+		"chop",
+		"names",
+		"latestsample",
+		"output",
+		"language"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "choptoDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "The to be used to retrieve values. A row is created for each channel's value."
+			},
+			{
+				"name": "names",
+				"label": "Include Names",
+				"style": "Toggle",
+				"description": "When checked on, an extra column will be created in every row for the channel's name."
+			},
+			{
+				"name": "latestsample",
+				"label": "Latest Sample when Time Slice",
+				"style": "Toggle",
+				"description": "When on and the is time sliced, only the latest sample of the will be used to create the output. This prevents the table size from fluctuating as frames are dropped."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Create a row per channel or column per channel."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			}
+		],
+		"versions": {}
+	}
+}

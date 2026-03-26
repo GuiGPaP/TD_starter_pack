@@ -1,0 +1,294 @@
+{
+	"id": "parameter-dat",
+	"title": "parameterDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"parameter",
+		"dat",
+		"parameterdat",
+		"parameters",
+		"includeopname",
+		"renamefrom",
+		"renameto"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "parameterDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "ops",
+				"label": "Operators",
+				"style": "OP",
+				"description": "The operators determine where to obtain the channels. Specify or more operator names or paths. Examples: , , , . Or select the operators using the menu."
+			},
+			{
+				"name": "parameters",
+				"label": "Parameters",
+				"style": "StrMenu",
+				"description": "The list of parameters names (which can include wildcards) you want to get from the (s). One or more parameter, or * for all parameters. You can also specify a \"NOT\" selection with an . Or select the "
+			},
+			{
+				"name": "includeopname",
+				"label": "Include Op Name",
+				"style": "Toggle",
+				"description": "Adds the OP name to the beginning of each parameter name in the table"
+			},
+			{
+				"name": "renamefrom",
+				"label": "Rename from",
+				"style": "Str",
+				"description": "See Pattern Matching."
+			},
+			{
+				"name": "renameto",
+				"label": "Rename to",
+				"style": "Str",
+				"description": "See Pattern Expansion."
+			},
+			{
+				"name": "custom",
+				"label": "Custom",
+				"style": "Toggle",
+				"description": "Output the operators' custom parameters."
+			},
+			{
+				"name": "builtin",
+				"label": "Built-In",
+				"style": "Toggle",
+				"description": "Output the operators' built-in parameters."
+			},
+			{
+				"name": "header",
+				"label": "Header",
+				"style": "Toggle",
+				"description": "Outputs the column headers."
+			},
+			{
+				"name": "name",
+				"label": "Name",
+				"style": "Toggle",
+				"description": "Outputs the parameter name."
+			},
+			{
+				"name": "value",
+				"label": "Value",
+				"style": "Toggle",
+				"description": "Outputs the evaluated parameter value."
+			},
+			{
+				"name": "eval",
+				"label": "Eval",
+				"style": "Toggle",
+				"description": "Outputs the evaluated parameter value as a python object."
+			},
+			{
+				"name": "constant",
+				"label": "Constant",
+				"style": "Toggle",
+				"description": "Outputs the current constant value of the parameter."
+			},
+			{
+				"name": "expression",
+				"label": "Expression",
+				"style": "Toggle",
+				"description": "Outputs the current python expression of the parameter."
+			},
+			{
+				"name": "export",
+				"label": "Export",
+				"style": "Toggle",
+				"description": "Outputs the export path of the parameter."
+			},
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Toggle",
+				"description": "Outputs the current mode of the parameter (constant, expression, or export)."
+			},
+			{
+				"name": "style",
+				"label": "Style",
+				"style": "Toggle",
+				"description": "Outputs what format the parameter is (eg. Float for float parameters, Menu for menu parameters etc.)."
+			},
+			{
+				"name": "tupletname",
+				"label": "Tuplet Name",
+				"style": "Toggle",
+				"description": "Outputs the name of the tuplet the parameter is in. For example, tx on the Geometry is a part of the 't' tuplet."
+			},
+			{
+				"name": "size",
+				"label": "Size",
+				"style": "Toggle",
+				"description": "Outputs the size of the tuplet. For example, tx on the Geometry would have a tuplet size of 3 since it's a part of the 't' tuplet with 3 parameters."
+			},
+			{
+				"name": "path",
+				"label": "Path",
+				"style": "Toggle",
+				"description": "Outputs the path to the node."
+			},
+			{
+				"name": "menuindex",
+				"label": "Menu Index",
+				"style": "Toggle",
+				"description": "If the parameter is a menu, then output the selected index of the menu."
+			},
+			{
+				"name": "minmax",
+				"label": "Min/Max",
+				"style": "Toggle",
+				"description": "Outputs the minimum and maximum values of the parameter. These values will clamp the value parameter to be within the range. If clampmin is 0 then the minimum will not clamp and the row/column entry w"
+			},
+			{
+				"name": "clampminmax",
+				"label": "Clamp Min/Max",
+				"style": "Toggle",
+				"description": "Outputs whether or not the parameter has a clamped min or clamped max. If true, then the values are defined by min/max columns."
+			},
+			{
+				"name": "normminmax",
+				"label": "Norm Min/Max",
+				"style": "Toggle",
+				"description": "Outputs the minimum and maximum values of the parameter in the interface (ie. the minimum and maximum values of a slider)."
+			},
+			{
+				"name": "default",
+				"label": "Default",
+				"style": "Toggle",
+				"description": "Outputs the default value of the parameter"
+			},
+			{
+				"name": "enabled",
+				"label": "Enabled",
+				"style": "Toggle",
+				"description": "Outputs whether the parameter is currently enabled"
+			},
+			{
+				"name": "readonly",
+				"label": "Read Only",
+				"style": "Toggle",
+				"description": "Outputs whether the parameter is currently read-only"
+			},
+			{
+				"name": "section",
+				"label": "Section",
+				"style": "Toggle",
+				"description": "Outputs whether the parameter has a section divider/separator (ie. line) above it."
+			},
+			{
+				"name": "menunames",
+				"label": "Menu Names",
+				"style": "Toggle",
+				"description": "Outputs a list of the menu names for any menu parameters."
+			},
+			{
+				"name": "menulabels",
+				"label": "Menu Labels",
+				"style": "Toggle",
+				"description": "Outputs a list of the menu labels for any menu parameters."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			},
+			{
+				"name": "pargroupname",
+				"label": "Pargroupname",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "numblocks",
+				"label": "Numblocks",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "blockindex",
+				"label": "Blockindex",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pages",
+				"label": "Pages",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sequence",
+				"label": "Sequence",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "basename",
+				"label": "Basename",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pargroups",
+				"label": "Pargroups",
+				"style": "StrMenu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bind",
+				"label": "Bind",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "label",
+				"label": "Label",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sortmethod",
+				"label": "Sortmethod",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "page",
+				"label": "Page",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

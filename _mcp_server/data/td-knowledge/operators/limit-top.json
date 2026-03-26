@@ -1,0 +1,113 @@
+{
+	"id": "limit-top",
+	"title": "limitTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"limit",
+		"top",
+		"limittop",
+		"positive",
+		"norm",
+		"normmin"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "limitTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "min",
+				"label": "Minimum Value",
+				"style": "Float",
+				"description": "The minimum value that any of the channels in the output image can have."
+			},
+			{
+				"name": "max",
+				"label": "Maximum Value",
+				"style": "Float",
+				"description": "The maximum value that any of the channels in the output image can have."
+			},
+			{
+				"name": "positive",
+				"label": "Positive Only",
+				"style": "Toggle",
+				"description": "Apply an absolute value function after all other limits and quantizations are calculated e.g. all negatives are made positive."
+			},
+			{
+				"name": "norm",
+				"label": "Normalize",
+				"style": "Toggle",
+				"description": "Normalize values in the output image so that they are all scaled and shifted to fall between the Normalized Minimum and Maximum (0 to 1 by default). This operation requires multiple internal render pa"
+			},
+			{
+				"name": "normmin",
+				"label": "Normalize Minimum",
+				"style": "Float",
+				"description": "The minimum value for pixels after normalization."
+			},
+			{
+				"name": "normmax",
+				"label": "Normalize Maximum",
+				"style": "Float",
+				"description": "The maximum value for pixels after normalization."
+			},
+			{
+				"name": "quantvalue",
+				"label": "Quantize Value",
+				"style": "Menu",
+				"description": "The function used to quantize the pixel values in the output image."
+			},
+			{
+				"name": "vstep",
+				"label": "Value Step",
+				"style": "Float",
+				"description": "The quantization step size for pixel values."
+			},
+			{
+				"name": "voffset",
+				"label": "Value Offset",
+				"style": "Float",
+				"description": "An offset for the quantization step so that it doesn't have to lie on zero."
+			},
+			{
+				"name": "quantpos",
+				"label": "Quantize Position",
+				"style": "Menu",
+				"description": "The function used for spacial quantization e.g. quantizing the UV coordinates so that pixel values are merged into larger blocks."
+			},
+			{
+				"name": "posstep",
+				"label": "Position Step",
+				"style": "Float",
+				"description": "The size of the spacial quantization step in UV space (0-1)"
+			},
+			{
+				"name": "posoffset",
+				"label": "Position Offset",
+				"style": "Float",
+				"description": "An offset applied to the spacial quantization so that the steps do not have to start at 0,0 (measured in 0-1 UV space)."
+			},
+			{
+				"name": "mintype",
+				"label": "Mintype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "maxtype",
+				"label": "Maxtype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

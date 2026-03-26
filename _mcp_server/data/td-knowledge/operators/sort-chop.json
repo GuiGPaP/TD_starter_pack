@@ -1,0 +1,109 @@
+{
+	"id": "sort-chop",
+	"title": "sortCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sort",
+		"chop",
+		"sortchop",
+		"method",
+		"seed",
+		"select",
+		"indices",
+		"names"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "sortCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "method",
+				"label": "Sorting Method",
+				"style": "Menu",
+				"description": "There are three different sorting methods. samples can be reordered by increasing values, decreasing values or in random order."
+			},
+			{
+				"name": "seed",
+				"label": "Seed",
+				"style": "Float",
+				"description": "Any number, integer or non-integer, which starts the random number generator. Each number gives completely different noise patterns, but with similar characteristics."
+			},
+			{
+				"name": "select",
+				"label": "Select Type",
+				"style": "Menu",
+				"description": "Specify if the channels to be sorted will be specified by index or name."
+			},
+			{
+				"name": "indices",
+				"label": "Channel Indices",
+				"style": "Str",
+				"description": "Specify the index of the channel to be sorted. All not specified channels will reorder their samples according to the specified channels new sample order. If left empty, all channels will be sorted."
+			},
+			{
+				"name": "names",
+				"label": "Channel Names",
+				"style": "Str",
+				"description": "Specify the name of the channel to be sorted. All not specified channels will reorder their samples according to the specified channels new sample order. If left empty, all channels will be sorted."
+			},
+			{
+				"name": "indexchannel",
+				"label": "Index Channel",
+				"style": "Toggle",
+				"description": "Enable to output an index channel which holds the former samples location before sorting."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "legacypattern",
+				"label": "Legacypattern",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

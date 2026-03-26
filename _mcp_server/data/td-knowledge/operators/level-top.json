@@ -1,22 +1,24 @@
 {
 	"id": "level-top",
-	"title": "Level TOP",
+	"title": "levelTOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"level",
-		"brightness",
-		"contrast",
-		"gamma",
-		"color",
-		"correction"
+		"top",
+		"leveltop",
+		"clampinput",
+		"invert",
+		"blacklevel",
+		"brightness1",
+		"gamma1"
 	],
 	"content": {
-		"summary": "Adjusts brightness, contrast, gamma, and color range. Core color correction tool."
+		"summary": "TouchDesigner  COMP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -24,25 +26,190 @@
 		"opFamily": "TOP",
 		"parameters": [
 			{
-				"name": "brightness1"
+				"name": "clampinput",
+				"label": "Clamp Input",
+				"style": "Menu",
+				"description": "This option will clamp pixel values in between 0 and 1. When using higher bit depth floating pixel formats, it is recommended to set it to Unclamped to allow the full range of values to be operated on"
 			},
 			{
-				"name": "contrast"
+				"name": "invert",
+				"label": "Invert",
+				"style": "Float",
+				"description": "Inverts the colors in the image. Black becomes white, white becomes black. Colors invert across the color wheel, so red becomes cyan, blue becomes yellow, green becomes magenta, and so on."
 			},
 			{
-				"name": "gamma1"
+				"name": "blacklevel",
+				"label": "Black Level",
+				"style": "Float",
+				"description": "Any pixel with a value less than or equal to this will be black."
 			},
 			{
-				"name": "black"
+				"name": "brightness1",
+				"label": "Brightness 1",
+				"style": "Float",
+				"description": "Increases or decreases the brightness of an image. Brightness can be considered the arithmetic mean of the RGB channels. The Brightness parameter adds or subtracts an offset into the R, G, and B chann"
 			},
 			{
-				"name": "bright"
+				"name": "gamma1",
+				"label": "Gamma 1",
+				"style": "Float",
+				"description": "The Gamma parameter applies a gamma correction to the image. Gamma is the relationship between the brightness of a pixel as it appears on the screen, and the numerical value of that pixel. This is oft"
 			},
 			{
-				"name": "invert"
+				"name": "contrast",
+				"label": "Contrast",
+				"style": "Float",
+				"description": "Contrast applies a scale factor (gain) to the RGB channels. Increasing contrast will brighten the light areas and darken the dark areas of the image, making the difference between the light and dark a"
 			},
 			{
-				"name": "opacity"
+				"name": "inlow",
+				"label": "In Low",
+				"style": "Float",
+				"description": "Any pixel below this value appears black."
+			},
+			{
+				"name": "inhigh",
+				"label": "In High",
+				"style": "Float",
+				"description": "Any pixel above this value appears white."
+			},
+			{
+				"name": "outlow",
+				"label": "Out Low",
+				"style": "Float",
+				"description": "Clamps pixel values to this value or higher."
+			},
+			{
+				"name": "outhigh",
+				"label": "Out High",
+				"style": "Float",
+				"description": "Clamps pixel values to this value or lower."
+			},
+			{
+				"name": "lowr",
+				"label": "Low R",
+				"style": "Float",
+				"description": "Clamps the minimum level of the red channel."
+			},
+			{
+				"name": "highr",
+				"label": "High R",
+				"style": "Float",
+				"description": "Clamps the maximum level of the red channel."
+			},
+			{
+				"name": "lowg",
+				"label": "Low G",
+				"style": "Float",
+				"description": "Clamps the minimum level of the green channel."
+			},
+			{
+				"name": "highg",
+				"label": "High G",
+				"style": "Float",
+				"description": "Clamps the maximum level of the green channel."
+			},
+			{
+				"name": "lowb",
+				"label": "Low B",
+				"style": "Float",
+				"description": "Clamps the minimum level of the blue channel."
+			},
+			{
+				"name": "highb",
+				"label": "High B",
+				"style": "Float",
+				"description": "Clamps the maximum level of the blue channel."
+			},
+			{
+				"name": "lowa",
+				"label": "Low A",
+				"style": "Float",
+				"description": "Clamps the minimum level of the alpha channel."
+			},
+			{
+				"name": "higha",
+				"label": "High A",
+				"style": "Float",
+				"description": "Clamps the maximum level of the alpha channel."
+			},
+			{
+				"name": "stepping",
+				"label": "Apply Stepping",
+				"style": "Toggle",
+				"description": "Turns on stepping (posterizing) and enables the parameters below."
+			},
+			{
+				"name": "stepsize",
+				"label": "Step Size",
+				"style": "Float",
+				"description": "Posterizes the image into bands or stripes. Number of bands equal to the inverse of this parameter (i.e., 0.25 = 4 bands). Use a default Ramp to easily see this parameter's effect."
+			},
+			{
+				"name": "threshold",
+				"label": "Threshold",
+				"style": "Float",
+				"description": "Offsets the position of the step boundaries."
+			},
+			{
+				"name": "clamplow",
+				"label": "Clamp Low",
+				"style": "Float",
+				"description": "Clamps the image's minimum value. ("
+			},
+			{
+				"name": "clamphigh",
+				"label": "Clamp High",
+				"style": "Float",
+				"description": "Clamps the image's maximum value. ("
+			},
+			{
+				"name": "soften",
+				"label": "Soften",
+				"style": "Float",
+				"description": "Softens or blends the boundaries between steps."
+			},
+			{
+				"name": "gamma2",
+				"label": "Gamma 2",
+				"style": "Float",
+				"description": "A second gamma correction that is added after the Range, RGBA, and Step page adjustments have been applied."
+			},
+			{
+				"name": "opacity",
+				"label": "Opacity",
+				"style": "Float",
+				"description": "Adjust the opacity, or transparency, of the image."
+			},
+			{
+				"name": "brightness2",
+				"label": "Brightness 2",
+				"style": "Float",
+				"description": "A second brightness adjustment that is added after the Range, RGBA, and Step page adjustments have been applied."
+			},
+			{
+				"name": "clamp",
+				"label": "Clamp",
+				"style": "Toggle",
+				"description": "Clamps pixel values to this value or lower."
+			},
+			{
+				"name": "clamplow2",
+				"label": "Clamp Low",
+				"style": "Float",
+				"description": "Clamps the image's minimum value. ("
+			},
+			{
+				"name": "clamphigh2",
+				"label": "Clamp High",
+				"style": "Float",
+				"description": "Clamps the image's maximum value. ("
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Pre-Multiply RGB by Alpha",
+				"style": "Toggle",
+				"description": "This option makes the color channels pre-multiplied by alpha."
 			}
 		],
 		"examples": [
@@ -72,8 +239,6 @@
 				"context": "parameter-expression"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

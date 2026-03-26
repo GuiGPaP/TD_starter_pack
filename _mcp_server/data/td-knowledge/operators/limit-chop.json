@@ -1,0 +1,158 @@
+{
+	"id": "limit-chop",
+	"title": "limitCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"limit",
+		"chop",
+		"limitchop",
+		"type",
+		"positive",
+		"norm"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "limitCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "Select limit options such as loop, clamp, or zigzag from the menu. The value will remain in the range from Min to less than Max."
+			},
+			{
+				"name": "min",
+				"label": "Minimum",
+				"style": "Float",
+				"description": "The minimum value the output channel can have."
+			},
+			{
+				"name": "max",
+				"label": "Maximum",
+				"style": "Float",
+				"description": "The maximum value the output channel can have."
+			},
+			{
+				"name": "positive",
+				"label": "Positive Only",
+				"style": "Toggle",
+				"description": "Takes the absolute value of the channel, making all negative values positive."
+			},
+			{
+				"name": "norm",
+				"label": "Normalize",
+				"style": "Toggle",
+				"description": "Scale and offset the channel so that it lies between -1 and +1. The Normalize function does not work with on."
+			},
+			{
+				"name": "underflow",
+				"label": "Fix Underflows",
+				"style": "Toggle",
+				"description": "This will cause extremely tiny numbers to be rounded to 0."
+			},
+			{
+				"name": "quantvalue",
+				"label": "Quantize Value",
+				"style": "Menu",
+				"description": "Selects the quantization method to use:"
+			},
+			{
+				"name": "vstep",
+				"label": "Value Step",
+				"style": "Float",
+				"description": "The increment between quantized values."
+			},
+			{
+				"name": "voffset",
+				"label": "Value Offset",
+				"style": "Float",
+				"description": "The offset for quantized values, to allow steps to not lie at zero, the default."
+			},
+			{
+				"name": "quantindex",
+				"label": "Quantize Index",
+				"style": "Menu",
+				"description": "Selects whether to quantize the index relative to the sample 0, or the start index of the ."
+			},
+			{
+				"name": "istep",
+				"label": "Step",
+				"style": "Float",
+				"description": "The increment between quantized indices, in seconds, frames or samples."
+			},
+			{
+				"name": "istepunit",
+				"label": "Step Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "ioffset",
+				"label": "Offset",
+				"style": "Float",
+				"description": "The offset for quantized indices."
+			},
+			{
+				"name": "ioffsetunit",
+				"label": "Offset Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "normrange1",
+				"label": "Normrange1",
+				"style": "Float"
+			},
+			{
+				"name": "normrange2",
+				"label": "Normrange2",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

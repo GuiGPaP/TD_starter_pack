@@ -1,0 +1,40 @@
+{
+	"id": "switch-top",
+	"title": "switchTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"switch",
+		"top",
+		"switchtop",
+		"index",
+		"blend"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "switchTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "index",
+				"label": "Index",
+				"style": "Float",
+				"description": "Selects which input to pass though to the output. The first input is 0."
+			},
+			{
+				"name": "blend",
+				"label": "Blend between Inputs",
+				"style": "Toggle",
+				"description": "Blends the input images when using floating point numbers in the parameter."
+			}
+		],
+		"versions": {}
+	}
+}

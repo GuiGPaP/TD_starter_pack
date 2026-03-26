@@ -1,0 +1,205 @@
+{
+	"id": "sort-pop",
+	"title": "sortPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sort",
+		"pop",
+		"sortpop",
+		"ptmethod",
+		"pointattr",
+		"pointuint",
+		"pointseed",
+		"pointobj"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "sortPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "ptmethod",
+				"label": "Point Method",
+				"style": "Menu",
+				"description": "Point sorting criteria."
+			},
+			{
+				"name": "pointattr",
+				"label": "Attribute",
+				"style": "StrMenu",
+				"description": "Attribute to use for sorting."
+			},
+			{
+				"name": "pointuint",
+				"label": "Attrib is UInt",
+				"style": "Menu",
+				"description": "When sorting by attribute, allows to specify whether the attribute is an unsigned integer and what the max value is. Smaller max UInt require fewer passes to sort."
+			},
+			{
+				"name": "pointseed",
+				"label": "Seed",
+				"style": "Float",
+				"description": "Seed for random number generator for randomly-ordered points."
+			},
+			{
+				"name": "pointobj",
+				"label": "Object",
+				"style": "Object",
+				"description": "to use when sorting points relative to Object Z-axis."
+			},
+			{
+				"name": "pointrev",
+				"label": "Reverse",
+				"style": "Toggle",
+				"description": "After sorting points, reverse their order."
+			},
+			{
+				"name": "pointshift",
+				"label": "Shift",
+				"style": "Toggle",
+				"description": "Enables offsetting on sorted points."
+			},
+			{
+				"name": "pointoffset",
+				"label": "Offset",
+				"style": "Int",
+				"description": "Shifts the point order by this offset."
+			},
+			{
+				"name": "primmethod",
+				"label": "Primitive Method",
+				"style": "Menu",
+				"description": "sorting criteria."
+			},
+			{
+				"name": "primattr",
+				"label": "Attribute",
+				"style": "StrMenu",
+				"description": "Attribute to use for sorting."
+			},
+			{
+				"name": "primuint",
+				"label": "Attrib is UInt",
+				"style": "Menu",
+				"description": "When sorting by attribute, allows to specify whether the attribute is an unsigned integer and what the max value is. Smaller max UInt require fewer passes to sort."
+			},
+			{
+				"name": "primseed",
+				"label": "Seed",
+				"style": "Float",
+				"description": "Seed for primitive ranomizer."
+			},
+			{
+				"name": "primobj",
+				"label": "Object",
+				"style": "Object",
+				"description": "to use when sorting primitives relative to Object Z-axis."
+			},
+			{
+				"name": "primrev",
+				"label": "Reverse",
+				"style": "Toggle",
+				"description": "Reverse the order of primitives."
+			},
+			{
+				"name": "primshift",
+				"label": "Shift",
+				"style": "Toggle",
+				"description": "Enables offsetting on sorted primitives."
+			},
+			{
+				"name": "primoffset",
+				"label": "Offset",
+				"style": "Int",
+				"description": "Shifts the primitive order by this offset."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "primproxz",
+				"label": "Primproxz",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointproxz",
+				"label": "Pointproxz",
+				"style": "XYZW"
+			},
+			{
+				"name": "primdirx",
+				"label": "Primdirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointdiry",
+				"label": "Pointdiry",
+				"style": "XYZW"
+			},
+			{
+				"name": "primdirz",
+				"label": "Primdirz",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointproxy",
+				"label": "Pointproxy",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointdirx",
+				"label": "Pointdirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointdirz",
+				"label": "Pointdirz",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointproxx",
+				"label": "Pointproxx",
+				"style": "XYZW"
+			},
+			{
+				"name": "primdiry",
+				"label": "Primdiry",
+				"style": "XYZW"
+			},
+			{
+				"name": "primproxy",
+				"label": "Primproxy",
+				"style": "XYZW"
+			},
+			{
+				"name": "primproxx",
+				"label": "Primproxx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

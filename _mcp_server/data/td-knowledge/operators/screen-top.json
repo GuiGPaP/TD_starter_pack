@@ -1,0 +1,118 @@
+{
+	"id": "screen-top",
+	"title": "screenTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"screen",
+		"top",
+		"screentop",
+		"size",
+		"prefit",
+		"justifyh",
+		"justifyv",
+		"extend"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "screenTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "size",
+				"label": "Fixed Layer",
+				"style": "Menu",
+				"description": "The selected input will become the fixed layer and the other input will be the overlay. This does not change the order of the composite (Input1 + Input2), only which layer is considered fixed and whic"
+			},
+			{
+				"name": "prefit",
+				"label": "Pre-Fit Overlay",
+				"style": "Menu",
+				"description": "Determines how the Overlay layer (Overlay layer is the input that is NOT the Fixed Layer) fills the composite."
+			},
+			{
+				"name": "justifyh",
+				"label": "Justify Horizontal",
+				"style": "Menu",
+				"description": "Specify the horizontal alignment of the Overlay."
+			},
+			{
+				"name": "justifyv",
+				"label": "Justify Vertical",
+				"style": "Menu",
+				"description": "Specify the vertical alignment of the Overlay."
+			},
+			{
+				"name": "extend",
+				"label": "Extend Overlay",
+				"style": "Menu",
+				"description": "Sets the extend (or repeat) conditions of the Overlay layer. This parameter determines what happens at the edges of the Overlay layer."
+			},
+			{
+				"name": "r",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "Rotates the Overlay layer. Increasing values rotate clockwise, decreasing values rotate counter-clockwise."
+			},
+			{
+				"name": "tunit",
+				"label": "Translate Units",
+				"style": "Menu",
+				"description": "Sets the units used in the Translate parameter."
+			},
+			{
+				"name": "punit",
+				"label": "Pivot Units",
+				"style": "Menu",
+				"description": "Sets the units used in the Pivot parameter."
+			},
+			{
+				"name": "legacyxform",
+				"label": "Legacy Transform",
+				"style": "Toggle",
+				"description": "When enabled, will use the legacy method of building the transform matrix, which has inverted rotation and transform order."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW",
+				"description": "Allows you to define the point about which the Overlay layer scales and rotates. Altering the pivot point produces different results depending on the Transform Order."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW",
+				"description": "Translates the Overlay layer in x and y."
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW",
+				"description": "Scales the Overlay layer in x and y."
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,317 @@
+{
+	"id": "group-pop",
+	"title": "groupPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"group",
+		"pop",
+		"grouppop",
+		"grname",
+		"entity",
+		"debugcolor",
+		"attr",
+		"attr0combine"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "groupPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "grname",
+				"label": "Group Name",
+				"style": "Str",
+				"description": "The name of the group to be created."
+			},
+			{
+				"name": "entity",
+				"label": "Entity",
+				"style": "Menu",
+				"description": "Sets the attribute class to use."
+			},
+			{
+				"name": "debugcolor",
+				"label": "Debug Color",
+				"style": "Toggle",
+				"description": "Enable addition of a color attribute to differentiate groups."
+			},
+			{
+				"name": "attr",
+				"label": "Attribute",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for attribute conditions."
+			},
+			{
+				"name": "attr0combine",
+				"label": "Combine",
+				"style": "Menu",
+				"description": "Specify how to combine the current attribute condition block with the one above."
+			},
+			{
+				"name": "attr0inattr",
+				"label": "Attribute",
+				"style": "StrMenu",
+				"description": "Name of attribute for conditions."
+			},
+			{
+				"name": "attr0func",
+				"label": "Function",
+				"style": "Menu",
+				"description": "Comparison function used to determine which elements are selected based on its attribute value."
+			},
+			{
+				"name": "attr0value",
+				"label": "Value",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attr0invert",
+				"label": "Invert",
+				"style": "Toggle",
+				"description": "Invert the selection resulting from the current conditions in the block."
+			},
+			{
+				"name": "thinenabled",
+				"label": "Enabled",
+				"style": "Toggle",
+				"description": "Enable thinning by index range, index step or random index."
+			},
+			{
+				"name": "thinoutrange",
+				"label": "Thin Out Range",
+				"style": "Toggle",
+				"description": "Enable index-based point filtering."
+			},
+			{
+				"name": "thinrangestart",
+				"label": "Thin Range Start",
+				"style": "Int",
+				"description": "Determines the starting index for range-based point filtering."
+			},
+			{
+				"name": "thinrangelength",
+				"label": "Thin Range Length",
+				"style": "Int",
+				"description": "Determines the number of points being filtered by index range."
+			},
+			{
+				"name": "thinstep",
+				"label": "Thin Step",
+				"style": "Int",
+				"description": "Filters every Nth point."
+			},
+			{
+				"name": "thinrandom",
+				"label": "Thin Random",
+				"style": "Float",
+				"description": "Determines the proportion of points randomly filtered."
+			},
+			{
+				"name": "thinrandomseed",
+				"label": "Thin Random Seed",
+				"style": "Float",
+				"description": "Sets the random seed for points being randomly filtered."
+			},
+			{
+				"name": "thininvert",
+				"label": "Invert",
+				"style": "Toggle",
+				"description": "Invert the selection resulting from the current conditions in the block."
+			},
+			{
+				"name": "pattern",
+				"label": "Pattern",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for index-matching pattern."
+			},
+			{
+				"name": "pattern0combine",
+				"label": "Combine",
+				"style": "Menu",
+				"description": "Specify how to combine the current pattern block with the one above."
+			},
+			{
+				"name": "pattern0pattern",
+				"label": "Pattern",
+				"style": "StrMenu",
+				"description": "Index-matching pattern. see in wiki."
+			},
+			{
+				"name": "pattern0invert",
+				"label": "Invert",
+				"style": "Toggle",
+				"description": "Invert the selection resulting from the current conditions in the block."
+			},
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for input groups, specifying a group name in this field will cause this to act only upon the group specified."
+			},
+			{
+				"name": "group0combine",
+				"label": "Combine",
+				"style": "Menu",
+				"description": "Specify how to combine the current group block with the one above."
+			},
+			{
+				"name": "group0name",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "The name of the group to use."
+			},
+			{
+				"name": "group0invert",
+				"label": "Invert",
+				"style": "Toggle",
+				"description": "Invert the selection resulting from the current conditions in the block."
+			},
+			{
+				"name": "bound",
+				"label": "Bound",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for bounding volumes."
+			},
+			{
+				"name": "bound0combine",
+				"label": "Combine",
+				"style": "Menu",
+				"description": "Specify how to combine the current bounding volume block with the one above."
+			},
+			{
+				"name": "bound0inattr",
+				"label": "Attribute",
+				"style": "StrMenu",
+				"description": "Name of position attribute for bounding volume."
+			},
+			{
+				"name": "bound0type",
+				"label": "Bounding Type",
+				"style": "Menu",
+				"description": "The type of bounding volume, Sphere or Box."
+			},
+			{
+				"name": "bound0invert",
+				"label": "Invert",
+				"style": "Toggle",
+				"description": "Invert the selection resulting from the current conditions in the block."
+			},
+			{
+				"name": "cnvtname",
+				"label": "Convert Name",
+				"style": "Str",
+				"description": "Sets the resulting groupe name when converting a group type"
+			},
+			{
+				"name": "preserve",
+				"label": "Preserve Original",
+				"style": "Toggle",
+				"description": "Keep original attribute class group when converting."
+			},
+			{
+				"name": "oldname",
+				"label": "Old Group Name",
+				"style": "StrMenu",
+				"description": "Old group name when renaming a group."
+			},
+			{
+				"name": "newname",
+				"label": "New Group Name",
+				"style": "Str",
+				"description": "Name for the new group created."
+			},
+			{
+				"name": "deletename",
+				"label": "Delete Group",
+				"style": "StrMenu",
+				"description": "Groups to delete."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "bound0translatez",
+				"label": "Bound0Translatez",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bound0scalez",
+				"label": "Bound0Scalez",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bound0rotatez",
+				"label": "Bound0Rotatez",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bound0rotatex",
+				"label": "Bound0Rotatex",
+				"style": "XYZW"
+			},
+			{
+				"name": "bound0translatex",
+				"label": "Bound0Translatex",
+				"style": "XYZW"
+			},
+			{
+				"name": "bound0translatey",
+				"label": "Bound0Translatey",
+				"style": "XYZW"
+			},
+			{
+				"name": "bound0scalex",
+				"label": "Bound0Scalex",
+				"style": "XYZW"
+			},
+			{
+				"name": "bound0rotatey",
+				"label": "Bound0Rotatey",
+				"style": "XYZW"
+			},
+			{
+				"name": "cnvtype",
+				"label": "Cnvtype",
+				"style": "Menu"
+			},
+			{
+				"name": "convertg",
+				"label": "Convertg",
+				"style": "StrMenu"
+			},
+			{
+				"name": "bound0scaley",
+				"label": "Bound0Scaley",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}
