@@ -43,6 +43,20 @@ For shader work, use the specialized skill — do not attempt GLSL in td-guide:
 
 9. **Check parameter bindings before modifying.** Parameters can be bound by reference to a parent COMP or another operator (`par.mode == ParMode.BIND`). Modifying a bound parameter directly can break the binding or propagate the change unexpectedly. Before any `par.xxx = value`, check `par.mode` and `par.bindExpr` — if bound, modify the source instead.
 
+10. **`create()` prend des strings, pas des classes.** `comp.create('geometryCOMP', 'myGeo')` et non `comp.create(geometryCOMP, 'myGeo')`. Les classes TD Python (`geometryCOMP`, `textDAT`, `noiseTOP`) ne sont pas dans le namespace des scripts MCP. Noms courants : `'geometryCOMP'`, `'baseCOMP'`, `'containerCOMP'`, `'textDAT'`, `'tableDAT'`, `'nullDAT'`, `'selectDAT'`, `'noiseTOP'`, `'textTOP'`, `'nullCHOP'`, `'audiodeviceinCHOP'`.
+
+11. **`allowCooking` ne s'applique qu'aux COMPs.** `op.allowCooking = False` crashe sur les DATs/TOPs/CHOPs/SOPs. Toujours vérifier : `if copy.isCOMP: copy.allowCooking = False`.
+
+12. **`/project1` peut ne pas exister.** Le COMP principal peut s'appeler `/ProjectName`, `/myProject`, etc. Toujours vérifier avec `op('/').children` avant de cibler un chemin.
+
+13. **`findChildren()` depuis `/` ne traverse pas les privacy flags.** Scanner chaque conteneur de premier niveau séparément plutôt que `op('/').findChildren(depth=10)`.
+
+14. **COMP connectors ≠ DAT connectors.** Les `inputConnectors` d'un baseCOMP/containerCOMP attendent des connexions COMP-à-COMP. On ne peut pas connecter un DAT directement à un COMP connector. Pour passer des données DAT à un COMP, utiliser les paramètres du COMP (`par.dat = dat.path`) ou placer le DAT à l'intérieur et le connecter au `in1` interne.
+
+15. **Ne pas deviner les noms de paramètres.** `opviewerTOP.par.comp` n'existe pas — c'est `par.opviewer`. Toujours vérifier avec `[p.name for p in op.pars()]` ou `get_node_parameter_schema` avant d'écrire un paramètre sur un opérateur inconnu.
+
+16. **Geo COMP crée un torus par défaut.** Un `geometryCOMP` créé via `create()` contient automatiquement un `torus1` SOP. Le supprimer si non désiré : `geo.op('torus1').destroy()`.
+
 ## Python Utilities Routing
 
 | Task | Skill |
