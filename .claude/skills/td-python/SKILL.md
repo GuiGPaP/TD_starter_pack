@@ -37,6 +37,16 @@ description: "TouchDesigner Python utility modules: TDFunctions, TDJSON, TDStore
 
 11. **Check par.mode before modifying values.** If `par.mode` is `ParMode.BIND` or `ParMode.EXPRESSION`, setting `par.val` overwrites the binding/expression. **WHY:** Destroys carefully authored references — check mode first, modify the source if bound.
 
+12. **`root` n'existe pas — utiliser `op('/')`.** Dans les scripts `execute_python_script`, `root` n'est pas défini. Utiliser `op('/')` pour accéder à la racine. **WHY:** `NameError: name 'root' is not defined`.
+
+13. **`td.Page` est unhashable.** Les objets `Page` (de `par.page`) ne peuvent pas être utilisés comme clés de dictionnaire. Convertir avec `str(p.page)`. **WHY:** `TypeError: unhashable type: 'td.Page'`.
+
+14. **`Exception` peut ne pas être défini dans les longs scripts MCP.** Certains builtins standards (`Exception`, `TypeError`) peuvent manquer dans le namespace des scripts très longs. Utiliser des checks préventifs (`if not geo: continue`) plutôt que `except Exception`. **WHY:** `NameError: name 'Exception' is not defined`.
+
+15. **MCP execution modes et le security analyzer.** Le security analyzer détecte des patterns par regex : `read-only` bloque `.text =`, `.par.xxx =`, `.eval()` (même `par.Mypar.eval()`) ; `safe-write` bloque `destroy()`, filesystem ops ; `full-exec` permet tout. **WHY:** `.eval()` dans un nom de paramètre est un faux positif en read-only. Utiliser `safe-write` ou `str(par.Mypar)` à la place.
+
+16. **`result` doit être la variable de sortie.** Les scripts `execute_python_script` assignent leur retour à `result`. Le type MCP attend `{ result: T }`. Pour les listes : `result = myList` (pas `result = {"items": myList}`). **WHY:** Erreur TS2344 côté MCP si la structure ne matche pas.
+
 ## Python Utilities Routing
 
 For tasks outside these 4 modules, use the appropriate skill:
