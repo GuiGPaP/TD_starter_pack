@@ -1,0 +1,189 @@
+{
+	"id": "dmxfixture-pop",
+	"title": "dmxfixturePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"dmxfixture",
+		"pop",
+		"dmxfixturepop",
+		"active",
+		"autolayout",
+		"routingtable",
+		"subnet"
+	],
+	"content": {
+		"summary": "TouchDesigner dmxfixturePOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "dmxfixturePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When enabled, will actively update the fixture and universe data, and if used in a DMX Out will be sent out to the device. If disabled, the DMX Out will not merge the DMX universes constructed by this"
+			},
+			{
+				"name": "autolayout",
+				"label": "Auto Layout",
+				"style": "Toggle",
+				"description": "When enabled, the universes will be constructed sequentially starting from net, subnet, universe, and channel specified in the parameters. For example, if starting a net=0, subnet=0, universe=1, chann"
+			},
+			{
+				"name": "routingtable",
+				"label": "Routing Table",
+				"style": "DAT",
+				"description": "Use a Routing Table to assign specific net, subnet, universe values to a fixture/primitive. Additionally, netaddress may optionally be specified to override those on the DMX Out . The routing table wi"
+			},
+			{
+				"name": "net",
+				"label": "Net (0-127)",
+				"style": "Int",
+				"description": "When using Auto , specify the starting net value."
+			},
+			{
+				"name": "subnet",
+				"label": "Subnet (0-15)",
+				"style": "Int",
+				"description": "When using Auto , specify the starting subnet value."
+			},
+			{
+				"name": "universe",
+				"label": "Universe",
+				"style": "Int",
+				"description": "When using Auto , specify the starting universe value."
+			},
+			{
+				"name": "channel",
+				"label": "Channel",
+				"style": "Int",
+				"description": "When using Auto , specify the starting channel value."
+			},
+			{
+				"name": "changap",
+				"label": "Channel Gap",
+				"style": "Int",
+				"description": "When using Auto , specify the amount of channels between fixtures. Eg. if fixture 1 ends on channel 200 and there is a channel of 10, then fixture 2 will start on channel 211."
+			},
+			{
+				"name": "quantizeuni",
+				"label": "Quantize Universe",
+				"style": "Menu",
+				"description": "Specify the level of quantizing to perform within a universe. It can either be set to be done By Fixture, or By ."
+			},
+			{
+				"name": "dmxchan",
+				"label": "DMX Channel",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks used to define the DMX profile"
+			},
+			{
+				"name": "dmxchan0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Specify the unique DMX Channel identifier."
+			},
+			{
+				"name": "dmxchan0valuetype",
+				"label": "Value Type",
+				"style": "Menu",
+				"description": "Specify how the channels values are iterated, and how the attributes are sourced."
+			},
+			{
+				"name": "dmxchan0valuesource",
+				"label": "Value Source",
+				"style": "Menu",
+				"description": "For the DMX channel value, gets it from an attribute or from a parameter."
+			},
+			{
+				"name": "dmxchan0group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "Optionally select a point group. Only points within the group will be used for universe creation, rather than all points."
+			},
+			{
+				"name": "dmxchan0numcomps",
+				"label": "Number of Components",
+				"style": "Menu",
+				"description": "Number of components of the new attribute."
+			},
+			{
+				"name": "dmxchan0attr",
+				"label": "Attribute",
+				"style": "StrMenu",
+				"description": "Set the attributes to interleave. Multiple attributes can be specified together."
+			},
+			{
+				"name": "dmxchan0valueres",
+				"label": "Value Resolution",
+				"style": "Menu",
+				"description": "The value resolution. Note: one DMX channel is 8-bit (ie. one byte and 0-255), so if a value is greater than 8-bit, it will use more than one channel: Eg. 16-bit uses 2 channels."
+			},
+			{
+				"name": "dmxchan0normalized",
+				"label": "Value is Normalized",
+				"style": "Toggle",
+				"description": "When enabled, values of 0-1 are expected, and they will be scaled to the appropriate range for the resolution (ie. 0-255 for 8-bit). When disabled, the values will be output as-is. Clamping is done in"
+			},
+			{
+				"name": "dmxchan0merge",
+				"label": "Merge with Above Block",
+				"style": "Toggle",
+				"description": "When enabled, will interleave channel values with the above block. The blocks must be of the same value type and value source. This feature is useful if needing to interleave values of different resol"
+			},
+			{
+				"name": "dmxchan0interleavebytes",
+				"label": "Interleave Bytes",
+				"style": "Toggle",
+				"description": "When enabled, attribute component values will be interleaved by byte order, instead of value order. Example: Position attribute P with 16-bit resolution will be interleaved as when the toggle is disab"
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "dmxchan0value0",
+				"label": "Dmxchan0Value0",
+				"style": "Float"
+			},
+			{
+				"name": "dmxchan0value2",
+				"label": "Dmxchan0Value2",
+				"style": "Float"
+			},
+			{
+				"name": "dmxchan0value1",
+				"label": "Dmxchan0Value1",
+				"style": "Float"
+			},
+			{
+				"name": "dmxchan0value3",
+				"label": "Dmxchan0Value3",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

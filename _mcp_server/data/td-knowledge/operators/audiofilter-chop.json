@@ -1,0 +1,109 @@
+{
+	"id": "audiofilter-chop",
+	"title": "audiofilterCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"audiofilter",
+		"chop",
+		"audiofilterchop",
+		"filter",
+		"units",
+		"cutofflog",
+		"cutofffrequency",
+		"resonance"
+	],
+	"content": {
+		"summary": "TouchDesigner audiofilterCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "audiofilterCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "filter",
+				"label": "Filter",
+				"style": "Menu",
+				"description": "The filter type:"
+			},
+			{
+				"name": "units",
+				"label": "Cutoff Units",
+				"style": "Menu",
+				"description": "The filter cutoff frequency can be expressed in Hz (menu set to Frequency) or power-of-10 (menu set to Logarithmic). It enables one of the next 2 Filter Cutoff parameters."
+			},
+			{
+				"name": "cutofflog",
+				"label": "Filter Cutoff (Hz=10**val)",
+				"style": "Float",
+				"description": "The filter cutoff frequency expressed in power-of-10, where value 0 translates to 1 Hz (10**0), value 1 is 10 Hz (10**1), value 2 is 100 Hz (10**2), value 3 is 1000 Hz, value 4 is 10,000 Hz, value 4.5"
+			},
+			{
+				"name": "cutofffrequency",
+				"label": "Filter Cutoff (Hz)",
+				"style": "Float",
+				"description": "The filter cutoff frequency expressed in Hz (cycles per second). This parameter set to 1000 has exactly the same effect as the above parameter set to 3."
+			},
+			{
+				"name": "resonance",
+				"label": "Filter Resonance",
+				"style": "Float",
+				"description": "Increasing the resonance will boost the loudness of the passed frequencies near the cutoff frequency."
+			},
+			{
+				"name": "rolloff",
+				"label": "Roll-Off (dB per Octave)",
+				"style": "Float",
+				"description": "Rolloff determines how much the levels decrease near the cutoff frequency. This parameter will make it decrease by 12 (dB) per octave, to, more extremely, 24 decibels per octave. 12 and 24 decibels co"
+			},
+			{
+				"name": "drywet",
+				"label": "Dry / Wet Mix",
+				"style": "Float",
+				"description": "As this parameter is reduced from 1 (Wet) toward 0 (Dry), it removes the effect of the filter."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

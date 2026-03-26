@@ -9,7 +9,7 @@
 		"selecttop"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner selectTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

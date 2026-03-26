@@ -1,0 +1,157 @@
+{
+	"id": "mousein-chop",
+	"title": "mouseinCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"mousein",
+		"chop",
+		"mouseinchop",
+		"active",
+		"output",
+		"posxname",
+		"posyname",
+		"lbuttonname"
+	],
+	"content": {
+		"summary": "TouchDesigner mouseinCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "mouseinCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Menu",
+				"description": "While , the mouse movement will be output from and the will cook every frame. When set to it will not cook and the current mouse X or Y values will not be output. will capture mouse events only when t"
+			},
+			{
+				"name": "output",
+				"label": "Output Coordinates",
+				"style": "Menu",
+				"description": "Controls the range of the mouse Position X and Position Y."
+			},
+			{
+				"name": "posxname",
+				"label": "Position X",
+				"style": "Str",
+				"description": "The name of the channel that returns the horizontal movement of the mouse."
+			},
+			{
+				"name": "posyname",
+				"label": "Position Y",
+				"style": "Str",
+				"description": "The name of the channel that returns the vertical movement of the mouse."
+			},
+			{
+				"name": "lbuttonname",
+				"label": "Left Button",
+				"style": "Str",
+				"description": "The name of the channel that returns the state of the left button."
+			},
+			{
+				"name": "rbuttonname",
+				"label": "Right Button",
+				"style": "Str",
+				"description": "The name of the channel that returns the state of the right button."
+			},
+			{
+				"name": "mbuttonname",
+				"label": "Middle Button",
+				"style": "Str",
+				"description": "The name of the channel that returns the state of the middle button."
+			},
+			{
+				"name": "wheel",
+				"label": "Wheel",
+				"style": "Str",
+				"description": "This channel goes up when the wheel is rolled away from the user and goes down when it is rolled the other way."
+			},
+			{
+				"name": "wheelinc",
+				"label": "Wheel Increment",
+				"style": "Float",
+				"description": "The amount that is added or subtracted to the current value of the Wheel channel when the wheel is moved."
+			},
+			{
+				"name": "monitor",
+				"label": "Monitor",
+				"style": "Str",
+				"description": "This channel returns which monitor the mouse cursor is currently on."
+			},
+			{
+				"name": "panels",
+				"label": "Panels",
+				"style": "PanelCOMP",
+				"description": "Events are only triggered when the specified panel has focus."
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "The sample rate of the channels, in samples per second."
+			},
+			{
+				"name": "left",
+				"label": "Extend Left",
+				"style": "Menu",
+				"description": "The left extend conditions (before/after range)."
+			},
+			{
+				"name": "right",
+				"label": "Extend Right",
+				"style": "Menu",
+				"description": "The right extend conditions (before/after range)."
+			},
+			{
+				"name": "defval",
+				"label": "Default Value",
+				"style": "Float",
+				"description": "The value used for the Default Value extend condition."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

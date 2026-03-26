@@ -14,7 +14,7 @@
 		"camerares"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner kinectTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

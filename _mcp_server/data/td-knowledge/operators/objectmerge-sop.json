@@ -1,0 +1,47 @@
+{
+	"id": "objectmerge-sop",
+	"title": "objectmergeSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"objectmerge",
+		"sop",
+		"objectmergesop",
+		"xform",
+		"merge",
+		"merge0sop"
+	],
+	"content": {
+		"summary": "TouchDesigner objectmergeSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "objectmergeSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "xform",
+				"label": "Transform Object",
+				"style": "Object",
+				"description": "Specify a geometry component to which all the merged geometry should be transformed relative to."
+			},
+			{
+				"name": "merge",
+				"label": "Merge",
+				"style": "Sequence",
+				"description": "Sequence of SOPs to merge"
+			},
+			{
+				"name": "merge0sop",
+				"label": "SOP",
+				"style": "SOP",
+				"description": "Each source allows you to specify a pattern of paths. The geometry of each is merged into this . Each can reside in a different component. A pattern can be a complete path to a single or it may consis"
+			}
+		],
+		"versions": {}
+	}
+}

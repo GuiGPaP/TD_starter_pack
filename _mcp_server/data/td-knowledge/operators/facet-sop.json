@@ -1,0 +1,109 @@
+{
+	"id": "facet-sop",
+	"title": "facetSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"facet",
+		"sop",
+		"facetsop",
+		"group",
+		"unit",
+		"prenml",
+		"unique",
+		"cons"
+	],
+	"content": {
+		"summary": "TouchDesigner facetSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "facetSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "unit",
+				"label": "Make Normals Unit Length",
+				"style": "Toggle",
+				"description": "Checking this option will normalize the length of normals to a length of one unit."
+			},
+			{
+				"name": "prenml",
+				"label": "Compute Normals",
+				"style": "Toggle",
+				"description": "Checking this option means that the surface normals will be computed. Where points are shared between polygons, smooth shading results, and where points are not shared (unique), faceted edges result. "
+			},
+			{
+				"name": "unique",
+				"label": "Unique Points",
+				"style": "Toggle",
+				"description": "Makes each vertex have a unique point. The result of selecting this option is that all vertices are made into unique points, thus making all edges hard, with no smooth shading."
+			},
+			{
+				"name": "cons",
+				"label": "Consolidate",
+				"style": "Menu",
+				"description": "Consolidate eliminates the redundancy of having many points that are close to each other, by merging them together to form a fewer set of common points. Consolidate is useful for cleaning up an edge t"
+			},
+			{
+				"name": "dist",
+				"label": "Distance",
+				"style": "Float",
+				"description": "Points and normals less than this distance apart will be consolidated, or have their normals averaged, based on the setting in the Consolidate menu."
+			},
+			{
+				"name": "inline",
+				"label": "Remove Inline Points",
+				"style": "Toggle",
+				"description": "Removes points that lie inline with its neighboring points."
+			},
+			{
+				"name": "inlinedist",
+				"label": "Distance",
+				"style": "Float",
+				"description": "Set the distance threshold for removing inline points when the above parameter is On."
+			},
+			{
+				"name": "orientpolys",
+				"label": "Orient Polygons",
+				"style": "Toggle",
+				"description": "Orients all polygons so they have the same winding direction."
+			},
+			{
+				"name": "cusp",
+				"label": "Cusp Polygons",
+				"style": "Toggle",
+				"description": "Most of the time, you want some polygons to be smooth shaded and others to be faceted. Usually polygons that meet at low angles should be smooth shaded, and polygon edges that meet at sharper angles s"
+			},
+			{
+				"name": "angle",
+				"label": "Cusp Angle",
+				"style": "Float",
+				"description": "Cusping allows you to specify the threshold angle at which the edges become faceted. A good typical value is 20."
+			},
+			{
+				"name": "remove",
+				"label": "Remove Degenerate",
+				"style": "Toggle",
+				"description": "Sometimes (not often) your geometry can get messed up, where there are points hanging around that are not used for anything, or there are primitives that don't make sense. This option checks for these"
+			},
+			{
+				"name": "postnml",
+				"label": "Compute Normals",
+				"style": "Toggle",
+				"description": "Again, allows you to compute the normals after the consolidation or cusping stages. You should select this if you have set either the Cusp or Consolidate option."
+			}
+		],
+		"versions": {}
+	}
+}

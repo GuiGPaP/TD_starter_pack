@@ -1,0 +1,97 @@
+{
+	"id": "join-sop",
+	"title": "joinSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"join",
+		"sop",
+		"joinsop",
+		"group",
+		"blend",
+		"tolerance",
+		"bias",
+		"knotmult"
+	],
+	"content": {
+		"summary": "TouchDesigner joinSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "joinSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "blend",
+				"label": "Blend",
+				"style": "Toggle",
+				"description": "Determines the way the primitives are joined. A blended face or surface will typically reposition the ends to be joined and convert them into a single, common point, row or column respectively. The am"
+			},
+			{
+				"name": "tolerance",
+				"label": "Tolerance",
+				"style": "Float",
+				"description": "The meaning of the tolerance varies with the type of join. The shapes of blended primitives will change less if the tolerance is low. If the tolerance is < , a new point, knot, row or column is insert"
+			},
+			{
+				"name": "bias",
+				"label": "Bias",
+				"style": "Float",
+				"description": "Affects only blended primitives by varying the position of the common point, row or column linearly between the two original ends. If the bias is zero, the common part will coincide with the end of th"
+			},
+			{
+				"name": "knotmult",
+				"label": "Multiplicity",
+				"style": "Toggle",
+				"description": "Affects the number of knots inserted at the blend point and thus allows for smooth or pointed connections. The connection will be pointed when the Multiplicity is on. When Blend is not on, an active m"
+			},
+			{
+				"name": "proximity",
+				"label": "Connect Closest Ends",
+				"style": "Toggle",
+				"description": "The Join connects the tail of the first primitive with the head on the next primitive, and so on unless this toggle is on, in which case the closest ends are chosen instead. For surfaces, this option "
+			},
+			{
+				"name": "dir",
+				"label": "Direction",
+				"style": "Menu",
+				"description": "This menu determines the parametric direction of the joining operation, which can be in U or in V, and is meaningful only when the inputs are surfaces. The U direction is associated with columns; the "
+			},
+			{
+				"name": "joinop",
+				"label": "Join",
+				"style": "Menu",
+				"description": "Can optionally join subgroups of n primitives or every nth primitive in a cyclical manner."
+			},
+			{
+				"name": "inc",
+				"label": "N",
+				"style": "Int",
+				"description": "Determines the number of primitives to be either grouped or skipped. N2."
+			},
+			{
+				"name": "loop",
+				"label": "Wrap Last to First",
+				"style": "Toggle",
+				"description": "If enabled, it connects the beginning of the first primitive to the end of the last primitive, thus forming a single, closed face or hull. If a single, open primitive exists in the input, it will be c"
+			},
+			{
+				"name": "prim",
+				"label": "Keep Primitives",
+				"style": "Toggle",
+				"description": "If this button is not checked, the input primitives will be deleted after being joined. If checked, they will be preserved."
+			}
+		],
+		"versions": {}
+	}
+}

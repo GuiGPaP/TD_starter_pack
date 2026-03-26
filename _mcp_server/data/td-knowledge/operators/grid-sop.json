@@ -1,0 +1,148 @@
+{
+	"id": "grid-sop",
+	"title": "gridSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"grid",
+		"sop",
+		"gridsop",
+		"type",
+		"surftype",
+		"orient",
+		"modifybounds",
+		"reverseanchors"
+	],
+	"content": {
+		"summary": "TouchDesigner gridSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "gridSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "type",
+				"label": "Primitive Type",
+				"style": "Menu",
+				"description": "Select from the following types. For information on the different types, see the Geometry Types section. Depending on the primitive type chosen, some options may not apply."
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "(Results only viewable for polygons and meshes)."
+			},
+			{
+				"name": "orient",
+				"label": "Orientation",
+				"style": "Menu",
+				"description": "Specifies on which plane the Grid is built."
+			},
+			{
+				"name": "modifybounds",
+				"label": "Modify Bounds",
+				"style": "Toggle",
+				"description": "Enabled only when an input is connected to the Grid to set bounds for the grid. Turn Modify Bounds = On to enable the transform parameters below to further modify the position and scale of the bounds."
+			},
+			{
+				"name": "reverseanchors",
+				"label": "Reverse Anchors",
+				"style": "Toggle",
+				"description": "Invert the direction of anchors."
+			},
+			{
+				"name": "anchoru",
+				"label": "Anchor U",
+				"style": "Float",
+				"description": "Set the point in X about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "anchorv",
+				"label": "Anchor V",
+				"style": "Float",
+				"description": "Set the point in Y about which the geometry is positioned, scaled and rotated."
+			},
+			{
+				"name": "rows",
+				"label": "Rows",
+				"style": "Int",
+				"description": "The number of rows and columns. Rows are horizontal lines; Columns are vertical lines. Two rows by two columns makes a square or rectangle. For example, one row and two columns makes a single line if "
+			},
+			{
+				"name": "cols",
+				"label": "Columns",
+				"style": "Int",
+				"description": "The number of rows and columns. Rows are horizontal lines; Columns are vertical lines. Two rows by two columns makes a square or rectangle. For example, one row and two columns makes a single line if "
+			},
+			{
+				"name": "orderu",
+				"label": "U Order",
+				"style": "Int",
+				"description": "U Order Degree of spline basis +1 in the U parametric direction."
+			},
+			{
+				"name": "orderv",
+				"label": "V Order",
+				"style": "Int",
+				"description": "V Order Degree of spline basis +1 in the V parametric direction."
+			},
+			{
+				"name": "interpu",
+				"label": "End Point Interpolate in U",
+				"style": "Toggle",
+				"description": "End-point interpolate in U Extends the surface to touch the end point in the U direction."
+			},
+			{
+				"name": "interpv",
+				"label": "End Point Interpolate in V",
+				"style": "Toggle",
+				"description": "End-point interpolate in V Extends the surface to touch the end point in the V direction."
+			},
+			{
+				"name": "texture",
+				"label": "Texture Coordinates",
+				"style": "Menu",
+				"description": "This adds uv coordinates to the geometry created by the Grid ."
+			},
+			{
+				"name": "normals",
+				"label": "Compute Normals",
+				"style": "Toggle",
+				"description": "Checking this option On will compute surface normals."
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "Center of grid in X, Y, and Z."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizex",
+				"label": "Sizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizey",
+				"label": "Sizey",
+				"style": "XYZW",
+				"description": "The X and Y scale of the grid."
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

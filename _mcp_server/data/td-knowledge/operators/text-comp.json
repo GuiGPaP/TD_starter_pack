@@ -1,0 +1,1241 @@
+{
+	"id": "text-comp",
+	"title": "textCOMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"text",
+		"comp",
+		"textcomp",
+		"mode",
+		"specdat",
+		"specchop",
+		"type"
+	],
+	"content": {
+		"summary": "TouchDesigner textCOMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "textCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "Controls whether the contents are taken from the Text parameter or from a Specification / ."
+			},
+			{
+				"name": "text",
+				"label": "Text",
+				"style": "Str",
+				"description": "This parameter is the data source for the text that is displayed in the panel. The value may be a number, string, or a reference to an external data source using a python or bind expression. When the "
+			},
+			{
+				"name": "specdat",
+				"label": "Specification DAT",
+				"style": "DAT",
+				"description": "A path to a that is the source of the text data when in Specification mode. The table should have 3 columns labeled x, y and text in their first rows. Each row after that will display one line of text"
+			},
+			{
+				"name": "specchop",
+				"label": "Specification CHOP",
+				"style": "CHOP",
+				"description": "A path to a that can provide numerical data when in Specification mode. Channels named x and y can be used to position the text data specified in the Specificaction . Each data row in the should have "
+			},
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The Type parameter controls how the value is interpreted and as well as what formatting and editing options are available."
+			},
+			{
+				"name": "formatting",
+				"label": "Formatting",
+				"style": "Menu",
+				"description": "This parameter controls how the source text is is formatted and displayed inside the panel. The options available will change depending on the selected mode. For example, in Float mode there are optio"
+			},
+			{
+				"name": "customformatting",
+				"label": "Custom Formatting",
+				"style": "Str",
+				"description": "This parameter provides the formatting string for custom modes like Python F-String and C++ Fmt. In both cases, the source text is defined inside curly braces ( {} ) while text outside the braces is t"
+			},
+			{
+				"name": "precision",
+				"label": "Precision",
+				"style": "Int",
+				"description": "Used in Float mode to set the number of decimal places."
+			},
+			{
+				"name": "thousandsseparator",
+				"label": "Thousands Separator",
+				"style": "Menu",
+				"description": "Used in Float and Integer mode to add a separator between thousands to make it easier to read large numbers. For example 1,000,000"
+			},
+			{
+				"name": "framerate",
+				"label": "Framerate",
+				"style": "Int",
+				"description": "Sets the number of frames per second when formatting integers into time codes."
+			},
+			{
+				"name": "formatcodes",
+				"label": "Formatting Codes",
+				"style": "Toggle",
+				"description": "Enables the use of formatting directives in the text. For example, the code {#color(255, 0, 0);} will turn all text afterwards on that line red. See for all available codes."
+			},
+			{
+				"name": "escapeseq",
+				"label": "Parse Escape Sequences",
+				"style": "Toggle",
+				"description": "When enabled, '\\t' sequences will be converted to tabs and '\\r' or '\\n' to line breaks. This feature is only enabled when using the Specification . For Text mode, python expressions should be used whe"
+			},
+			{
+				"name": "smartpunct",
+				"label": "Smart Punctuation",
+				"style": "Toggle",
+				"description": "Enables the use of smart punctuation. For example, pairs of quotes will be replaced with appropriate angled quotes, 3 periods will be replaced with an ellipses character and two hypens will become an "
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Toggle",
+				"description": "Enables word wrap and can only be used when the 'Type' parameter above is set to 'Multi Line'. Word wrap will split single lines of text onto multiple lines when they extend past the edge of the panel"
+			},
+			{
+				"name": "editmode",
+				"label": "Edit Mode",
+				"style": "Menu",
+				"description": "Controls whether the text can be editing directly in the viewer."
+			},
+			{
+				"name": "shiftenter",
+				"label": "Shift-Enter for New Line",
+				"style": "Toggle",
+				"description": "In multiline mode, when this option is enabled, pressing Enter will complete editing and save the value and users must hold Shift and Enter if they wish to create a new line."
+			},
+			{
+				"name": "dragdropmode",
+				"label": "Drag Drop Behaviour",
+				"style": "Menu",
+				"description": "This parameter controls what happens when a user drags something onto an active panel."
+			},
+			{
+				"name": "placeholdertext",
+				"label": "Placeholder Text",
+				"style": "Str",
+				"description": "This parameter is the data source for the text that is displayed in the panel when there is no text given. Similar to a hint text."
+			},
+			{
+				"name": "readingdirection",
+				"label": "Reading Direction",
+				"style": "Menu",
+				"description": "Use this parameter to control whether the text is displayed from left-to-right (LTR) or from right-to-left (RTL). Bidirectional layout is also supported when LTR characters are detected when using RTL"
+			},
+			{
+				"name": "fieldfocus",
+				"label": "Focus Order",
+				"style": "DAT",
+				"description": "A path to a containing a list of component paths that is used to control which panel receives the focus when a user hits TAB or Shift+Tab during editing."
+			},
+			{
+				"name": "callbacks",
+				"label": "Callbacks DAT",
+				"style": "DAT",
+				"description": "The path of a Text containing python callback functions that can be used to react to different events in the viewer."
+			},
+			{
+				"name": "legacyfontselection",
+				"label": "Legacy Font Selection",
+				"style": "Toggle",
+				"description": "Enable to select the font using the legacy system of bold and italic toggles. In the new system, bold and italic options can be chosen using the typeface parameter when available."
+			},
+			{
+				"name": "font",
+				"label": "Font",
+				"style": "Menu",
+				"description": "Select the font to be used from the dropdown menu. Available fonts are those that have been registered with the operating system. There may be a delay when selecting fonts that have not been used befo"
+			},
+			{
+				"name": "fontfile",
+				"label": "Font File",
+				"style": "File",
+				"description": "Specify a font file to be used for rendering the text. This option can be used for fonts that are not registered with the operating system and do not appear in the drop down menu."
+			},
+			{
+				"name": "typeface",
+				"label": "Typeface",
+				"style": "Menu",
+				"description": "Select a specific typeface for the current font e.g. Bold, Regular, Italic, etc. Not applicable in legacy font mode."
+			},
+			{
+				"name": "bold",
+				"label": "Bold",
+				"style": "Toggle",
+				"description": "Display the text in ."
+			},
+			{
+				"name": "italic",
+				"label": "Italic",
+				"style": "Toggle",
+				"description": "Display the text in italics."
+			},
+			{
+				"name": "scaletofit",
+				"label": "Scale Text to Fit",
+				"style": "Menu",
+				"description": "Automatically adjust the font size to fit inside the panel."
+			},
+			{
+				"name": "fontsize",
+				"label": "Font Size",
+				"style": "Float",
+				"description": "Set the size of the font. By default the font is defined in resolution-independent panel units that will be rendered to a variable number of pixels depending on DPI settings of the output window (e.g."
+			},
+			{
+				"name": "fontsizeunits",
+				"label": "Font Size Units",
+				"style": "Menu",
+				"description": "Determines how the font size is interpretted. The default is resolution-independent panel units."
+			},
+			{
+				"name": "tracking",
+				"label": "Tracking",
+				"style": "Float",
+				"description": "Sets the horizontal spacing between characters, where 0 is default spacing, > 0 is increased spacing and < 0 is decreased spacing."
+			},
+			{
+				"name": "skew",
+				"label": "Skew",
+				"style": "Float",
+				"description": "Tilts the top of the characters forwards or backwards relative to the baseline."
+			},
+			{
+				"name": "horzstretch",
+				"label": "Horz Stretch",
+				"style": "Float",
+				"description": "Horizontally stretch the characters relative to their current alignment."
+			},
+			{
+				"name": "linespacing",
+				"label": "Line Spacing",
+				"style": "Float",
+				"description": "The spacing between lines when using multiline mode. The value is a multiplier of the default spacing which is defined as 1.2 * font size."
+			},
+			{
+				"name": "fontalpha",
+				"label": "Font Alpha",
+				"style": "Float",
+				"description": "The blending value used to display the text over the background. 1 is opaque while 0 is transparent."
+			},
+			{
+				"name": "customselectcolor",
+				"label": "Custom Select Color",
+				"style": "Toggle",
+				"description": "Enable this parameter to define a custom color used for the selection bar when editing the text. When disabled, the selection color will be automatically chosen to maximize contrast between the backgr"
+			},
+			{
+				"name": "dropshadow",
+				"label": "Drop Shadow",
+				"style": "Toggle",
+				"description": "Draw a drop shadow under the text."
+			},
+			{
+				"name": "dropshadowalpha",
+				"label": "Drop Shadow Alpha",
+				"style": "Float",
+				"description": "The blending value used to display the shadow over the background. 1 is opaque while 0 is transparent. Premultiplied by Font Alpha."
+			},
+			{
+				"name": "dropshadowoffsetunits",
+				"label": "Drop Shadow Offset Units",
+				"style": "Menu",
+				"description": "Determine the units used by the Drop Shadow Offset parameter."
+			},
+			{
+				"name": "textoffsetunits",
+				"label": "Text Offset Units",
+				"style": "Menu",
+				"description": "Determine the units used by the Text Offset parameter."
+			},
+			{
+				"name": "textpaddingunits",
+				"label": "Text Padding Units",
+				"style": "Menu",
+				"description": "The units used by the text padding."
+			},
+			{
+				"name": "alignx",
+				"label": "Horizontal Align",
+				"style": "Menu",
+				"description": "Determines how the text is positioned horizontally in the panel. For example, with left alignment, the text will be positioned against the left side of the panel plus any defined padding."
+			},
+			{
+				"name": "alignxmode",
+				"label": "Horizontal Align Mode",
+				"style": "Menu",
+				"description": "Determines how the text is measured for calculating the alignment. Only font metrics are available when using Multiline or Specification mode."
+			},
+			{
+				"name": "aligny",
+				"label": "Vertical Align",
+				"style": "Menu",
+				"description": "Determines how the text is positioned vertically inside the panel."
+			},
+			{
+				"name": "alignymode",
+				"label": "Vertical Align Mode",
+				"style": "Menu",
+				"description": "Determines how the text is measured when doing the vertical alignment."
+			},
+			{
+				"name": "x",
+				"label": "X",
+				"style": "Int",
+				"description": "Specify the horizontal position in pixels relative to its parent."
+			},
+			{
+				"name": "y",
+				"label": "Y",
+				"style": "Int",
+				"description": "Specify the vertical position in pixels relative to its parent."
+			},
+			{
+				"name": "w",
+				"label": "Width",
+				"style": "Int",
+				"description": "Specify the panel's width in pixels."
+			},
+			{
+				"name": "h",
+				"label": "Height",
+				"style": "Int",
+				"description": "Specify the 's height in pixels."
+			},
+			{
+				"name": "fixedaspect",
+				"label": "Fixed Aspect",
+				"style": "Menu",
+				"description": "Allows easy creation of panels with a specific aspect set in the Aspect Ratio parameter below. Only requires setting the width or height of the panel and the other dimension is calculated based on the"
+			},
+			{
+				"name": "aspect",
+				"label": "Aspect Ratio",
+				"style": "Float",
+				"description": "Specify the ratio when using Fixed Aspect parameter above, the ratio is width/height."
+			},
+			{
+				"name": "layer",
+				"label": "Depth Layer",
+				"style": "Float",
+				"description": "Specifies the order the panel components are drawn in, similar to layers in Photoshop. Higher values will be drawn over any other panel with a lower value (that is at the same level of hierarchy). If "
+			},
+			{
+				"name": "hmode",
+				"label": "Horizontal Mode",
+				"style": "Menu",
+				"description": "Select one of 3 modes to determine the horizontal width of the panel."
+			},
+			{
+				"name": "leftanchor",
+				"label": "Left Anchor",
+				"style": "Float",
+				"description": "Position of the left anchor of the panel with respect to the parent. This value is normalized 0-1, 0 is the left edge of the parent and 1 is the right edge of the parent."
+			},
+			{
+				"name": "leftoffset",
+				"label": "Left Offset",
+				"style": "Float",
+				"description": "An offset for the left anchor in pixels."
+			},
+			{
+				"name": "rightanchor",
+				"label": "Right Anchor",
+				"style": "Float",
+				"description": "Position of the right anchor of the panel with respect to the parent. This value is normalized 0-1, 0 is the left edge of the parent and 1 is the right edge of the parent."
+			},
+			{
+				"name": "rightoffset",
+				"label": "Right Offset",
+				"style": "Float",
+				"description": "An offset for the right anchor in pixels."
+			},
+			{
+				"name": "horigin",
+				"label": "Horizontal Origin",
+				"style": "Float",
+				"description": "Sets the position of the panel's origin horizontally. The default origin (0,0) is the bottom-left corner of the panel."
+			},
+			{
+				"name": "hfillweight",
+				"label": "Horizontal Fill Weight",
+				"style": "Float",
+				"description": "When multiple panels are using Horizontal Mode = Fill and being aligned by the parent either Left to Right or Right to Left, this fill weight parameter can be used to bias the fill width of the panels"
+			},
+			{
+				"name": "vmode",
+				"label": "Vertical Mode",
+				"style": "Menu",
+				"description": "Select one of 3 modes to determine the vertical height of the panel."
+			},
+			{
+				"name": "bottomanchor",
+				"label": "Bottom Anchor",
+				"style": "Float",
+				"description": "Position of the bottom anchor of the panel with respect to the parent. This value is normalized 0-1, 0 is the bottom edge of the parent and 1 is the top edge of the parent."
+			},
+			{
+				"name": "bottomoffset",
+				"label": "Bottom Offset",
+				"style": "Float",
+				"description": "An offset for the bottom anchor in pixels."
+			},
+			{
+				"name": "topanchor",
+				"label": "Top Anchor",
+				"style": "Float",
+				"description": "Position of the top anchor of the panel with respect to the parent. This value is normalized 0-1, 0 is the bottom edge of the parent and 1 is the top edge of the parent."
+			},
+			{
+				"name": "topoffset",
+				"label": "Top Offset",
+				"style": "Float",
+				"description": "An offset for the top anchor in pixels."
+			},
+			{
+				"name": "vorigin",
+				"label": "Vertical Origin",
+				"style": "Float",
+				"description": "Sets the position of the panel's origin vertically. The default origin (0,0) is the bottom-left corner of the panel."
+			},
+			{
+				"name": "vfillweight",
+				"label": "Vertical Fill Weight",
+				"style": "Float",
+				"description": "When multiple panels are using Vertical Mode = Fill and being aligned by the parent either Top to Bottom or Bottom to Top, this fill weight parameter can be used to bias the fill height of the panels."
+			},
+			{
+				"name": "alignallow",
+				"label": "Parent Alignment",
+				"style": "Menu",
+				"description": "When set to Ignore, the Panel will ignore any Align parameter settings from its parent."
+			},
+			{
+				"name": "alignorder",
+				"label": "Align Order",
+				"style": "Float",
+				"description": "This parameter allows you to specify the align position when its parent's Align parameter is set to something other then or . Lower numbers are first."
+			},
+			{
+				"name": "sizefromwindow",
+				"label": "Size from Window",
+				"style": "Toggle",
+				"description": "When enabled the panel component's width and height are set by resizing its floating viewer window."
+			},
+			{
+				"name": "display",
+				"label": "Display",
+				"style": "Toggle",
+				"description": "Specifies if the panel is displayed or hidden. Changing this parameter may incur some layout processing costs.  For simple cases, such as overlays it is more performant to adjust the opacity parameter"
+			},
+			{
+				"name": "enable",
+				"label": "Enable",
+				"style": "Toggle",
+				"description": "Allows you to prevent all interaction with this panel."
+			},
+			{
+				"name": "helpdat",
+				"label": "Help DAT",
+				"style": "DAT",
+				"description": "Lets you specify the path to a whose content will be displayed as a rollover pop-up help for the control panel."
+			},
+			{
+				"name": "cursor",
+				"label": "Cursor",
+				"style": "Menu",
+				"description": "Changes the cursor displayed when cursor is over the panel."
+			},
+			{
+				"name": "multitouch",
+				"label": "Multi-Touch",
+				"style": "Menu",
+				"description": "When enabled, this panel will process the first touch it gets in a similar manner to how it processes a mouse click, with updates to u, v, state etc.  The touch event must be initiated from the panel."
+			},
+			{
+				"name": "constraincursor",
+				"label": "Constrain Cursor",
+				"style": "Toggle",
+				"description": "Constrains the cursor to this panel, keeping it inside once it enters."
+			},
+			{
+				"name": "clickthrough",
+				"label": "Click Through",
+				"style": "Toggle",
+				"description": "When enabled all mouse clicks are ignored by this ."
+			},
+			{
+				"name": "mousewheel",
+				"label": "Use Mouse Wheel",
+				"style": "Toggle",
+				"description": "Turn on to capture events when the mouse wheel is used over the panel."
+			},
+			{
+				"name": "mouserel",
+				"label": "Relative UV",
+				"style": "Toggle",
+				"description": "When enabled the uv will reflect relative mouse movement."
+			},
+			{
+				"name": "reposition",
+				"label": "Drag to Reposition",
+				"style": "Menu",
+				"description": "Enables repositioning of the panel or window by dragging with the mouse."
+			},
+			{
+				"name": "repocomp",
+				"label": "Component",
+				"style": "COMP",
+				"description": "Enabled by choosing the option from the Reposition parameter. Specify the path to the panel component you would like to reposition by mouse."
+			},
+			{
+				"name": "anchordrag",
+				"label": "Anchor Drag",
+				"style": "Menu",
+				"description": "When Drag To Reposition parameter is set to , and the panel's Horizontal Mode and/or Vertical Mode is set to Anchors, this menu determines whether drag-to-reposition actions change Anchor values or Of"
+			},
+			{
+				"name": "scrolloverlay",
+				"label": "Scroll Overlay",
+				"style": "Menu",
+				"description": "Controls whether the panel is affected by scrollbar position. This allows the creation of panel overlays that aren't affected by the panel's scrollbars."
+			},
+			{
+				"name": "bgalpha",
+				"label": "Background Alpha",
+				"style": "Float",
+				"description": "Set the alpha value for the background."
+			},
+			{
+				"name": "top",
+				"label": "Background TOP",
+				"style": "TOP",
+				"description": "Allows you to specify a as the background for the panel."
+			},
+			{
+				"name": "topfill",
+				"label": "TOP Fill",
+				"style": "Menu",
+				"description": "This menu specifies the way the Background will fill the panel's background."
+			},
+			{
+				"name": "topsmoothness",
+				"label": "TOP Smoothness",
+				"style": "Menu",
+				"description": "This menu controls background 's viewer smoothness settings. In previous builds of TouchDesigner, this was always 'Mipmap Pixels', so old files will load with this setting whereas the default for new "
+			},
+			{
+				"name": "borderaalpha",
+				"label": "Border A Alpha",
+				"style": "Float",
+				"description": "Alpha value for border A color."
+			},
+			{
+				"name": "borderbalpha",
+				"label": "Border B Alpha",
+				"style": "Float",
+				"description": "Alpha value for border B color."
+			},
+			{
+				"name": "leftborder",
+				"label": "Left Border",
+				"style": "Menu",
+				"description": "What color the 2 left-most pixels are. Options are 0 (no change), Border A (uses color defined in Border A), or Border B (uses color defined in Border B)."
+			},
+			{
+				"name": "leftborderi",
+				"label": "Left Border Inside",
+				"style": "Menu",
+				"description": "Same as above parameter but used for an inside border."
+			},
+			{
+				"name": "rightborder",
+				"label": "Right Border",
+				"style": "Menu",
+				"description": "What color the 2 right-most pixels are. Options are 0 (no change), Border A (uses color defined in Border A), or Border B (uses color defined in Border B)."
+			},
+			{
+				"name": "rightborderi",
+				"label": "Right Border Inside",
+				"style": "Menu",
+				"description": "Same as above parameter but used for an inside border."
+			},
+			{
+				"name": "bottomborder",
+				"label": "Bottom Border",
+				"style": "Menu",
+				"description": "What color the 2 bottom-most pixels are. Options are 0 (no change), Border A (uses color defined in Border A), or Border B (uses color defined in Border B)."
+			},
+			{
+				"name": "bottomborderi",
+				"label": "Bottom Border Inside",
+				"style": "Menu",
+				"description": "Same as above parameter but used for an inside border."
+			},
+			{
+				"name": "topborder",
+				"label": "Top Border",
+				"style": "Menu",
+				"description": "What color the 2 top-most pixels are. Options are 0 (no change), Border A (uses color defined in Border A), or Border B (uses color defined in Border B)."
+			},
+			{
+				"name": "topborderi",
+				"label": "Top Border Inside",
+				"style": "Menu",
+				"description": "Same as above parameter but used for an inside border."
+			},
+			{
+				"name": "borderover",
+				"label": "Border Over Children",
+				"style": "Toggle",
+				"description": "Draws the panel's borders on top of all children panels."
+			},
+			{
+				"name": "dodisablecolor",
+				"label": "Disable Color",
+				"style": "Toggle",
+				"description": "Enable the use of a unique disable color below when the panel's Enable = Off."
+			},
+			{
+				"name": "disablealpha",
+				"label": "Disable Alpha",
+				"style": "Float",
+				"description": "Set the alpha value for the disable color."
+			},
+			{
+				"name": "multrgb",
+				"label": "Multiply RGB by Alpha",
+				"style": "Toggle",
+				"description": "Multiplies the RGB channels by the alpha channel."
+			},
+			{
+				"name": "composite",
+				"label": "Composite",
+				"style": "Menu",
+				"description": "Selects how the panel is composited with its siblings panels. See the for a description of the various composite methods."
+			},
+			{
+				"name": "opacity",
+				"label": "Opacity",
+				"style": "Float",
+				"description": "Allows you to control the transparency of the panel."
+			},
+			{
+				"name": "align",
+				"label": "Align",
+				"style": "Menu",
+				"description": "This menu allows you to specify how the children inside the will be laid out. The options , and will scale the 's children to fit the . They use the Align Order of each of the children to determine th"
+			},
+			{
+				"name": "spacing",
+				"label": "Spacing",
+				"style": "Float",
+				"description": "This is enabled by choosing any Align option other than or . It defines the space between the children when they are being aligned."
+			},
+			{
+				"name": "alignmax",
+				"label": "Max per Line",
+				"style": "Int",
+				"description": "This is enabled by choosing any Align option other than , , , or , and defines the maximum number of children placed in one row or column."
+			},
+			{
+				"name": "justifymethod",
+				"label": "Justify Mathod",
+				"style": "Menu",
+				"description": "This menu specifies if the panel's children are being justified as a group or individually using the Jusitfy Horizontal / Vertical parameters below."
+			},
+			{
+				"name": "justifyh",
+				"label": "Justify Horizontal",
+				"style": "Menu",
+				"description": "This menu specifies if the panel's children are being justified horizontally."
+			},
+			{
+				"name": "justifyv",
+				"label": "Justify Vertical",
+				"style": "Menu",
+				"description": "This menu specifies if the panel's children are being justified vertically."
+			},
+			{
+				"name": "fit",
+				"label": "Fit",
+				"style": "Menu",
+				"description": "This menu allows you to scale the panel's children. It overrides the Justify Horizontal and Justify Vertical parameters."
+			},
+			{
+				"name": "crop",
+				"label": "Crop",
+				"style": "Menu",
+				"description": "This menu determines if any children panels which are positioned partially or completely outside the panel component's dimensions get cropped."
+			},
+			{
+				"name": "phscrollbar",
+				"label": "Horizontal Scrollbar",
+				"style": "Menu",
+				"description": "Setting for horizontal scrollbar on this panel."
+			},
+			{
+				"name": "pvscrollbar",
+				"label": "Vertical Scrollbar",
+				"style": "Menu",
+				"description": "Setting for vertical scrollbar on this panel."
+			},
+			{
+				"name": "scrollbarthickness",
+				"label": "Thickness",
+				"style": "Int",
+				"description": "Set the thickness of the scrollbars in pixels."
+			},
+			{
+				"name": "drag",
+				"label": "When Dragging This",
+				"style": "Menu",
+				"description": "Specify if this can be dragged."
+			},
+			{
+				"name": "dragscript",
+				"label": "Drag Script",
+				"style": "DAT",
+				"description": "Specify a script that will be executed when starting to drag a . Please refer to the Drag section of the page."
+			},
+			{
+				"name": "droptypescript",
+				"label": "Drop Types",
+				"style": "DAT",
+				"description": "If a drop destination script is specified, you can also add a table with a list of return types that the drop destination script will provide. Return types can be one of the op types ( , , , , , ), ch"
+			},
+			{
+				"name": "dropdestscript",
+				"label": "Drop Destination Script",
+				"style": "DAT",
+				"description": "Specify a script that will be executed when the dragged is dropped. A temporary network is created and the component (or the alternative operator specified in Dropped ) is copied to this network. You "
+			},
+			{
+				"name": "paneldragop",
+				"label": "Dropped Operator",
+				"style": "OP",
+				"description": "The Dropped parameter is the easiest way to specify an alternative operator to drop. Note that this alternative operator must exist, otherwise the component itself will be dropped. The alternative is "
+			},
+			{
+				"name": "drop",
+				"label": "On Dropping Into",
+				"style": "Menu",
+				"description": "Specify if this accepts items that are dropped onto it."
+			},
+			{
+				"name": "builtindrop",
+				"label": "Built-In Drop Options",
+				"style": "Toggle",
+				"description": "Normally, when dropping over a node, if the viewer is not active, built-in drop options are provided, otherwise custom defined drop options are provided.  When this option is off, custom defined drop "
+			},
+			{
+				"name": "dropscript",
+				"label": "Drop Script",
+				"style": "DAT",
+				"description": "A component's Drop is run when you drop another component or an external file into that component. Please refer to the Drop Scripts - Text section of the page."
+			},
+			{
+				"name": "dropparm",
+				"label": "Drop Parameter",
+				"style": "StrMenu",
+				"description": "When 'On Dropping Into' is set to"
+			},
+			{
+				"name": "dragdropcallbacks",
+				"label": "Drag/Drop Callbacks",
+				"style": "DAT",
+				"description": "Specify which holds the custom drag/drop scripts.  If blank, press 'Add' to create a with default scripts."
+			},
+			{
+				"name": "reinitextensions",
+				"label": "Re-Init Extensions",
+				"style": "Pulse",
+				"description": "Recompile all extension objects. Normally extension objects are compiled only when they are referenced and their definitions have changed."
+			},
+			{
+				"name": "initextonstart",
+				"label": "Init Extensions On Start",
+				"style": "Toggle",
+				"description": "Perform a Re-Init automatically when TouchDEsigner Starts"
+			},
+			{
+				"name": "ext",
+				"label": "Extension",
+				"style": "Sequence",
+				"description": "Sequence of info for creating extensions on this component"
+			},
+			{
+				"name": "ext0object",
+				"label": "Object",
+				"style": "Str",
+				"description": "A number of class instances that can be attached to the component."
+			},
+			{
+				"name": "ext0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Optional name to search by, instead of the instance class name."
+			},
+			{
+				"name": "ext0promote",
+				"label": "Promote",
+				"style": "Toggle",
+				"description": "Controls whether or not the extensions are visible directly at the component level, or must be accessed through the member.  Example: vs"
+			},
+			{
+				"name": "parentshortcut",
+				"label": "Parent Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as the path to that component. See ."
+			},
+			{
+				"name": "opshortcut",
+				"label": "Global OP Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere at all as the path to that component. See ."
+			},
+			{
+				"name": "iop",
+				"label": "Internal OP",
+				"style": "Sequence",
+				"description": "Sequence header for internal operators."
+			},
+			{
+				"name": "iop0shortcut",
+				"label": "Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as a path to \"Internal \" below. See ."
+			},
+			{
+				"name": "iop0op",
+				"label": "OP",
+				"style": "OP",
+				"description": "The path to the Internal OP inside this component. See ."
+			},
+			{
+				"name": "nodeview",
+				"label": "Node View",
+				"style": "Menu",
+				"description": "Determines what is displayed in the node viewer, also known as the . Some options will not be available depending on the type ( , , Misc.)"
+			},
+			{
+				"name": "opviewer",
+				"label": "Operator Viewer",
+				"style": "OP",
+				"description": "Select which operator's node viewer to use when the Node View parameter above is set to Operator ."
+			},
+			{
+				"name": "keepmemory",
+				"label": "Keep in Memory",
+				"style": "Toggle"
+			},
+			{
+				"name": "enablecloning",
+				"label": "Enable Cloning",
+				"style": "Toggle",
+				"description": "Control if the OP should be actively cloneing. Turning this off causes this node to stop cloning it's 'Clone Master'."
+			},
+			{
+				"name": "enablecloningpulse",
+				"label": "Enable Cloning Pulse",
+				"style": "Pulse",
+				"description": "Instantaneously clone the contents."
+			},
+			{
+				"name": "clone",
+				"label": "Clone Master",
+				"style": "COMP",
+				"description": "to a component used as the Master ."
+			},
+			{
+				"name": "loadondemand",
+				"label": "Load on Demand",
+				"style": "Toggle",
+				"description": "Loads the component into memory only when required. Good to use for components that are not always used in the project."
+			},
+			{
+				"name": "enableexternaltox",
+				"label": "Enable External .tox",
+				"style": "Toggle",
+				"description": "When on (default), the external file will be loaded when the starts and the contents of the will match that of the external . This can be turned off to avoid loading from the referenced external on st"
+			},
+			{
+				"name": "enableexternaltoxpulse",
+				"label": "Enable External .tox Pulse",
+				"style": "Pulse",
+				"description": "This button will re-load from the external file (if present)."
+			},
+			{
+				"name": "externaltox",
+				"label": "External .tox Path",
+				"style": "File",
+				"description": "to a file on disk which will source the component's contents upon start of a . This allows for components to contain networks that can be updated independently. If the file can not be found, whatever "
+			},
+			{
+				"name": "reloadcustom",
+				"label": "Reload Custom Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes inside the component ar"
+			},
+			{
+				"name": "reloadbuiltin",
+				"label": "Reload Built-In Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's built-in parameters are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes ins"
+			},
+			{
+				"name": "savebackup",
+				"label": "Save Backup of External",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, a backup copy of the component specified by the External parameter is saved in the file.  This backup copy will be used if the External can not be found. This may happen"
+			},
+			{
+				"name": "subcompname",
+				"label": "Sub-Component to Load",
+				"style": "Str",
+				"description": "When loading from an External file, this option allows you to reach into the and pull out a and make that the top-level , ignoring everything else in the file (except for the contents of that ). For e"
+			},
+			{
+				"name": "relpath",
+				"label": "Relative File Path Behavior",
+				"style": "Menu",
+				"description": "Set whether the child file paths within this are relative to the itself or the , or inherit from parent."
+			},
+			{
+				"name": "uvbuttonsright",
+				"label": "Uvbuttonsright",
+				"style": "Toggle",
+				"description": "Allows you to specify which mouse buttons update the uv Panel Values."
+			},
+			{
+				"name": "resizecomp",
+				"label": "Resizecomp",
+				"style": "COMP",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "scaley",
+				"label": "Scaley",
+				"style": "XYZW",
+				"description": "Allows you to uniformly scale the Panel's children."
+			},
+			{
+				"name": "uvbuttonsmiddle",
+				"label": "Uvbuttonsmiddle",
+				"style": "Toggle"
+			},
+			{
+				"name": "fontcolorb",
+				"label": "Fontcolorb",
+				"style": "RGBA",
+				"description": "The default color of the text. Additional colors can be applied to separate parts of the text using formatting codes."
+			},
+			{
+				"name": "resizel",
+				"label": "Resizel",
+				"style": "Toggle"
+			},
+			{
+				"name": "bgcolorr",
+				"label": "Bgcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "resizeb",
+				"label": "Resizeb",
+				"style": "Toggle"
+			},
+			{
+				"name": "dropshadowoffsety",
+				"label": "Dropshadowoffsety",
+				"style": "XYZW",
+				"description": "An offset applied to the shadow position after any other alignment operations. Positive values move the text up and to the right."
+			},
+			{
+				"name": "repositionymax",
+				"label": "Repositionymax",
+				"style": "Float",
+				"description": "Enabled by choosing the Component option from the Reposition parameter.  Sets the maximum range for repositioning the panel component vertically."
+			},
+			{
+				"name": "borderbg",
+				"label": "Borderbg",
+				"style": "RGBA"
+			},
+			{
+				"name": "repositionxmin",
+				"label": "Repositionxmin",
+				"style": "Float"
+			},
+			{
+				"name": "marginl",
+				"label": "Marginl",
+				"style": "Float"
+			},
+			{
+				"name": "placeholdercolorg",
+				"label": "Placeholdercolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "selectcolorg",
+				"label": "Selectcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "dropshadowcolorb",
+				"label": "Dropshadowcolorb",
+				"style": "RGBA",
+				"description": "The color of the drop shadow. Additional colors can be applied to separate parts of the text using formatting codes."
+			},
+			{
+				"name": "scalex",
+				"label": "Scalex",
+				"style": "XYZW"
+			},
+			{
+				"name": "offsety",
+				"label": "Offsety",
+				"style": "XYZW",
+				"description": "Allows you to offset the Panel's children. This parameter is overwritten by the Align, Justify Horizontal, and Justify Vertical parameters above."
+			},
+			{
+				"name": "bgcolorg",
+				"label": "Bgcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "fontcolorr",
+				"label": "Fontcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "fontcolorg",
+				"label": "Fontcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "marginb",
+				"label": "Marginb",
+				"style": "Float"
+			},
+			{
+				"name": "borderag",
+				"label": "Borderag",
+				"style": "RGBA"
+			},
+			{
+				"name": "dropshadowcolorg",
+				"label": "Dropshadowcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "bgcolorb",
+				"label": "Bgcolorb",
+				"style": "RGBA",
+				"description": "RGB values for the background. (default: black (0,0,0))"
+			},
+			{
+				"name": "placeholdercolorr",
+				"label": "Placeholdercolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "textoffsety",
+				"label": "Textoffsety",
+				"style": "XYZW",
+				"description": "An offset applied to the text position after any other alignment operations. Positive values move the text up and to the right."
+			},
+			{
+				"name": "selectcolorb",
+				"label": "Selectcolorb",
+				"style": "RGBA",
+				"description": "The color of the selection bar when Custom Select Color is enabled."
+			},
+			{
+				"name": "repositionxmax",
+				"label": "Repositionxmax",
+				"style": "Float",
+				"description": "Enabled by choosing the Component option from the Reposition parameter.  Sets the maximum range for  repositioning the panel component horizontally."
+			},
+			{
+				"name": "placeholdercolorb",
+				"label": "Placeholdercolorb",
+				"style": "RGBA",
+				"description": "The default color of the placeholder text. Additional colors can be applied to separate parts of the text using formatting codes."
+			},
+			{
+				"name": "resizehmax",
+				"label": "Resizehmax",
+				"style": "Float",
+				"description": "Limits the bottom-top (height) resizing range."
+			},
+			{
+				"name": "resizer",
+				"label": "Resizer",
+				"style": "Toggle"
+			},
+			{
+				"name": "resizewmin",
+				"label": "Resizewmin",
+				"style": "Float"
+			},
+			{
+				"name": "textoffsetx",
+				"label": "Textoffsetx",
+				"style": "XYZW"
+			},
+			{
+				"name": "postoffsetx",
+				"label": "Postoffsetx",
+				"style": "XYZW"
+			},
+			{
+				"name": "uvbuttonsleft",
+				"label": "Uvbuttonsleft",
+				"style": "Toggle"
+			},
+			{
+				"name": "resizewmax",
+				"label": "Resizewmax",
+				"style": "Float",
+				"description": "Limits the left-right (width) resizing range."
+			},
+			{
+				"name": "postoffsety",
+				"label": "Postoffsety",
+				"style": "XYZW",
+				"description": "Adds an offset after all other postions and alignment options have been applied to the panel."
+			},
+			{
+				"name": "repositionymin",
+				"label": "Repositionymin",
+				"style": "Float"
+			},
+			{
+				"name": "textpaddingt",
+				"label": "Textpaddingt",
+				"style": "Float",
+				"description": "Set the amount of space between the edges of the panel and the text. Whether the padding has an effect on the position of the text depends on the current alignment mode and whether word wrapping is us"
+			},
+			{
+				"name": "borderab",
+				"label": "Borderab",
+				"style": "RGBA",
+				"description": "RGB values for border A color."
+			},
+			{
+				"name": "textpaddingb",
+				"label": "Textpaddingb",
+				"style": "Float"
+			},
+			{
+				"name": "resizehmin",
+				"label": "Resizehmin",
+				"style": "Float"
+			},
+			{
+				"name": "dropshadowoffsetx",
+				"label": "Dropshadowoffsetx",
+				"style": "XYZW"
+			},
+			{
+				"name": "disablecolorr",
+				"label": "Disablecolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "borderar",
+				"label": "Borderar",
+				"style": "RGBA"
+			},
+			{
+				"name": "allowuishortcuts",
+				"label": "Allowuishortcuts",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "marginr",
+				"label": "Marginr",
+				"style": "Float"
+			},
+			{
+				"name": "disablecolorg",
+				"label": "Disablecolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "resizet",
+				"label": "Resizet",
+				"style": "Toggle",
+				"description": "Four checkboxes allow you to enable resizing a panel by grabbing the corresponding edge or corner: Resize Left, Right, Bottom, Top."
+			},
+			{
+				"name": "dropshadowcolorr",
+				"label": "Dropshadowcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "borderbr",
+				"label": "Borderbr",
+				"style": "RGBA"
+			},
+			{
+				"name": "textpaddingr",
+				"label": "Textpaddingr",
+				"style": "Float"
+			},
+			{
+				"name": "offsetx",
+				"label": "Offsetx",
+				"style": "XYZW"
+			},
+			{
+				"name": "selectcolorr",
+				"label": "Selectcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "borderbb",
+				"label": "Borderbb",
+				"style": "RGBA",
+				"description": "RGBA values for border B color."
+			},
+			{
+				"name": "disablecolorb",
+				"label": "Disablecolorb",
+				"style": "RGBA",
+				"description": "RGB values for the disable color. (default: black (0,0,0))"
+			},
+			{
+				"name": "margint",
+				"label": "Margint",
+				"style": "Float",
+				"description": "The four fields allow you to specify the space that surrounds the Panel Component. The margin is the space between the Panel Component's border and the outer edge. The Margin is defined in absolute pi"
+			},
+			{
+				"name": "textpaddingl",
+				"label": "Textpaddingl",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

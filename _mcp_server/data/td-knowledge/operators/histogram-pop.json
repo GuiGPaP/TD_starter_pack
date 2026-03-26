@@ -1,0 +1,106 @@
+{
+	"id": "histogram-pop",
+	"title": "histogramPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"histogram",
+		"pop",
+		"histogrampop",
+		"attrclass",
+		"useinputrange",
+		"outputbinval",
+		"quantize",
+		"outsiderange"
+	],
+	"content": {
+		"summary": "TouchDesigner histogramPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "histogramPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "useinputrange",
+				"label": "Use Input Range",
+				"style": "Toggle",
+				"description": "Specify teh range of the input attribute values. Default range is 0 to the number of bins."
+			},
+			{
+				"name": "outputbinval",
+				"label": "Output Bin Value",
+				"style": "Toggle",
+				"description": "Whether to output a separate attribute with the bin values, when using an input range."
+			},
+			{
+				"name": "quantize",
+				"label": "Quantize",
+				"style": "Menu",
+				"description": "Convert values into a finite set of discrete levels."
+			},
+			{
+				"name": "outsiderange",
+				"label": "Outside Range",
+				"style": "Menu",
+				"description": "Determines the behavior outside the input range."
+			},
+			{
+				"name": "numbins",
+				"label": "Number of Bins",
+				"style": "Int",
+				"description": "The number of bins to sort the attribute values in."
+			},
+			{
+				"name": "countattr",
+				"label": "Count Attribute",
+				"style": "Str",
+				"description": "Sets the attribute scope when outputting the count attribute"
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "inputrangemin",
+				"label": "Inputrangemin",
+				"style": "Float"
+			},
+			{
+				"name": "inputattr",
+				"label": "Inputattr",
+				"style": "StrMenu"
+			},
+			{
+				"name": "inputrangemax",
+				"label": "Inputrangemax",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

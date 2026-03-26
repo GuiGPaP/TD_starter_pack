@@ -14,7 +14,7 @@
 		"maxbloomradius"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner bloomTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

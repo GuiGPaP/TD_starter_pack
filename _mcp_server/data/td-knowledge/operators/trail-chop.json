@@ -14,7 +14,7 @@
 		"capture"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner trailCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

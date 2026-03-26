@@ -9,7 +9,7 @@
 		"nullpop"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner nullPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

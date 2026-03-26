@@ -1,0 +1,91 @@
+{
+	"id": "photoshopin-top",
+	"title": "photoshopinTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"photoshopin",
+		"top",
+		"photoshopintop",
+		"active",
+		"address",
+		"password",
+		"imageformat",
+		"lockeddocument"
+	],
+	"content": {
+		"summary": "TouchDesigner photoshopinTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "photoshopinTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "While on, the will receive data from Photoshop."
+			},
+			{
+				"name": "address",
+				"label": "Address",
+				"style": "Str",
+				"description": "The IP address of the computer that Photoshop is running on.  If Photoshop is running on the same computer as TouchDesigner, can be used in this parameter.  Otherwise, Photoshop's Remote Connection di"
+			},
+			{
+				"name": "password",
+				"label": "Password",
+				"style": "Str",
+				"description": "Enter the password specified in Photoshop's Remote Connection dialog."
+			},
+			{
+				"name": "imageformat",
+				"label": "Image Format",
+				"style": "Menu",
+				"description": "Determines what format the Photoshop stream is transferred with."
+			},
+			{
+				"name": "lockeddocument",
+				"label": "Locked Document Name",
+				"style": "Str",
+				"description": "This parameter can be used to lock the Photoshop In 's input to a particular file that is open in Photoshop."
+			},
+			{
+				"name": "locktocurrent",
+				"label": "Lock to Current Document",
+				"style": "Pulse",
+				"description": "click this button to lock the Photoshop In 's input to the currently active file in Photoshop.  Clicking this button fills out the parameter above Locked Document Name."
+			},
+			{
+				"name": "unlock",
+				"label": "Unlock",
+				"style": "Pulse",
+				"description": "Clears the Locked Document Name parameter.  When unlocked, the Photoshop In will grab whichever document is currently active in Photoshop."
+			},
+			{
+				"name": "updatemode",
+				"label": "Update Mode",
+				"style": "Menu",
+				"description": "Determines how the image is updated."
+			},
+			{
+				"name": "maxupdaterate",
+				"label": "Max Update Rate",
+				"style": "Float",
+				"description": "The maximum update rate of the image when Update Mode is set to automatic."
+			},
+			{
+				"name": "update",
+				"label": "Update",
+				"style": "Pulse",
+				"description": "Click to anually update the image."
+			}
+		],
+		"versions": {}
+	}
+}

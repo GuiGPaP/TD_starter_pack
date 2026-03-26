@@ -1,0 +1,103 @@
+{
+	"id": "mouseout-chop",
+	"title": "mouseoutCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"mouseout",
+		"chop",
+		"mouseoutchop",
+		"posu",
+		"posv",
+		"lbuttonname",
+		"rbuttonname",
+		"mbuttonname"
+	],
+	"content": {
+		"summary": "TouchDesigner mouseoutCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "mouseoutCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "posu",
+				"label": "Position U",
+				"style": "Str",
+				"description": "Channel name to look for that will drive the mouse U position."
+			},
+			{
+				"name": "posv",
+				"label": "Position V",
+				"style": "Str",
+				"description": "Channel name to look for that will drive the mouse V position."
+			},
+			{
+				"name": "lbuttonname",
+				"label": "Left Button",
+				"style": "Str",
+				"description": "Channel name to look for that will drive the mouse's left button state."
+			},
+			{
+				"name": "rbuttonname",
+				"label": "Right Button",
+				"style": "Str",
+				"description": "Channel name to look for that will drive the mouse's right button state."
+			},
+			{
+				"name": "mbuttonname",
+				"label": "Middle Button",
+				"style": "Str",
+				"description": "Channel name to look for that will drive the mouse's middle button state."
+			},
+			{
+				"name": "cookalways",
+				"label": "Cook Every Frame",
+				"style": "Toggle",
+				"description": "Forces to cook every frame."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

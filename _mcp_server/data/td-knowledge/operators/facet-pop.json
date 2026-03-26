@@ -1,0 +1,120 @@
+{
+	"id": "facet-pop",
+	"title": "facetPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"facet",
+		"pop",
+		"facetpop",
+		"group",
+		"operation",
+		"angle",
+		"dist",
+		"maxtries"
+	],
+	"content": {
+		"summary": "TouchDesigner facetPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "facetPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified."
+			},
+			{
+				"name": "operation",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Selects the operation to perform."
+			},
+			{
+				"name": "angle",
+				"label": "Angle",
+				"style": "Float",
+				"description": "The threshold angle between faces above which the shared edge vertices don't share points."
+			},
+			{
+				"name": "dist",
+				"label": "Distance",
+				"style": "Float",
+				"description": "Sets the maximum distance between points when consolidating points."
+			},
+			{
+				"name": "maxtries",
+				"label": "Max Tries",
+				"style": "Int",
+				"description": "Max number of iterations when trying to consolidate points, in case the target point has already been consolidated."
+			},
+			{
+				"name": "removeunusedpoints",
+				"label": "Remove Unused Points",
+				"style": "Toggle",
+				"description": "Removes unused points not referenced by primitives."
+			},
+			{
+				"name": "technique",
+				"label": "Technique",
+				"style": "Menu",
+				"description": "Points consolidation technique."
+			},
+			{
+				"name": "gridres",
+				"label": "Voxels Grid Resolution",
+				"style": "Int",
+				"description": "Defines the voxel grid resolution used when consolidating points via the Spatial Grid Per Voxel method."
+			},
+			{
+				"name": "specifybbox",
+				"label": "Specify Bounding Box",
+				"style": "Toggle",
+				"description": "Enable specifying a bounding box when consolidating points with the spacial grid per voxel method."
+			},
+			{
+				"name": "bbox",
+				"label": "Bounding Box",
+				"style": "SOP",
+				"description": "to use as bounding box when specifying a bounding box when consolidating points with the Spatial Grid method."
+			},
+			{
+				"name": "cpureadback",
+				"label": "Copy Topology Info Back to CPU",
+				"style": "Toggle",
+				"description": "Enable copying the point count and topology information held on the to the CPU."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "remove",
+				"label": "Remove",
+				"style": "Toggle"
+			}
+		],
+		"versions": {}
+	}
+}

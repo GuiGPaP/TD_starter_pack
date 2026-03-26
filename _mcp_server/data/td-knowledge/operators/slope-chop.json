@@ -14,7 +14,7 @@
 		"scope"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner slopeCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -1,0 +1,175 @@
+{
+	"id": "realsense-top",
+	"title": "realsenseTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"realsense",
+		"top",
+		"realsensetop",
+		"active",
+		"model",
+		"sensor",
+		"image",
+		"colorres"
+	],
+	"content": {
+		"summary": "TouchDesigner realsenseTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "realsenseTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When set to 1 the captures the image stream from the camera."
+			},
+			{
+				"name": "model",
+				"label": "Model",
+				"style": "Menu",
+				"description": "Select the model of device to use."
+			},
+			{
+				"name": "sensor",
+				"label": "Sensor",
+				"style": "Menu",
+				"description": "Select which device to use."
+			},
+			{
+				"name": "image",
+				"label": "Image",
+				"style": "Menu",
+				"description": "Select the image type to output."
+			},
+			{
+				"name": "colorres",
+				"label": "Color Camera Resolution",
+				"style": "Menu",
+				"description": "Select the resolution of the video. Currently only usable for the Color image."
+			},
+			{
+				"name": "maxdepth",
+				"label": "Max Depth",
+				"style": "Float",
+				"description": "The depth value pixels with a value of 1 will be set to. Specified in Meters. Pixels with a depth larger than this will be clamped to 1 for fixed point texture output, or go above 1 for floating point"
+			},
+			{
+				"name": "mirrorimage",
+				"label": "Mirror Image",
+				"style": "Toggle",
+				"description": "Flip the image horizontally."
+			},
+			{
+				"name": "defaulttradeoff",
+				"label": "Use Default Tradeoff",
+				"style": "Toggle",
+				"description": "Use the default Motion Range Tradeoff specified by the device."
+			},
+			{
+				"name": "tradeoff",
+				"label": "Motion Range Tradeoff",
+				"style": "Int",
+				"description": "Specifies the tradeoff between motion and range. Value is from 0 (short exposure, short range, and better motion) to 100 (long exposure and long range)."
+			},
+			{
+				"name": "optionschop",
+				"label": "Options CHOP",
+				"style": "CHOP",
+				"description": "Channels specified in this allow for setting all of the options that the RealSense camera supports. Channel names should be the same as the C enumeration, with the RS2_OPTION_ prefix removed, and all "
+			},
+			{
+				"name": "decimation",
+				"label": "Decimation",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "spatialholefilling",
+				"label": "Spatialholefilling",
+				"style": "Int",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "holefillmode",
+				"label": "Holefillmode",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "spatialsmoothdelta",
+				"label": "Spatialsmoothdelta",
+				"style": "Int",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "decimationmagnitude",
+				"label": "Decimationmagnitude",
+				"style": "Int",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "applyfilter",
+				"label": "Applyfilter",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "holefilling",
+				"label": "Holefilling",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "temporalpersistencyindex",
+				"label": "Temporalpersistencyindex",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "temporal",
+				"label": "Temporal",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "spatialsmoothalpha",
+				"label": "Spatialsmoothalpha",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "temporalsmoothdelta",
+				"label": "Temporalsmoothdelta",
+				"style": "Int",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "spatial",
+				"label": "Spatial",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "temporalsmoothalpha",
+				"label": "Temporalsmoothalpha",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "spatialmagnitude",
+				"label": "Spatialmagnitude",
+				"style": "Int",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

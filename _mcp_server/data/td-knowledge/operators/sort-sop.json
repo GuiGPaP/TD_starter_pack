@@ -1,0 +1,199 @@
+{
+	"id": "sort-sop",
+	"title": "sortSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sort",
+		"sop",
+		"sortsop",
+		"ptsort",
+		"pointseed",
+		"pointoffset",
+		"pointobj",
+		"primsort"
+	],
+	"content": {
+		"summary": "TouchDesigner sortSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "sortSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "ptsort",
+				"label": "Point Sort",
+				"style": "Menu",
+				"description": "Sort the points in the input geometry, according to the following criteria:"
+			},
+			{
+				"name": "pointseed",
+				"label": "Seed",
+				"style": "Int",
+				"description": "The random seed when is set to ."
+			},
+			{
+				"name": "pointoffset",
+				"label": "Offset",
+				"style": "Int",
+				"description": "Shift point order by the amount specified on the offset line."
+			},
+			{
+				"name": "pointobj",
+				"label": "Vector Object",
+				"style": "Object",
+				"description": "Sort points along a vector defined by the object's transformation values."
+			},
+			{
+				"name": "primsort",
+				"label": "Primitive Sort",
+				"style": "Menu",
+				"description": "Sort the primitives according to the following criteria:"
+			},
+			{
+				"name": "primseed",
+				"label": "Seed",
+				"style": "Int",
+				"description": "Random seed when sorting by ."
+			},
+			{
+				"name": "primoffset",
+				"label": "Offset",
+				"style": "Int",
+				"description": "Shift primitive order by the amount specified on the offset line."
+			},
+			{
+				"name": "primobj",
+				"label": "Vector Object",
+				"style": "Object",
+				"description": "Sort primitives along a vector defined by the object's translation."
+			},
+			{
+				"name": "partsort",
+				"label": "Particle Sort",
+				"style": "Menu",
+				"description": "Sort the primitives according to the following criteria:"
+			},
+			{
+				"name": "partreverse",
+				"label": "Reverse Results",
+				"style": "Toggle",
+				"description": "Reverses the result from the Particle Sort as defined above."
+			},
+			{
+				"name": "partoffset",
+				"label": "Offset",
+				"style": "Int",
+				"description": "Shift particle order by the amount specified on the offset line."
+			},
+			{
+				"name": "partobj",
+				"label": "Vector Object",
+				"style": "Object",
+				"description": "Sort particles along a vector defined by the object's translation."
+			},
+			{
+				"name": "primproxz",
+				"label": "Primproxz",
+				"style": "XYZW",
+				"description": "The X, Y and Z coordinates to reference when sorting by Proximity to Point."
+			},
+			{
+				"name": "partdirx",
+				"label": "Partdirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "partproxy",
+				"label": "Partproxy",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointproxz",
+				"label": "Pointproxz",
+				"style": "XYZW",
+				"description": "The X, Y and Z coordinates to reference when sorting by Proximity to Point."
+			},
+			{
+				"name": "primdirx",
+				"label": "Primdirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "partproxx",
+				"label": "Partproxx",
+				"style": "XYZW"
+			},
+			{
+				"name": "partdirz",
+				"label": "Partdirz",
+				"style": "XYZW",
+				"description": "Allows you to specify a unique vector along which particles can be sorted."
+			},
+			{
+				"name": "pointdiry",
+				"label": "Pointdiry",
+				"style": "XYZW"
+			},
+			{
+				"name": "primdirz",
+				"label": "Primdirz",
+				"style": "XYZW",
+				"description": "Allows you to specify a unique vector along which primitives can be sorted."
+			},
+			{
+				"name": "pointproxy",
+				"label": "Pointproxy",
+				"style": "XYZW"
+			},
+			{
+				"name": "partdiry",
+				"label": "Partdiry",
+				"style": "XYZW"
+			},
+			{
+				"name": "pointdirx",
+				"label": "Pointdirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "partproxz",
+				"label": "Partproxz",
+				"style": "XYZW",
+				"description": "The X, Y and Z coordinates to reference when sorting by Proximity to Point."
+			},
+			{
+				"name": "pointdirz",
+				"label": "Pointdirz",
+				"style": "XYZW",
+				"description": "Allows you to specify a unique vector along which points can be sorted."
+			},
+			{
+				"name": "pointproxx",
+				"label": "Pointproxx",
+				"style": "XYZW"
+			},
+			{
+				"name": "primdiry",
+				"label": "Primdiry",
+				"style": "XYZW"
+			},
+			{
+				"name": "primproxy",
+				"label": "Primproxy",
+				"style": "XYZW"
+			},
+			{
+				"name": "primproxx",
+				"label": "Primproxx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

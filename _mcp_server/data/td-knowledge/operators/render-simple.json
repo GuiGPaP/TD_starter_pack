@@ -1,0 +1,24 @@
+{
+	"id": "render-simple",
+	"title": "Render_Simple - Parameters",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"render_simple",
+		"comp"
+	],
+	"content": {
+		"summary": "Orthographic ortho - Enable this to make the project become orthograhic instead of perspective. FOV fov - The horizontal FOV in degrees, when using perspective projection. Ortho Width orthowidth - The orthographic width, when using orthographic projection. Camera Distance camdistance - The distance "
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "Render_Simple",
+		"opFamily": "TOP",
+		"parameters": [],
+		"versions": {}
+	}
+}

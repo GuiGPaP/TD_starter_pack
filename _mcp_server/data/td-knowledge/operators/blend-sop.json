@@ -1,0 +1,85 @@
+{
+	"id": "blend-sop",
+	"title": "blendSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"blend",
+		"sop",
+		"blendsop",
+		"group",
+		"diff",
+		"dopos",
+		"doclr",
+		"donml"
+	],
+	"content": {
+		"summary": "TouchDesigner blendSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "blendSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "Specifies a point or primitive group in the first input. If, for example, a group is specified containing the first and third points, then the first and third point of every input will be blended wher"
+			},
+			{
+				"name": "diff",
+				"label": "Differencing",
+				"style": "Toggle",
+				"description": "Generates exaggerated blends between objects where values above 1 or less than 0 will result in over-scaled blends."
+			},
+			{
+				"name": "dopos",
+				"label": "Blend Position",
+				"style": "Toggle",
+				"description": "When checked, the point positions of the inputs will be blended based on the weights of the blend channels. If not checked, the input geometry will not change, only allowing Blending of Colors, Normal"
+			},
+			{
+				"name": "doclr",
+				"label": "Blend Colors",
+				"style": "Toggle",
+				"description": "When checked, the point colors of the geometry inputs will be blended based on the weights of the blend channels."
+			},
+			{
+				"name": "donml",
+				"label": "Blend Normals",
+				"style": "Toggle",
+				"description": "When checked, the point normals of the geometry inputs will be blended based on the weights of the blend channels."
+			},
+			{
+				"name": "douvw",
+				"label": "Blend Texture",
+				"style": "Toggle",
+				"description": "When checked, the point texture co-ordinates of the geometry inputs will be blended based on the weights of the blend channels."
+			},
+			{
+				"name": "doup",
+				"label": "Blend Up",
+				"style": "Toggle",
+				"description": "When checked, the Up Vector of the geometry inputs will be blended based on the weights of the blend channels."
+			},
+			{
+				"name": "input",
+				"label": "Input",
+				"style": "Sequence",
+				"description": "Sequence of input weights"
+			},
+			{
+				"name": "input0weight",
+				"label": "Weight",
+				"style": "Float",
+				"description": "The weight or contribution of this input. 0 has no contribution, 1 is full contribution."
+			}
+		],
+		"versions": {}
+	}
+}

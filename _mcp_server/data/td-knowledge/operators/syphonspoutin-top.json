@@ -1,0 +1,40 @@
+{
+	"id": "syphonspoutin-top",
+	"title": "syphonspoutinTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"syphonspoutin",
+		"top",
+		"syphonspoutintop",
+		"usespoutactivesender",
+		"sendername"
+	],
+	"content": {
+		"summary": "TouchDesigner syphonspoutinTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "syphonspoutinTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "usespoutactivesender",
+				"label": "Use Spout Active Sender",
+				"style": "Toggle",
+				"description": "Spout has a external utility that allows selecting from the list of senders running, and flagging one as the global 'Active' sender. Enabling this parameter will make the node use that sender instead "
+			},
+			{
+				"name": "sendername",
+				"label": "Sender Name",
+				"style": "StrMenu",
+				"description": "The name of the Syphon/Spout sender you wish to receive."
+			}
+		],
+		"versions": {}
+	}
+}

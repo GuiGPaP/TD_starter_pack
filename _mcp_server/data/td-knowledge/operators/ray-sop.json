@@ -1,0 +1,121 @@
+{
+	"id": "ray-sop",
+	"title": "raySOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"ray",
+		"sop",
+		"raysop",
+		"group",
+		"method",
+		"dotrans",
+		"lookfar",
+		"normal"
+	],
+	"content": {
+		"summary": "TouchDesigner raySOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "raySOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "method",
+				"label": "Method",
+				"style": "Menu",
+				"description": "Select the method of projection for the Ray ."
+			},
+			{
+				"name": "dotrans",
+				"label": "Transform Points",
+				"style": "Toggle",
+				"description": "If selected, it will transform the input points as defined below. Leave this off when only interested in updating the source point attributes."
+			},
+			{
+				"name": "lookfar",
+				"label": "Intersect Farthest Surface",
+				"style": "Toggle",
+				"description": "If selected, this option allows the user to choose between intersecting with the closest intersecting object or the furthest. See example, below."
+			},
+			{
+				"name": "normal",
+				"label": "Point Intersection Normal",
+				"style": "Menu",
+				"description": "If selected, updates each point in the source geometry with the normal at the collision surface it intersects with. If the point doesn't intersect at the collision surface, a normal of (0,0,0) is used"
+			},
+			{
+				"name": "bounces",
+				"label": "Bounces",
+				"style": "Int",
+				"description": "The number of times to bounce the ray off of the collision surface before creating the output position. For example, if bounces is set to 1, then the point will be projected onto surface at the first "
+			},
+			{
+				"name": "bouncegeo",
+				"label": "Save Bounce Geometry",
+				"style": "Toggle",
+				"description": "When enabled, the projected geometry will be saved each time the projected ray bounces off a surface resulting in multiple copies of the input geometry. See the second Ray snippet for an example."
+			},
+			{
+				"name": "putdist",
+				"label": "Point Intersection Distance",
+				"style": "Toggle",
+				"description": "If selected, updates each point intersected with the distance to the collision surface. If the point doesn't intersect at the collision surface a distance of 0 is used. This value is placed in the poi"
+			},
+			{
+				"name": "scale",
+				"label": "Scale",
+				"style": "Float",
+				"description": "A value of zero will leave the input point unaffected. A value of one will land the point on the intersection surface. Negative values and values > 1 are also valid."
+			},
+			{
+				"name": "lift",
+				"label": "Lift",
+				"style": "Float",
+				"description": "This value further offsets the surface input by offsetting it in the direction of its normal."
+			},
+			{
+				"name": "sample",
+				"label": "Sample",
+				"style": "Int",
+				"description": "This value determines the number of rays sent per point. If greater than one, the remaining rays are perturbed randomly, and averaged."
+			},
+			{
+				"name": "jitter",
+				"label": "Jitter Scale",
+				"style": "Float",
+				"description": "Controls the perturbation of the extra sample rays."
+			},
+			{
+				"name": "seed",
+				"label": "Seed",
+				"style": "Int",
+				"description": "Allows a different random sequence at higher sampling rates."
+			},
+			{
+				"name": "newgrp",
+				"label": "Create Point Group",
+				"style": "Toggle",
+				"description": "If selected, it will create a point group containing all the points which were intersected successfully."
+			},
+			{
+				"name": "hitgrp",
+				"label": "Ray Hit Group",
+				"style": "Str",
+				"description": "Specifies the name of the above point group."
+			}
+		],
+		"versions": {}
+	}
+}

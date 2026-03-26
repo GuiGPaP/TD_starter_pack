@@ -1,0 +1,182 @@
+{
+	"id": "lookupchannel-pop",
+	"title": "lookupchannelPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"lookupchannel",
+		"pop",
+		"lookupchannelpop",
+		"attrclass",
+		"group",
+		"chop",
+		"indexunit",
+		"cyclic"
+	],
+	"content": {
+		"summary": "TouchDesigner lookupchannelPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "lookupchannelPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified."
+			},
+			{
+				"name": "chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "The to use for lookups."
+			},
+			{
+				"name": "indexunit",
+				"label": "Lookup Index Units",
+				"style": "Menu",
+				"description": "Units for lookup index attribute."
+			},
+			{
+				"name": "cyclic",
+				"label": "Cyclic Index",
+				"style": "Toggle",
+				"description": "When enabled, the index wraps so the end connects back to the start, letting the full range map evenly across the cycle."
+			},
+			{
+				"name": "interpolate",
+				"label": "Interpolate",
+				"style": "Toggle",
+				"description": "When on, the can be interpolated between samples. When off, the nearest sample is used."
+			},
+			{
+				"name": "extendleft",
+				"label": "Extend Left and Right",
+				"style": "Menu",
+				"description": "What happens when the lookup samples outside of the range."
+			},
+			{
+				"name": "lookup",
+				"label": "Lookup",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks of lookups."
+			},
+			{
+				"name": "lookup0chanscope",
+				"label": "Channel Scope",
+				"style": "StrMenu",
+				"description": "Pattern of channel names to use to perform the lookup for the output attribute values."
+			},
+			{
+				"name": "lookup0fromlow",
+				"label": "From Low",
+				"style": "Float",
+				"description": "Reranges the value resulting from the lookup."
+			},
+			{
+				"name": "lookup0fromhigh",
+				"label": "From High",
+				"style": "Float",
+				"description": "Reranges the value resulting from the lookup."
+			},
+			{
+				"name": "lookup0tolow",
+				"label": "To Low",
+				"style": "Float",
+				"description": "Sets low value on the output range."
+			},
+			{
+				"name": "lookup0tohigh",
+				"label": "To High",
+				"style": "Float",
+				"description": "Reranges the output attribute value."
+			},
+			{
+				"name": "lookup0outputattrscope",
+				"label": "Output Attribute Scope",
+				"style": "StrMenu",
+				"description": "Name of attribute to output (can choose components of attribute), can choose from menu."
+			},
+			{
+				"name": "lookup0overrideautoattr",
+				"label": "Override Automatic Attribute",
+				"style": "Toggle",
+				"description": "Whether to override the kind of attribute automatically created based on the input and parameters. Allows to specify manually the type and number of components of the new attribute."
+			},
+			{
+				"name": "lookup0attrtype",
+				"label": "Attribute Type",
+				"style": "Menu",
+				"description": "The output attribute's data type, default float."
+			},
+			{
+				"name": "lookup0attrnumcomps",
+				"label": "Components",
+				"style": "Menu",
+				"description": "The number of components in the new custom attribute."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "lookupattr",
+				"label": "Lookupattr",
+				"style": "StrMenu"
+			},
+			{
+				"name": "lookup0attrdefaultval2",
+				"label": "Lookup0Attrdefaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "extendright",
+				"label": "Extendright",
+				"style": "Menu"
+			},
+			{
+				"name": "lookup0attrdefaultval0",
+				"label": "Lookup0Attrdefaultval0",
+				"style": "Float"
+			},
+			{
+				"name": "lookup0attrdefaultval1",
+				"label": "Lookup0Attrdefaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "lookup0attrdefaultval3",
+				"label": "Lookup0Attrdefaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

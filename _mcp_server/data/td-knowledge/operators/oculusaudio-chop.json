@@ -1,0 +1,185 @@
+{
+	"id": "oculusaudio-chop",
+	"title": "oculusaudioCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"oculusaudio",
+		"chop",
+		"oculusaudiochop",
+		"active",
+		"headobject",
+		"sourceobject",
+		"minrange",
+		"maxrange"
+	],
+	"content": {
+		"summary": "TouchDesigner oculusaudioCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "oculusaudioCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When enabled, will actively spatialize the audio input."
+			},
+			{
+				"name": "headobject",
+				"label": "Head Object COMP",
+				"style": "Object",
+				"description": "A that represents the listener's (ie. head) transform. Must be a that contains transform data, such as a Geometry or Camera ."
+			},
+			{
+				"name": "sourceobject",
+				"label": "Source Object COMP",
+				"style": "Object",
+				"description": "A that represents the audio source's transform. Must be a that contains transform data, such as a Geometry or Camera ."
+			},
+			{
+				"name": "minrange",
+				"label": "Minimum Range",
+				"style": "Float",
+				"description": "The minimum attenuation range of the audio source (in meters)."
+			},
+			{
+				"name": "maxrange",
+				"label": "Maximum Range",
+				"style": "Float",
+				"description": "The maximum attenuation range of the audio source (in meters)"
+			},
+			{
+				"name": "diameter",
+				"label": "Diameter",
+				"style": "Float",
+				"description": "The virtual diameter of the audio source. By default the diameter is 0 which means the audio source is just a point in space."
+			},
+			{
+				"name": "bandhint",
+				"label": "Band Hint",
+				"style": "Menu",
+				"description": "If the audio source content is known, this parameter can be set to improve overall sound quality."
+			},
+			{
+				"name": "reflectrevert",
+				"label": "Reflections and Reverb",
+				"style": "Toggle",
+				"description": "When enabled, audio reflection and reverb will be enabled."
+			},
+			{
+				"name": "attenuation",
+				"label": "Attenuation",
+				"style": "Menu",
+				"description": "Select attentuation calculation between the audio source and listener (head)."
+			},
+			{
+				"name": "attenuationscale",
+				"label": "Attenuation Scale",
+				"style": "Float",
+				"description": "Set the fixed attenuation value when in Fixed Attenuation mode."
+			},
+			{
+				"name": "boxroommode",
+				"label": "Box Room Mode",
+				"style": "Toggle",
+				"description": "Enables box room calculations for reverberation."
+			},
+			{
+				"name": "roomleftrelfect",
+				"label": "Room Left Reflect",
+				"style": "Float",
+				"description": "Reflection level for the left of the box (ie. what percentage of the audio is reflected back)."
+			},
+			{
+				"name": "roomrightrelfect",
+				"label": "Room Right Reflect",
+				"style": "Float",
+				"description": "Reflection level for the right of the box (ie. what percentage of the audio is reflected back)."
+			},
+			{
+				"name": "roombottomrelfect",
+				"label": "Room Bottom Reflect",
+				"style": "Float",
+				"description": "Reflection level for the bottom of the box (ie. what percentage of the audio is reflected back)."
+			},
+			{
+				"name": "roomtoprelfect",
+				"label": "Room Top Reflect",
+				"style": "Float",
+				"description": "Reflection level for the top of the box (ie. what percentage of the audio is reflected back)."
+			},
+			{
+				"name": "roomfrontrelfect",
+				"label": "Room Front Reflect",
+				"style": "Float",
+				"description": "Reflection level for the front of the box (ie. what percentage of the audio is reflected back)."
+			},
+			{
+				"name": "roombackrelfect",
+				"label": "Room Back Reflect",
+				"style": "Float",
+				"description": "Reflection level for the back of the box (ie. what percentage of the audio is reflected back)."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "roomsizex",
+				"label": "Roomsizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "roomsizey",
+				"label": "Roomsizey",
+				"style": "XYZW"
+			},
+			{
+				"name": "roomsizez",
+				"label": "Roomsizez",
+				"style": "XYZW",
+				"description": "Sets the size of the box room."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,113 @@
+{
+	"id": "envelope-chop",
+	"title": "envelopeCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"envelope",
+		"chop",
+		"envelopechop",
+		"method",
+		"bounds",
+		"width",
+		"widthunit",
+		"interp"
+	],
+	"content": {
+		"summary": "TouchDesigner envelopeCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "envelopeCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "method",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The two methods of calculating the envelope:"
+			},
+			{
+				"name": "bounds",
+				"label": "Envelope Bounds",
+				"style": "Menu"
+			},
+			{
+				"name": "width",
+				"label": "Envelope Width",
+				"style": "Float",
+				"description": "The width of the window to use in the envelope calculation. Adjust this width to capture as many features of the input as needed. It is expressed in Units."
+			},
+			{
+				"name": "widthunit",
+				"label": "Envelope Width Unit",
+				"style": "Menu",
+				"description": "Select the units to use for this parameter, Samples, Frames, or Seconds."
+			},
+			{
+				"name": "interp",
+				"label": "Interpolate",
+				"style": "Menu"
+			},
+			{
+				"name": "norm",
+				"label": "Normalize Power Envelope",
+				"style": "Toggle",
+				"description": "Keeps the total power in the signal constant when adjusting the Envelope Width."
+			},
+			{
+				"name": "resample",
+				"label": "Resample Envelope",
+				"style": "Toggle",
+				"description": "When On, the envelope can be resampled to the specified in the parameter below."
+			},
+			{
+				"name": "samplerate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "Set the sample rate to resample the envelope to when the Resample Envelope parameter above is On."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

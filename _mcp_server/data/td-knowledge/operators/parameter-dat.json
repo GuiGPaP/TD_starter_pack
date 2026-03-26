@@ -13,7 +13,7 @@
 		"renameto"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner parameterDAT operator."
 	},
 	"provenance": {
 		"source": "td-docs",

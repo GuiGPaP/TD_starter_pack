@@ -14,7 +14,7 @@
 		"maxtempneighbors"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner proximityPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

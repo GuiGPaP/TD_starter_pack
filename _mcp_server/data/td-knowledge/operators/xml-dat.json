@@ -1,0 +1,163 @@
+{
+	"id": "xml-dat",
+	"title": "xmlDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"xml",
+		"dat",
+		"xmldat",
+		"sgml",
+		"merge",
+		"mlabel",
+		"label",
+		"type"
+	],
+	"content": {
+		"summary": "TouchDesigner xmlDAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "xmlDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "sgml",
+				"label": "Parse SGML/HTML",
+				"style": "Toggle",
+				"description": "If enabled, the input should be in SGML/HTML format. This includes form data. If disabled, XML format is assumed."
+			},
+			{
+				"name": "merge",
+				"label": "Merge",
+				"style": "Menu",
+				"description": "Merge and label can be used to combine two inputs of data. The second input must be XML formatted, and not SGML/HTML. These two parameters control where and how the second input is merged."
+			},
+			{
+				"name": "mlabel",
+				"label": "Label",
+				"style": "Str",
+				"description": "Specify the element at which the merge occurs."
+			},
+			{
+				"name": "label",
+				"label": "Label",
+				"style": "Str",
+				"description": "Element labels must match this parameter."
+			},
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Str",
+				"description": "Element types must match this parameter."
+			},
+			{
+				"name": "text",
+				"label": "Text",
+				"style": "Str",
+				"description": "Element text must match this parameter."
+			},
+			{
+				"name": "name",
+				"label": "Name",
+				"style": "Str",
+				"description": "If an element contains attributes, at least one must have a name matching this parameter."
+			},
+			{
+				"name": "value",
+				"label": "Value",
+				"style": "Str",
+				"description": "If an element contains attributes, at least one must have a value matching this parameter."
+			},
+			{
+				"name": "plabel",
+				"label": "Parent Label",
+				"style": "Str",
+				"description": "Elements must have a parent whose label matches this parameter."
+			},
+			{
+				"name": "ptype",
+				"label": "Parent Type",
+				"style": "Str",
+				"description": "Elements must have a parent whose type matches this parameter."
+			},
+			{
+				"name": "ptext",
+				"label": "Parent Text",
+				"style": "Str",
+				"description": "Elements must have a parent whose text matches this parameter."
+			},
+			{
+				"name": "pname",
+				"label": "Parent Name",
+				"style": "Str",
+				"description": "Elements must have a parent with an attribute whose name matches this parameter."
+			},
+			{
+				"name": "pvalue",
+				"label": "Parent Value",
+				"style": "Str",
+				"description": "Elements must have a parent with an attribute whose value matches this parameter."
+			},
+			{
+				"name": "oaname",
+				"label": "Name Attributes",
+				"style": "Str",
+				"description": "Only output attributes whos name match this parameter."
+			},
+			{
+				"name": "oavalue",
+				"label": "Value Attributes",
+				"style": "Str",
+				"description": "Only output attributes whose value match this parameter."
+			},
+			{
+				"name": "oclabel",
+				"label": "Children Labels",
+				"style": "Str",
+				"description": "Only output children whose label match this parameter."
+			},
+			{
+				"name": "show",
+				"label": "Show",
+				"style": "Menu",
+				"description": "This controls how the selected elements are presented."
+			},
+			{
+				"name": "lprefix",
+				"label": "Label Prefix",
+				"style": "Toggle",
+				"description": "This determines whether or not the element label is prefixed when outputting tables or attributes or children."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,185 @@
+{
+	"id": "blobtrack-top",
+	"title": "blobtrackTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"blobtrack",
+		"top",
+		"blobtracktop",
+		"reset",
+		"resetpulse",
+		"monosource",
+		"drawblobs",
+		"threshold"
+	],
+	"content": {
+		"summary": "TouchDesigner blobtrackTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "blobtrackTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "Resets all tracking data and learned background data while this parameter is On."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Instantly resets all tracking data and learned background data."
+			},
+			{
+				"name": "monosource",
+				"label": "Mono Source",
+				"style": "Menu",
+				"description": "Blob tracking is done using a single channel. This menu controls what single channel is used to detect blobs."
+			},
+			{
+				"name": "drawblobs",
+				"label": "Draw Blob Bounds",
+				"style": "Toggle",
+				"description": "Draws rectangles on the image that shows where the tracked blobs are."
+			},
+			{
+				"name": "threshold",
+				"label": "Threshold",
+				"style": "Float",
+				"description": "Threshold used to create the binary texture when using background subtraction. It is the threshold of the difference between the background texture and the input texture."
+			},
+			{
+				"name": "minblobsize",
+				"label": "Minimum Blob Size",
+				"style": "Float",
+				"description": "Blobs must be at least this big to be tracked."
+			},
+			{
+				"name": "maxblobsize",
+				"label": "Maximum Blob Size",
+				"style": "Float",
+				"description": "Blobs larger than this will not be tracked."
+			},
+			{
+				"name": "maxmovedistance",
+				"label": "Maximum Move Distance",
+				"style": "Float",
+				"description": "The maximum distance a blob can move in one frame and still be considered to the same blob (maintain the same ID)."
+			},
+			{
+				"name": "deletenearby",
+				"label": "Delete Nearby Blobs",
+				"style": "Toggle",
+				"description": "Sometimes (depending on the tracking method) duplicate blobs may be created. This feature allows you to delete blobs that are too close to each other."
+			},
+			{
+				"name": "deletedist",
+				"label": "Minimum Distance",
+				"style": "Float",
+				"description": "When deleting nearby blobs, blobs will be deleted if they are within this number of pixels of each other. The smaller blob will be deleted."
+			},
+			{
+				"name": "deletenearbytol",
+				"label": "Delete Area Tolerance",
+				"style": "Float",
+				"description": "Along with the distance, the area of the two blobs can be compared. If this parameter is 1, than the area is ignored. As this parameter gets smaller only blobs that have a significant size difference "
+			},
+			{
+				"name": "deleteoverlap",
+				"label": "Delete Overlapping Blobs",
+				"style": "Toggle",
+				"description": "Deletes blobs that are overlapping."
+			},
+			{
+				"name": "deleteoverlaptol",
+				"label": "Delete Overlap Tolerance",
+				"style": "Float",
+				"description": "If this parameter is 1 then only blobs that are completely overlapped will be deleted. As this value gets smaller less and less overlap is needed for a blob to get deleted."
+			},
+			{
+				"name": "reviveblobs",
+				"label": "Revive Blobs",
+				"style": "Toggle",
+				"description": "When enabled, will revive lost blobs (ie. same ID) if they satisfy all the below parameters"
+			},
+			{
+				"name": "revivetime",
+				"label": "Revive Time",
+				"style": "Float",
+				"description": "The time (in seconds) threshold for reviving a lost blob. If a blob has been lost for longer than revive time, it will not be revived and is considered expired."
+			},
+			{
+				"name": "revivearea",
+				"label": "Revive Area Difference",
+				"style": "Float",
+				"description": "The area difference threshold for the new blob and the lost blob."
+			},
+			{
+				"name": "revivedistance",
+				"label": "Revive Distance",
+				"style": "Float",
+				"description": "The distance threshold between the new blob and the lost blob."
+			},
+			{
+				"name": "includelost",
+				"label": "Include Lost Blobs in Table",
+				"style": "Toggle",
+				"description": "When enabled, lost blobs will be included in the Blob Track 's Info table."
+			},
+			{
+				"name": "includeexpired",
+				"label": "Include Expired Blobs in Table",
+				"style": "Toggle",
+				"description": "When enabled, expired blobs (ie. blobs that have no chance of revival) will be included in the Blob Track 's Info table."
+			},
+			{
+				"name": "expiredtime",
+				"label": "Expired Time",
+				"style": "Float",
+				"description": "Time in seconds for blobs to remain in the Info table after expiring."
+			},
+			{
+				"name": "blobcolorr",
+				"label": "Blobcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "masktop",
+				"label": "Masktop",
+				"style": "TOP",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "callbacks",
+				"label": "Callbacks",
+				"style": "DAT",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "downloadtype",
+				"label": "Downloadtype",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "blobcolorb",
+				"label": "Blobcolorb",
+				"style": "RGBA",
+				"description": "Determines the color of the rectangles that are drawn to show the blobs."
+			},
+			{
+				"name": "blobcolorg",
+				"label": "Blobcolorg",
+				"style": "RGBA"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -14,7 +14,7 @@
 		"blendmethod"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner cycleCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

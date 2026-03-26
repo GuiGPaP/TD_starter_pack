@@ -1,0 +1,127 @@
+{
+	"id": "surfsect-sop",
+	"title": "surfsectSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"surfsect",
+		"sop",
+		"surfsectsop",
+		"groupa",
+		"groupb",
+		"tol3d",
+		"tol2d",
+		"step"
+	],
+	"content": {
+		"summary": "TouchDesigner surfsectSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "surfsectSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "groupa",
+				"label": "Group A",
+				"style": "StrMenu",
+				"description": "Subset of NURBS and Bezier surfaces. Accepts patterns, as described in ."
+			},
+			{
+				"name": "groupb",
+				"label": "Group B",
+				"style": "StrMenu",
+				"description": "Subset of NURBS and Bezier surfaces to intersect with A. Accepts patterns, as described in ."
+			},
+			{
+				"name": "tol3d",
+				"label": "3D Tolerance",
+				"style": "Float",
+				"description": "World space precision of the intersection."
+			},
+			{
+				"name": "tol2d",
+				"label": "2D Tolerance",
+				"style": "Float",
+				"description": "Domain precision of the intersection."
+			},
+			{
+				"name": "step",
+				"label": "Marching Steps",
+				"style": "Int",
+				"description": "Number of steps for tracing each profile span."
+			},
+			{
+				"name": "boolop",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Select from the following operations: , , , , or ."
+			},
+			{
+				"name": "insidea",
+				"label": "Keep Inside A",
+				"style": "Toggle",
+				"description": "Preserve the inside sections of the A surfaces."
+			},
+			{
+				"name": "insideb",
+				"label": "Keep Inside B",
+				"style": "Toggle",
+				"description": "Preserve the inside sections of the B surfaces."
+			},
+			{
+				"name": "outsidea",
+				"label": "Keep Outside A",
+				"style": "Toggle",
+				"description": "Preserve the outside sections of the A surfaces."
+			},
+			{
+				"name": "outsideb",
+				"label": "Keep Outside B",
+				"style": "Toggle",
+				"description": "Preserve the outside sections of the B surfaces."
+			},
+			{
+				"name": "target",
+				"label": "Target",
+				"style": "Menu",
+				"description": "Which surface to output profiles for: A, B, or both."
+			},
+			{
+				"name": "creategroupa",
+				"label": "A Profiles Group",
+				"style": "Toggle",
+				"description": "Place the A profiles in a user-defined group."
+			},
+			{
+				"name": "creategroupb",
+				"label": "** (`profilesa`) - Type: ParStr\nThe name assigned to profile group A.\n\n**B Profiles Group",
+				"style": "Toggle",
+				"description": "Place the B profiles in a user-defined group."
+			},
+			{
+				"name": "mindholes",
+				"label": "** (`profilesb`) - Type: ParStr\nThe name assigned to profile group B.\n\n**Avoid Already Trimmed-Out Parts",
+				"style": "Toggle",
+				"description": "Intersect only the visible surface parts and truncate the intersection profile at the trimmed-in surface boundaries."
+			},
+			{
+				"name": "join",
+				"label": "Join Profiles Created by Multiple Surfaces",
+				"style": "Toggle",
+				"description": "If a surface has several adjacent profiles caused by its intersection with two or more surfaces, the profiles will be joined into a single curve-on-surface."
+			},
+			{
+				"name": "method",
+				"label": "Method",
+				"style": "Menu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -14,7 +14,7 @@
 		"replacespulse"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner cacheTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

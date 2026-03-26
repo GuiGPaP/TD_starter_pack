@@ -1,0 +1,390 @@
+{
+	"id": "window-comp",
+	"title": "windowCOMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"window",
+		"comp",
+		"windowcomp",
+		"winop",
+		"title",
+		"justifyoffsetto",
+		"ignoretaskbar",
+		"display"
+	],
+	"content": {
+		"summary": "TouchDesigner windowCOMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "windowCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "winop",
+				"label": "Window Operator",
+				"style": "OP",
+				"description": "Specifies the operator the window will display."
+			},
+			{
+				"name": "title",
+				"label": "Title",
+				"style": "Str",
+				"description": "Specify the window's title."
+			},
+			{
+				"name": "justifyoffsetto",
+				"label": "Justisy and Offset to...",
+				"style": "Menu",
+				"description": "All the positioning parameters below are done relative to the location you specify here. Your window can span more than the specified 'area', it's just used as the reference for positioning. : When us"
+			},
+			{
+				"name": "ignoretaskbar",
+				"label": "Ignore Taskbar",
+				"style": "Toggle",
+				"description": "The Windows taskBar is ignored when this option is 'On'. When off the taskbar is accounted for so position and sizing will not cover it up."
+			},
+			{
+				"name": "display",
+				"label": "Display",
+				"style": "Int",
+				"description": "Specify the display index when is set to ."
+			},
+			{
+				"name": "justifyh",
+				"label": "Justify Horizontal",
+				"style": "Menu",
+				"description": "Aligns the window horizontally with the monitor or bounds of all monitors."
+			},
+			{
+				"name": "justifyv",
+				"label": "Justify Vertical",
+				"style": "Menu",
+				"description": "Aligns the window vertically with the monitor or bounds of all monitors."
+			},
+			{
+				"name": "single",
+				"label": "Shift to Single Display",
+				"style": "Menu",
+				"description": "This menu has options for shifting the opening window. You can either shift to a single display or shift to the display the cursor is over when the window opens."
+			},
+			{
+				"name": "dpiscaling",
+				"label": "DPI Scaling",
+				"style": "Menu",
+				"description": "Options for managing DPI scaling on high DPI monitors. To inspect a monitor's DPI scaling setting, you can use the and refer to the column."
+			},
+			{
+				"name": "size",
+				"label": "Opening Size",
+				"style": "Menu",
+				"description": "Determines how the size of the window is determined."
+			},
+			{
+				"name": "winw",
+				"label": "Width",
+				"style": "Int",
+				"description": "The width of the window when Opening Size parameter is set to Custom."
+			},
+			{
+				"name": "winh",
+				"label": "Height",
+				"style": "Int",
+				"description": "The height of the window when Opening Size parameter is set to Custom."
+			},
+			{
+				"name": "update",
+				"label": "Update Settings from Window",
+				"style": "Pulse",
+				"description": "When the window is open you can reposition and resize it. Clicking this button will then read its current windows settings and apply them to the parameters above."
+			},
+			{
+				"name": "borders",
+				"label": "Borders",
+				"style": "Toggle",
+				"description": "Controls whether or not the window contains borders and a title bar."
+			},
+			{
+				"name": "bordersinsize",
+				"label": "Include Borders in Size",
+				"style": "Toggle",
+				"description": "When 'On' the borders are included in the size of the window."
+			},
+			{
+				"name": "alwaysontop",
+				"label": "Always on Top",
+				"style": "Toggle",
+				"description": "Controls whether or not the window always sits atop other floating windows."
+			},
+			{
+				"name": "cursorvisible",
+				"label": "Cursor Visible",
+				"style": "Menu",
+				"description": "Controls whether or not the cursor remains visible when over this window."
+			},
+			{
+				"name": "constraincursor",
+				"label": "Constrain Cursor",
+				"style": "Menu",
+				"description": "Control the area in which the cursor can operate."
+			},
+			{
+				"name": "cursordisplay",
+				"label": "Cursor Display",
+				"style": "Int",
+				"description": "Specify display index, when cursor is constrained to a specific display."
+			},
+			{
+				"name": "interact",
+				"label": "Allow Viewer Interaction",
+				"style": "Toggle",
+				"description": "Enables interactions with the operator specified in the Operator parameter."
+			},
+			{
+				"name": "allowminimize",
+				"label": "Allow Minimize",
+				"style": "Toggle",
+				"description": "Enables the window to be minimized in the taskbar (dock in macOS)."
+			},
+			{
+				"name": "windowpixelformat",
+				"label": "Window Pixel Format",
+				"style": "Menu",
+				"description": "Controls the pixel format of the window that is created. This affects both the bit depth (8, 10, 16 bit) and the color space the window will given the content as. This settings only works if a working"
+			},
+			{
+				"name": "vsyncmode",
+				"label": "V-Sync Mode",
+				"style": "Menu",
+				"description": "Controls how the window is updated with regards to V-Sync. Enabled means it will update in sync with the monitors refresh which avoids tearing and lost frames. Disabled means it can update at any poin"
+			},
+			{
+				"name": "drawwindow",
+				"label": "Draw Window",
+				"style": "Toggle",
+				"description": "When disabled the window will not update it's contents at all. Useful for processes that arn't doing rendering such as Audio or networking processes, or for when using VR devices."
+			},
+			{
+				"name": "hwframelock",
+				"label": "Hardware Frame-Lock",
+				"style": "Toggle",
+				"description": "Use of this feature in the is deprecated. It is highly recommended that be used for Lock. This feature provides multi frame-lock sync using sync cards. For more information, see and ."
+			},
+			{
+				"name": "performance",
+				"label": "Open as Perform Window",
+				"style": "Pulse",
+				"description": "Opens this in . Any can be set as default Perform (opens using F1 shortcut) using the . This button allows you to open this in without changing what is currently selected as the 'default' Perform ."
+			},
+			{
+				"name": "winopen",
+				"label": "Open as Separate Window",
+				"style": "Pulse",
+				"description": "Opens this as its own floating window, not as the Perform . Useful for things such as dialog boxes, popups, or testing, but should not be used for putting final rendered content to outputs. Use a sing"
+			},
+			{
+				"name": "winclose",
+				"label": "Close",
+				"style": "Pulse",
+				"description": "Closes the window, if it's open."
+			},
+			{
+				"name": "setperform",
+				"label": "Set as Perform Window",
+				"style": "Pulse",
+				"description": "Permanently changes the Perform setting in the Placement dialog to this window."
+			},
+			{
+				"name": "opendialog",
+				"label": "Window Placement Dialog",
+				"style": "Pulse",
+				"description": "A shortcut to open the Placement dialog."
+			},
+			{
+				"name": "includedialog",
+				"label": "Include in Placement Dialog",
+				"style": "Toggle",
+				"description": "When 'On' this will be displayed in the Placement ."
+			},
+			{
+				"name": "blocksleep",
+				"label": "Prevent Display Sleep",
+				"style": "Toggle",
+				"description": "When 'On' the display will not go to sleep regardless of the system's power and sleep settings."
+			},
+			{
+				"name": "closeescape",
+				"label": "Close on Escape Key",
+				"style": "Toggle",
+				"description": "When 'On' pressing the escape key over this window will close it. : Shift-Escape will always close it, whether this parameter is on or off."
+			},
+			{
+				"name": "reinitextensions",
+				"label": "Re-Init Extensions",
+				"style": "Pulse",
+				"description": "Recompile all extension objects. Normally extension objects are compiled only when they are referenced and their definitions have changed."
+			},
+			{
+				"name": "initextonstart",
+				"label": "Init Extensions On Start",
+				"style": "Toggle",
+				"description": "Perform a Re-Init automatically when TouchDEsigner Starts"
+			},
+			{
+				"name": "ext",
+				"label": "Extension",
+				"style": "Sequence",
+				"description": "Sequence of info for creating extensions on this component"
+			},
+			{
+				"name": "ext0object",
+				"label": "Object",
+				"style": "Str",
+				"description": "A number of class instances that can be attached to the component."
+			},
+			{
+				"name": "ext0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Optional name to search by, instead of the instance class name."
+			},
+			{
+				"name": "ext0promote",
+				"label": "Promote",
+				"style": "Toggle",
+				"description": "Controls whether or not the extensions are visible directly at the component level, or must be accessed through the member.  Example: vs"
+			},
+			{
+				"name": "parentshortcut",
+				"label": "Parent Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as the path to that component. See ."
+			},
+			{
+				"name": "opshortcut",
+				"label": "Global OP Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere at all as the path to that component. See ."
+			},
+			{
+				"name": "iop",
+				"label": "Internal OP",
+				"style": "Sequence",
+				"description": "Sequence header for internal operators."
+			},
+			{
+				"name": "iop0shortcut",
+				"label": "Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as a path to \"Internal \" below. See ."
+			},
+			{
+				"name": "iop0op",
+				"label": "OP",
+				"style": "OP",
+				"description": "The path to the Internal OP inside this component. See ."
+			},
+			{
+				"name": "opviewer",
+				"label": "Operator Viewer",
+				"style": "OP",
+				"description": "Select which operator's node viewer to use when the Node View parameter above is set to Operator ."
+			},
+			{
+				"name": "enablecloning",
+				"label": "Enable Cloning",
+				"style": "Toggle",
+				"description": "Control if the OP should be actively cloneing. Turning this off causes this node to stop cloning it's 'Clone Master'."
+			},
+			{
+				"name": "enablecloningpulse",
+				"label": "Enable Cloning Pulse",
+				"style": "Pulse",
+				"description": "Instantaneously clone the contents."
+			},
+			{
+				"name": "clone",
+				"label": "Clone Master",
+				"style": "COMP",
+				"description": "to a component used as the Master ."
+			},
+			{
+				"name": "loadondemand",
+				"label": "Load on Demand",
+				"style": "Toggle",
+				"description": "Loads the component into memory only when required. Good to use for components that are not always used in the project."
+			},
+			{
+				"name": "enableexternaltox",
+				"label": "Enable External .tox",
+				"style": "Toggle",
+				"description": "When on (default), the external file will be loaded when the starts and the contents of the will match that of the external . This can be turned off to avoid loading from the referenced external on st"
+			},
+			{
+				"name": "enableexternaltoxpulse",
+				"label": "Enable External .tox Pulse",
+				"style": "Pulse",
+				"description": "This button will re-load from the external file (if present)."
+			},
+			{
+				"name": "externaltox",
+				"label": "External .tox Path",
+				"style": "File",
+				"description": "to a file on disk which will source the component's contents upon start of a . This allows for components to contain networks that can be updated independently. If the file can not be found, whatever "
+			},
+			{
+				"name": "reloadcustom",
+				"label": "Reload Custom Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes inside the component ar"
+			},
+			{
+				"name": "reloadbuiltin",
+				"label": "Reload Built-In Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's built-in parameters are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes ins"
+			},
+			{
+				"name": "savebackup",
+				"label": "Save Backup of External",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, a backup copy of the component specified by the External parameter is saved in the file.  This backup copy will be used if the External can not be found. This may happen"
+			},
+			{
+				"name": "subcompname",
+				"label": "Sub-Component to Load",
+				"style": "Str",
+				"description": "When loading from an External file, this option allows you to reach into the and pull out a and make that the top-level , ignoring everything else in the file (except for the contents of that ). For e"
+			},
+			{
+				"name": "relpath",
+				"label": "Relative File Path Behavior",
+				"style": "Menu",
+				"description": "Set whether the child file paths within this are relative to the itself or the , or inherit from parent."
+			},
+			{
+				"name": "nodeview",
+				"label": "Nodeview",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "winoffsetx",
+				"label": "Winoffsetx",
+				"style": "Int"
+			},
+			{
+				"name": "winoffsety",
+				"label": "Winoffsety",
+				"style": "Int",
+				"description": "Horizontal offset applied to window after justifying."
+			}
+		],
+		"versions": {}
+	}
+}

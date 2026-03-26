@@ -14,7 +14,7 @@
 		"names"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner sortCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

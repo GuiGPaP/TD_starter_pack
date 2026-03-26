@@ -1,0 +1,90 @@
+{
+	"id": "opticalflow-top",
+	"title": "opticalflowTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"opticalflow",
+		"top",
+		"opticalflowtop",
+		"gridsize",
+		"quality",
+		"costoutput",
+		"manualtiming",
+		"timestamp"
+	],
+	"content": {
+		"summary": "TouchDesigner opticalflowTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "opticalflowTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "gridsize",
+				"label": "Grid Size",
+				"style": "Menu",
+				"description": "Determines the output resolution. A smaller grid corresponds to a larger output image. only support `4x4`, whereas newer GPUs can use any option."
+			},
+			{
+				"name": "quality",
+				"label": "Quality",
+				"style": "Menu",
+				"description": "Specify the optical flow model. Higher quality is slower to compute, and low quality is faster to compute."
+			},
+			{
+				"name": "costoutput",
+				"label": "Cost Output",
+				"style": "Toggle",
+				"description": "Toggle whether the \"cost\" of the optical flow is output in the blue channel of the . Higher cost means higher uncertainty in the optical flow estimate in the RG channels. The cost values are integers "
+			},
+			{
+				"name": "manualtiming",
+				"label": "Manual Timing",
+				"style": "Toggle",
+				"description": "The Optical Flow works in both real-time mode and non-real-time mode. However, if you have a video source whose frame rate differs from the project rate, you might be able to get better optical flow r"
+			},
+			{
+				"name": "timestamp",
+				"label": "Timestamp",
+				"style": "Float",
+				"description": "This is a timestamp in seconds of the video frame. See the discussion of Manual Timing in the parameter above."
+			},
+			{
+				"name": "gamma",
+				"label": "Gamma",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "gainy",
+				"label": "Gainy",
+				"style": "XYZW",
+				"description": "A post-multiply for the optical flow in the RG channels, allowing control of output intensity."
+			},
+			{
+				"name": "preshrink",
+				"label": "Preshrink",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "threshold",
+				"label": "Threshold",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "gainx",
+				"label": "Gainx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

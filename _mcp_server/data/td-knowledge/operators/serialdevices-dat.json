@@ -1,0 +1,85 @@
+{
+	"id": "serialdevices-dat",
+	"title": "serialdevicesDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"serialdevices",
+		"dat",
+		"serialdevicesdat",
+		"callbacks",
+		"usage",
+		"refreshpulse",
+		"enablepolling",
+		"pollingtime"
+	],
+	"content": {
+		"summary": "TouchDesigner serialdevicesDAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "serialdevicesDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "callbacks",
+				"label": "Callbacks DAT",
+				"style": "DAT",
+				"description": "Runs this script once for each change to the table. See for usage."
+			},
+			{
+				"name": "usage",
+				"label": "Usage",
+				"style": "Menu",
+				"description": "Specify which serial devices to report information about based on their availability."
+			},
+			{
+				"name": "refreshpulse",
+				"label": "Refresh Pulse",
+				"style": "Pulse",
+				"description": "Instantly poll for serial device changes and update the table."
+			},
+			{
+				"name": "enablepolling",
+				"label": "Enable Polling",
+				"style": "Toggle",
+				"description": "While on, poll for serial device changes periodically and update the table."
+			},
+			{
+				"name": "pollingtime",
+				"label": "Polling Time",
+				"style": "Float",
+				"description": "Time in seconds to wait for the next poll."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			}
+		],
+		"versions": {}
+	}
+}

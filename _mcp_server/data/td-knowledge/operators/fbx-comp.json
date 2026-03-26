@@ -1,0 +1,723 @@
+{
+	"id": "fbx-comp",
+	"title": "fbxCOMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"fbx",
+		"comp",
+		"fbxcomp",
+		"file",
+		"importmethod",
+		"importscale",
+		"texdir"
+	],
+	"content": {
+		"summary": "TouchDesigner fbxCOMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fbxCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "FBX File",
+				"style": "File",
+				"description": "The FBX file to import."
+			},
+			{
+				"name": "importmethod",
+				"label": "Import Method",
+				"style": "Menu",
+				"description": "Determines what to do when clicking the 'Import' button below."
+			},
+			{
+				"name": "imp",
+				"label": "Import",
+				"style": "Pulse",
+				"description": "A pulse to import the contents based on the setting in the 'Import Method' parameter above."
+			},
+			{
+				"name": "importscale",
+				"label": "Import Scale",
+				"style": "Float",
+				"description": "Scales the imported geometry as a multipier."
+			},
+			{
+				"name": "texdir",
+				"label": "Texture Directory",
+				"style": "Folder",
+				"description": "Specifies an additional search location for external texture files if they can't be found at the default location specified inside the FBX file."
+			},
+			{
+				"name": "lights",
+				"label": "Lights",
+				"style": "Toggle",
+				"description": "When enabled the FBX will import any lights within the FBX File."
+			},
+			{
+				"name": "cameras",
+				"label": "Cameras",
+				"style": "Toggle",
+				"description": "When enabled the FBX will import any cameras within the FBX File."
+			},
+			{
+				"name": "genactors",
+				"label": "Generate Actor COMPs",
+				"style": "Toggle",
+				"description": "When enabled, will generate Actor COMPs in place of Geometry COMPs as the parents' of Import Select SOPs. This is useful for working with systems with your imported geometry."
+			},
+			{
+				"name": "mergegeo",
+				"label": "Merge Geometry",
+				"style": "Toggle",
+				"description": "When enabled the FBX will merge Geometry COMPs. Geometry COMPs are merged if they have only default parameters except transform. If they have the same material then their Import Select SOPs will be me"
+			},
+			{
+				"name": "mergelevel",
+				"label": "Merge Level",
+				"style": "Int",
+				"description": "When enabled the FBX will attempt to merge up to the desired “level”. Level is how many steps down a node is from the root (FBX ). If its level is higher than the merge level and it is mergeable then "
+			},
+			{
+				"name": "keepparams",
+				"label": "Keep Parameters",
+				"style": "Toggle",
+				"description": "When enabled, any parameter conflicts during update will keep the user changes. When disabled, any user changes to parameters may be overwritten."
+			},
+			{
+				"name": "primgroups",
+				"label": "Primitive Groups",
+				"style": "Toggle",
+				"description": "When enabled the FBX will put each merged into its own primitive group, so that they can be split up later if need be."
+			},
+			{
+				"name": "maxwiredchildren",
+				"label": "Max Wired Children",
+				"style": "Int",
+				"description": "Any COMPs that have more wired children than this parameter will have those wired children converted to internal children of the . This maintains parenting but can cleanup networks."
+			},
+			{
+				"name": "pops",
+				"label": "Import POPs",
+				"style": "Toggle",
+				"description": "When On will be used or when Off will be used to load geometry inside the FBX ."
+			},
+			{
+				"name": "gpudirect",
+				"label": "Direct to GPU",
+				"style": "Toggle",
+				"description": "Load the geometry directly to the when using SOPs ie. 'Import POPs' above is Off. This makes the rendering much faster than CPU mode. However, currently the only supported geometries are mesh and poin"
+			},
+			{
+				"name": "keepconnections",
+				"label": "Keep Connections",
+				"style": "Toggle",
+				"description": "When enabled, any wiring/connection conflicts during update will keep the user changes. When disabled, any user changes to wiring/connections may be overwritten."
+			},
+			{
+				"name": "callbacks",
+				"label": "Callbacks DAT",
+				"style": "DAT",
+				"description": "The Callbacks will execute during import or update allowing for modification and customization of the imported operators and resulting network."
+			},
+			{
+				"name": "animation",
+				"label": "Animation",
+				"style": "StrMenu",
+				"description": "Specifies the animation name (if any is specified) to playback from the imported FBX."
+			},
+			{
+				"name": "shiftanimationstart",
+				"label": "Shift Animation Start",
+				"style": "Toggle",
+				"description": "A toggle to specify whether to shift the animation to the start of animation indicated in the importing file."
+			},
+			{
+				"name": "sampleratemode",
+				"label": "Sample Rate Mode",
+				"style": "Menu",
+				"description": "Select between using the 'File ' embedded in the FBX file or setting a 'Custom' sample rate."
+			},
+			{
+				"name": "samplerate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "Set the sample rate when the \" Mode\" parameter above is set to 'Custom'."
+			},
+			{
+				"name": "playmode",
+				"label": "Play Mode",
+				"style": "Menu",
+				"description": "A menu to specify the method used to play the animation."
+			},
+			{
+				"name": "initialize",
+				"label": "Initialize",
+				"style": "Pulse",
+				"description": "Resets the animation to its initial state."
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Pulse",
+				"description": "Resets the animation to its initial state and starts playback."
+			},
+			{
+				"name": "play",
+				"label": "Play",
+				"style": "Toggle",
+				"description": "Animation plays when On and stops when Off. This animation playback control is only available when Play Mode is Sequential."
+			},
+			{
+				"name": "speed",
+				"label": "Speed",
+				"style": "Float",
+				"description": "This is a speed multiplier which only works when Play Mode is Sequential. A value of 1 is the default playback speed. A value of 2 is double speed, 0.5 is half speed and so on. Negative values will pl"
+			},
+			{
+				"name": "cue",
+				"label": "Cue",
+				"style": "Toggle",
+				"description": "Jumps to and holds at the Cue Point when set to 1. Only available when Play Mode is Sequential."
+			},
+			{
+				"name": "cuepulse",
+				"label": "Cue Pulse",
+				"style": "Pulse",
+				"description": "Jumps to the Cue Point when pulsed. Only available when Play Mode is Sequential."
+			},
+			{
+				"name": "cuepoint",
+				"label": "Cue Point",
+				"style": "Float",
+				"description": "Set any index in the animation as a point to jump to. Only available when Play Mode is Sequential."
+			},
+			{
+				"name": "cuepointunit",
+				"label": "Cue Point Unit",
+				"style": "Menu",
+				"description": "Select what type of unit to specify the Cue Point with."
+			},
+			{
+				"name": "index",
+				"label": "Index",
+				"style": "Float",
+				"description": "This parameter explicitly sets the animation position when Play Mode is set to Specify Index. The units menu on the right lets you specify the index in the following units: Index, Frames, Seconds, and"
+			},
+			{
+				"name": "indexunit",
+				"label": "Index Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "trim",
+				"label": "Trim",
+				"style": "Toggle",
+				"description": "A toggle to enable the Trim Start and Trim End parameters."
+			},
+			{
+				"name": "tstart",
+				"label": "Trim Start",
+				"style": "Float",
+				"description": "Sets an in point from the beginning of the animation, allowing you to trim the starting index of the animation. The units’ menu on the right let you specify this position by index, frames, seconds, or"
+			},
+			{
+				"name": "tstartunit",
+				"label": "Trim Start Unit",
+				"style": "Menu",
+				"description": "Specifies a unit type for Trim Start. Changing this will convert the previous unit to the selected unit."
+			},
+			{
+				"name": "tend",
+				"label": "Trim End",
+				"style": "Float",
+				"description": "Sets an end point from the end of the movie, allowing you to trim the ending index of the animation. The units’ menu on the right let you specify this position by index, frames, seconds, or fraction ("
+			},
+			{
+				"name": "tendunit",
+				"label": "Trim End Unit",
+				"style": "Menu",
+				"description": "Specifies a unit type for Trim End. Changing this will convert the previous unit to the selected unit."
+			},
+			{
+				"name": "textendleft",
+				"label": "Extend Left",
+				"style": "Menu",
+				"description": "Determines how the animation behaves before the start of the animation (or Trim Start position if it is used)."
+			},
+			{
+				"name": "textendright",
+				"label": "Extend Right",
+				"style": "Menu",
+				"description": "Determines how the animation behaves after the end of the animation (or Trim End position if it is used)."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "This allows you to specify the order in which the changes to your will take place. Changing the Transform Order will change where things go much the same way as going a block and turning east gets you"
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "This allows you to set the transform order for the 's rotations. As with transform order (above), changing the order in which the 's rotations take place will alter the 's final position.\tA Rotation o"
+			},
+			{
+				"name": "scale",
+				"label": "Uniform Scale",
+				"style": "Float",
+				"description": "This field allows you to change the size of an uniformly along the three axes."
+			},
+			{
+				"name": "parentxformsrc",
+				"label": "Parent Transform Source",
+				"style": "Menu",
+				"description": "Select what position is used as the transform source for this obejct. Can be one of \"Parent (Hierarchy)\", \"Specify Parent Object\", or \"World Origin\"."
+			},
+			{
+				"name": "parentobject",
+				"label": "Parent Object",
+				"style": "Object",
+				"description": "Allows the location of the object to be constrained to any other object whose path is specified in this parameter."
+			},
+			{
+				"name": "lookat",
+				"label": "Look At",
+				"style": "Object",
+				"description": "Allows you to orient this by naming another 3D you would like it to , or point to. Once you have designated this to look at, it will continue to face that , even if you move it. This is useful if, for"
+			},
+			{
+				"name": "forwarddir",
+				"label": "Forward Direction",
+				"style": "Menu",
+				"description": "Sets which axis and direction is considered the forward direction."
+			},
+			{
+				"name": "lookup",
+				"label": "Look At Up Vector",
+				"style": "Menu",
+				"description": "When specifying a , it is possible to specify an up vector for the lookat. Without using an up vector, it is possible to get poor animation when the lookat , for example, passes through the Y axis of "
+			},
+			{
+				"name": "pathsop",
+				"label": "Path SOP",
+				"style": "SOP",
+				"description": "Names the that functions as the path you want this to move along. For instance, you can name a that provides a path for the camera to follow."
+			},
+			{
+				"name": "roll",
+				"label": "Roll",
+				"style": "Float",
+				"description": "Using the angle control you can specify a 's rotation as it animates along the path."
+			},
+			{
+				"name": "pos",
+				"label": "Position",
+				"style": "Float",
+				"description": "This parameter lets you specify the of the along the path. The values you can enter for this parameter range from to , where equals the starting point and equals the end point of the path. The value s"
+			},
+			{
+				"name": "pathorient",
+				"label": "Orient along Path",
+				"style": "Toggle",
+				"description": "If this option is selected, the will be oriented along the path. The positive Z axis of the will be pointing down the path."
+			},
+			{
+				"name": "bank",
+				"label": "Auto-Bank Factor",
+				"style": "Float",
+				"description": "The rolls the based on the curvature of the path at its current position. To turn off auto-banking, set the bank scale to ."
+			},
+			{
+				"name": "pxform",
+				"label": "Apply Pre-Transform",
+				"style": "Toggle",
+				"description": "Enables the transformation on this page."
+			},
+			{
+				"name": "pxord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "prord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "pscale",
+				"label": "Uniform Scale",
+				"style": "Float",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "preset",
+				"label": "Reset Transform",
+				"style": "Pulse",
+				"description": "This button will reset this page's transform so it has no translate/rotate/scale."
+			},
+			{
+				"name": "pcommit",
+				"label": "Commit to Main Transform",
+				"style": "Pulse",
+				"description": "This button will copy the transform from this page to the main Xform page, and reset this page's transform."
+			},
+			{
+				"name": "xformmatrixop",
+				"label": "Xform Matrix/CHOP/DAT",
+				"style": "CHOP",
+				"description": "This parameter can be used to transform using a 4x4 matrix directly. For information on ways to specify a matrix directly, refer to the page. This transform will be applied after the regular Pre-Trans"
+			},
+			{
+				"name": "material",
+				"label": "Material",
+				"style": "MAT",
+				"description": "Selects a to apply to the geometry inside."
+			},
+			{
+				"name": "render",
+				"label": "Render",
+				"style": "Toggle",
+				"description": "Whether the 's geometry is visible in the . This parameter works in conjunction (logical AND) with the 's ."
+			},
+			{
+				"name": "drawpriority",
+				"label": "Draw Priority",
+				"style": "Float",
+				"description": "Determines the order in which the Components are drawn. Smaller values get drawn after larger values. The value is compared with other Components in the same parent , or if the is the top level one li"
+			},
+			{
+				"name": "pickpriority",
+				"label": "Pick Priority",
+				"style": "Float",
+				"description": "When using a or a , there is an option to have a 'Search Area'. If multiple objects are found within the search area, the pick priority can be used to select one object over another. A higher value wi"
+			},
+			{
+				"name": "lightmask",
+				"label": "Light Mask",
+				"style": "Object",
+				"description": "By default all lights used in the will affect geometry renderer. This parameter can be used to specify a sub-set of lights to be used for this particular geometry. The lights must be listed in the as "
+			},
+			{
+				"name": "reinitextensions",
+				"label": "Re-Init Extensions",
+				"style": "Pulse",
+				"description": "Recompile all extension objects. Normally extension objects are compiled only when they are referenced and their definitions have changed."
+			},
+			{
+				"name": "initextonstart",
+				"label": "Init Extensions On Start",
+				"style": "Toggle",
+				"description": "Perform a Re-Init automatically when TouchDEsigner Starts"
+			},
+			{
+				"name": "ext",
+				"label": "Extension",
+				"style": "Sequence",
+				"description": "Sequence of info for creating extensions on this component"
+			},
+			{
+				"name": "ext0object",
+				"label": "Object",
+				"style": "Str",
+				"description": "A number of class instances that can be attached to the component."
+			},
+			{
+				"name": "ext0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Optional name to search by, instead of the instance class name."
+			},
+			{
+				"name": "ext0promote",
+				"label": "Promote",
+				"style": "Toggle",
+				"description": "Controls whether or not the extensions are visible directly at the component level, or must be accessed through the member.  Example: vs"
+			},
+			{
+				"name": "parentshortcut",
+				"label": "Parent Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as the path to that component. See ."
+			},
+			{
+				"name": "opshortcut",
+				"label": "Global OP Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere at all as the path to that component. See ."
+			},
+			{
+				"name": "iop",
+				"label": "Internal OP",
+				"style": "Sequence",
+				"description": "Sequence header for internal operators."
+			},
+			{
+				"name": "iop0shortcut",
+				"label": "Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as a path to \"Internal \" below. See ."
+			},
+			{
+				"name": "iop0op",
+				"label": "OP",
+				"style": "OP",
+				"description": "The path to the Internal OP inside this component. See ."
+			},
+			{
+				"name": "nodeview",
+				"label": "Node View",
+				"style": "Menu",
+				"description": "Determines what is displayed in the node viewer, also known as the . Some options will not be available depending on the type ( , , Misc.)"
+			},
+			{
+				"name": "opviewer",
+				"label": "Operator Viewer",
+				"style": "OP",
+				"description": "Select which operator's node viewer to use when the Node View parameter above is set to Operator ."
+			},
+			{
+				"name": "enablecloning",
+				"label": "Enable Cloning",
+				"style": "Toggle",
+				"description": "Control if the OP should be actively cloneing. Turning this off causes this node to stop cloning it's 'Clone Master'."
+			},
+			{
+				"name": "enablecloningpulse",
+				"label": "Enable Cloning Pulse",
+				"style": "Pulse",
+				"description": "Instantaneously clone the contents."
+			},
+			{
+				"name": "clone",
+				"label": "Clone Master",
+				"style": "COMP",
+				"description": "to a component used as the Master ."
+			},
+			{
+				"name": "loadondemand",
+				"label": "Load on Demand",
+				"style": "Toggle",
+				"description": "Loads the component into memory only when required. Good to use for components that are not always used in the project."
+			},
+			{
+				"name": "enableexternaltox",
+				"label": "Enable External .tox",
+				"style": "Toggle",
+				"description": "When on (default), the external file will be loaded when the starts and the contents of the will match that of the external . This can be turned off to avoid loading from the referenced external on st"
+			},
+			{
+				"name": "enableexternaltoxpulse",
+				"label": "Enable External .tox Pulse",
+				"style": "Pulse",
+				"description": "This button will re-load from the external file (if present)."
+			},
+			{
+				"name": "externaltox",
+				"label": "External .tox Path",
+				"style": "File",
+				"description": "to a file on disk which will source the component's contents upon start of a . This allows for components to contain networks that can be updated independently. If the file can not be found, whatever "
+			},
+			{
+				"name": "reloadcustom",
+				"label": "Reload Custom Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes inside the component ar"
+			},
+			{
+				"name": "reloadbuiltin",
+				"label": "Reload Built-In Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's built-in parameters are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes ins"
+			},
+			{
+				"name": "savebackup",
+				"label": "Save Backup of External",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, a backup copy of the component specified by the External parameter is saved in the file.  This backup copy will be used if the External can not be found. This may happen"
+			},
+			{
+				"name": "subcompname",
+				"label": "Sub-Component to Load",
+				"style": "Str",
+				"description": "When loading from an External file, this option allows you to reach into the and pull out a and make that the top-level , ignoring everything else in the file (except for the contents of that ). For e"
+			},
+			{
+				"name": "relpath",
+				"label": "Relative File Path Behavior",
+				"style": "Menu",
+				"description": "Set whether the child file paths within this are relative to the itself or the , or inherit from parent."
+			},
+			{
+				"name": "pty",
+				"label": "Pty",
+				"style": "XYZW"
+			},
+			{
+				"name": "wcolorr",
+				"label": "Wcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "ppy",
+				"label": "Ppy",
+				"style": "XYZW"
+			},
+			{
+				"name": "wcolorb",
+				"label": "Wcolorb",
+				"style": "RGBA",
+				"description": "Use the R, G, and B fields to set the Component's color when displayed in wireframe shading mode."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "This allows you to specify the amount of movement along any of the three axes; the amount, in degrees, of rotation around any of the three axes; and a non-uniform scaling along the three axes. As an a"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "prz",
+				"label": "Prz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW",
+				"description": "The Pivot point edit fields allow you to define the point about which a Component scales and rotates. Altering the pivot point of a Component produces different results depending on the transformation"
+			},
+			{
+				"name": "ppx",
+				"label": "Ppx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ppz",
+				"label": "Ppz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "prx",
+				"label": "Prx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ptx",
+				"label": "Ptx",
+				"style": "XYZW"
+			},
+			{
+				"name": "upx",
+				"label": "Upx",
+				"style": "XYZW"
+			},
+			{
+				"name": "psz",
+				"label": "Psz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "psx",
+				"label": "Psx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "upz",
+				"label": "Upz",
+				"style": "XYZW",
+				"description": "When orienting a Component, the Up Vector is used to determine where the positive Y axis points."
+			},
+			{
+				"name": "pry",
+				"label": "Pry",
+				"style": "XYZW"
+			},
+			{
+				"name": "upy",
+				"label": "Upy",
+				"style": "XYZW"
+			},
+			{
+				"name": "wcolorg",
+				"label": "Wcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW",
+				"description": "This specifies the amount of movement along any of the three axes; the amount, in degrees, of rotation around any of the three axes; and a non-uniform scaling along the three axes. As an alternative t"
+			},
+			{
+				"name": "ptz",
+				"label": "Ptz",
+				"style": "XYZW",
+				"description": "Refer to the documentation on Xform page for more information."
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "Theis specifies the amount of movement along any of the three axes; the amount, in degrees, of rotation around any of the three axes; and a non-uniform scaling along the three axes. As an alternative "
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "psy",
+				"label": "Psy",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

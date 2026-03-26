@@ -14,7 +14,7 @@
 		"delinputattrs"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner inPOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

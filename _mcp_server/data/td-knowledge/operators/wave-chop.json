@@ -14,7 +14,7 @@
 		"bias"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner waveCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

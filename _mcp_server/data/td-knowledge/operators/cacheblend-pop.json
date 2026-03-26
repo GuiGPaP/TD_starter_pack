@@ -1,0 +1,91 @@
+{
+	"id": "cacheblend-pop",
+	"title": "cacheblendPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"cacheblend",
+		"pop",
+		"cacheblendpop",
+		"cachepop",
+		"chop",
+		"indexchan",
+		"weightchan",
+		"cache"
+	],
+	"content": {
+		"summary": "TouchDesigner cacheblendPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cacheblendPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "cachepop",
+				"label": "Cache POP",
+				"style": "POP",
+				"description": "The Cache to retrieve from."
+			},
+			{
+				"name": "chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "Weight and index can be channels of a versus being parameters."
+			},
+			{
+				"name": "indexchan",
+				"label": "Index Channel",
+				"style": "StrMenu",
+				"description": "Name of the channel to use for cache index when using a ."
+			},
+			{
+				"name": "weightchan",
+				"label": "Weight Channel",
+				"style": "StrMenu",
+				"description": "Specifies the channel that contains weight values."
+			},
+			{
+				"name": "cache",
+				"label": "Cache",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for managing weights and index of POPs in the cache."
+			},
+			{
+				"name": "cache0index",
+				"label": "Cache Index",
+				"style": "Int",
+				"description": "The Cache Index to select."
+			},
+			{
+				"name": "cache0weight",
+				"label": "Cache Weight",
+				"style": "Float",
+				"description": "Weight to use for the in the cache at the index."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

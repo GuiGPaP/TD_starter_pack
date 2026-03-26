@@ -13,7 +13,7 @@
 		"segmentunit"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner recordCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

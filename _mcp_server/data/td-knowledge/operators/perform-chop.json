@@ -13,7 +13,7 @@
 		"mvreadahead"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner performCHOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

@@ -1,0 +1,343 @@
+{
+	"id": "renderpass-top",
+	"title": "renderpassTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"renderpass",
+		"top",
+		"renderpasstop",
+		"renderinput",
+		"camera",
+		"geometry",
+		"lights",
+		"cleardepth"
+	],
+	"content": {
+		"summary": "TouchDesigner renderpassTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "renderpassTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "renderinput",
+				"label": "Render/RenderPass TOP",
+				"style": "TOP",
+				"description": "The network path to the used as input. This parameter can be used as an alternate to connecting a Render or Render Pass to the Render Pass's input connector. Makes it easier to select a render from an"
+			},
+			{
+				"name": "camera",
+				"label": "Camera",
+				"style": "Object",
+				"description": "Specifies which to look through when rendering the scene."
+			},
+			{
+				"name": "geometry",
+				"label": "Geometry",
+				"style": "Object",
+				"description": "Specifies which will be included in the rendered scene. You can use to specify objects using patterns. Example: will render all Geometry components whose names start with except ."
+			},
+			{
+				"name": "lights",
+				"label": "Lights",
+				"style": "Object",
+				"description": "Specifies which will be used to render the scene. You can use here as well."
+			},
+			{
+				"name": "cleardepth",
+				"label": "Clear Depth Buffer",
+				"style": "Toggle",
+				"description": "Clears the values that are currently in the depth buffer (coming from the that is wired to the input of this node)."
+			},
+			{
+				"name": "transparency",
+				"label": "Transparency",
+				"style": "Menu",
+				"description": "Refer to to the same parameter in the help page."
+			},
+			{
+				"name": "depthpeel",
+				"label": "Depth Peel",
+				"style": "Toggle",
+				"description": "Refer to to the same parameter in the help page."
+			},
+			{
+				"name": "transpeellayers",
+				"label": "Transparency/Peel Layers",
+				"style": "Int",
+				"description": "Refer to to the same parameter in the help page."
+			},
+			{
+				"name": "render",
+				"label": "Render",
+				"style": "Toggle",
+				"description": "Enables rendering; 1 = on, 0 = off."
+			},
+			{
+				"name": "dither",
+				"label": "Dither",
+				"style": "Toggle",
+				"description": "Dithers the rendering to help deal with banding and other artifacts created by precision limitations of 8-bit displays."
+			},
+			{
+				"name": "coloroutputneeded",
+				"label": "Color Output Needed",
+				"style": "Toggle",
+				"description": "This is an optimization if you don't actually need the color result from this pass. Turning this off avoids a copy from the offscreen render buffer to the 's texture. When anti-aliasing is enabled tur"
+			},
+			{
+				"name": "drawdepthonly",
+				"label": "Draw Depth Only",
+				"style": "Toggle",
+				"description": "This will cause the render to only draw depth values to the depth buffer. No color values will be created. To make use of the depth buffer, use the ."
+			},
+			{
+				"name": "allowbufblending",
+				"label": "Allow Blending for Extra Buffers",
+				"style": "Menu",
+				"description": "Controls if blending (as enabled by the common page setting) will be enabled for extra buffers beyond the first one. Often the extra buffers are used to write other types of information such as normal"
+			},
+			{
+				"name": "cullface",
+				"label": "Cull Face",
+				"style": "Menu",
+				"description": "Front Faces, Back Faces, Both Faces, Neither. Will cause the render to avoid rendering certain polygon faces depending on their orientation to the camera. Refer to for more information."
+			},
+			{
+				"name": "overridemat",
+				"label": "Override Material",
+				"style": "MAT",
+				"description": "This allows you to specific a material that will be applied to every Geometry that is rendered in the Render . It is useful for pre-processing passes where we are outputting infoformation about the ge"
+			},
+			{
+				"name": "polygonoffset",
+				"label": "Polygon Depth Offset",
+				"style": "Toggle",
+				"description": "This feature pushes the polygons back into space a tiny fraction. This is useful when you are rendering two polygons directly ontop of each other and are experiencing . Refer to for more information. "
+			},
+			{
+				"name": "polygonoffsetfactor",
+				"label": "Offset Factor",
+				"style": "Float",
+				"description": "Refer to to the same parameter in the help page."
+			},
+			{
+				"name": "polygonoffsetunits",
+				"label": "Offset Units",
+				"style": "Float",
+				"description": "Refer to to the same parameter in the help page."
+			},
+			{
+				"name": "overdraw",
+				"label": "Display Overdraw",
+				"style": "Toggle",
+				"description": "This feature visually shows the overdraw in the scene. Refer to the article for more information. In particular the Analyzing Overdraw section."
+			},
+			{
+				"name": "overdrawlimit",
+				"label": "Overdraw Limit",
+				"style": "Int",
+				"description": "This value quantizes the outputted color value to some # of overdraws. Refer to the for more information."
+			},
+			{
+				"name": "cropleft",
+				"label": "Crop Left",
+				"style": "Float",
+				"description": "Positions the left edge of the rendered image."
+			},
+			{
+				"name": "cropleftunit",
+				"label": "Crop Left Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "cropright",
+				"label": "Crop Right",
+				"style": "Float",
+				"description": "Positions the right edge of the rendered image."
+			},
+			{
+				"name": "croprightunit",
+				"label": "Crop Right Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "cropbottom",
+				"label": "Crop Bottom",
+				"style": "Float",
+				"description": "Positions the bottom edge of the rendered image."
+			},
+			{
+				"name": "cropbottomunit",
+				"label": "Crop Bottom Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "croptop",
+				"label": "Crop Top",
+				"style": "Float",
+				"description": "Positions the top edge of the rendered image."
+			},
+			{
+				"name": "croptopunit",
+				"label": "Crop Top Unit",
+				"style": "Menu",
+				"description": "Select the units for this parameter from Pixels, Fraction (0-1), Fraction Aspect (0-1 considering aspect ratio)."
+			},
+			{
+				"name": "sampler",
+				"label": "Sampler",
+				"style": "Sequence"
+			},
+			{
+				"name": "sampler0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "This is the sampler name that the GLSL program will use to sample from this . The samplers need to be declared as the same dimensions as the (sampler2D for a 2D , sampler3D for 3D )."
+			},
+			{
+				"name": "sampler0top",
+				"label": "TOP",
+				"style": "TOP",
+				"description": "This is the that will be referenced by the above sampler name above it."
+			},
+			{
+				"name": "sampler0extendu",
+				"label": "Extend U",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sampler0extendv",
+				"label": "Extend V",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sampler0extendw",
+				"label": "Extend W",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sampler0filter",
+				"label": "Filter",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "sampler0anisotropy",
+				"label": "Anisotropic Filter",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec",
+				"label": "Vector",
+				"style": "Sequence"
+			},
+			{
+				"name": "vec0name",
+				"label": "Uniform Name",
+				"style": "Str",
+				"description": "The uniform name, as declared in the shader."
+			},
+			{
+				"name": "clearcolor",
+				"label": "Clearcolor",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "bgcolorr",
+				"label": "Bgcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "negsidex",
+				"label": "Negsidex",
+				"style": "Toggle"
+			},
+			{
+				"name": "bgcolorg",
+				"label": "Bgcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "possidex",
+				"label": "Possidex",
+				"style": "Toggle"
+			},
+			{
+				"name": "bgcolorb",
+				"label": "Bgcolorb",
+				"style": "RGBA"
+			},
+			{
+				"name": "vec0valuey",
+				"label": "Vec0Valuey",
+				"style": "XYZW"
+			},
+			{
+				"name": "negsidez",
+				"label": "Negsidez",
+				"style": "Toggle",
+				"description": "When Render Mode is Cube Map, specify which sides if the cube map are rendered, -X, -Y, or -Z."
+			},
+			{
+				"name": "possidez",
+				"label": "Possidez",
+				"style": "Toggle",
+				"description": "When Render Mode is Cube Map, specify which sides if the cube map are rendered, +X, +Y, or +Z."
+			},
+			{
+				"name": "possidey",
+				"label": "Possidey",
+				"style": "Toggle"
+			},
+			{
+				"name": "vec0valuez",
+				"label": "Vec0Valuez",
+				"style": "XYZW"
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec0valuex",
+				"label": "Vec0Valuex",
+				"style": "XYZW"
+			},
+			{
+				"name": "negsidey",
+				"label": "Negsidey",
+				"style": "Toggle"
+			},
+			{
+				"name": "bgcolora",
+				"label": "Bgcolora",
+				"style": "RGBA",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "vec0valuew",
+				"label": "Vec0Valuew",
+				"style": "XYZW",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

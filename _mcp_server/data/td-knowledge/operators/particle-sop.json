@@ -1,0 +1,346 @@
+{
+	"id": "particle-sop",
+	"title": "particleSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"particle",
+		"sop",
+		"particlesop",
+		"sourcegrp",
+		"prtype",
+		"behave",
+		"normals",
+		"ptreuse"
+	],
+	"content": {
+		"summary": "TouchDesigner particleSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "particleSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "sourcegrp",
+				"label": "Source Group",
+				"style": "StrMenu",
+				"description": "Limit the particle emission to the points found in the specified point groups."
+			},
+			{
+				"name": "prtype",
+				"label": "Particle Type",
+				"style": "Menu",
+				"description": "Selects how the particles are rendered."
+			},
+			{
+				"name": "behave",
+				"label": "Behavior",
+				"style": "Menu",
+				"description": "Select between emitting particles from the geometry's points or deforming the original geometry using the Particle 's behavior."
+			},
+			{
+				"name": "normals",
+				"label": "Compute Normals",
+				"style": "Toggle",
+				"description": "Creates normals on the geometry.  Only used when is set to ."
+			},
+			{
+				"name": "ptreuse",
+				"label": "Point Reuse",
+				"style": "Menu",
+				"description": "Decide how the internal memory for points is reused when a point needs to be created or when a point dies."
+			},
+			{
+				"name": "timepreroll",
+				"label": "Preroll Time",
+				"style": "Float",
+				"description": "How many seconds of the simulation to bypass, after the reset time is reached. For example, if you put the number into this field (and reset is at ), frame one will show the simulation that was at a t"
+			},
+			{
+				"name": "timeinc",
+				"label": "Time Inc",
+				"style": "Float",
+				"description": "The parameter determines how often to cook the . By default, this parameter is set to . This means that the will cook once for every frame. When complex dynamics are involved, the may require more fre"
+			},
+			{
+				"name": "maxsteps",
+				"label": "Max Steps",
+				"style": "Int",
+				"description": "Limits how far back in time TouchDesigner calculates particle positions for proper interactions.  If frame rates are slow this computation back in time can become high, this parameter limits that effe"
+			},
+			{
+				"name": "jitter",
+				"label": "Jitter Births",
+				"style": "Toggle",
+				"description": "This allows you to jitter the location pixels of each particle as they are born."
+			},
+			{
+				"name": "accurate",
+				"label": "Accurate Moves",
+				"style": "Toggle",
+				"description": "This option makes the particles move more accurately between frames by calculating their trajectories for fractional frame values."
+			},
+			{
+				"name": "rmunused",
+				"label": "Remove Unused Points",
+				"style": "Toggle",
+				"description": "Removes all unused points from the input geometry. This is provided as an explicit option instead of automatically because it saves the time needed to purge the points from memory during the simulatio"
+			},
+			{
+				"name": "attractmode",
+				"label": "Attractor Use",
+				"style": "Menu",
+				"description": "Select which mode of attraction to use for Surface Attractors."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "When On the particle system is held in a reset state and does not emit particles."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Instantly reset the particle system to its starting state."
+			},
+			{
+				"name": "period",
+				"label": "Turb Period",
+				"style": "Float",
+				"description": "A small period means that the turbulence varies quickly over a small area, while a larger value will cause points close to each other to be affected similarly."
+			},
+			{
+				"name": "seed",
+				"label": "Seed",
+				"style": "Int",
+				"description": "Random number seed for the particle simulation."
+			},
+			{
+				"name": "doid",
+				"label": "Add Particle ID",
+				"style": "Toggle",
+				"description": "Adds an ID number to each particle as it is born. New attributes only appear once the particle system is reset via the parameter or loads for first time."
+			},
+			{
+				"name": "domass",
+				"label": "Add Mass Attribute",
+				"style": "Toggle",
+				"description": "When selected, calculates the mass of the particle, as specified in the field."
+			},
+			{
+				"name": "mass",
+				"label": "Mass",
+				"style": "Float",
+				"description": "The relative mass of each particle. Heavier particles take longer to start moving, and longer to slow down."
+			},
+			{
+				"name": "dodrag",
+				"label": "Add Drag Attribute",
+				"style": "Toggle",
+				"description": "When selected, calculates the drag coefficient of the particle, as entered in the field."
+			},
+			{
+				"name": "drag",
+				"label": "Drag",
+				"style": "Float",
+				"description": "Drag of each particle."
+			},
+			{
+				"name": "birth",
+				"label": "Birth",
+				"style": "Float",
+				"description": "The number of particles born each second. Particles are not released in clusters. They are born at random times during the first frame of their existence. Their birth time is set randomly during the f"
+			},
+			{
+				"name": "life",
+				"label": "Life Expect",
+				"style": "Float",
+				"description": "How long each particle will exist, in seconds. The default is seconds. You may want to adjust this number based on the length of your animation."
+			},
+			{
+				"name": "lifevar",
+				"label": "Life Variance",
+				"style": "Float",
+				"description": "Variance of a particle's life expectancy in seconds. If life expectancy is one second, and the variance is zero seconds, each particle will live exactly one second. If variance is set to 0.5, then som"
+			},
+			{
+				"name": "alpha",
+				"label": "Alpha Speed",
+				"style": "Float",
+				"description": "As a particle goes faster, it should become more transparent. The parameter defaults to 0, which doesn't change alpha as the speed increases. A typical value of 0.5 causes the particle to be 70% opaqu"
+			},
+			{
+				"name": "birthcount",
+				"label": "Birth Count",
+				"style": "Int",
+				"description": "Specifies the number of particles created when the Birth pulse parameter is hit."
+			},
+			{
+				"name": "birthpulse",
+				"label": "Birth",
+				"style": "Pulse",
+				"description": "Manually create n particles when pulsed. The number of particles created is controlled by the Birth Count parameter."
+			},
+			{
+				"name": "hit",
+				"label": "Hit Behavior",
+				"style": "Menu",
+				"description": "Control over what happens when a particle hits either the six collision planes or the collide object. The options are:"
+			},
+			{
+				"name": "gaintan",
+				"label": "Gain Tangent",
+				"style": "Float",
+				"description": "Friction parameters which can be regarded as energy loss upon collision. The first parameter affects the energy loss (gain) perpendicular to the surface. 0 means all energy (velocity) is lost, 1 means"
+			},
+			{
+				"name": "gainnorm",
+				"label": "Gain Normal",
+				"style": "Float",
+				"description": "Friction parameters which can be regarded as energy loss upon collision. The first parameter affects the energy loss (gain) perpendicular to the surface. 0 means all energy (velocity) is lost, 1 means"
+			},
+			{
+				"name": "splittype",
+				"label": "Split",
+				"style": "Menu",
+				"description": "Select if the particle will split and under what conditions."
+			},
+			{
+				"name": "externaly",
+				"label": "Externaly",
+				"style": "XYZW"
+			},
+			{
+				"name": "splitvely",
+				"label": "Splitvely",
+				"style": "XYZW"
+			},
+			{
+				"name": "splitmin",
+				"label": "Splitmin",
+				"style": "Int"
+			},
+			{
+				"name": "turby",
+				"label": "Turby",
+				"style": "XYZW"
+			},
+			{
+				"name": "surfattract",
+				"label": "Surfattract",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "splitvelx",
+				"label": "Splitvelx",
+				"style": "XYZW"
+			},
+			{
+				"name": "splitvarx",
+				"label": "Splitvarx",
+				"style": "XYZW"
+			},
+			{
+				"name": "limitnegy",
+				"label": "Limitnegy",
+				"style": "XYZW"
+			},
+			{
+				"name": "limitposy",
+				"label": "Limitposy",
+				"style": "XYZW"
+			},
+			{
+				"name": "windy",
+				"label": "Windy",
+				"style": "XYZW"
+			},
+			{
+				"name": "limitnegx",
+				"label": "Limitnegx",
+				"style": "XYZW"
+			},
+			{
+				"name": "externalz",
+				"label": "Externalz",
+				"style": "XYZW",
+				"description": "Forces of gravity acting on the particles. When drag is zero, the particles can accelerate with no limit on their speed."
+			},
+			{
+				"name": "splitmax",
+				"label": "Splitmax",
+				"style": "Int",
+				"description": "When a particle splits, it splits into a number of other particles. The number of particles is randomly set between this range."
+			},
+			{
+				"name": "windx",
+				"label": "Windx",
+				"style": "XYZW"
+			},
+			{
+				"name": "windz",
+				"label": "Windz",
+				"style": "XYZW",
+				"description": "Wind forces acting on the particles. Similar to External Force. Using Wind (and no other forces, such as Turbulence), the particles will not exceed the wind velocity.  ====Discussion - Wind vs Externa"
+			},
+			{
+				"name": "limitposx",
+				"label": "Limitposx",
+				"style": "XYZW"
+			},
+			{
+				"name": "splitvarz",
+				"label": "Splitvarz",
+				"style": "XYZW",
+				"description": "This is a random amount that is added to the split velocity. When creating fireworks, the variance is large while the velocity is low. When rendering raindrops splashing, the split velocity is large i"
+			},
+			{
+				"name": "limitnegz",
+				"label": "Limitnegz",
+				"style": "XYZW",
+				"description": "The particles will die or bounce off the limit planes when it reaches them. The six limit plane fields define a bounding cube. The default settings are 1000 units away, which is very large. Reduce the"
+			},
+			{
+				"name": "splitvelz",
+				"label": "Splitvelz",
+				"style": "XYZW",
+				"description": "Each split particle is given this base velocity."
+			},
+			{
+				"name": "turbz",
+				"label": "Turbz",
+				"style": "XYZW",
+				"description": "The amplitude of turbulent (chaotic) forces along each axis. Use positive values, if any."
+			},
+			{
+				"name": "limitposz",
+				"label": "Limitposz",
+				"style": "XYZW",
+				"description": "The particles will die or bounce off the limit planes when it reaches them. The six limit plane fields define a bounding cube. The default settings are 1000 units away, which is very large. Reduce the"
+			},
+			{
+				"name": "splitvary",
+				"label": "Splitvary",
+				"style": "XYZW"
+			},
+			{
+				"name": "turbx",
+				"label": "Turbx",
+				"style": "XYZW"
+			},
+			{
+				"name": "externalx",
+				"label": "Externalx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

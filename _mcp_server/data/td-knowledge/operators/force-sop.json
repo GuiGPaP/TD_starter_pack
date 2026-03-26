@@ -1,0 +1,83 @@
+{
+	"id": "force-sop",
+	"title": "forceSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"force",
+		"sop",
+		"forcesop",
+		"doradial",
+		"radial",
+		"doaxis",
+		"axial",
+		"vortex"
+	],
+	"content": {
+		"summary": "TouchDesigner forceSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "forceSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "doradial",
+				"label": "Radial Force",
+				"style": "Toggle",
+				"description": "When checked, triggers a force towards or away from the centre of the metaball field, depending on the value of the force."
+			},
+			{
+				"name": "radial",
+				"label": "Force",
+				"style": "Float",
+				"description": "When Radial Force is checked, this controls the strength of the Radial Force field."
+			},
+			{
+				"name": "doaxis",
+				"label": "Directional Force",
+				"style": "Toggle",
+				"description": "When checked, enables all parameters below to allow control of specific force attributes."
+			},
+			{
+				"name": "axial",
+				"label": "Axial Force",
+				"style": "Float",
+				"description": "When Directional Force is checked, controls the force along the primary axis. Increasing this value will cause the particles to move up the primary axis of the metaball field as defined by the directi"
+			},
+			{
+				"name": "vortex",
+				"label": "Vortex Force",
+				"style": "Float",
+				"description": "When Directional Force is checked, this field controls the amount of twist particles are given around the primary axis. Positive values cause the particles to spin clockwise, negative values cause cou"
+			},
+			{
+				"name": "spiral",
+				"label": "Spiral Force",
+				"style": "Float",
+				"description": "Controls the attraction/repulsion force perpendicular to the primary axis (Direction field). Values greater than 0 will cause the points to be drawn toward the primary axis. Values less than 0 push pa"
+			},
+			{
+				"name": "dirz",
+				"label": "Dirz",
+				"style": "XYZW",
+				"description": "When Directional Force is checked, determines the direction vector axis, and activates forces along the directional vector for the directional forces below."
+			},
+			{
+				"name": "dirx",
+				"label": "Dirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "diry",
+				"label": "Diry",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

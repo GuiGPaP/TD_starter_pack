@@ -1,0 +1,122 @@
+{
+	"id": "revolve-sop",
+	"title": "revolveSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"revolve",
+		"sop",
+		"revolvesop",
+		"group",
+		"surftype",
+		"polys",
+		"imperfect",
+		"type"
+	],
+	"content": {
+		"summary": "TouchDesigner revolveSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "revolveSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified. Accepts patterns, as described in ."
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "This option is used to select the type of surface, when using a Mesh Type."
+			},
+			{
+				"name": "polys",
+				"label": "Convert Mesh to Polygons",
+				"style": "Toggle",
+				"description": "Changes the output mesh to consist of individual polygons."
+			},
+			{
+				"name": "imperfect",
+				"label": "Imperfect",
+				"style": "Toggle",
+				"description": "Applies to splines only. If selected, the results are approximated nonrational curves, otherwise they are perfect rational curves."
+			},
+			{
+				"name": "type",
+				"label": "Revolve Type",
+				"style": "Menu",
+				"description": "Determines how the revolve should be generated."
+			},
+			{
+				"name": "divs",
+				"label": "Divisions",
+				"style": "Int",
+				"description": "Density of the resulting mesh surface."
+			},
+			{
+				"name": "order",
+				"label": "Order",
+				"style": "Int",
+				"description": "If a spline type is selected, it is built at this order."
+			},
+			{
+				"name": "cap",
+				"label": "End Caps",
+				"style": "Toggle",
+				"description": "If selected, it adds faceted end caps."
+			},
+			{
+				"name": "dirz",
+				"label": "Dirz",
+				"style": "XYZW",
+				"description": "X, Y, and Z coordinates of the direction vector defining the direction of the revolve."
+			},
+			{
+				"name": "originx",
+				"label": "Originx",
+				"style": "XYZW"
+			},
+			{
+				"name": "endangle",
+				"label": "Endangle",
+				"style": "Float",
+				"description": "The start and end angles of the revolve. A revolve will start at the beginning angle, and proceed towards the ending angle. If Beginning = 0 and End = 360 it will be fully revolved. Values greater tha"
+			},
+			{
+				"name": "originz",
+				"label": "Originz",
+				"style": "XYZW",
+				"description": "Coordinates defining the origin of the revolution."
+			},
+			{
+				"name": "dirx",
+				"label": "Dirx",
+				"style": "XYZW"
+			},
+			{
+				"name": "beginangle",
+				"label": "Beginangle",
+				"style": "Float"
+			},
+			{
+				"name": "originy",
+				"label": "Originy",
+				"style": "XYZW"
+			},
+			{
+				"name": "diry",
+				"label": "Diry",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

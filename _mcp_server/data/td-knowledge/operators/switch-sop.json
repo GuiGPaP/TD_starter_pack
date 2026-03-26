@@ -1,0 +1,33 @@
+{
+	"id": "switch-sop",
+	"title": "switchSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"switch",
+		"sop",
+		"switchsop",
+		"input"
+	],
+	"content": {
+		"summary": "TouchDesigner switchSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "switchSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "input",
+				"label": "Select Input",
+				"style": "Int",
+				"description": "The index of the source to use, where the first source is 0, the second 1, and so on."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,174 @@
+{
+	"id": "pargroupexecute-dat",
+	"title": "pargroupexecuteDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"pargroupexecute",
+		"dat",
+		"pargroupexecutedat",
+		"active",
+		"pars",
+		"callbackmode",
+		"valuechange"
+	],
+	"content": {
+		"summary": "TouchDesigner pargroupexecuteDAT operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "pargroupexecuteDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "While on, the will respond to the Parameter that is referenced."
+			},
+			{
+				"name": "op",
+				"label": "OPs",
+				"style": "OP",
+				"description": "Specify which operator(s) the triggering parameter belongs to."
+			},
+			{
+				"name": "pars",
+				"label": "Parameters",
+				"style": "Str",
+				"description": "Specify which parameter(s) to monitor for triggering the script."
+			},
+			{
+				"name": "callbackmode",
+				"label": "Callback Mode",
+				"style": "Menu",
+				"description": "This controls the format of the 'curr' and 'prev' arguments to the callbacks."
+			},
+			{
+				"name": "valuechange",
+				"label": "Value Change",
+				"style": "Toggle",
+				"description": "The onValueChange() method executes when the parameter value specified changes value in any way. It is called once each frame."
+			},
+			{
+				"name": "onpulse",
+				"label": "On Pulse",
+				"style": "Toggle",
+				"description": "The onPulse() method executes when a 'pulse' type parameter is pulsed by clicking on it or via the .pulse() method."
+			},
+			{
+				"name": "expressionchange",
+				"label": "Expression Change",
+				"style": "Toggle",
+				"description": "The onExpressionChange() method executes whenever the specified parameter's expression changes. For example, changing the expression from to will trigger the script."
+			},
+			{
+				"name": "exportchange",
+				"label": "Export Change",
+				"style": "Toggle",
+				"description": "The onExportChange() method executes if the export path to the specified parameter changes. For example, if the parameter is being exported to from /chopname/chan1 and that is changed so /chopname2/ch"
+			},
+			{
+				"name": "enablechange",
+				"label": "Enable Change",
+				"style": "Toggle",
+				"description": "The onEnableChange() method executes if the specified parameter goes from being disabled to enabled."
+			},
+			{
+				"name": "modechange",
+				"label": "Mode Change",
+				"style": "Toggle",
+				"description": "The onModeChange() method executes if the specified changes between the available constant, expression, export or bind mode."
+			},
+			{
+				"name": "custom",
+				"label": "Custom",
+				"style": "Toggle",
+				"description": "Monitor Custom Parameters."
+			},
+			{
+				"name": "builtin",
+				"label": "Built-In",
+				"style": "Toggle",
+				"description": "Monitor Built-In parameters."
+			},
+			{
+				"name": "edit",
+				"label": "Edit..",
+				"style": "Pulse",
+				"description": "Clicking this opens a text editor to edit text in the ."
+			},
+			{
+				"name": "file",
+				"label": "File",
+				"style": "File",
+				"description": "The filesystem path and name of the file to load. Accepts and files."
+			},
+			{
+				"name": "syncfile",
+				"label": "Sync to File",
+				"style": "Toggle",
+				"description": "When On, loads the file from disk into the when the projects starts.  A filename must be specified.  Turning on the option will load the file from disk immediately.  If the file does not exist, it wil"
+			},
+			{
+				"name": "loadonstart",
+				"label": "Load on Start",
+				"style": "Toggle",
+				"description": "When On, reloads the file from disk into the when the projects starts."
+			},
+			{
+				"name": "loadonstartpulse",
+				"label": "Load File",
+				"style": "Pulse",
+				"description": "Instantly reloads the file."
+			},
+			{
+				"name": "write",
+				"label": "Write on Toe Save",
+				"style": "Toggle",
+				"description": "When On, writes the contents of the out to the file on disk when the project is saved."
+			},
+			{
+				"name": "writepulse",
+				"label": "Write File",
+				"style": "Pulse",
+				"description": "Instantly write the file to disk."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			},
+			{
+				"name": "defaultreadencoding",
+				"label": "Defaultreadencoding",
+				"style": "Menu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

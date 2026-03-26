@@ -1,0 +1,96 @@
+{
+	"id": "mpcdi-top",
+	"title": "mpcdiTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"mpcdi",
+		"top",
+		"mpcditop",
+		"file",
+		"reloadpulse",
+		"outputformat",
+		"bufferid",
+		"regionid"
+	],
+	"content": {
+		"summary": "TouchDesigner mpcdiTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "mpcdiTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "Configuration File",
+				"style": "File",
+				"description": "Specify the location of the .mpcdi file."
+			},
+			{
+				"name": "reloadpulse",
+				"label": "Reload Pulse",
+				"style": "Pulse",
+				"description": "Instantly reloads the file."
+			},
+			{
+				"name": "outputformat",
+				"label": "Output by",
+				"style": "Menu",
+				"description": "The menu determines how the output regions are laid out, in single or grid format."
+			},
+			{
+				"name": "bufferid",
+				"label": "Buffer ID",
+				"style": "Menu",
+				"description": "Buffer ID to output."
+			},
+			{
+				"name": "regionid",
+				"label": "Region ID",
+				"style": "Menu",
+				"description": "Region ID to output."
+			},
+			{
+				"name": "near",
+				"label": "Near",
+				"style": "Float",
+				"description": "Sets the near value."
+			},
+			{
+				"name": "far",
+				"label": "Far",
+				"style": "Float",
+				"description": "Sets the far value."
+			},
+			{
+				"name": "alphabeta",
+				"label": "Alpha Beta Blending",
+				"style": "Toggle",
+				"description": "Toggle to apply alpha-beta blending."
+			},
+			{
+				"name": "gamma",
+				"label": "Gamma Encoding",
+				"style": "Toggle",
+				"description": "Toggle to apply gamma encoding."
+			},
+			{
+				"name": "layoutmaxw",
+				"label": "Layoutmaxw",
+				"style": "Int"
+			},
+			{
+				"name": "layoutmaxh",
+				"label": "Layoutmaxh",
+				"style": "Int",
+				"description": "Determines the maximum rows and columns when output by grid is selected."
+			}
+		],
+		"versions": {}
+	}
+}

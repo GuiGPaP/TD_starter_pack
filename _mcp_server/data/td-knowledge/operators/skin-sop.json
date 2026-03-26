@@ -1,0 +1,97 @@
+{
+	"id": "skin-sop",
+	"title": "skinSOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"skin",
+		"sop",
+		"skinsop",
+		"uprims",
+		"vprims",
+		"surftype",
+		"keepshape",
+		"closev"
+	],
+	"content": {
+		"summary": "TouchDesigner skinSOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "skinSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "uprims",
+				"label": "U Cross Sections",
+				"style": "StrMenu",
+				"description": "Empty by default, this field provides a way to specify a subset of the first input's faces and surfaces. Do so by selecting one or more primitive groups from this field's pop-up menu."
+			},
+			{
+				"name": "vprims",
+				"label": "V Cross Sections",
+				"style": "StrMenu",
+				"description": "Empty by default, this field provides a way to specify a subset of V faces. If a second input exists, the primitive groups available for selection are taken from the second input. If only the first in"
+			},
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "(Results only viewable for polygons and meshes)."
+			},
+			{
+				"name": "keepshape",
+				"label": "Preserve Shape",
+				"style": "Toggle",
+				"description": "This parameter determines the precision of a linear skin (case c in the diagram). If enabled, it ensures that the generated surface goes through each cross-section. Here, a cross-section can be a face"
+			},
+			{
+				"name": "closev",
+				"label": "V Wrap",
+				"style": "Menu",
+				"description": "This menu (menu: Off, On, If primitive does) setting determines whether the surface should be wrapped in the V parametric direction. The options are to open (Off), close (On), or inherit the closure t"
+			},
+			{
+				"name": "force",
+				"label": "Use V Order",
+				"style": "Toggle",
+				"description": "Enables or disables the use of the parameter. If the flag is , the skinned surface is built as a cubic (order 4) in V, unless fewer than four cross-sections for an open V or 3 cross-section for a clos"
+			},
+			{
+				"name": "orderv",
+				"label": "V Order",
+				"style": "Int",
+				"description": "Specifies the order of the skinned surface when the flag is enabled. A NURB surface of order \"n\" can be constructed with at least n or n-1 cross-sections, depending on whether the surface is open or c"
+			},
+			{
+				"name": "skinops",
+				"label": "Skin",
+				"style": "Menu",
+				"description": "Can optionally skin subgroups of n primitives or every nth primitive in a cyclical manner."
+			},
+			{
+				"name": "inc",
+				"label": "N",
+				"style": "Int",
+				"description": "Determines the number of primitives to be either grouped or skipped. N2."
+			},
+			{
+				"name": "prim",
+				"label": "Keep Primitives",
+				"style": "Toggle",
+				"description": "Determines whether the input primitives will be preserved (On) or deleted from the output (Off)."
+			},
+			{
+				"name": "polys",
+				"label": "Output Polygons",
+				"style": "Toggle",
+				"description": "If set, this flag instructs the program to convert the skinned surface(s) to polygons if the surface type is Mesh."
+			}
+		],
+		"versions": {}
+	}
+}

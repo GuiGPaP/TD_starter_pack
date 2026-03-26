@@ -12,7 +12,7 @@
 		"flop"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner flipTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

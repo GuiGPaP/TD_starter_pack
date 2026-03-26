@@ -1,0 +1,73 @@
+{
+	"id": "lumablur-top",
+	"title": "lumablurTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"lumablur",
+		"top",
+		"lumablurtop",
+		"type",
+		"widthchan",
+		"blackvalue",
+		"whitevalue",
+		"blackwidth"
+	],
+	"content": {
+		"summary": "TouchDesigner lumablurTOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "lumablurTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "Determines the mathematical function used to create the blur."
+			},
+			{
+				"name": "widthchan",
+				"label": "Kernel Width Channel",
+				"style": "Menu",
+				"description": "The greyscale can be any channel of the second input, or composites like luminance and RGB average."
+			},
+			{
+				"name": "blackvalue",
+				"label": "Black Value",
+				"style": "Float",
+				"description": "The pixel luminance value used for the Black Filter Size parameter below."
+			},
+			{
+				"name": "whitevalue",
+				"label": "White Value",
+				"style": "Float",
+				"description": "The pixel luminance value used for the White Filter Size parameter below."
+			},
+			{
+				"name": "blackwidth",
+				"label": "Black Filter Width",
+				"style": "Int",
+				"description": "The amount of blur where the second input is black."
+			},
+			{
+				"name": "whitewidth",
+				"label": "White Filter Width",
+				"style": "Int",
+				"description": "The amount of blur where the second input is white."
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "Sets the extend conditions to determine what happens to the blur at the edge of the image."
+			}
+		],
+		"versions": {}
+	}
+}

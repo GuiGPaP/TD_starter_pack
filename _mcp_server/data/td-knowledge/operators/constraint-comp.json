@@ -1,0 +1,367 @@
+{
+	"id": "constraint-comp",
+	"title": "constraintCOMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"constraint",
+		"comp",
+		"constraintcomp",
+		"active",
+		"type",
+		"bodytobody",
+		"collisions",
+		"actor1"
+	],
+	"content": {
+		"summary": "TouchDesigner constraintCOMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "constraintCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Toggle the constraint on/off in the simulation."
+			},
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The type of constraint to create: point to point, hinge, or slider."
+			},
+			{
+				"name": "bodytobody",
+				"label": "Body to Body",
+				"style": "Toggle",
+				"description": "Toggle body to body mode on/off. Body to body mode creates a constraint between two bodies (Actor 1 Bodies and Actor 2 Bodies). When toggled off it will create constrain bodies individually. If Actor "
+			},
+			{
+				"name": "collisions",
+				"label": "Collisions between Bodies",
+				"style": "Toggle",
+				"description": "Turns on/off collisions between the body to body constraints."
+			},
+			{
+				"name": "actor1",
+				"label": "Actor COMP",
+				"style": "Object",
+				"description": "A reference to an Actor . This specifies the Actor of which you want to constrain some bodies."
+			},
+			{
+				"name": "bodies1",
+				"label": "Actor Bodies",
+				"style": "Str",
+				"description": "A list (regular expression) of the IDs of the bodies in actor1 to constrain. If an Actor contains N bodies, then body IDs will go from 0 to N-1 for that Actor . The number of bodies can be verified us"
+			},
+			{
+				"name": "actor2",
+				"label": "Actor COMP",
+				"style": "Object",
+				"description": "A reference to an Actor . This specifies the Actor of which you want to constrain some bodies. This Actor is only used when body to body mode is toggled on."
+			},
+			{
+				"name": "bodies2",
+				"label": "Actor Bodies",
+				"style": "Str",
+				"description": "A list (regular expression) of the IDs of the bodies in actor2 to constrain. If an Actor contains N bodies, then body IDs will go from 0 to N-1 for that Actor . The number of bodies can be verified us"
+			},
+			{
+				"name": "enablelimits",
+				"label": "Enable Limits",
+				"style": "Toggle",
+				"description": "Enables limits on the constraint. Without constraints, the bodies will be able to rotate a full 360 degrees, or translate any distance."
+			},
+			{
+				"name": "lowerlinlim",
+				"label": "Lower Linear Limit",
+				"style": "Float",
+				"description": "The lower limit for translation of the body along the constraint. Only used with slider constraints."
+			},
+			{
+				"name": "upperlinlim",
+				"label": "Upper Linear Limit",
+				"style": "Float",
+				"description": "The upper limit for translation of the body along the constraint. Only used with slider constraints."
+			},
+			{
+				"name": "loweranglim",
+				"label": "Lower Angular Limit",
+				"style": "Float",
+				"description": "The lower limit for rotation of the body around its axis. Used with slider constraints or hinge constraints."
+			},
+			{
+				"name": "upperanglim",
+				"label": "Upper Angular Limit",
+				"style": "Float",
+				"description": "The upper limit for rotation of the body around its axis. Used with slider constraints or hinge constraints."
+			},
+			{
+				"name": "reinitextensions",
+				"label": "Re-Init Extensions",
+				"style": "Pulse",
+				"description": "Recompile all extension objects. Normally extension objects are compiled only when they are referenced and their definitions have changed."
+			},
+			{
+				"name": "initextonstart",
+				"label": "Init Extensions On Start",
+				"style": "Toggle",
+				"description": "Perform a Re-Init automatically when TouchDEsigner Starts"
+			},
+			{
+				"name": "ext",
+				"label": "Extension",
+				"style": "Sequence",
+				"description": "Sequence of info for creating extensions on this component"
+			},
+			{
+				"name": "ext0object",
+				"label": "Object",
+				"style": "Str",
+				"description": "A number of class instances that can be attached to the component."
+			},
+			{
+				"name": "ext0name",
+				"label": "Name",
+				"style": "Str",
+				"description": "Optional name to search by, instead of the instance class name."
+			},
+			{
+				"name": "ext0promote",
+				"label": "Promote",
+				"style": "Toggle",
+				"description": "Controls whether or not the extensions are visible directly at the component level, or must be accessed through the member.  Example: vs"
+			},
+			{
+				"name": "parentshortcut",
+				"label": "Parent Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as the path to that component. See ."
+			},
+			{
+				"name": "opshortcut",
+				"label": "Global OP Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere at all as the path to that component. See ."
+			},
+			{
+				"name": "iop",
+				"label": "Internal OP",
+				"style": "Sequence",
+				"description": "Sequence header for internal operators."
+			},
+			{
+				"name": "iop0shortcut",
+				"label": "Shortcut",
+				"style": "Str",
+				"description": "Specifies a name you can use anywhere inside the component as a path to \"Internal \" below. See ."
+			},
+			{
+				"name": "iop0op",
+				"label": "OP",
+				"style": "OP",
+				"description": "The path to the Internal OP inside this component. See ."
+			},
+			{
+				"name": "nodeview",
+				"label": "Node View",
+				"style": "Menu",
+				"description": "Determines what is displayed in the node viewer, also known as the . Some options will not be available depending on the type ( , , Misc.)"
+			},
+			{
+				"name": "opviewer",
+				"label": "Operator Viewer",
+				"style": "OP",
+				"description": "Select which operator's node viewer to use when the Node View parameter above is set to Operator ."
+			},
+			{
+				"name": "enablecloning",
+				"label": "Enable Cloning",
+				"style": "Toggle",
+				"description": "Control if the OP should be actively cloneing. Turning this off causes this node to stop cloning it's 'Clone Master'."
+			},
+			{
+				"name": "enablecloningpulse",
+				"label": "Enable Cloning Pulse",
+				"style": "Pulse",
+				"description": "Instantaneously clone the contents."
+			},
+			{
+				"name": "clone",
+				"label": "Clone Master",
+				"style": "COMP",
+				"description": "to a component used as the Master ."
+			},
+			{
+				"name": "loadondemand",
+				"label": "Load on Demand",
+				"style": "Toggle",
+				"description": "Loads the component into memory only when required. Good to use for components that are not always used in the project."
+			},
+			{
+				"name": "enableexternaltox",
+				"label": "Enable External .tox",
+				"style": "Toggle",
+				"description": "When on (default), the external file will be loaded when the starts and the contents of the will match that of the external . This can be turned off to avoid loading from the referenced external on st"
+			},
+			{
+				"name": "enableexternaltoxpulse",
+				"label": "Enable External .tox Pulse",
+				"style": "Pulse",
+				"description": "This button will re-load from the external file (if present)."
+			},
+			{
+				"name": "externaltox",
+				"label": "External .tox Path",
+				"style": "File",
+				"description": "to a file on disk which will source the component's contents upon start of a . This allows for components to contain networks that can be updated independently. If the file can not be found, whatever "
+			},
+			{
+				"name": "reloadcustom",
+				"label": "Reload Custom Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes inside the component ar"
+			},
+			{
+				"name": "reloadbuiltin",
+				"label": "Reload Built-In Parameters",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, the values of the component's built-in parameters are reloaded when the is reloaded. This only affects top-level parameters on the component, all parameters on nodes ins"
+			},
+			{
+				"name": "savebackup",
+				"label": "Save Backup of External",
+				"style": "Toggle",
+				"description": "When this checkbox is enabled, a backup copy of the component specified by the External parameter is saved in the file.  This backup copy will be used if the External can not be found. This may happen"
+			},
+			{
+				"name": "subcompname",
+				"label": "Sub-Component to Load",
+				"style": "Str",
+				"description": "When loading from an External file, this option allows you to reach into the and pull out a and make that the top-level , ignoring everything else in the file (except for the contents of that ). For e"
+			},
+			{
+				"name": "relpath",
+				"label": "Relative File Path Behavior",
+				"style": "Menu",
+				"description": "Set whether the child file paths within this are relative to the itself or the , or inherit from parent."
+			},
+			{
+				"name": "pivot2y",
+				"label": "Pivot2Y",
+				"style": "XYZW"
+			},
+			{
+				"name": "sliderrot2y",
+				"label": "Sliderrot2Y",
+				"style": "XYZW"
+			},
+			{
+				"name": "axis1y",
+				"label": "Axis1Y",
+				"style": "XYZW"
+			},
+			{
+				"name": "sliderrot1z",
+				"label": "Sliderrot1Z",
+				"style": "XYZW",
+				"description": "The rotation of the slider constraint axis. By default the slider constraint is applied on the X axis."
+			},
+			{
+				"name": "pivot2z",
+				"label": "Pivot2Z",
+				"style": "XYZW",
+				"description": "The pivot point for the constraint."
+			},
+			{
+				"name": "axis1x",
+				"label": "Axis1X",
+				"style": "XYZW"
+			},
+			{
+				"name": "sliderrot1y",
+				"label": "Sliderrot1Y",
+				"style": "XYZW"
+			},
+			{
+				"name": "pivot1x",
+				"label": "Pivot1X",
+				"style": "XYZW"
+			},
+			{
+				"name": "sliderrot1x",
+				"label": "Sliderrot1X",
+				"style": "XYZW"
+			},
+			{
+				"name": "axis2y",
+				"label": "Axis2Y",
+				"style": "XYZW"
+			},
+			{
+				"name": "axis2z",
+				"label": "Axis2Z",
+				"style": "XYZW",
+				"description": "The axis around which to create the hinge. Each value is typically a number between 0 and 1. For example, to spin around the Z axis set to 0, 0, 1."
+			},
+			{
+				"name": "sliderrot2x",
+				"label": "Sliderrot2X",
+				"style": "XYZW"
+			},
+			{
+				"name": "axis1z",
+				"label": "Axis1Z",
+				"style": "XYZW",
+				"description": "The axis around which to create the hinge. Each value is typically a number between 0 and 1. For example, to spin around the Z axis set to 0, 0, 1."
+			},
+			{
+				"name": "sliderrot2z",
+				"label": "Sliderrot2Z",
+				"style": "XYZW",
+				"description": "The rotation of the slider constraint axis. By default the slider constraint is applied on the X axis."
+			},
+			{
+				"name": "dispcon",
+				"label": "Dispcon",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pivot2x",
+				"label": "Pivot2X",
+				"style": "XYZW"
+			},
+			{
+				"name": "axis2x",
+				"label": "Axis2X",
+				"style": "XYZW"
+			},
+			{
+				"name": "pivot1z",
+				"label": "Pivot1Z",
+				"style": "XYZW",
+				"description": "The pivot point for the constraint."
+			},
+			{
+				"name": "pivot1y",
+				"label": "Pivot1Y",
+				"style": "XYZW"
+			},
+			{
+				"name": "legacypattern",
+				"label": "Legacypattern",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

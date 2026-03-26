@@ -1,0 +1,282 @@
+{
+	"id": "linemetrics-pop",
+	"title": "linemetricsPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"linemetrics",
+		"pop",
+		"linemetricspop",
+		"attrclass",
+		"dispnext",
+		"dispprev",
+		"distnext",
+		"distprev"
+	],
+	"content": {
+		"summary": "TouchDesigner linemetricsPOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "linemetricsPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "dispnext",
+				"label": "Displacement to Next",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the displacement to the next vertex in the line strip."
+			},
+			{
+				"name": "dispprev",
+				"label": "Displacement to Previous",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the displacement to the previous vertex in the line strip."
+			},
+			{
+				"name": "distnext",
+				"label": "Distance to Next",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the distance to the next vertex in the line strip."
+			},
+			{
+				"name": "distprev",
+				"label": "Distance to Previous",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the distance to the previous vertex in the line strip."
+			},
+			{
+				"name": "dirnext",
+				"label": "Direction to Next",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the direction to the next vertex in the line strip."
+			},
+			{
+				"name": "dirprev",
+				"label": "Direction to Previous",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the direction to the previous vertex in the line strip."
+			},
+			{
+				"name": "tangent",
+				"label": "Tangent",
+				"style": "Toggle",
+				"description": "Output a tangent attribute for each point."
+			},
+			{
+				"name": "curvature",
+				"label": "Curvature",
+				"style": "Toggle",
+				"description": "Whether to output an attribute containing the curvature."
+			},
+			{
+				"name": "angleperdist",
+				"label": "Angle per Distance",
+				"style": "Toggle",
+				"description": "Whether to output Angle per Distance."
+			},
+			{
+				"name": "continuousdir",
+				"label": "Continuous Direction",
+				"style": "Toggle",
+				"description": "Enable returning continuous directions for co-incident points"
+			},
+			{
+				"name": "maxneighbors",
+				"label": "Max Neighbors",
+				"style": "Int",
+				"description": "When computing Direction vector, how far to look when points are in same position as next or previous points."
+			},
+			{
+				"name": "diststart",
+				"label": "Distance from Start",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the distance from the start of the line strip."
+			},
+			{
+				"name": "distend",
+				"label": "Distance from End",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the distance from the end of the line strip."
+			},
+			{
+				"name": "diststartnorm",
+				"label": "Distance from Start Normalized",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the normalized distance from the start of the line strip."
+			},
+			{
+				"name": "distendnorm",
+				"label": "Distance from End Normalized",
+				"style": "Toggle",
+				"description": "Whether to output an attribute with the normalized distance from the end of the line strip."
+			},
+			{
+				"name": "primlen",
+				"label": "Line Strip Length",
+				"style": "Toggle",
+				"description": "Enable addition of line strip length attribute."
+			},
+			{
+				"name": "primlenprim",
+				"label": "Length Attrib Primitive Attribute",
+				"style": "Toggle",
+				"description": "When on, the attribute created for the length of the line strip is a primitive attribute."
+			},
+			{
+				"name": "pointindex",
+				"label": "Vert Index in Line Strip",
+				"style": "Toggle",
+				"description": "Output the vertex index for each point, assuming unique."
+			},
+			{
+				"name": "numverts",
+				"label": "Number of Verts in Line Strip",
+				"style": "Toggle",
+				"description": "Outputs attribute for number of vertices in current point's like strip."
+			},
+			{
+				"name": "vertindexnorm",
+				"label": "Vert Index in Line Strip Normalized",
+				"style": "Toggle",
+				"description": "Output the vertex index normalized to 0-1 for each point, assuming unique."
+			},
+			{
+				"name": "linestripindex",
+				"label": "Line Strip Index",
+				"style": "Toggle",
+				"description": "Enable addition of line strip index attribute."
+			},
+			{
+				"name": "lsindexnorm",
+				"label": "Line Strip Index Normalized",
+				"style": "Toggle",
+				"description": "Enable addition of normalized line strip index attribute."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "dirprevname",
+				"label": "Dirprevname",
+				"style": "Str"
+			},
+			{
+				"name": "numvertsname",
+				"label": "Numvertsname",
+				"style": "Str"
+			},
+			{
+				"name": "pointindexname",
+				"label": "Pointindexname",
+				"style": "Str"
+			},
+			{
+				"name": "primlenname",
+				"label": "Primlenname",
+				"style": "Str"
+			},
+			{
+				"name": "distendnormname",
+				"label": "Distendnormname",
+				"style": "Str"
+			},
+			{
+				"name": "tangentname",
+				"label": "Tangentname",
+				"style": "Str"
+			},
+			{
+				"name": "distprevname",
+				"label": "Distprevname",
+				"style": "Str"
+			},
+			{
+				"name": "diststartnormname",
+				"label": "Diststartnormname",
+				"style": "Str"
+			},
+			{
+				"name": "diststartname",
+				"label": "Diststartname",
+				"style": "Str"
+			},
+			{
+				"name": "distendname",
+				"label": "Distendname",
+				"style": "Str"
+			},
+			{
+				"name": "dispprevname",
+				"label": "Dispprevname",
+				"style": "Str"
+			},
+			{
+				"name": "angleperdistname",
+				"label": "Angleperdistname",
+				"style": "Str"
+			},
+			{
+				"name": "lsindexnormname",
+				"label": "Lsindexnormname",
+				"style": "Str"
+			},
+			{
+				"name": "vertindexnormname",
+				"label": "Vertindexnormname",
+				"style": "Str"
+			},
+			{
+				"name": "distnextname",
+				"label": "Distnextname",
+				"style": "Str"
+			},
+			{
+				"name": "curvaturename",
+				"label": "Curvaturename",
+				"style": "Str"
+			},
+			{
+				"name": "dispnextname",
+				"label": "Dispnextname",
+				"style": "Str"
+			},
+			{
+				"name": "linestripindexname",
+				"label": "Linestripindexname",
+				"style": "Str"
+			},
+			{
+				"name": "dirnextname",
+				"label": "Dirnextname",
+				"style": "Str"
+			}
+		],
+		"versions": {}
+	}
+}

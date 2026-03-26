@@ -1,0 +1,24 @@
+{
+	"id": "layer-mix",
+	"title": "Layer_Mix - Parameters",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"layer_mix",
+		"comp"
+	],
+	"content": {
+		"summary": "Background background- - This menu determines which background plate to use while compositing. Offoff - No background is used. There must be at least two layer sources provided as inputs if there is no background.Background TOPbackgroundtop - Another TOP's output image will be used as the background"
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "Layer_Mix",
+		"opFamily": "TOP",
+		"parameters": [],
+		"versions": {}
+	}
+}

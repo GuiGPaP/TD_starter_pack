@@ -1,0 +1,174 @@
+{
+	"id": "join-chop",
+	"title": "joinCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"join",
+		"chop",
+		"joinchop",
+		"blendmethod",
+		"blendfunc",
+		"blendbyinput",
+		"blendregion",
+		"blendregionunit"
+	],
+	"content": {
+		"summary": "TouchDesigner joinCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "joinCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "blendmethod",
+				"label": "Method",
+				"style": "Menu",
+				"description": "The blend method to produce a seamless sequence:"
+			},
+			{
+				"name": "blendfunc",
+				"label": "Shape",
+				"style": "Menu",
+				"description": "The blend interpolation shape to use. See Shape in the ."
+			},
+			{
+				"name": "blendbyinput",
+				"label": "First Input Specifies Blend Regions",
+				"style": "Toggle",
+				"description": "When this is checked on, the first input can be a multi-channel input which specifies blend regions for the remaining inputs into the Join . Channel 1 of input0 is used to blend between input1 & input"
+			},
+			{
+				"name": "blendregion",
+				"label": "Region",
+				"style": "Float",
+				"description": "The size of the blend region."
+			},
+			{
+				"name": "blendregionunit",
+				"label": "Blend Region Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "blendbias",
+				"label": "Bias",
+				"style": "Float",
+				"description": "Which segment to favour when blending: the previous (-1), the next (+1) or neither (0)."
+			},
+			{
+				"name": "match",
+				"label": "Match by",
+				"style": "Menu",
+				"description": "Match channels between inputs by index or by name."
+			},
+			{
+				"name": "step",
+				"label": "Step",
+				"style": "Float",
+				"description": "If set to 1, the next segment will be shifted up or down so that it begins where the last segment ended."
+			},
+			{
+				"name": "stepscope",
+				"label": "Step Scope",
+				"style": "Str",
+				"description": "The names of channels that use Step."
+			},
+			{
+				"name": "blendscope",
+				"label": "Blend Scope",
+				"style": "Str",
+				"description": "The names of the channels that should be blended. Other channels will not be blended."
+			},
+			{
+				"name": "transscopex",
+				"label": "Translate X Blend",
+				"style": "Str",
+				"description": "The names of channels that will be translation-blended. Each string field contains a list of its component channels, such as *tx, *ty and *tz."
+			},
+			{
+				"name": "transscopey",
+				"label": "Translate Y Blend",
+				"style": "Str",
+				"description": "The names of channels that will be translation-blended. Each string field contains a list of its component channels, such as *tx, *ty and *tz."
+			},
+			{
+				"name": "transscopez",
+				"label": "Translate Z Blend",
+				"style": "Str",
+				"description": "The names of channels that will be translation-blended. Each string field contains a list of its component channels, such as *tx, *ty and *tz."
+			},
+			{
+				"name": "quatrot",
+				"label": "Quaternion Blend",
+				"style": "Toggle",
+				"description": "Use quaternion blending on rotation channels."
+			},
+			{
+				"name": "shortrot",
+				"label": "Shortest Path Rotation Blending",
+				"style": "Toggle",
+				"description": "If enabled, compensates."
+			},
+			{
+				"name": "rotscope",
+				"label": "Rotation Scope",
+				"style": "Str",
+				"description": "Enabled when Shortest Rotation Blending is turned on."
+			},
+			{
+				"name": "cyclelen",
+				"label": "Cycle Length",
+				"style": "Float",
+				"description": "Enabled when Shortest Rotation Blending is turned on."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "chops",
+				"label": "Chops",
+				"style": "CHOP",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

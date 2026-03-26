@@ -14,7 +14,7 @@
 		"lightuvunit"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner lookupTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

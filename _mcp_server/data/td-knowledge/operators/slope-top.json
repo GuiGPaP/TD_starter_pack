@@ -13,7 +13,7 @@
 		"method"
 	],
 	"content": {
-		"summary": "TouchDesigner  COMP operator."
+		"summary": "TouchDesigner slopeTOP operator."
 	},
 	"provenance": {
 		"source": "td-docs",

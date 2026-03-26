@@ -1,0 +1,228 @@
+{
+	"id": "midiout-chop",
+	"title": "midioutCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"midiout",
+		"chop",
+		"midioutchop",
+		"active",
+		"destination",
+		"device",
+		"onebased"
+	],
+	"content": {
+		"summary": "TouchDesigner midioutCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "midioutCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "Enable or disable the MIDI Out ."
+			},
+			{
+				"name": "destination",
+				"label": "MIDI Destination",
+				"style": "Menu",
+				"description": "Where the MIDI events are sent to. MIDI Mapper is the default destination."
+			},
+			{
+				"name": "device",
+				"label": "Device Table",
+				"style": "DAT",
+				"description": "to the MIDI device ."
+			},
+			{
+				"name": "id",
+				"label": "Device ID",
+				"style": "Str",
+				"description": "Specify the id of which device to use."
+			},
+			{
+				"name": "onebased",
+				"label": "One Based Index",
+				"style": "Toggle",
+				"description": "Make the index 1 based instead of the default 0 based."
+			},
+			{
+				"name": "file",
+				"label": "MIDI File",
+				"style": "File",
+				"description": "The filename of the output MIDI file."
+			},
+			{
+				"name": "writefile",
+				"label": "Write MIDI File",
+				"style": "Pulse",
+				"description": "Writes all the data to a MIDI file."
+			},
+			{
+				"name": "prefix",
+				"label": "Channel Prefix",
+				"style": "Str",
+				"description": "The prefix string that all input channels must have in order to extract the channel number from their name (i.e. \"ch1note44\", with a channel prefix of \"ch\")."
+			},
+			{
+				"name": "cookalways",
+				"label": "Cook Every Frame",
+				"style": "Toggle",
+				"description": "Forces a cook of the every frame. It should be On because the MIDI Out will otherwise only cook if the leads to a graphics display viewer. You want it to cooks whether you are displaying anything or n"
+			},
+			{
+				"name": "autonoteoff",
+				"label": "Automatic Note Off",
+				"style": "Menu",
+				"description": "A MIDI 'All Note Off' event can be sent upon the start and/or end of the output."
+			},
+			{
+				"name": "reset",
+				"label": "All Notes Off",
+				"style": "Pulse",
+				"description": "Sends an All Notes Off message to all MIDI channels."
+			},
+			{
+				"name": "volumeoff",
+				"label": "All Volume Off",
+				"style": "Pulse",
+				"description": "Sends an All Notes Off message to all MIDI channels."
+			},
+			{
+				"name": "volumeon",
+				"label": "All Volume On",
+				"style": "Pulse",
+				"description": "Sends an All Notes On message to all MIDI channels."
+			},
+			{
+				"name": "startstop",
+				"label": "Send Start/Stop/Continue Events",
+				"style": "Toggle",
+				"description": "Sends the appropriate events when the framebar starts or stops."
+			},
+			{
+				"name": "sendmtc",
+				"label": "Send MIDI Timecode",
+				"style": "Toggle",
+				"description": "While enabled, the MIDI Out will send MIDI Timecode (MTC) as a stream of quarter frame messages."
+			},
+			{
+				"name": "timecodeop",
+				"label": "Timecode Object/CHOP/DAT",
+				"style": "CHOP",
+				"description": "The MIDI Timecode value to send. Should be a reference to either a with channels 'hour', 'second', 'minute', 'frame', a with a timecode string in its first cell, or a object."
+			},
+			{
+				"name": "notename",
+				"label": "Note Name",
+				"style": "Str",
+				"description": "The base name of the note channels. If input channels have a number after the name, it is assumed to be the note number. If not, the channel value is assumed to contain the note number."
+			},
+			{
+				"name": "aftername",
+				"label": "Aftertouch Name",
+				"style": "Str",
+				"description": "The name of the aftertouch channel."
+			},
+			{
+				"name": "pressname",
+				"label": "Pressure Name",
+				"style": "Str",
+				"description": "The name of the channel pressure channel."
+			},
+			{
+				"name": "notenorm",
+				"label": "Normalize",
+				"style": "Menu",
+				"description": "Values in the range 0-1 are mapped to MIDI value 0-127."
+			},
+			{
+				"name": "pitchname",
+				"label": "Pitch Wheel Name",
+				"style": "Str",
+				"description": "The name of the pitch wheel channel."
+			},
+			{
+				"name": "controlname",
+				"label": "Controller Name",
+				"style": "Str",
+				"description": "The base name of the controller channels."
+			},
+			{
+				"name": "controlformat",
+				"label": "Controller Format",
+				"style": "Menu",
+				"description": "Sends 7 or 14 bit controller events."
+			},
+			{
+				"name": "controlnorm",
+				"label": "Normalize",
+				"style": "Menu",
+				"description": "Maps channel values from different ranges to 0-127."
+			},
+			{
+				"name": "progname",
+				"label": "Program Change",
+				"style": "Str",
+				"description": "The name of the program change channel."
+			},
+			{
+				"name": "barname",
+				"label": "Bar Ramp Name",
+				"style": "StrMenu",
+				"description": "Clock ticks frequency is determined by the period of the ramp. The ramp must be 0 to 1. An incoming channel name for a 0 to 1 ramp over each 4-beat bar."
+			},
+			{
+				"name": "barticks",
+				"label": "Ticks per Bar",
+				"style": "Int",
+				"description": "Default is 96 = 4 beats * 24 ticks per beat."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

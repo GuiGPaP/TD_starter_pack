@@ -1,0 +1,156 @@
+{
+	"id": "sopto-chop",
+	"title": "soptoCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"sopto",
+		"chop",
+		"soptochop",
+		"group",
+		"position",
+		"colorrgb",
+		"coloralpha"
+	],
+	"content": {
+		"summary": "TouchDesigner soptoCHOP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "soptoCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "sop",
+				"label": "SOP",
+				"style": "SOP",
+				"description": "Specifies which Object / contains the geometry you want to fetch."
+			},
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "Only points within the specified group are Fetched. If blank, all points are fetched."
+			},
+			{
+				"name": "position",
+				"label": "Position",
+				"style": "Toggle",
+				"description": "When On will retrieve the position attributes (P) from the and create channels tx, ty, tz."
+			},
+			{
+				"name": "colorrgb",
+				"label": "Color RGB",
+				"style": "Toggle",
+				"description": "When On will retrieve the RGB color attributes (Cd0, Cd1, Cd2) from the and create channels cr, cg, cb."
+			},
+			{
+				"name": "coloralpha",
+				"label": "Color Alpha",
+				"style": "Toggle",
+				"description": "When On will retrieve the Alpha color attribute (Cd4) from the and create channel alpha."
+			},
+			{
+				"name": "normal",
+				"label": "Normal",
+				"style": "Toggle",
+				"description": "When On will retrieve the Normal attributes (N) from the and create channels nx, ny, nz."
+			},
+			{
+				"name": "textureuv",
+				"label": "Texture UV",
+				"style": "Toggle",
+				"description": "When On will retrieve the UV texture attributes (uv0, uv1) from the and create channels u and v."
+			},
+			{
+				"name": "texturew",
+				"label": "Texture W",
+				"style": "Toggle",
+				"description": "When On will retrieve the W texture attribute (uv2) from the and create channel w."
+			},
+			{
+				"name": "pointindex",
+				"label": "Point Index",
+				"style": "Toggle",
+				"description": "Turn On to output the point index of each point in the in a channel called index."
+			},
+			{
+				"name": "normpos",
+				"label": "Normal Position XYZ",
+				"style": "Toggle",
+				"description": "Turn On"
+			},
+			{
+				"name": "custom",
+				"label": "Custom",
+				"style": "Toggle",
+				"description": "Turn On to access any attributes in the including Custom by using the two parameters below."
+			},
+			{
+				"name": "attribscope",
+				"label": "Attribute Scope",
+				"style": "Str",
+				"description": "This selects the custom attributes of the to acquire."
+			},
+			{
+				"name": "renamescope",
+				"label": "Rename Scope",
+				"style": "Str",
+				"description": "This parameter matches each channel acquired in the Attribute . There must be one name per attribute value. By default, it translates the P attribute (position of the point) to , and channels. You can"
+			},
+			{
+				"name": "transobj",
+				"label": "Transform Object",
+				"style": "Object",
+				"description": "If a transform object is specified, the point values will be represented relative to that object's origin and rotation."
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "The sample rate of the channels, in samples per second."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}
