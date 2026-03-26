@@ -1,0 +1,31 @@
+{
+  "kind": "workflow",
+  "id": "generative-feedback-loop",
+  "title": "Generative Feedback Loop",
+  "searchKeywords": ["feedback", "generative", "loop", "noise", "recursive"],
+  "content": {
+    "summary": "Create evolving visuals using a feedback loop with noise and compositing"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "intermediate",
+    "operators": [
+      { "opType": "noiseTOP", "family": "TOP", "role": "generator" },
+      { "opType": "compositeTOP", "family": "TOP", "role": "combiner" },
+      { "opType": "feedbackTOP", "family": "TOP", "role": "feedback" },
+      { "opType": "levelTOP", "family": "TOP", "role": "modifier" }
+    ],
+    "connections": [
+      { "from": "noiseTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "feedbackTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 1 },
+      { "from": "compositeTOP", "to": "feedbackTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "compositeTOP", "to": "levelTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["generative", "feedback", "noise", "loop"]
+  }
+}

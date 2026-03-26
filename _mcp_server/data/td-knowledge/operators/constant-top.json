@@ -1,0 +1,66 @@
+{
+	"id": "constant-top",
+	"title": "Constant TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"constant",
+		"color",
+		"solid",
+		"fill",
+		"background"
+	],
+	"content": {
+		"summary": "Outputs a solid-color image. Useful as background, fill, or uniform input."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "constantTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "colorr"
+			},
+			{
+				"name": "colorg"
+			},
+			{
+				"name": "colorb"
+			},
+			{
+				"name": "colora"
+			},
+			{
+				"name": "outputresolution"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set solid red background",
+				"language": "python",
+				"code": "c = op('constant1')\nc.par.colorr = 1.0\nc.par.colorg = 0.0\nc.par.colorb = 0.0\nc.par.colora = 1.0",
+				"context": "textport"
+			},
+			{
+				"label": "Set semi-transparent white",
+				"language": "python",
+				"code": "c = op('constant1')\nc.par.colorr = 1.0\nc.par.colorg = 1.0\nc.par.colorb = 1.0\nc.par.colora = 0.5",
+				"context": "textport"
+			},
+			{
+				"label": "Pulse color with audio",
+				"language": "python",
+				"code": "op('constant1').par.colorr = op('audiodevicein1')['chan1']",
+				"description": "Drive the red channel from an audio input CHOP.",
+				"context": "parameter-expression"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

@@ -1,0 +1,90 @@
+{
+	"content": {
+		"summary": "Per-instance color and scale variation using a data texture. Each instance samples its color from a 1D texture row and applies noise-based scale variation. The pixel shader uses TouchDesigner's built-in TDLighting for Phong shading across all scene lights.",
+		"warnings": [
+			"Render TOP instancing must be enabled and connected to a CHOP with enough samples",
+			"uColorTex must have width >= uInstanceCount (one pixel per instance)"
+		]
+	},
+	"id": "instancing-data",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "flat in vec4 vInstanceColor;\nin vec3 vWorldPos;\nin vec3 vWorldNorm;\nin vec2 vTexCoord;\n\nlayout(location = 0) out vec4 fragColor;\n\nuniform float uShininess;\nuniform float uAmbient;\n\nvoid main() {\n    TDCheckDiscard();\n    vec3 norm = normalize(vWorldNorm);\n    vec3 albedo = vInstanceColor.rgb;\n    vec4 litColor = vec4(0.0);\n    for (int i = 0; i < TD_NUM_LIGHTS; i++) {\n        litColor += TDLighting(i, vWorldPos, norm, albedo, uShininess, vec3(1.0));\n    }\n    litColor.rgb += albedo * uAmbient;\n    litColor.a = vInstanceColor.a;\n    litColor = TDFog(litColor, vWorldPos, TDCameraIndex());\n    fragColor = TDOutputSwizzle(litColor);\n}\n",
+			"vertexGlsl": "uniform sampler2D uColorTex;\nuniform int uInstanceCount;\nuniform float uScaleVariation;\nuniform float uTime;\n\nflat out vec4 vInstanceColor;\nout vec3 vWorldPos;\nout vec3 vWorldNorm;\nout vec2 vTexCoord;\n\nvoid main() {\n    int id = TDInstanceID();\n    float u = (float(id) + 0.5) / float(uInstanceCount);\n    vInstanceColor = texture(uColorTex, vec2(u, 0.5));\n    float scaleNoise = TDSimplexNoise(vec2(float(id) * 0.37, uTime * 0.1));\n    float scale = 1.0 + scaleNoise * uScaleVariation;\n    vec3 scaledPos = P * scale;\n    vec4 worldPos = TDDeform(scaledPos);\n    vWorldPos = worldPos.xyz;\n    vWorldNorm = normalize(uTDMats[TDCameraIndex()].worldForNormals * N);\n    vTexCoord = uv[0].st;\n    gl_Position = TDWorldToProj(worldPos);\n}\n"
+		},
+		"difficulty": "intermediate",
+		"estimatedGpuCost": "medium",
+		"setup": {
+			"operators": [
+				{
+					"family": "MAT",
+					"name": "glslMAT1",
+					"role": "primary",
+					"type": "glslMAT"
+				}
+			],
+			"uniforms": [
+				{
+					"default": "0.1",
+					"description": "Ambient light intensity",
+					"name": "uAmbient",
+					"type": "float"
+				},
+				{
+					"description": "Data texture with one pixel per instance (RGBA = color)",
+					"name": "uColorTex",
+					"type": "sampler2D"
+				},
+				{
+					"description": "Total number of instances",
+					"name": "uInstanceCount",
+					"type": "int"
+				},
+				{
+					"default": "0.3",
+					"description": "How much scale differs between instances (0-1)",
+					"name": "uScaleVariation",
+					"type": "float"
+				},
+				{
+					"default": "32",
+					"description": "Specular sharpness",
+					"name": "uShininess",
+					"type": "float"
+				},
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"instancing",
+			"per-instance",
+			"color",
+			"scale",
+			"data-texture",
+			"lighting"
+		],
+		"type": "vertex"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"instancing",
+		"instance",
+		"color",
+		"scale",
+		"data texture",
+		"per-instance",
+		"phong",
+		"lighting"
+	],
+	"title": "Instancing Data Texture"
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "workflow",
+  "id": "texture-displacement",
+  "title": "Texture Displacement",
+  "searchKeywords": ["displacement", "noise", "distortion", "texture", "displace"],
+  "content": {
+    "summary": "Displace a texture using a noise pattern as the displacement map"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "intermediate",
+    "operators": [
+      { "opType": "noiseTOP", "family": "TOP", "role": "displacement-map" },
+      { "opType": "movieFileInTOP", "family": "TOP", "role": "input" },
+      { "opType": "displaceTOP", "family": "TOP", "role": "effect" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "movieFileInTOP", "to": "displaceTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "noiseTOP", "to": "displaceTOP", "fromOutput": 0, "toInput": 1 },
+      { "from": "displaceTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["displacement", "noise", "distortion"]
+  }
+}

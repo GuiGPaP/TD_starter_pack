@@ -1,0 +1,67 @@
+{
+	"id": "circle-sop",
+	"title": "Circle SOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"circle",
+		"arc",
+		"ellipse",
+		"ring",
+		"geometry"
+	],
+	"content": {
+		"summary": "Creates circle, arc, or ellipse geometry."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "circleSOP",
+		"opFamily": "SOP",
+		"parameters": [
+			{
+				"name": "type"
+			},
+			{
+				"name": "radius"
+			},
+			{
+				"name": "orient"
+			},
+			{
+				"name": "arc"
+			},
+			{
+				"name": "divisions"
+			}
+		],
+		"examples": [
+			{
+				"label": "Create a high-res circle",
+				"language": "python",
+				"code": "c = op('circle1')\nc.par.divisions = 64\nc.par.radius = 0.5",
+				"context": "textport"
+			},
+			{
+				"label": "Create a half-arc",
+				"language": "python",
+				"code": "c = op('circle1')\nc.par.type = 'open'\nc.par.arc = 180",
+				"description": "Create an open arc spanning 180 degrees.",
+				"context": "textport"
+			},
+			{
+				"label": "Animate circle radius",
+				"language": "python",
+				"code": "0.2 + abs(me.time.seconds % 2 - 1) * 0.3",
+				"description": "Use as expression on radius to pulse between 0.2 and 0.5.",
+				"context": "parameter-expression"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

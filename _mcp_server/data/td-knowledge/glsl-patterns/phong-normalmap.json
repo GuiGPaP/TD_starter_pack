@@ -1,0 +1,95 @@
+{
+	"content": {
+		"summary": "Full Phong material with normal mapping, specular map, and diffuse texture. The vertex shader builds a TBN (Tangent-Bitangent-Normal) matrix for correct tangent-space normal mapping. Supports fog, OIT transparency, and emissive glow. Uses TDLighting for all scene lights.",
+		"warnings": [
+			"Geometry must have tangent attributes; add an Attribute SOP set to Tangents if missing",
+			"Connect at least one Light COMP to the Render TOP for TDLighting to produce output",
+			"If no normal map is available, connect a Constant TOP (0.5, 0.5, 1.0) to slot 1"
+		]
+	},
+	"id": "phong-normalmap",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "in vec3 vWorldPos;\nin vec2 vTexCoord;\nin mat3 vTBN;\n\nlayout(location = 0) out vec4 fragColor;\n\nuniform vec4 uDiffuseTint;\nuniform float uShininess;\nuniform vec3 uSpecularColor;\nuniform float uNormalStrength;\nuniform float uAmbient;\nuniform float uEmissive;\n\nvoid main() {\n    TDCheckDiscard();\n    vec4 diffuseSample = texture(sTD2DInputs[0], vTexCoord) * uDiffuseTint;\n    vec3 normalSample = texture(sTD2DInputs[1], vTexCoord).rgb;\n    float specularSample = texture(sTD2DInputs[2], vTexCoord).r;\n    vec3 tsNormal = normalSample * 2.0 - 1.0;\n    tsNormal = normalize(mix(vec3(0.0, 0.0, 1.0), tsNormal, uNormalStrength));\n    vec3 worldNorm = normalize(vTBN * tsNormal);\n    vec3 specular = uSpecularColor * specularSample;\n    vec4 litColor = vec4(0.0);\n    for (int i = 0; i < TD_NUM_LIGHTS; i++) {\n        litColor += TDLighting(i, vWorldPos, worldNorm, diffuseSample.rgb, uShininess, specular);\n    }\n    litColor.rgb += diffuseSample.rgb * uAmbient;\n    litColor.rgb += diffuseSample.rgb * uEmissive;\n    litColor.a = diffuseSample.a;\n    litColor = TDFog(litColor, vWorldPos, TDCameraIndex());\n    fragColor = TDOutputSwizzle(litColor);\n}\n",
+			"vertexGlsl": "out vec3 vWorldPos;\nout vec2 vTexCoord;\nout mat3 vTBN;\n\nvoid main() {\n    vec4 worldPos = TDDeform(P);\n    mat3 normMat = uTDMats[TDCameraIndex()].worldForNormals;\n    vec3 wN = normalize(normMat * N);\n    vec3 wT = normalize(mat3(uTDMats[TDCameraIndex()].world) * T.xyz);\n    wT = normalize(wT - dot(wT, wN) * wN);\n    vec3 wB = cross(wN, wT) * T.w;\n    vTBN = mat3(wT, wB, wN);\n    vWorldPos = worldPos.xyz;\n    vTexCoord = uv[0].st;\n    gl_Position = TDWorldToProj(worldPos);\n}\n"
+		},
+		"difficulty": "advanced",
+		"estimatedGpuCost": "medium",
+		"setup": {
+			"operators": [
+				{
+					"family": "MAT",
+					"name": "glslMAT1",
+					"role": "primary",
+					"type": "glslMAT"
+				}
+			],
+			"uniforms": [
+				{
+					"default": "0.1",
+					"description": "Ambient fill intensity",
+					"name": "uAmbient",
+					"type": "float"
+				},
+				{
+					"default": "1, 1, 1, 1",
+					"description": "Multiplied on top of diffuse texture",
+					"name": "uDiffuseTint",
+					"type": "vec4"
+				},
+				{
+					"default": "0",
+					"description": "Self-glow multiplier on diffuse color",
+					"name": "uEmissive",
+					"type": "float"
+				},
+				{
+					"default": "1",
+					"description": "Normal map intensity (0-1)",
+					"name": "uNormalStrength",
+					"type": "float"
+				},
+				{
+					"default": "64",
+					"description": "Specular power (higher = tighter highlight)",
+					"name": "uShininess",
+					"type": "float"
+				},
+				{
+					"default": "1, 1, 1",
+					"description": "Specular highlight color",
+					"name": "uSpecularColor",
+					"type": "vec3"
+				}
+			]
+		},
+		"tags": [
+			"phong",
+			"normal-map",
+			"specular",
+			"diffuse",
+			"tbn",
+			"lighting",
+			"material"
+		],
+		"type": "vertex"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"phong",
+		"normal map",
+		"specular",
+		"diffuse",
+		"tbn",
+		"tangent",
+		"lighting",
+		"material",
+		"lit"
+	],
+	"title": "Phong Normal Map"
+}

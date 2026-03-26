@@ -1,0 +1,34 @@
+{
+  "kind": "template",
+  "id": "video-player",
+  "title": "Video Player",
+  "searchKeywords": ["video", "playback", "media", "movie"],
+  "content": {
+    "summary": "Basic video playback pipeline with level and transform controls"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "media",
+    "difficulty": "beginner",
+    "operators": [
+      { "name": "movieIn", "opType": "movieFileInTOP", "family": "TOP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "level1", "opType": "levelTOP", "family": "TOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "transform1", "opType": "transformTOP", "family": "TOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 600, "y": 0 }
+    ],
+    "connections": [
+      { "from": "movieIn", "to": "level1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "transform1", "fromOutput": 0, "toInput": 0 },
+      { "from": "transform1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "movieIn": { "file": "" },
+      "level1": { "opacity": 1.0 }
+    },
+    "tags": ["video", "playback", "media"]
+  }
+}

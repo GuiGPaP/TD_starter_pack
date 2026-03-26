@@ -1,0 +1,65 @@
+post:
+  summary: Connect two nodes
+  operationId: connect_nodes
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - fromPath
+            - toPath
+          properties:
+            fromPath:
+              type: string
+              description: Path to the source operator
+            toPath:
+              type: string
+              description: Path to the destination operator
+            fromOutput:
+              type: integer
+              default: 0
+              description: Output connector index (default 0)
+            toInput:
+              type: integer
+              default: 0
+              description: Input connector index (default 0)
+  responses:
+    "200":
+      description: Nodes connected successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                properties:
+                  from:
+                    type: string
+                    description: Path of the source node
+                  to:
+                    type: string
+                    description: Path of the destination node
+                  fromOutput:
+                    type: integer
+                    description: Output connector index used
+                  toInput:
+                    type: integer
+                    description: Input connector index used
+                  family:
+                    type: string
+                    description: Operator family of the connected nodes
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful

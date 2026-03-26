@@ -1,0 +1,43 @@
+{
+  "id": "audio-reactive-feedback",
+  "title": "Audio-Reactive Feedback Effects",
+  "kind": "technique",
+  "aliases": ["audio feedback visuals", "sound reactive feedback"],
+  "searchKeywords": ["audio", "reactive", "feedback", "visual", "sound", "music", "vj"],
+  "content": {
+    "summary": "Drives Feedback TOP parameters with audio analysis data to create visuals that pulse, distort, and evolve in response to music. Audio levels control feedback opacity, displacement amount, blur intensity, or color shift, creating a tight coupling between sound and image. This is a staple VJ and live performance technique."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "audio-visual",
+    "difficulty": "intermediate",
+    "tags": ["audio", "reactive", "feedback", "vj", "live-visuals", "music"],
+    "operatorChain": [
+      { "family": "CHOP", "opType": "audiodeviceinCHOP", "role": "capture audio" },
+      { "family": "CHOP", "opType": "analyzeCHOP", "role": "extract audio level" },
+      { "family": "CHOP", "opType": "lagCHOP", "role": "smooth audio envelope" },
+      { "family": "TOP", "opType": "feedbackTOP", "role": "feedback loop source" },
+      { "family": "TOP", "opType": "compositeTOP", "role": "blend input with feedback" },
+      { "family": "TOP", "opType": "levelTOP", "role": "audio-driven opacity/decay" },
+      { "family": "TOP", "opType": "transformTOP", "role": "audio-driven rotation/scale" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Bind audio level to feedback parameters via expressions",
+        "language": "python",
+        "code": "# Map audio analysis to feedback chain parameters\nlevel = op('level_decay')\ntransform = op('transform_feedback')\n\n# Drive opacity from audio RMS (higher audio = longer trails)\nlevel.par.opacity.expr = \"0.85 + op('lag1')['chan1'] * 0.14\"\n\n# Drive rotation from audio level for swirl effect\ntransform.par.rz.expr = \"op('lag1')['chan1'] * 5\"\n\n# Drive scale for breathing/pulsing effect\ntransform.par.sx.expr = \"1.0 + op('lag1')['chan1'] * 0.02\"\ntransform.par.sy.expr = \"1.0 + op('lag1')['chan1'] * 0.02\"",
+        "description": "Uses CHOP Export expressions to map smoothed audio levels to feedback decay, rotation, and scale parameters."
+      }
+    ],
+    "tips": [
+      "Use a Lag CHOP with short attack and medium release to create a responsive but smooth envelope.",
+      "Map different frequency bands to different feedback parameters — bass to scale, mids to rotation, highs to color shift.",
+      "Add a Transform TOP in the feedback path with audio-driven rotation for spiral/vortex effects.",
+      "Keep feedback opacity below 1.0 to prevent permanent burn-in; use audio to modulate between 0.85 and 0.99."
+    ]
+  }
+}

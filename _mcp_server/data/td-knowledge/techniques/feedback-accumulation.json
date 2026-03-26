@@ -1,0 +1,40 @@
+{
+  "id": "feedback-accumulation",
+  "title": "Feedback Accumulation Effects",
+  "kind": "technique",
+  "aliases": ["temporal accumulation", "frame blending", "feedback loop"],
+  "searchKeywords": ["feedback", "accumulation", "temporal", "trail", "persistence", "blur", "decay"],
+  "content": {
+    "summary": "Uses the Feedback TOP to create temporal accumulation effects where previous frames blend with new input, producing trails, motion blur, ghosting, and decay effects. The Feedback TOP feeds the previous frame's output back into the chain, and a Composite or GLSL TOP blends it with the current frame. Controlling the opacity or blend mode of the feedback path determines the decay rate."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "gpu-compute",
+    "difficulty": "beginner",
+    "tags": ["feedback", "accumulation", "temporal", "compositing", "visual-effects"],
+    "operatorChain": [
+      { "family": "TOP", "opType": "feedbackTOP", "role": "provides previous frame" },
+      { "family": "TOP", "opType": "compositeTOP", "role": "blends current frame with feedback" },
+      { "family": "TOP", "opType": "levelTOP", "role": "controls decay/opacity of feedback" },
+      { "family": "TOP", "opType": "blurTOP", "role": "optional softening of feedback trail" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Set up feedback accumulation chain",
+        "language": "python",
+        "code": "# Create a basic feedback accumulation network\nbase = op('/project1')\n\n# Create operators\nnoise = base.create(noiseTOP, 'noise_input')\nfeedback = base.create(feedbackTOP, 'feedback1')\ncomp = base.create(compositeTOP, 'comp1')\nlevel = base.create(levelTOP, 'level_decay')\n\n# Wire the chain: noise + feedback -> composite -> level -> (feedback target)\ncomp.inputConnectors[0].connect(noise)\ncomp.inputConnectors[1].connect(level)\nlevel.inputConnectors[0].connect(feedback)\n\n# Point feedback at the composite output\nfeedback.par.top = comp\n\n# Set blend mode and decay\ncomp.par.operand = 'over'\nlevel.par.opacity = 0.95  # Higher = longer trails",
+        "description": "Creates a feedback loop where noise is composited over a decaying version of the previous frame."
+      }
+    ],
+    "tips": [
+      "Keep the Level TOP opacity between 0.9 and 0.99 for visible trails; 1.0 means infinite accumulation with no decay.",
+      "Add a Blur TOP in the feedback path to create soft, dreamy trailing effects.",
+      "Use a GLSL TOP instead of Composite for more control over the blending math (e.g., additive, max, custom curves).",
+      "Resolution mismatches in the feedback loop can cause unexpected scaling — lock all TOPs to the same resolution."
+    ]
+  }
+}

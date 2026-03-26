@@ -1,0 +1,42 @@
+{
+  "id": "onnx-inference-pipeline",
+  "title": "ONNX Inference Pipeline",
+  "kind": "technique",
+  "aliases": ["onnx runtime", "neural network inference", "model inference"],
+  "searchKeywords": ["onnx", "inference", "ml", "neural-network", "model", "runtime", "deep-learning"],
+  "content": {
+    "summary": "Runs pre-trained ONNX models inside TouchDesigner for real-time inference tasks such as style transfer, segmentation, or classification. A Script DAT or Script CHOP loads the ONNX Runtime, reads input from TOPs or CHOPs, runs the model, and outputs results back into the TD pipeline. This technique enables integrating any model exported to ONNX format from PyTorch, TensorFlow, or other frameworks."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "ml",
+    "difficulty": "advanced",
+    "tags": ["onnx", "inference", "ml", "deep-learning", "style-transfer", "segmentation"],
+    "operatorChain": [
+      { "family": "TOP", "opType": "videodevinTOP", "role": "camera input" },
+      { "family": "TOP", "opType": "resolutionTOP", "role": "resize to model input dimensions" },
+      { "family": "DAT", "opType": "scriptDAT", "role": "ONNX Runtime session and inference" },
+      { "family": "TOP", "opType": "scriptTOP", "role": "convert model output back to texture" },
+      { "family": "TOP", "opType": "levelTOP", "role": "normalize output range" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Load and run ONNX model inference",
+        "language": "python",
+        "code": "# Example: ONNX inference in a Script TOP or Execute DAT\nimport numpy as np\nimport onnxruntime as ort\n\n# Load model once (store on extension or storage)\nif not hasattr(op.AttachStorage, 'session'):\n\top.AttachStorage.session = ort.InferenceSession(\n\t\tproject.folder + '/models/style_transfer.onnx',\n\t\tproviders=['CUDAExecutionProvider', 'CPUExecutionProvider']\n\t)\n\nsession = op.AttachStorage.session\n\n# Get input from a TOP as numpy array\ninput_top = op('resolutionTOP1')\nframe = input_top.numpyArray(delayed=True)\n\nif frame is not None:\n\t# Reshape for model: NCHW format, float32, normalized\n\timg = frame[:, :, :3].astype(np.float32) / 255.0\n\timg = np.transpose(img, (2, 0, 1))[np.newaxis, ...]\n\t\n\t# Run inference\n\tinput_name = session.get_inputs()[0].name\n\tresult = session.run(None, {input_name: img})\n\t\n\t# Output is available as numpy array\n\toutput = result[0]",
+        "description": "Loads an ONNX model with GPU acceleration and runs inference on a TOP frame converted to a numpy array."
+      }
+    ],
+    "tips": [
+      "Install onnxruntime-gpu for CUDA-accelerated inference; fall back to onnxruntime (CPU) if GPU is unavailable.",
+      "Cache the InferenceSession on an extension or TDStoreTools storage to avoid reloading the model every frame.",
+      "Use delayed=True on numpyArray() to avoid stalling the GPU pipeline.",
+      "Resize input to the exact dimensions the model expects — most ONNX models have fixed input shapes.",
+      "Run inference in a separate thread for heavy models to keep TD's frame rate stable."
+    ]
+  }
+}

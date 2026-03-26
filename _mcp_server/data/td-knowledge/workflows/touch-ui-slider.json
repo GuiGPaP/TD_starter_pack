@@ -1,0 +1,29 @@
+{
+  "kind": "workflow",
+  "id": "touch-ui-slider",
+  "title": "Touch UI Slider",
+  "searchKeywords": ["ui", "slider", "control", "interface", "container", "widget"],
+  "content": {
+    "summary": "Build a basic UI slider control using a container and CHOP pipeline"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "ui",
+    "difficulty": "beginner",
+    "operators": [
+      { "opType": "containerCOMP", "family": "COMP", "role": "container" },
+      { "opType": "sliderCHOP", "family": "CHOP", "role": "input" },
+      { "opType": "mathCHOP", "family": "CHOP", "role": "modifier" },
+      { "opType": "nullCHOP", "family": "CHOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "sliderCHOP", "to": "mathCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "mathCHOP", "to": "nullCHOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["ui", "slider", "control", "interface"]
+  }
+}

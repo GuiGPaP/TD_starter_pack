@@ -1,0 +1,76 @@
+{
+	"id": "noise-top",
+	"title": "Noise TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"noise",
+		"random",
+		"perlin",
+		"simplex",
+		"procedural",
+		"texture"
+	],
+	"content": {
+		"summary": "Generates procedural noise textures (Perlin, Simplex, etc.) for displacement, masks, or animated backgrounds."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "noiseTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "type"
+			},
+			{
+				"name": "monochrome"
+			},
+			{
+				"name": "period"
+			},
+			{
+				"name": "harmonics"
+			},
+			{
+				"name": "roughness"
+			},
+			{
+				"name": "amplitude"
+			},
+			{
+				"name": "offset"
+			},
+			{
+				"name": "seed"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set fixed seed for reproducible output",
+				"language": "python",
+				"code": "op('noise1').par.seed = 42",
+				"context": "textport"
+			},
+			{
+				"label": "Animate noise with time",
+				"language": "python",
+				"code": "me.time.seconds * 0.1",
+				"description": "Use as a parameter expression on the offset parameter to slowly scroll the noise.",
+				"context": "parameter-expression"
+			},
+			{
+				"label": "Configure smooth monochrome noise",
+				"language": "python",
+				"code": "n = op('noise1')\nn.par.monochrome = True\nn.par.roughness = 0.4\nn.par.period = 200\nn.par.harmonics = 5",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

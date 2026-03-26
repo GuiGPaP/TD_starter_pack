@@ -1,0 +1,48 @@
+{
+  "id": "lsystem-sop-generation",
+  "title": "L-System SOP Generation",
+  "kind": "technique",
+  "aliases": ["l-system", "lindenmayer", "growth patterns", "procedural growth"],
+  "searchKeywords": ["lsystem", "growth", "procedural", "tree", "branch", "fractal", "sop", "generative"],
+  "content": {
+    "summary": "Uses the L-system SOP to generate procedural branching and growth patterns based on Lindenmayer system rules. By defining production rules, angle parameters, and generation count, you can create organic tree structures, coral-like forms, and fractal branching geometry. The output can be rendered directly, used as a path for particle systems, or converted to tubes for 3D organic shapes."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "advanced",
+    "tags": ["lsystem", "generative", "procedural", "fractal", "growth", "organic", "tree", "branching"],
+    "operatorChain": [
+      { "family": "SOP", "opType": "lsystemSOP", "role": "generate L-system geometry" },
+      { "family": "SOP", "opType": "tubeSOP", "role": "convert lines to 3D tubes" },
+      { "family": "SOP", "opType": "facetSOP", "role": "compute normals for rendering" },
+      { "family": "COMP", "opType": "geometryCOMP", "role": "render the L-system geometry" },
+      { "family": "MAT", "opType": "phongMAT", "role": "material for rendering" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Configure L-system SOP for a branching tree",
+        "language": "python",
+        "code": "# Set up an L-system SOP with tree-like branching rules\nlsys = op('lsystem1')\n\n# Basic tree rules\n# F = draw forward, + = turn right, - = turn left\n# [ = push state (start branch), ] = pop state (end branch)\nlsys.par.premise = 'F'\nlsys.par.rule1 = 'F=FF-[-F+F+F]+[+F-F-F]'\nlsys.par.generations = 4\nlsys.par.angle = 22.5\nlsys.par.stepl = 0.3\n\n# Animate growth by changing generations over time\n# lsys.par.generations.expr = 'int(absTime.seconds % 6) + 1'",
+        "description": "Configures a classic L-system tree with branching rules, 22.5-degree branching angle, and 4 generations of growth."
+      },
+      {
+        "label": "Convert L-system lines to renderable tubes",
+        "language": "python",
+        "code": "# Convert L-system wireframe to 3D tubes\ntube = op('tube_from_lsys')\ntube.par.primtype = 'mesh'\ntube.par.cols = 6  # 6-sided tubes\ntube.par.rad1 = 0.02\ntube.par.rad2 = 0.01  # Taper toward tips\n\n# Add facet SOP for proper normals\nfacet = op('facet1')\nfacet.par.unique = True\nfacet.par.consolidate = True",
+        "description": "Converts L-system line segments into tapered 3D tubes suitable for rendering."
+      }
+    ],
+    "tips": [
+      "Start with low generation counts (2-3) and increase gradually — L-systems grow exponentially in complexity.",
+      "Use the angle parameter to dramatically change the character of the branching: 22.5 for trees, 60 for hexagonal, 90 for square grids.",
+      "Animate the step length with time to create growing/shrinking effects.",
+      "Add a Noise SOP after the L-system to add organic randomness to the otherwise perfect fractal structure.",
+      "Use different rules for 2D (+ and -) versus 3D (add & ^ /) branching patterns."
+    ]
+  }
+}

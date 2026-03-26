@@ -1,0 +1,75 @@
+{
+	"id": "light-comp",
+	"title": "Light COMP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"light",
+		"point",
+		"directional",
+		"cone",
+		"shadow"
+	],
+	"content": {
+		"summary": "Light source for Render TOP scenes. Point, directional, cone, or area."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "lightCOMP",
+		"opFamily": "COMP",
+		"parameters": [
+			{
+				"name": "lighttype"
+			},
+			{
+				"name": "dimmer"
+			},
+			{
+				"name": "colorr"
+			},
+			{
+				"name": "colorg"
+			},
+			{
+				"name": "colorb"
+			},
+			{
+				"name": "tx"
+			},
+			{
+				"name": "ty"
+			},
+			{
+				"name": "tz"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set warm point light",
+				"language": "python",
+				"code": "l = op('light1')\nl.par.lighttype = 'point'\nl.par.colorr = 1.0\nl.par.colorg = 0.9\nl.par.colorb = 0.7\nl.par.dimmer = 1.5",
+				"context": "textport"
+			},
+			{
+				"label": "Position light above scene",
+				"language": "python",
+				"code": "l = op('light1')\nl.par.tx = 0\nl.par.ty = 3\nl.par.tz = -2",
+				"context": "textport"
+			},
+			{
+				"label": "Animate light intensity",
+				"language": "python",
+				"code": "0.5 + abs(me.time.seconds % 2 - 1)",
+				"description": "Use as expression on dimmer for a pulsing light effect.",
+				"context": "parameter-expression"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

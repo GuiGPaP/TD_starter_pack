@@ -1,0 +1,60 @@
+{
+	"id": "table-dat",
+	"title": "Table DAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"table",
+		"data",
+		"rows",
+		"columns",
+		"spreadsheet",
+		"lookup",
+		"dat"
+	],
+	"content": {
+		"summary": "Stores tabular data (rows/columns). Lookup tables, parameter lists, CSV."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "tableDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "file"
+			},
+			{
+				"name": "loadonstartpulse"
+			}
+		],
+		"examples": [
+			{
+				"label": "Populate a lookup table",
+				"language": "python",
+				"code": "t = op('table1')\nt.clear()\nt.appendRow(['name', 'value'])\nt.appendRow(['speed', '1.5'])\nt.appendRow(['scale', '0.8'])",
+				"context": "script-dat"
+			},
+			{
+				"label": "Read a cell value",
+				"language": "python",
+				"code": "val = op('table1')['speed', 'value'].val\nprint(val)",
+				"description": "Look up a value by row name and column header.",
+				"context": "textport"
+			},
+			{
+				"label": "Load table from CSV file",
+				"language": "python",
+				"code": "op('table1').par.file = 'data/config.csv'\nop('table1').par.loadonstartpulse.pulse()",
+				"description": "Set the file path and trigger a reload.",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

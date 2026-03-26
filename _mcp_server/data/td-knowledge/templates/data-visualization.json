@@ -1,0 +1,36 @@
+{
+  "kind": "template",
+  "id": "data-visualization",
+  "title": "Data Visualization",
+  "searchKeywords": ["data", "visualization", "instancing", "table", "chart"],
+  "content": {
+    "summary": "Data visualization pipeline converting DAT table data to 3D instanced geometry"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "data",
+    "difficulty": "advanced",
+    "operators": [
+      { "name": "table1", "opType": "tableDAT", "family": "DAT", "role": "generator", "x": 0, "y": 0 },
+      { "name": "dat_to_chop", "opType": "datToCHOP", "family": "CHOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "math1", "opType": "mathCHOP", "family": "CHOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "null_chop", "opType": "nullCHOP", "family": "CHOP", "role": "output", "x": 600, "y": 0 },
+      { "name": "geo1", "opType": "geometryCOMP", "family": "COMP", "role": "filter", "x": 0, "y": 200 },
+      { "name": "render1", "opType": "renderTOP", "family": "TOP", "role": "filter", "x": 200, "y": 200 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 400, "y": 200 }
+    ],
+    "connections": [
+      { "from": "table1", "to": "dat_to_chop", "fromOutput": 0, "toInput": 0 },
+      { "from": "dat_to_chop", "to": "math1", "fromOutput": 0, "toInput": 0 },
+      { "from": "math1", "to": "null_chop", "fromOutput": 0, "toInput": 0 },
+      { "from": "geo1", "to": "render1", "fromOutput": 0, "toInput": 0 },
+      { "from": "render1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {},
+    "tags": ["data", "instancing", "visualization"]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "custom-parameter-callbacks",
+  "title": "Custom Parameter Callbacks",
+  "kind": "technique",
+  "aliases": ["par callback", "parameter change event", "onParChange"],
+  "searchKeywords": ["parameter", "callback", "custom", "event", "change", "react", "python"],
+  "content": {
+    "summary": "Uses TouchDesigner's parameter callback system to execute Python code whenever custom parameters change. By defining an onValueChange callback in a parameter execute DAT or extension class, you can react to slider movements, button presses, menu selections, and other parameter edits in real time. This is the standard event-driven pattern for building interactive UI components and control panels."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "python-advanced",
+    "difficulty": "intermediate",
+    "tags": ["parameter", "callback", "python", "event", "custom-par", "ui", "interactive"],
+    "operatorChain": [
+      { "family": "COMP", "opType": "baseCOMP", "role": "host component with custom parameters" },
+      { "family": "DAT", "opType": "parameterexecuteDAT", "role": "handles parameter change callbacks" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Parameter Execute DAT callbacks",
+        "language": "python",
+        "code": "# In a Parameter Execute DAT watching a COMP's custom parameters\n\ndef onValueChange(par, prev):\n\t\"\"\"Called when a parameter value changes.\"\"\"\n\tif par.name == 'Speed':\n\t\t# Update animation speed\n\t\top('animation_comp').par.speed = par.eval()\n\t\n\telif par.name == 'Color':\n\t\t# Update color across multiple operators\n\t\tfor top in parent().findChildren(type=TOP):\n\t\t\tif hasattr(top.par, 'colorr'):\n\t\t\t\ttop.par.colorr = par.eval()[0]\n\t\t\t\ttop.par.colorg = par.eval()[1]\n\t\t\t\ttop.par.colorb = par.eval()[2]\n\n\ndef onPulse(par):\n\t\"\"\"Called when a pulse parameter is pushed.\"\"\"\n\tif par.name == 'Reset':\n\t\tparent().ext.MyExt.Reset()\n\telif par.name == 'Randomize':\n\t\timport random\n\t\tparent().par.Speed = random.uniform(0.1, 2.0)",
+        "description": "Standard callback structure for reacting to parameter value changes and pulse button presses."
+      },
+      {
+        "label": "Extension-based parameter callback",
+        "language": "python",
+        "code": "# In an extension class, handle parameter changes directly\n\nclass MyControlExt:\n\tdef __init__(self, ownerComp):\n\t\tself.ownerComp = ownerComp\n\t\n\tdef onParValueChange(self, par, prev):\n\t\t\"\"\"Called automatically if extension is registered for callbacks.\"\"\"\n\t\tif par.name == 'Brightness':\n\t\t\top('level1').par.brightness1 = par.eval()\n\t\telif par.name == 'Active':\n\t\t\top('switch1').par.index = 1 if par.eval() else 0",
+        "description": "Extension method for handling parameter changes within the class, keeping logic co-located with state."
+      }
+    ],
+    "tips": [
+      "Use par.eval() not par.val in callbacks to get the evaluated value when expressions are involved.",
+      "The prev argument in onValueChange gives you the previous value — useful for undo or delta calculations.",
+      "For Pulse parameters, use onPulse() not onValueChange() — pulse parameters do not trigger value changes.",
+      "Set the Parameter Execute DAT's 'Parameters' field to filter which parameters trigger callbacks, reducing unnecessary calls."
+    ]
+  }
+}

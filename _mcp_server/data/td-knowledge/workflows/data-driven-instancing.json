@@ -1,0 +1,35 @@
+{
+  "kind": "workflow",
+  "id": "data-driven-instancing",
+  "title": "Data-Driven Instancing",
+  "searchKeywords": ["instancing", "data", "table", "gpu", "chop", "visualization"],
+  "content": {
+    "summary": "Use table data to drive GPU instancing of geometry for data visualization"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "data-visualization",
+    "difficulty": "advanced",
+    "operators": [
+      { "opType": "tableDAT", "family": "DAT", "role": "input" },
+      { "opType": "datToCHOP", "family": "CHOP", "role": "converter" },
+      { "opType": "mathCHOP", "family": "CHOP", "role": "modifier" },
+      { "opType": "nullCHOP", "family": "CHOP", "role": "output" },
+      { "opType": "geometryCOMP", "family": "COMP", "role": "geometry" },
+      { "opType": "renderTOP", "family": "TOP", "role": "renderer" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "tableDAT", "to": "datToCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "datToCHOP", "to": "mathCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "mathCHOP", "to": "nullCHOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "geometryCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "renderTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["instancing", "data", "gpu", "chop"]
+  }
+}

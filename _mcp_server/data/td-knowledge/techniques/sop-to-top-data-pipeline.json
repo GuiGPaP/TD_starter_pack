@@ -1,0 +1,45 @@
+{
+  "id": "sop-to-top-data-pipeline",
+  "title": "SOP to TOP Data Pipeline",
+  "kind": "technique",
+  "aliases": ["geometry to texture", "sop data baking"],
+  "searchKeywords": ["sop", "top", "gpu", "data", "texture", "geometry", "pipeline", "bake"],
+  "content": {
+    "summary": "Converts SOP geometry attributes (position, normals, UVs, custom attributes) into TOP textures so they can be processed on the GPU. This is a foundational technique for GPU-based particle systems, instancing, and any workflow that needs to move per-point data from the CPU geometry pipeline into the texture/compute pipeline."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "gpu-compute",
+    "difficulty": "intermediate",
+    "tags": ["sop", "top", "gpu", "data-pipeline", "geometry", "texture-baking"],
+    "operatorChain": [
+      { "family": "SOP", "opType": "sphereSOP", "role": "input geometry source" },
+      { "family": "SOP", "opType": "sortSOP", "role": "deterministic point order" },
+      { "family": "TOP", "opType": "soptoTOP", "role": "convert SOP points to texture" },
+      { "family": "TOP", "opType": "glslTOP", "role": "GPU processing of point data" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Read back pixel data from SOP-to-TOP conversion",
+        "language": "python",
+        "code": "# Read position data from a soptoTOP\nsop_tex = op('soptoTOP1')\nwidth = sop_tex.width\nheight = sop_tex.height\n\n# Access pixel values (each pixel = one point's data)\nfor i in range(width):\n    r, g, b, a = sop_tex.sample(x=i, y=0)\n    print(f'Point {i}: pos=({r}, {g}, {b})')",
+        "description": "Demonstrates reading position data back from the texture. In practice you would keep data on the GPU, but this is useful for debugging."
+      },
+      {
+        "label": "Configure SOP to TOP for position output",
+        "language": "python",
+        "code": "# Configure a SOP to TOP to output point positions as 32-bit float\nsop_to_top = op('soptoTOP1')\nsop_to_top.par.sop = op('sphere1')\nsop_to_top.par.outputattribute = 'P'\nsop_to_top.par.format = 'Use Input'",
+        "description": "Sets up the SOP to TOP operator to extract position attribute from the source SOP."
+      }
+    ],
+    "tips": [
+      "Use 32-bit float format on the SOP to TOP to preserve precision for position data.",
+      "Sort the SOP points before conversion to ensure consistent pixel-to-point mapping across frames.",
+      "Chain multiple SOP to TOPs for different attributes (P, N, Cd) and combine in a GLSL TOP."
+    ]
+  }
+}

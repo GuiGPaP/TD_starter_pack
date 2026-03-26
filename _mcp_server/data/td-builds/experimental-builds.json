@@ -1,0 +1,91 @@
+[
+  {
+    "series": "2025.30000",
+    "status": "active",
+    "latestBuild": "2025.31760",
+    "releaseDate": "2025-03",
+    "features": [
+      { "area": "rendering", "description": "Vulkan renderer improvements and stability" },
+      { "area": "operators", "description": "POP family extensions (GLSL POP, Advanced POP)" },
+      { "area": "python", "description": "Python 3.11 upgrade with performance improvements" },
+      { "area": "ui", "description": "Node editor UX improvements" }
+    ],
+    "breakingChanges": [
+      "Python 3.11 may break some legacy extension scripts",
+      "Vulkan backend is now default on supported hardware"
+    ],
+    "newOperators": ["glslPOP", "glslAdvancedPOP", "glslCopyPOP", "glslSelectPOP"],
+    "pythonApiAdditions": ["POP class methods", "op.popnet improvements"],
+    "graduatedTo": null
+  },
+  {
+    "series": "2024.20000",
+    "status": "graduated",
+    "latestBuild": "2024.20610",
+    "releaseDate": "2024-06",
+    "features": [
+      { "area": "rendering", "description": "Vulkan renderer initial support" },
+      { "area": "operators", "description": "New Palette components and improvements" },
+      { "area": "networking", "description": "NDI 5 support" },
+      { "area": "python", "description": "Python 3.9 to 3.11 migration path" }
+    ],
+    "breakingChanges": [
+      "OpenGL deprecated in favor of Vulkan on Windows",
+      "Some GLSL TOP uniforms renamed for Vulkan compatibility"
+    ],
+    "newOperators": [],
+    "pythonApiAdditions": ["td.sysinfo improvements"],
+    "graduatedTo": "2024.20610"
+  },
+  {
+    "series": "2023.30000",
+    "status": "graduated",
+    "latestBuild": "2023.31760",
+    "releaseDate": "2023-09",
+    "features": [
+      { "area": "rendering", "description": "Multi-GPU rendering support" },
+      { "area": "operators", "description": "Script CHOP improvements" },
+      { "area": "ui", "description": "Dark mode and high-DPI scaling" },
+      { "area": "python", "description": "asyncio integration improvements" }
+    ],
+    "breakingChanges": [
+      "Script CHOP callback signature changed"
+    ],
+    "newOperators": ["webRenderTOP"],
+    "pythonApiAdditions": ["td.run() async support"],
+    "graduatedTo": "2023.31760"
+  },
+  {
+    "series": "2023.10000",
+    "status": "graduated",
+    "latestBuild": "2023.11880",
+    "releaseDate": "2023-03",
+    "features": [
+      { "area": "operators", "description": "GLSL MAT operator overhaul" },
+      { "area": "rendering", "description": "PBR material improvements" },
+      { "area": "networking", "description": "WebSocket DAT improvements" }
+    ],
+    "breakingChanges": [],
+    "newOperators": [],
+    "pythonApiAdditions": [],
+    "graduatedTo": "2023.11880"
+  },
+  {
+    "series": "2022.30000",
+    "status": "graduated",
+    "latestBuild": "2022.33910",
+    "releaseDate": "2022-09",
+    "features": [
+      { "area": "operators", "description": "Kinect Azure CHOP support" },
+      { "area": "rendering", "description": "Apple Silicon (M1/M2) native support" },
+      { "area": "python", "description": "Python 3.9 upgrade" }
+    ],
+    "breakingChanges": [
+      "Python 2 compatibility layer removed",
+      "Some tscript commands deprecated"
+    ],
+    "newOperators": ["kinectAzureCHOP"],
+    "pythonApiAdditions": ["match/case syntax available"],
+    "graduatedTo": "2022.33910"
+  }
+]

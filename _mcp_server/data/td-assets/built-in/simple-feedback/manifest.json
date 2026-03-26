@@ -1,0 +1,26 @@
+{
+	"aliases": ["feedback loop", "noise feedback", "displace feedback"],
+	"deploy": {
+		"containerName": "simple_feedback",
+		"mode": "import_tox"
+	},
+	"description": "Basic feedback loop: Noise TOP → Feedback TOP → Displace. A minimal starting point for generative visual effects using feedback.",
+	"id": "simple-feedback",
+	"kind": "tox-asset",
+	"postDeployChecks": ["recursive_error_check"],
+	"provenance": {
+		"license": "MIT",
+		"source": "project-original"
+	},
+	"sha256": "a689effef2c3ab55de56d59cf2761a3b5b22ec9f044867edc789a799c62ac278",
+	"tags": ["feedback", "generative", "noise", "displace", "top"],
+	"tdVersion": {
+		"min": "2023.11000"
+	},
+	"title": "Simple Feedback Loop",
+	"useCases": [
+		"Starting point for generative feedback effects",
+		"Learning feedback loop patterns in TouchDesigner"
+	],
+	"version": "1.0.0"
+}

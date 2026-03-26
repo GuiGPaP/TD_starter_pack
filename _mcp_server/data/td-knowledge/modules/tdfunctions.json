@@ -1,0 +1,159 @@
+{
+	"id": "tdfunctions",
+	"title": "TDFunctions",
+	"kind": "python-module",
+	"aliases": ["td.TDFunctions"],
+	"content": {
+		"summary": "Utility module providing path helpers, property creation, parameter serialization, layout tools, menu helpers, and a tScript bridge. Available as 'import TDFunctions' in any DAT.",
+		"warnings": [
+			"createProperty adds a class-level property shared across ALL instances of the extension class — use me.store for instance-specific data when replication is involved.",
+			"tScript() is slow (creates/destroys a temporary DAT per call) — always prefer the Python API when available.",
+			"getShortcutPath may return None — always validate the result with op() before using."
+		]
+	},
+	"provenance": {
+		"source": "skills-reference",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"searchKeywords": [
+		"createProperty", "getShortcutPath", "parentLevel", "applyParInfo",
+		"getParInfo", "bindChain", "findNetworkEdges", "arrangeNode",
+		"parMenu", "tScript", "makeDeepDependable", "property", "layout",
+		"parameter", "utility"
+	],
+	"payload": {
+		"canonicalName": "TDFunctions",
+		"accessPattern": "import TDFunctions",
+		"members": [
+			{
+				"name": "getShortcutPath",
+				"signature": "getShortcutPath(shortcut, default=None)",
+				"returns": "str or None",
+				"description": "Best-guess resolution of a shortcut path. Always validate the returned path with op().",
+				"parameters": [
+					{ "name": "shortcut", "type": "str", "description": "Shortcut name to resolve" },
+					{ "name": "default", "type": "any", "default": "None", "description": "Value to return if shortcut not found" }
+				],
+				"examples": [
+					{
+						"code": "path = TDFunctions.getShortcutPath('MOPs')\ntarget = op(path) if path else None\nif target is None:\n    debug('shortcut not found')",
+						"label": "Safe usage with validation"
+					}
+				],
+				"warnings": ["Returns None if shortcut not found — always null-check before passing to op()"]
+			},
+			{
+				"name": "parentLevel",
+				"signature": "parentLevel(op, depth)",
+				"returns": "OP or None",
+				"description": "Returns the ancestor OP at depth levels up, not the depth itself.",
+				"parameters": [
+					{ "name": "op", "type": "OP", "description": "Starting operator" },
+					{ "name": "depth", "type": "int", "description": "Number of levels to go up" }
+				]
+			},
+			{
+				"name": "createProperty",
+				"signature": "createProperty(ext, name, value=None, readOnly=False, dependable=False)",
+				"returns": "None",
+				"description": "Adds a Python property to type(ext) — the class, not the instance. The property is shared across all instances of the extension class.",
+				"parameters": [
+					{ "name": "ext", "type": "object", "description": "Extension instance (usually self)" },
+					{ "name": "name", "type": "str", "description": "Property name" },
+					{ "name": "value", "type": "any", "default": "None", "description": "Initial value" },
+					{ "name": "readOnly", "type": "bool", "default": "False", "description": "If True, property has no setter" },
+					{ "name": "dependable", "type": "bool", "default": "False", "description": "If True, wraps value for TD dependency tracking" }
+				],
+				"warnings": ["Creates class-level property shared across ALL instances — use me.store for instance-specific data when replication is involved"]
+			},
+			{
+				"name": "makeDeepDependable",
+				"signature": "makeDeepDependable(ext, name)",
+				"returns": "None",
+				"description": "Wraps an existing property's value in DependDict/DependList recursively. Only use when downstream operators must cook on nested changes."
+			},
+			{
+				"name": "applyParInfo",
+				"signature": "applyParInfo(comp, parInfo)",
+				"returns": "list[str]",
+				"description": "Applies parameter info dict to a COMP. Returns names of parameters that failed — empty list means success.",
+				"parameters": [
+					{ "name": "comp", "type": "COMP", "description": "Target component" },
+					{ "name": "parInfo", "type": "dict", "description": "Parameter info dict (from getParInfo)" }
+				],
+				"examples": [
+					{
+						"code": "failed = TDFunctions.applyParInfo(comp, info)\nif failed:\n    debug(f'Failed to apply: {failed}')",
+						"label": "Check return value for failures"
+					}
+				],
+				"warnings": ["Always check the return value — typos in parameter names will silently fail"]
+			},
+			{
+				"name": "getParInfo",
+				"signature": "getParInfo(comp, pattern='*')",
+				"returns": "dict",
+				"description": "Returns a serializable dict of parameter values matching the pattern.",
+				"parameters": [
+					{ "name": "comp", "type": "COMP", "description": "Source component" },
+					{ "name": "pattern", "type": "str", "default": "'*'", "description": "Parameter name pattern to match" }
+				]
+			},
+			{
+				"name": "bindChain",
+				"signature": "bindChain(par)",
+				"returns": "list[Par]",
+				"description": "Returns the full chain of bound parameters from source to final.",
+				"parameters": [
+					{ "name": "par", "type": "Par", "description": "Starting parameter" }
+				]
+			},
+			{
+				"name": "findNetworkEdges",
+				"signature": "findNetworkEdges(comp)",
+				"returns": "dict",
+				"description": "Returns {'left': x, 'right': x, 'top': y, 'bottom': y} of child node bounds.",
+				"parameters": [
+					{ "name": "comp", "type": "COMP", "description": "Component to inspect" }
+				]
+			},
+			{
+				"name": "arrangeNode",
+				"signature": "arrangeNode(node, position='end')",
+				"returns": "None",
+				"description": "Positions a node relative to siblings.",
+				"parameters": [
+					{ "name": "node", "type": "OP", "description": "Node to position" },
+					{ "name": "position", "type": "str", "default": "'end'", "description": "Position relative to siblings" }
+				]
+			},
+			{
+				"name": "parMenu",
+				"signature": "parMenu(menuNames, menuLabels=None)",
+				"returns": "dict",
+				"description": "Returns a dict suitable for par.menuNames/par.menuLabels. Convenience wrapper — same as building the lists manually.",
+				"parameters": [
+					{ "name": "menuNames", "type": "list[str]", "description": "Menu item names" },
+					{ "name": "menuLabels", "type": "list[str]", "default": "None", "description": "Menu item labels (uses menuNames if None)" }
+				]
+			},
+			{
+				"name": "tScript",
+				"signature": "tScript(cmd)",
+				"returns": "str",
+				"description": "Executes a tscript command by creating a temporary textDAT, running the command, reading stdout, and deleting the DAT.",
+				"parameters": [
+					{ "name": "cmd", "type": "str", "description": "tScript command to execute" }
+				],
+				"examples": [
+					{
+						"code": "# Bad — slow in a loop\nfor i in range(100):\n    result = TDFunctions.tScript(f'opfind -n /project1 -t chopexecDAT')\n\n# Good — use Python API instead\nresults = op('/project1').findChildren(type=chopexecDAT)",
+						"label": "Prefer Python API over tScript"
+					}
+				],
+				"warnings": ["Slow — creates/destroys a temporary DAT per call. If the Python API can do it, never use tScript()"]
+			}
+		]
+	}
+}

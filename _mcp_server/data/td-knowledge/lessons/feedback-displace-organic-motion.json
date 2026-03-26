@@ -1,0 +1,43 @@
+{
+	"aliases": ["organic-feedback", "displace-feedback"],
+	"content": {
+		"summary": "Feeding a Feedback TOP through a Displace TOP creates organic, flowing motion. The displacement accumulates frame-over-frame, producing natural-looking evolving textures.",
+		"warnings": [
+			"High displacement values compound quickly — start with small amounts (0.01-0.05)",
+			"Resolution mismatch between Feedback and Displace can cause UV seam artifacts"
+		]
+	},
+	"id": "feedback-displace-organic-motion",
+	"kind": "lesson",
+	"payload": {
+		"category": "pattern",
+		"difficulty": "intermediate",
+		"operatorChain": [
+			{ "family": "TOP", "opType": "feedbackTOP", "role": "accumulator" },
+			{ "family": "TOP", "opType": "displaceTOP", "role": "primary" },
+			{ "family": "TOP", "opType": "noiseTOP", "role": "input" }
+		],
+		"recipe": {
+			"description": "Connect Noise TOP as source, feed through Displace TOP using Feedback TOP output as displacement map. Feed Displace output back into Feedback.",
+			"steps": [
+				"Create Noise TOP as initial source",
+				"Create Displace TOP — connect Noise to input 0",
+				"Create Feedback TOP — connect Displace output to Feedback input",
+				"Connect Feedback output to Displace input 1 (displacement map)",
+				"Set Displace weight to 0.01-0.05 to start"
+			]
+		},
+		"relatedPatternIds": ["feedback-decay"],
+		"tags": ["feedback", "displace", "organic", "generative", "motion", "texture"]
+	},
+	"provenance": {
+		"confidence": "high",
+		"discoveredAt": "2026-03-25",
+		"discoveredIn": "starter_pack",
+		"license": "MIT",
+		"source": "manual",
+		"validationCount": 3
+	},
+	"searchKeywords": ["feedback", "displace", "organic", "motion", "generative", "flowing", "texture", "evolving"],
+	"title": "Feedback + Displace for Organic Motion"
+}

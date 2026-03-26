@@ -1,0 +1,32 @@
+{
+  "kind": "workflow",
+  "id": "render-3d-basic",
+  "title": "Basic 3D Render",
+  "searchKeywords": ["3d", "render", "camera", "light", "geometry", "basic"],
+  "content": {
+    "summary": "Render a 3D scene with a camera, light, and geometry component"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "3d-rendering",
+    "difficulty": "beginner",
+    "operators": [
+      { "opType": "cameraCOMP", "family": "COMP", "role": "camera" },
+      { "opType": "lightCOMP", "family": "COMP", "role": "light" },
+      { "opType": "geometryCOMP", "family": "COMP", "role": "geometry" },
+      { "opType": "renderTOP", "family": "TOP", "role": "renderer" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "cameraCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "lightCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "geometryCOMP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "renderTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["3d", "render", "camera", "geometry"]
+  }
+}

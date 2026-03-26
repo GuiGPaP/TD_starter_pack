@@ -1,0 +1,30 @@
+{
+  "kind": "workflow",
+  "id": "video-playback-composite",
+  "title": "Video Playback Composite",
+  "searchKeywords": ["video", "playback", "movie", "composite", "layer"],
+  "content": {
+    "summary": "Load and composite video files with level adjustments"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "video",
+    "difficulty": "beginner",
+    "operators": [
+      { "opType": "movieFileInTOP", "family": "TOP", "role": "input" },
+      { "opType": "levelTOP", "family": "TOP", "role": "modifier" },
+      { "opType": "compositeTOP", "family": "TOP", "role": "combiner" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "movieFileInTOP", "to": "levelTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "levelTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "compositeTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["video", "playback", "composite"]
+  }
+}

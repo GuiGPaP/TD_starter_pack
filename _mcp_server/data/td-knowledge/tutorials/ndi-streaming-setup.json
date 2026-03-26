@@ -1,0 +1,47 @@
+{
+  "id": "ndi-streaming-setup",
+  "title": "NDI Streaming Setup",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["NDI", "streaming", "network", "video", "input", "output", "NewTek"],
+  "content": {
+    "summary": "Learn how to send and receive NDI (Network Device Interface) video streams in TouchDesigner. NDI allows low-latency video transmission over a local network between applications and machines, making it ideal for multi-machine setups, live production, and integration with other NDI-compatible software."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "beginner",
+    "estimatedTime": "20 minutes",
+    "prerequisites": ["Basic TouchDesigner navigation", "Local network connection"],
+    "relatedOperators": ["ndiinTOP", "ndioutTOP", "nullTOP", "selectTOP"],
+    "tags": ["NDI", "streaming", "network", "video", "live", "production"],
+    "sections": [
+      {
+        "title": "Understanding NDI",
+        "content": "NDI (Network Device Interface) is a royalty-free protocol for transmitting video, audio, and metadata over standard Ethernet networks. TouchDesigner has built-in NDI support through the **NDI In TOP** and **NDI Out TOP** operators.\n\nKey advantages:\n- **Low latency**: Typically under one frame of delay on a local network\n- **Auto-discovery**: NDI sources are automatically discoverable on the network\n- **No special hardware**: Works over standard gigabit Ethernet\n- **Cross-application**: Send to/from OBS, Resolume, Unity, and many other tools"
+      },
+      {
+        "title": "Sending NDI Output",
+        "content": "To send a video stream from TouchDesigner, create an **NDI Out TOP** and connect any TOP to its input. The stream immediately becomes available on the network.\n\nThe NDI Out TOP's `Source Name` parameter sets the name that other applications will see when browsing for NDI sources. By default it uses the machine name and operator path.",
+        "code": "# Create an NDI output\nndi_out = op('/project1').create(ndioutTOP, 'ndi_out')\nndi_out.par.sourcename = 'TD_MainOutput'\n\n# Connect your content to it\n# (wire any TOP chain into ndi_out's input)"
+      },
+      {
+        "title": "Receiving NDI Input",
+        "content": "Create an **NDI In TOP** to receive video from any NDI source on your network. Click the `Source Name` parameter's dropdown menu to see all available NDI sources — they are auto-discovered via mDNS.\n\nThe NDI In TOP outputs the received video as a standard TOP texture that you can process, composite, or render like any other image in TouchDesigner.",
+        "code": "# Create an NDI input\nndi_in = op('/project1').create(ndiinTOP, 'ndi_in')\n# List available NDI sources\nprint(ndi_in.par.sourcename.menuNames)\n# Select a source by name\nndi_in.par.sourcename = 'MACHINE_NAME (TD_MainOutput)'"
+      },
+      {
+        "title": "Performance Considerations",
+        "content": "NDI works best on **gigabit Ethernet** or faster. For optimal performance:\n\n- Use a dedicated network for NDI traffic when possible\n- Lower resolution reduces bandwidth: 1080p NDI uses roughly 125 Mbps\n- The NDI Out TOP's `Bandwidth` parameter lets you choose between full bandwidth and a compressed mode that reduces network load at the cost of some quality\n- Monitor network utilization in the **Performance Monitor** (F2)\n- Multiple NDI streams on one machine are supported but increase CPU/GPU load"
+      },
+      {
+        "title": "Multi-Machine Workflow",
+        "content": "A common production setup uses multiple TouchDesigner machines connected via NDI:\n\n1. **Content machines** generate visuals and send via NDI Out\n2. **A mixing machine** receives all streams via NDI In and composites them\n3. **An output machine** receives the final mix and sends to displays\n\nAll machines must be on the same subnet for auto-discovery. If machines are on different subnets, use the NDI Access Manager to manually add IP addresses.",
+        "code": "# Example: receive two NDI streams and composite them\nndi_a = op('/project1/ndi_in_a')\nndi_b = op('/project1/ndi_in_b')\n\n# Create a Composite TOP to blend them\ncomp = op('/project1').create(compositeTOP, 'ndi_mix')\ncomp.par.operand = 'over'\n# Wire ndi_a and ndi_b into comp's inputs"
+      }
+    ]
+  }
+}

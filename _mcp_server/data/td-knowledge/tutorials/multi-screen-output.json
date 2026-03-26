@@ -1,0 +1,48 @@
+{
+  "id": "multi-screen-output",
+  "title": "Multi-Screen Output Configuration",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["multi-screen", "display", "output", "window", "projector", "monitor", "mapping"],
+  "content": {
+    "summary": "Configure multi-display output in TouchDesigner using Window COMPs. This tutorial covers setting up multiple output windows, positioning them on specific monitors, configuring borderless fullscreen, and synchronizing content across displays for installations and live shows."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "intermediate",
+    "estimatedTime": "30 minutes",
+    "prerequisites": ["Basic TouchDesigner navigation", "Understanding of TOPs", "Multiple monitors connected"],
+    "relatedOperators": ["windowCOMP", "containerCOMP", "compositeTOP", "nullTOP", "constantTOP", "cropTOP"],
+    "tags": ["output", "display", "multi-screen", "installation", "projection", "window"],
+    "sections": [
+      {
+        "title": "Understanding Window COMPs",
+        "content": "The **Window COMP** is TouchDesigner's gateway to external displays. Each Window COMP can open a separate OS window that can be positioned on any connected monitor. For multi-screen setups, you create one Window COMP per output display.\n\nEach Window COMP has an `Operator` parameter that defines which TOP provides its content. The window renders that TOP's output at the specified resolution and position."
+      },
+      {
+        "title": "Position Windows on Specific Monitors",
+        "content": "Use the `Window Placement` parameters to control where each window appears. Set `Borders` to `Off` and `Opening Size` to match your display resolution for seamless fullscreen output.\n\nThe `Offset` parameters (`Offset X`, `Offset Y`) position the window in desktop coordinates. Monitor positions can be found in Windows Display Settings — the second monitor might start at x=1920 if it's to the right of a 1080p primary display.",
+        "code": "# Configure two Window COMPs for dual-screen output\n# Window 1 — primary display\nwin1 = op('/project1/window1')\nwin1.par.winoffsetx = 0\nwin1.par.winoffsety = 0\nwin1.par.winw = 1920\nwin1.par.winh = 1080\nwin1.par.borders = False\n\n# Window 2 — second display (offset by primary width)\nwin2 = op('/project1/window2')\nwin2.par.winoffsetx = 1920\nwin2.par.winoffsety = 0\nwin2.par.winw = 1920\nwin2.par.winh = 1080\nwin2.par.borders = False"
+      },
+      {
+        "title": "Detect Monitors Programmatically",
+        "content": "TouchDesigner provides the `monitors` object to query connected displays at runtime. This is essential for installations that need to adapt to different hardware setups without manual reconfiguration.\n\nUse `monitors` to auto-position your Window COMPs on the correct displays.",
+        "code": "# Query available monitors\nfor i, m in enumerate(monitors):\n    print(f'Monitor {i}: {m.width}x{m.height} at ({m.left}, {m.top})')\n    print(f'  DPI: {m.dpiScale}, Primary: {m.isPrimary}')\n\n# Auto-position window on second monitor\nif len(monitors) > 1:\n    m = monitors[1]\n    win = op('/project1/window2')\n    win.par.winoffsetx = m.left\n    win.par.winoffsety = m.top\n    win.par.winw = m.width\n    win.par.winh = m.height"
+      },
+      {
+        "title": "Content Splitting for Wide Canvases",
+        "content": "For seamless content spanning multiple screens, render to a single wide canvas and split it per display. Create your content at the combined resolution (e.g., 3840x1080 for two HD screens), then use **Crop TOPs** to extract each display's portion.\n\nThis ensures content flows seamlessly across screen boundaries without alignment issues.",
+        "code": "# Create a wide canvas and split for two screens\n# Assume content TOP is 3840x1080\n\n# Left half for display 1\ncrop_left = op('/project1/crop_left')\ncrop_left.par.cropleft = 0\ncrop_left.par.cropright = 1920\ncrop_left.par.croptop = 0\ncrop_left.par.cropbottom = 1080\n\n# Right half for display 2\ncrop_right = op('/project1/crop_right')\ncrop_right.par.cropleft = 1920\ncrop_right.par.cropright = 3840\ncrop_right.par.croptop = 0\ncrop_right.par.cropbottom = 1080"
+      },
+      {
+        "title": "Open and Manage Windows",
+        "content": "Use `window.par.winopen` to programmatically open and close output windows. For installations, you typically open all windows on startup using an **Execute DAT** with the `Start` option enabled.\n\nDuring development, toggle windows with keyboard shortcuts by using a **Keyboard In DAT** connected to a script that pulses the open parameter.",
+        "code": "# Open all output windows\nfor w in ops('/project1/window*'):\n    w.par.winopen.pulse()\n\n# Close all output windows\nfor w in ops('/project1/window*'):\n    w.par.winclose.pulse()\n\n# Toggle a specific window\nwin = op('/project1/window1')\nif win.isOpen:\n    win.par.winclose.pulse()\nelse:\n    win.par.winopen.pulse()"
+      }
+    ]
+  }
+}

@@ -1,0 +1,105 @@
+{
+	"content": {
+		"summary": "Gray-Scott reaction-diffusion model. Reads the previous frame from a feedback loop, computes Laplacian diffusion with a 3x3 kernel, and outputs the next simulation step. Produces organic, coral-like patterns that evolve over time.",
+		"warnings": [
+			"Requires a Feedback TOP to create the simulation loop",
+			"Initialize the first frame with a seed pattern (e.g., a small rectangle of chemical B) or the simulation will remain blank",
+			"uFeedRate and uKillRate are extremely sensitive — small changes produce dramatically different patterns",
+			"High GPU cost due to 9 texture lookups per channel per pixel"
+		]
+	},
+	"id": "reaction-diffusion",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uFeedRate;\nuniform float uKillRate;\nuniform float uDiffuseA;\nuniform float uDiffuseB;\nuniform float uTime;\nout vec4 fragColor;\n\nvoid main() {\n    vec2 uv = vUV.st;\n    vec2 texel = vec2(1.0) / uTDOutputInfo.res.zw;\n    \n    vec4 c = texture(sTD2DInputs[0], uv);\n    float a = c.r;\n    float b = c.g;\n    \n    float lapA = 0.0;\n    float lapB = 0.0;\n    \n    lapA += texture(sTD2DInputs[0], uv + vec2( texel.x, 0.0)).r * 0.2;\n    lapA += texture(sTD2DInputs[0], uv + vec2(-texel.x, 0.0)).r * 0.2;\n    lapA += texture(sTD2DInputs[0], uv + vec2(0.0,  texel.y)).r * 0.2;\n    lapA += texture(sTD2DInputs[0], uv + vec2(0.0, -texel.y)).r * 0.2;\n    lapA += texture(sTD2DInputs[0], uv + vec2( texel.x,  texel.y)).r * 0.05;\n    lapA += texture(sTD2DInputs[0], uv + vec2(-texel.x,  texel.y)).r * 0.05;\n    lapA += texture(sTD2DInputs[0], uv + vec2( texel.x, -texel.y)).r * 0.05;\n    lapA += texture(sTD2DInputs[0], uv + vec2(-texel.x, -texel.y)).r * 0.05;\n    lapA -= a;\n    \n    lapB += texture(sTD2DInputs[0], uv + vec2( texel.x, 0.0)).g * 0.2;\n    lapB += texture(sTD2DInputs[0], uv + vec2(-texel.x, 0.0)).g * 0.2;\n    lapB += texture(sTD2DInputs[0], uv + vec2(0.0,  texel.y)).g * 0.2;\n    lapB += texture(sTD2DInputs[0], uv + vec2(0.0, -texel.y)).g * 0.2;\n    lapB += texture(sTD2DInputs[0], uv + vec2( texel.x,  texel.y)).g * 0.05;\n    lapB += texture(sTD2DInputs[0], uv + vec2(-texel.x,  texel.y)).g * 0.05;\n    lapB += texture(sTD2DInputs[0], uv + vec2( texel.x, -texel.y)).g * 0.05;\n    lapB += texture(sTD2DInputs[0], uv + vec2(-texel.x, -texel.y)).g * 0.05;\n    lapB -= b;\n    \n    float abb = a * b * b;\n    float newA = a + uDiffuseA * lapA - abb + uFeedRate * (1.0 - a);\n    float newB = b + uDiffuseB * lapB + abb - (uKillRate + uFeedRate) * b;\n    \n    fragColor = TDOutputSwizzle(vec4(clamp(newA, 0.0, 1.0), clamp(newB, 0.0, 1.0), 0.0, 1.0));\n}\n"
+		},
+		"difficulty": "advanced",
+		"estimatedGpuCost": "high",
+		"setup": {
+			"connections": [
+				{
+					"from": "feedback1",
+					"fromOutput": 0,
+					"to": "glsl1",
+					"toInput": 0
+				}
+			],
+			"operators": [
+				{
+					"family": "TOP",
+					"name": "glsl1",
+					"role": "primary",
+					"type": "glslTOP"
+				},
+				{
+					"family": "TOP",
+					"name": "feedback1",
+					"type": "feedbackTOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Diffusion rate for chemical A",
+					"expression": "1.0",
+					"name": "uDiffuseA",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Diffusion rate for chemical B",
+					"expression": "0.5",
+					"name": "uDiffuseB",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Feed rate for chemical A replenishment",
+					"expression": "0.055",
+					"name": "uFeedRate",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Kill rate for chemical B removal",
+					"expression": "0.062",
+					"name": "uKillRate",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"page": "Vectors 1",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"reaction-diffusion",
+			"gray-scott",
+			"simulation",
+			"feedback",
+			"organic",
+			"generative"
+		],
+		"type": "pixel"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "manual"
+	},
+	"searchKeywords": [
+		"reaction-diffusion",
+		"gray-scott",
+		"simulation",
+		"laplacian",
+		"organic",
+		"coral",
+		"cellular",
+		"feedback"
+	],
+	"title": "Reaction-Diffusion"
+}

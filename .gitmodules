@@ -1,4 +1,0 @@
-[submodule "_mcp_server"]
-	path = _mcp_server
-	url = https://github.com/GuiGPaP/touchdesigner-mcp.git
-	branch = td-starter-pack

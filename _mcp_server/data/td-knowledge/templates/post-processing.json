@@ -1,0 +1,36 @@
+{
+  "kind": "template",
+  "id": "post-processing",
+  "title": "Post Processing",
+  "searchKeywords": ["post-processing", "bloom", "color", "render", "effects"],
+  "content": {
+    "summary": "Post-processing chain with bloom, levels, and HSV color adjustment"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "rendering",
+    "difficulty": "intermediate",
+    "operators": [
+      { "name": "render1", "opType": "renderTOP", "family": "TOP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "bloom1", "opType": "bloomTOP", "family": "TOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "level1", "opType": "levelTOP", "family": "TOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "hsv1", "opType": "hsvadjustTOP", "family": "TOP", "role": "filter", "x": 600, "y": 0 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 800, "y": 0 }
+    ],
+    "connections": [
+      { "from": "render1", "to": "bloom1", "fromOutput": 0, "toInput": 0 },
+      { "from": "bloom1", "to": "level1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "hsv1", "fromOutput": 0, "toInput": 0 },
+      { "from": "hsv1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "bloom1": { "size": 0.5 },
+      "level1": { "brightness1": 1.1 }
+    },
+    "tags": ["post-processing", "bloom", "color", "render"]
+  }
+}

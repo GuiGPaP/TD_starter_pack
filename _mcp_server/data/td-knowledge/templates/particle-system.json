@@ -1,0 +1,35 @@
+{
+  "kind": "template",
+  "id": "particle-system",
+  "title": "Particle System",
+  "searchKeywords": ["particles", "3d", "render", "geometry", "simulation"],
+  "content": {
+    "summary": "3D particle rendering setup with geometry, camera, light, and render pipeline"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "3d",
+    "difficulty": "advanced",
+    "operators": [
+      { "name": "geo1", "opType": "geometryCOMP", "family": "COMP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "cam1", "opType": "cameraCOMP", "family": "COMP", "role": "generator", "x": 0, "y": 200 },
+      { "name": "light1", "opType": "lightCOMP", "family": "COMP", "role": "generator", "x": 0, "y": 400 },
+      { "name": "render1", "opType": "renderTOP", "family": "TOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "level1", "opType": "levelTOP", "family": "TOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 600, "y": 0 }
+    ],
+    "connections": [
+      { "from": "geo1", "to": "render1", "fromOutput": 0, "toInput": 0 },
+      { "from": "render1", "to": "level1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "render1": { "resolutionw": 1920, "resolutionh": 1080 }
+    },
+    "tags": ["particles", "3d", "render", "geometry"]
+  }
+}

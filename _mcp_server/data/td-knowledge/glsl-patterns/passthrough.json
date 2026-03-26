@@ -1,0 +1,58 @@
+{
+	"content": {
+		"summary": "Minimal pass-through shader that samples the first input texture and outputs it unchanged. The simplest starting point for any pixel shader effect.",
+		"warnings": [
+			"Requires at least one input connected to the GLSL TOP"
+		]
+	},
+	"id": "passthrough",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uTime;\nout vec4 fragColor;\nvoid main() {\n    vec2 uv = vUV.st;\n    vec4 color = texture(sTD2DInputs[0], uv);\n    fragColor = TDOutputSwizzle(color);\n}\n"
+		},
+		"difficulty": "beginner",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"connections": [],
+			"operators": [
+				{
+					"family": "TOP",
+					"name": "glsl1",
+					"role": "primary",
+					"type": "glslTOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"page": "Vectors 1",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"passthrough",
+			"basic",
+			"template",
+			"input"
+		],
+		"type": "pixel"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"passthrough",
+		"basic",
+		"template",
+		"input",
+		"texture",
+		"sample"
+	],
+	"title": "Passthrough"
+}

@@ -1,0 +1,99 @@
+{
+	"id": "tdjson",
+	"title": "TDJSON",
+	"kind": "python-module",
+	"aliases": ["td.TDJSON"],
+	"content": {
+		"summary": "JSON parsing, serialization of TD types, and parameter round-trip utilities. Handles conversion between TD objects (Par, Cell, Channel, OP, Position, Vector, Color, Matrix) and JSON-safe values.",
+		"warnings": [
+			"textToJSON and datToJSON return None on failure — they do NOT raise. Always null-check the result.",
+			"destroyOthers=True in loadChildrenFromJSONDict wipes all children not in the dict — use with extreme caution."
+		]
+	},
+	"provenance": {
+		"source": "skills-reference",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"searchKeywords": [
+		"textToJSON", "datToJSON", "serializeTDData", "parameterToJSONPar",
+		"addParameterFromJSONDict", "loadChildrenFromJSONDict", "JSON",
+		"parse", "serialize", "parameter", "round-trip"
+	],
+	"payload": {
+		"canonicalName": "TDJSON",
+		"accessPattern": "import TDJSON",
+		"members": [
+			{
+				"name": "textToJSON",
+				"signature": "textToJSON(text, orderedDict=False)",
+				"returns": "dict or None",
+				"description": "Parses a JSON string. Returns dict or None on failure (malformed JSON, empty text). Prints to textport but does NOT raise.",
+				"parameters": [
+					{ "name": "text", "type": "str", "description": "JSON string to parse" },
+					{ "name": "orderedDict", "type": "bool", "default": "False", "description": "If True, use OrderedDict for object pairs" }
+				],
+				"examples": [
+					{
+						"code": "data = TDJSON.textToJSON(op('config').text)\nif data is None:\n    debug('Failed to parse config JSON')\n    return",
+						"label": "Always null-check the result"
+					}
+				],
+				"warnings": ["Returns None on failure — never assume the result is a dict"]
+			},
+			{
+				"name": "datToJSON",
+				"signature": "datToJSON(dat, orderedDict=False)",
+				"returns": "dict or None",
+				"description": "Parses a DAT's text content as JSON. Returns dict or None on failure.",
+				"parameters": [
+					{ "name": "dat", "type": "DAT", "description": "DAT operator whose text to parse" },
+					{ "name": "orderedDict", "type": "bool", "default": "False", "description": "If True, use OrderedDict for object pairs" }
+				],
+				"warnings": ["Returns None on failure — never assume the result is a dict"]
+			},
+			{
+				"name": "serializeTDData",
+				"signature": "serializeTDData(data)",
+				"returns": "JSON-safe value",
+				"description": "Recursively converts TD types to JSON-safe values. Par→eval(), Cell→val, Channel→eval(), OP→path string, Position/Vector→[x,y,z], Color→[r,g,b,a], Matrix→nested 4x4 list, dict/list→recurse.",
+				"parameters": [
+					{ "name": "data", "type": "any", "description": "TD data to serialize (can be nested dict/list of TD types)" }
+				],
+				"examples": [
+					{
+						"code": "info = {'pos': op('/geo1').par.tx, 'source': op('/null1')}\nsafe = TDJSON.serializeTDData(info)\n# {'pos': 0.5, 'source': '/project1/null1'}",
+						"label": "Serialize mixed TD data for JSON"
+					}
+				]
+			},
+			{
+				"name": "parameterToJSONPar",
+				"signature": "parameterToJSONPar(par)",
+				"returns": "dict",
+				"description": "Exports a single parameter to a dict describing its name, type, default, range, menu items, etc. Use with addParameterFromJSONDict for round-trip.",
+				"parameters": [
+					{ "name": "par", "type": "Par", "description": "Parameter to export" }
+				]
+			},
+			{
+				"name": "addParameterFromJSONDict",
+				"signature": "addParameterFromJSONDict(comp, parDict, setValues=True, page=None)",
+				"returns": "None",
+				"description": "Creates or updates a custom parameter from a dict produced by parameterToJSONPar.",
+				"parameters": [
+					{ "name": "comp", "type": "COMP", "description": "Target component" },
+					{ "name": "parDict", "type": "dict", "description": "Parameter dict from parameterToJSONPar" },
+					{ "name": "setValues", "type": "bool", "default": "True", "description": "If True, apply parameter values from dict" },
+					{ "name": "page", "type": "str", "default": "None", "description": "Page name to add parameter to" }
+				],
+				"examples": [
+					{
+						"code": "par_dict = TDJSON.parameterToJSONPar(op('/base1').par.Mypar)\nTDJSON.addParameterFromJSONDict(op('/base2'), par_dict, page='Custom')",
+						"label": "Round-trip a custom parameter"
+					}
+				]
+			}
+		]
+	}
+}

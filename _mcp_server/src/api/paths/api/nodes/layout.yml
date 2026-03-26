@@ -1,0 +1,72 @@
+post:
+  summary: Reorganize nodes using a layout algorithm
+  operationId: layout_nodes
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - paths
+          properties:
+            paths:
+              type: array
+              items:
+                type: string
+              description: Node paths to lay out (minimum 2)
+            mode:
+              type: string
+              enum:
+                - horizontal
+                - vertical
+                - grid
+              default: horizontal
+              description: "Layout mode: horizontal (left-to-right), vertical (top-to-bottom), or grid"
+            spacing:
+              type: integer
+              description: Override spacing in pixels (default depends on mode)
+            startX:
+              type: integer
+              description: Anchor X position (default uses leftmost node)
+            startY:
+              type: integer
+              description: Anchor Y position (default uses topmost node)
+  responses:
+    "200":
+      description: Nodes repositioned successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                        nodeX:
+                          type: integer
+                        nodeY:
+                          type: integer
+                  mode:
+                    type: string
+                  spacing:
+                    type: integer
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful

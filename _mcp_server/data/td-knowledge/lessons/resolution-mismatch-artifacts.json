@@ -1,0 +1,32 @@
+{
+	"aliases": ["resolution-mismatch", "res-mismatch"],
+	"content": {
+		"summary": "Connecting TOPs with different resolutions without explicit resolution handling causes unexpected scaling, blurring, or UV seam artifacts. Always match resolutions or use Resolution/Fit TOPs.",
+		"warnings": [
+			"This is especially problematic in feedback chains where the mismatch compounds over time"
+		]
+	},
+	"id": "resolution-mismatch-artifacts",
+	"kind": "lesson",
+	"payload": {
+		"category": "pitfall",
+		"cause": "TouchDesigner auto-scales inputs to match the first input's resolution. When a 1080p TOP feeds into a 512x512 TOP, the downscale introduces blur. In feedback loops, this creates progressive quality loss.",
+		"difficulty": "beginner",
+		"fix": "Insert a Resolution TOP or Fit TOP between mismatched operators. Or set all TOPs in the chain to the same resolution via Common > Resolution parameter.",
+		"operatorChain": [
+			{ "family": "TOP", "opType": "resolutionTOP", "role": "fix" }
+		],
+		"symptom": "Output looks blurry, has unexpected scaling, or shows UV seam lines at edges. Feedback loops progressively lose detail.",
+		"tags": ["resolution", "mismatch", "blur", "scaling", "artifacts", "fit"]
+	},
+	"provenance": {
+		"confidence": "high",
+		"discoveredAt": "2026-03-25",
+		"discoveredIn": "starter_pack",
+		"license": "MIT",
+		"source": "manual",
+		"validationCount": 6
+	},
+	"searchKeywords": ["resolution", "mismatch", "blur", "scale", "artifacts", "fit", "quality", "seam"],
+	"title": "Resolution Mismatch Causes Artifacts"
+}

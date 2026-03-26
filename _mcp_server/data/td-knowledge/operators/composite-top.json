@@ -1,0 +1,61 @@
+{
+	"id": "composite-top",
+	"title": "Composite TOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"composite",
+		"blend",
+		"layer",
+		"mix",
+		"over",
+		"add",
+		"multiply"
+	],
+	"content": {
+		"summary": "Composites multiple input images using blend operations (over, add, multiply, screen)."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "compositeTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "operand"
+			},
+			{
+				"name": "chanmask"
+			}
+		],
+		"examples": [
+			{
+				"label": "Set additive blending",
+				"language": "python",
+				"code": "op('comp1').par.operand = 'add'",
+				"description": "Combine inputs with additive blending for glow effects.",
+				"context": "textport"
+			},
+			{
+				"label": "Set multiply blending",
+				"language": "python",
+				"code": "op('comp1').par.operand = 'multiply'",
+				"description": "Multiply inputs together for masking and darkening.",
+				"context": "textport"
+			},
+			{
+				"label": "Layer with alpha over",
+				"language": "python",
+				"code": "op('comp1').par.operand = 'over'",
+				"description": "Standard alpha compositing: foreground over background.",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

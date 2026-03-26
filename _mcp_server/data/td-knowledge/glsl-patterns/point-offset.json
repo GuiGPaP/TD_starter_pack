@@ -1,0 +1,60 @@
+{
+	"content": {
+		"summary": "Basic GLSL POP that reads point positions and offsets them along the Y axis using a sine wave driven by time. The simplest starting point for custom compute-based point manipulation.",
+		"warnings": [
+			"Requires a SOP input with point data connected to the GLSL POP"
+		]
+	},
+	"id": "point-offset",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uTime;\n\nvoid main() {\n    const uint id = TDIndex();\n    if (id >= TDNumElements()) return;\n    vec3 pos = TDIn_P();\n    pos.y += sin(uTime) * 0.1;\n    P[id] = pos;\n}\n"
+		},
+		"difficulty": "beginner",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"operators": [
+				{
+					"family": "POP",
+					"name": "glslPOP1",
+					"role": "primary",
+					"type": "glslPOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"pop",
+			"compute",
+			"point",
+			"offset",
+			"basic",
+			"template"
+		],
+		"type": "compute"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"pop",
+		"compute",
+		"point",
+		"offset",
+		"basic",
+		"glsl pop",
+		"sine",
+		"position"
+	],
+	"title": "Point Offset"
+}

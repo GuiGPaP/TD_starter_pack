@@ -1,0 +1,92 @@
+{
+	"id": "tdstoretools",
+	"title": "TDStoreTools",
+	"kind": "python-module",
+	"aliases": ["td.TDStoreTools"],
+	"content": {
+		"summary": "Storage management for COMP extensions via StorageManager, plus dependency-aware containers (DependDict, DependList, DependSet) that integrate with TD's cook system.",
+		"warnings": [
+			"StorageManager with sync=True deletes any me.store key NOT listed in items — use sync=False (default) to preserve unknown keys.",
+			"Two extensions with the same class name on the same COMP will silently share/overwrite StorageManager storage due to key collision.",
+			"DependDict inside DependDict does NOT trigger outer dependency on inner changes — use TDFunctions.makeDeepDependable() for nested reactivity.",
+			"Do not use DependDict/DependList in onFrameStart/onCook hot paths unless downstream reactivity is the explicit goal — each read/write has overhead."
+		]
+	},
+	"provenance": {
+		"source": "skills-reference",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"searchKeywords": [
+		"StorageManager", "DependDict", "DependList", "DependSet",
+		"me.store", "storage", "dependency", "dependable", "sync",
+		"getRaw", "getDependency", "peekValue", "extension"
+	],
+	"payload": {
+		"canonicalName": "TDStoreTools",
+		"accessPattern": "import TDStoreTools",
+		"members": [
+			{
+				"name": "StorageManager",
+				"signature": "StorageManager(ext, comp, items, sync=False)",
+				"returns": "StorageManager",
+				"description": "Manages me.store entries for a COMP extension — keeps storage in sync with a declared schema. Each item dict supports: name, default, property (create Python property), readOnly, dependable (wrap in DependDict/List).",
+				"parameters": [
+					{ "name": "ext", "type": "object", "description": "Extension instance (self)" },
+					{ "name": "comp", "type": "COMP", "description": "Component owning the storage" },
+					{ "name": "items", "type": "list[dict]", "description": "Schema: [{name, default, property, readOnly, dependable}, ...]" },
+					{ "name": "sync", "type": "bool", "default": "False", "description": "If True, deletes me.store keys not listed in items" }
+				],
+				"examples": [
+					{
+						"code": "stored_items = [\n    {'name': 'Data', 'default': {}, 'property': True, 'readOnly': False},\n    {'name': 'Active', 'default': False, 'property': True, 'readOnly': False},\n]\nself.stored = TDStoreTools.StorageManager(self, comp, stored_items)",
+						"label": "Basic StorageManager setup in __init__"
+					}
+				],
+				"warnings": [
+					"sync=True deletes unknown me.store keys",
+					"Class name collision: two extensions with same class name on same COMP share storage"
+				]
+			},
+			{
+				"name": "DependDict",
+				"description": "Wrapper around dict that participates in TD's dependency system. When a reader accesses a value, it registers as dependent — any write triggers a cook on all readers.",
+				"examples": [
+					{
+						"code": "self.stored = TDStoreTools.StorageManager(self, comp, [\n    {'name': 'Config', 'default': {}, 'dependable': True, 'property': True},\n])",
+						"label": "DependDict via StorageManager"
+					}
+				],
+				"warnings": ["No nesting of DependDict inside DependDict — inner changes won't trigger outer dependency"]
+			},
+			{
+				"name": "DependList",
+				"description": "Wrapper around list that participates in TD's dependency system, same behavior as DependDict but for ordered collections.",
+				"warnings": ["Same nesting limitation as DependDict"]
+			},
+			{
+				"name": "DependSet",
+				"description": "Wrapper around set that participates in TD's dependency system.",
+				"warnings": ["Same nesting limitation as DependDict"]
+			},
+			{
+				"name": "getRaw",
+				"signature": "container.getRaw()",
+				"returns": "dict | list | set",
+				"description": "Returns the underlying plain container WITHOUT registering a dependency. Use when you need to read without triggering cooks."
+			},
+			{
+				"name": "getDependency",
+				"signature": "container.getDependency(key)",
+				"returns": "tdu.Dependency",
+				"description": "Returns the tdu.Dependency object for a specific key."
+			},
+			{
+				"name": "peekValue",
+				"signature": "container.peekValue(key)",
+				"returns": "any",
+				"description": "Read a value without registering a dependency."
+			}
+		]
+	}
+}

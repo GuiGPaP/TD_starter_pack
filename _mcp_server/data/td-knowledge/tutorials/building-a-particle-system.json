@@ -1,0 +1,48 @@
+{
+  "id": "building-a-particle-system",
+  "title": "Building a GPU Particle System",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["particle", "GPU", "GLSL", "POP", "compute", "instancing", "simulation"],
+  "content": {
+    "summary": "Build a GPU-accelerated particle system using GLSL TOPs to simulate and render thousands of particles in real-time. This tutorial covers encoding particle state in textures, writing simulation logic in GLSL, and rendering particles using instancing with a Geometry COMP."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "intermediate",
+    "estimatedTime": "45 minutes",
+    "prerequisites": ["Basic GLSL knowledge", "Understanding of TOPs and COMPs", "Familiarity with feedback loops"],
+    "relatedOperators": ["glslTOP", "feedbackTOP", "noiseTOP", "geometryCOMP", "cameraCOMP", "renderTOP", "gridSOP"],
+    "tags": ["particles", "GPU", "GLSL", "simulation", "instancing", "generative"],
+    "sections": [
+      {
+        "title": "Particle State as Textures",
+        "content": "In GPU particle systems, each pixel in a texture represents one particle. We use two textures: one for **position** (XYZ stored in RGB) and one for **velocity** (XYZ in RGB). A 256x256 texture gives us 65,536 particles.\n\nCreate two **Noise TOPs** at 256x256 resolution to initialize positions and velocities. Set pixel format to `32-bit float (RGBA)` for precision. The noise provides random starting positions and velocities for each particle."
+      },
+      {
+        "title": "Create the Simulation Feedback Loop",
+        "content": "Create two **Feedback TOPs** — one for position and one for velocity. These capture the previous frame's state so the GLSL shader can read last frame's positions/velocities and compute the next frame.\n\nCreate a **GLSL TOP** with two inputs: the fed-back position texture and the fed-back velocity texture. The GLSL TOP will output updated positions (and optionally updated velocities on a second output).",
+        "code": "# Set up the GLSL TOP for particle simulation\nglsl_sim = op('/project1/glsl_sim')\nglsl_sim.par.resolutionw = 256\nglsl_sim.par.resolutionh = 256\nglsl_sim.par.pixelformat = '32-bit float (RGBA)'\nglsl_sim.par.outputresolution = 'custom'"
+      },
+      {
+        "title": "Write the Simulation Shader",
+        "content": "The pixel shader reads the previous position and velocity for each particle (pixel), applies forces like gravity and damping, then outputs the new position. Each pixel's UV coordinate maps to a unique particle.\n\nThe shader runs once per particle per frame, making it massively parallel on the GPU.",
+        "code": "# GLSL pixel shader for particle simulation\n# Set this as the text of a Text DAT wired to the GLSL TOP\nshader_code = '''\nuniform float uDeltaTime;\nuniform float uGravity;\nuniform float uDamping;\n\nlayout(location = 0) out vec4 fragPosition;\n\nvoid main()\n{\n    vec2 uv = vUV.st;\n    vec4 pos = texture(sTD2DInputs[0], uv);   // previous position\n    vec4 vel = texture(sTD2DInputs[1], uv);   // velocity\n    \n    // Apply gravity\n    vel.y -= uGravity * uDeltaTime;\n    \n    // Apply damping\n    vel.xyz *= uDamping;\n    \n    // Euler integration\n    pos.xyz += vel.xyz * uDeltaTime;\n    \n    // Reset particles that fall below ground\n    if (pos.y < -1.0) {\n        pos.xyz = vec3(0.0);\n    }\n    \n    fragPosition = pos;\n}\n'''\nop('/project1/glsl_sim_shader').text = shader_code"
+      },
+      {
+        "title": "Render Particles with Instancing",
+        "content": "To render the particles, create a **Geometry COMP** with a small sphere or point sprite inside. Enable **Instancing** on the Geometry COMP and use a **TOP to CHOP** to convert the position texture into instance transform channels.\n\nAlternatively, use a **GLSL MAT** as the material and sample the position texture directly in the vertex shader using `gl_InstanceID` to look up each particle's position.",
+        "code": "# Configure instancing on the Geometry COMP\ngeo = op('/project1/geo1')\ngeo.par.instancing = True\ngeo.par.instancetx = 'tx'\ngeo.par.instancety = 'ty'\ngeo.par.instancetz = 'tz'\n\n# The CHOP feeding instance channels comes from\n# converting the position texture via topTo CHOP"
+      },
+      {
+        "title": "Add Camera and Render",
+        "content": "Create a **Camera COMP** and a **Render TOP** to view your particle system. Point the camera at the origin where particles spawn. The Render TOP composites everything in the 3D scene.\n\nAdjust the GLSL uniforms (`uGravity`, `uDamping`) to control particle behavior. Try adding wind forces, attractors, or color based on velocity for more interesting effects.",
+        "code": "# Set up the render pipeline\ncam = op('/project1/cam1')\ncam.par.tz = 5  # Pull camera back to see particles\n\nrender = op('/project1/render1')\nrender.par.camera = cam.path"
+      }
+    ]
+  }
+}

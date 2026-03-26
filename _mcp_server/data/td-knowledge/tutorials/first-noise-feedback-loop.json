@@ -1,0 +1,48 @@
+{
+  "id": "first-noise-feedback-loop",
+  "title": "Create Your First Noise Feedback Loop",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["feedback", "noise", "loop", "visual", "beginner", "TOP"],
+  "content": {
+    "summary": "Learn how to create a mesmerizing visual feedback loop by combining a Noise TOP with a Feedback TOP and Transform TOP. This foundational technique is the basis for many generative visual effects in TouchDesigner and teaches you about signal flow, compositing, and the feedback paradigm."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "beginner",
+    "estimatedTime": "15 minutes",
+    "prerequisites": ["Basic TouchDesigner navigation", "Understanding of TOP operators"],
+    "relatedOperators": ["noiseTOP", "feedbackTOP", "transformTOP", "compositeTOP", "levelTOP"],
+    "tags": ["feedback", "noise", "generative", "visual-loop", "TOP"],
+    "sections": [
+      {
+        "title": "Create the Noise Source",
+        "content": "Start by creating a **Noise TOP** which will serve as the seed texture for your feedback loop. Set its resolution to 1280x720 and adjust the `Noise > Translate` parameters to animate the pattern over time.\n\nThe Noise TOP generates procedural noise patterns that change every frame, providing fresh input into the feedback system."
+      },
+      {
+        "title": "Add the Feedback TOP",
+        "content": "Create a **Feedback TOP** below your Noise TOP. The Feedback TOP captures the output of the previous frame and makes it available as an input, which is the core mechanism for creating visual persistence and trails.\n\nThe Feedback TOP has a `Target TOP` parameter — you will set this after building the rest of the chain.",
+        "code": "# Create the feedback loop nodes via script\nfeedback = op('/project1/feedback1')\n# The target will be set after we build the composite\nfeedback.par.top = '/project1/comp1'"
+      },
+      {
+        "title": "Transform the Feedback",
+        "content": "Insert a **Transform TOP** after the Feedback TOP. This is the key to interesting feedback effects — by slightly scaling, rotating, or translating the fed-back image each frame, you create evolving trails and patterns.\n\nSet `Scale` to 0.99 and `Rotate` to 0.5 degrees. These small per-frame changes accumulate dramatically over time through the feedback loop.",
+        "code": "# Configure the transform for subtle per-frame changes\ntransform = op('/project1/transform1')\ntransform.par.sx = 0.99\ntransform.par.sy = 0.99\ntransform.par.r = 0.5"
+      },
+      {
+        "title": "Composite Noise with Feedback",
+        "content": "Create a **Composite TOP** to blend the original Noise TOP with the transformed feedback. Set the operation to `Add` or `Over` and adjust the opacity of the feedback input to control how much of the previous frame persists.\n\nConnect the Noise TOP to the first input and the Transform TOP (fed-back image) to the second input. Then set the Feedback TOP's `Target TOP` parameter to point at this Composite TOP.",
+        "code": "# Set up the composite blending\ncomp = op('/project1/comp1')\ncomp.par.operand = 'over'\n\n# Point the feedback target at the composite output\nfeedback = op('/project1/feedback1')\nfeedback.par.top = comp.path"
+      },
+      {
+        "title": "Refine and Experiment",
+        "content": "Add a **Level TOP** after the Composite to control brightness and prevent the image from blowing out to white. Set `Post > Brightness` slightly below 1.0 (e.g., 0.98) to gradually fade the trails.\n\nExperiment with these parameters to change the look:\n- **Transform Scale**: Values below 1.0 create a zoom-out tunnel effect; above 1.0 zooms in.\n- **Transform Rotate**: Creates spiral patterns.\n- **Level Brightness**: Controls trail length — lower values mean shorter trails.\n- **Noise Type**: Try different noise types (Sparse, Perlin, Simplex) for varied seed textures.",
+        "code": "# Add brightness decay to prevent blow-out\nlevel = op('/project1/level1')\nlevel.par.postb = 0.98"
+      }
+    ]
+  }
+}

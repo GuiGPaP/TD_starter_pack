@@ -1,0 +1,30 @@
+{
+  "kind": "workflow",
+  "id": "particle-system-basic",
+  "title": "Basic Particle System",
+  "searchKeywords": ["particles", "sop", "simulation", "sphere", "emitter"],
+  "content": {
+    "summary": "Create a basic particle system using SOP-based particle emitter and renderer"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "particles",
+    "difficulty": "advanced",
+    "operators": [
+      { "opType": "sphereSOP", "family": "SOP", "role": "emitter" },
+      { "opType": "particleSOP", "family": "SOP", "role": "simulator" },
+      { "opType": "renderTOP", "family": "TOP", "role": "renderer" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "sphereSOP", "to": "particleSOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "particleSOP", "to": "renderTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "renderTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["particles", "sop", "simulation"]
+  }
+}

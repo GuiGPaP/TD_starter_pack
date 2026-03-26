@@ -1,0 +1,41 @@
+{
+  "id": "noise-layering-technique",
+  "title": "Noise Layering Technique",
+  "kind": "technique",
+  "aliases": ["layered noise", "fractal noise", "multi-octave noise"],
+  "searchKeywords": ["noise", "layering", "fractal", "octave", "texture", "generative", "procedural"],
+  "content": {
+    "summary": "Layers multiple Noise TOPs at different scales, speeds, and blend modes to create rich, organic procedural textures. Each noise layer acts as an octave — large-scale noise provides broad structure while small-scale noise adds fine detail. Compositing them together with varying opacities produces complex textures suitable for backgrounds, displacement maps, or particle driving forces."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "beginner",
+    "tags": ["noise", "generative", "procedural", "texture", "layering", "compositing"],
+    "operatorChain": [
+      { "family": "TOP", "opType": "noiseTOP", "role": "base large-scale noise layer" },
+      { "family": "TOP", "opType": "noiseTOP", "role": "medium-scale detail layer" },
+      { "family": "TOP", "opType": "noiseTOP", "role": "fine detail layer" },
+      { "family": "TOP", "opType": "compositeTOP", "role": "blend noise layers together" },
+      { "family": "TOP", "opType": "levelTOP", "role": "adjust contrast and brightness" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Create a 3-octave layered noise setup",
+        "language": "python",
+        "code": "# Create three noise layers at different scales\nbase = op('/project1')\n\n# Layer 1: Large-scale base\nn1 = base.create(noiseTOP, 'noise_large')\nn1.par.type = 'sparse'\nn1.par.period = 500\nn1.par.harmonics = 1\nn1.par.translate1 = 'absTime.seconds * 0.02'\n\n# Layer 2: Medium detail\nn2 = base.create(noiseTOP, 'noise_medium')\nn2.par.type = 'sparse'\nn2.par.period = 150\nn2.par.harmonics = 1\nn2.par.translate1 = 'absTime.seconds * 0.05'\n\n# Layer 3: Fine detail\nn3 = base.create(noiseTOP, 'noise_fine')\nn3.par.type = 'sparse'\nn3.par.period = 40\nn3.par.harmonics = 1\nn3.par.translate1 = 'absTime.seconds * 0.1'\n\n# Composite: add layers with decreasing amplitude\ncomp1 = base.create(compositeTOP, 'comp_layers1')\ncomp1.par.operand = 'add'\ncomp1.inputConnectors[0].connect(n1)\ncomp1.inputConnectors[1].connect(n2)\n\ncomp2 = base.create(compositeTOP, 'comp_layers2')\ncomp2.par.operand = 'add'\ncomp2.inputConnectors[0].connect(comp1)\ncomp2.inputConnectors[1].connect(n3)\n\n# Level to normalize the combined range\nlvl = base.create(levelTOP, 'level_normalize')\nlvl.inputConnectors[0].connect(comp2)\nlvl.par.brightness1 = 0.5\nlvl.par.contrast = 1.5",
+        "description": "Creates three noise octaves at different spatial frequencies and speeds, composited together additively."
+      }
+    ],
+    "tips": [
+      "Each octave should have roughly half the period and half the amplitude of the previous one for natural-looking fractal noise.",
+      "Animate each layer's translate at different speeds to create complex organic motion.",
+      "Use 'sparse' noise type for smoother results; 'random' for more chaotic textures.",
+      "Apply a Level TOP at the end to remap the combined range back to 0-1 and add contrast."
+    ]
+  }
+}

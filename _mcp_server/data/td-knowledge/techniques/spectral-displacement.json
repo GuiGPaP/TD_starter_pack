@@ -1,0 +1,42 @@
+{
+  "id": "spectral-displacement",
+  "title": "Spectral Audio Displacement",
+  "kind": "technique",
+  "aliases": ["audio displacement", "spectrum geometry", "sound displacement"],
+  "searchKeywords": ["spectrum", "displacement", "audio", "geometry", "fft", "sop", "deform", "music"],
+  "content": {
+    "summary": "Uses the audio frequency spectrum to displace geometry vertices in real time. An Audio Spectrum CHOP extracts FFT frequency bands, which are converted to a texture via CHOP to TOP or used directly as CHOP data to drive a Noise SOP or Point SOP displacement. This creates geometry that physically responds to different frequencies in the music."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "audio-visual",
+    "difficulty": "intermediate",
+    "tags": ["audio", "spectrum", "displacement", "geometry", "fft", "3d", "reactive"],
+    "operatorChain": [
+      { "family": "CHOP", "opType": "audiodeviceinCHOP", "role": "audio input" },
+      { "family": "CHOP", "opType": "audiospectrumCHOP", "role": "FFT spectrum analysis" },
+      { "family": "CHOP", "opType": "resampleCHOP", "role": "match sample count to geometry resolution" },
+      { "family": "TOP", "opType": "choptoTOP", "role": "convert spectrum to displacement map" },
+      { "family": "SOP", "opType": "gridSOP", "role": "base geometry to displace" },
+      { "family": "MAT", "opType": "glslMAT", "role": "vertex displacement using spectrum texture" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Configure audio spectrum for displacement mapping",
+        "language": "python",
+        "code": "# Set up audio spectrum analysis for geometry displacement\nspectrum = op('audiospectrum1')\nresample = op('resample1')\nchop_to_top = op('chopto1')\n\n# Configure spectrum\nspectrum.par.outputop = 'magnitude'\n\n# Resample to match grid resolution (e.g., 100 columns)\nresample.par.method = 'timeslice'\nresample.par.numsamples = 100\nresample.par.interpolation = 'cubic'\n\n# CHOP to TOP outputs a 1-pixel-tall texture with spectrum data\nchop_to_top.par.format = 'rgba32float'",
+        "description": "Configures the spectrum analysis chain and converts it to a texture suitable for vertex displacement."
+      }
+    ],
+    "tips": [
+      "Use a Resample CHOP to match the number of spectrum samples to your geometry resolution for clean mapping.",
+      "Apply a Math CHOP with a power function to compress the dynamic range of the spectrum before displacement.",
+      "Use logarithmic frequency scaling on the Audio Spectrum CHOP for more musically meaningful displacement.",
+      "Add a Trail CHOP before the CHOP to TOP to create a 2D spectrogram texture that scrolls over time."
+    ]
+  }
+}

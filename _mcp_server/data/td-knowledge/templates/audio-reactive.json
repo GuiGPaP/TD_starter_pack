@@ -1,0 +1,39 @@
+{
+  "kind": "template",
+  "id": "audio-reactive",
+  "title": "Audio Reactive",
+  "searchKeywords": ["audio", "reactive", "live", "spectrum", "music"],
+  "content": {
+    "summary": "Audio-reactive setup with spectrum analysis driving visual parameters"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "live-performance",
+    "difficulty": "intermediate",
+    "operators": [
+      { "name": "audioIn", "opType": "audioDeviceInCHOP", "family": "CHOP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "spectrum", "opType": "audioSpectrumCHOP", "family": "CHOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "math1", "opType": "mathCHOP", "family": "CHOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "null_chop", "opType": "nullCHOP", "family": "CHOP", "role": "output", "x": 600, "y": 0 },
+      { "name": "noise1", "opType": "noiseTOP", "family": "TOP", "role": "generator", "x": 0, "y": 200 },
+      { "name": "level1", "opType": "levelTOP", "family": "TOP", "role": "filter", "x": 200, "y": 200 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 400, "y": 200 }
+    ],
+    "connections": [
+      { "from": "audioIn", "to": "spectrum", "fromOutput": 0, "toInput": 0 },
+      { "from": "spectrum", "to": "math1", "fromOutput": 0, "toInput": 0 },
+      { "from": "math1", "to": "null_chop", "fromOutput": 0, "toInput": 0 },
+      { "from": "noise1", "to": "level1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "spectrum": { "outputrange1": 1.0 },
+      "noise1": { "resolutionw": 1920, "resolutionh": 1080 }
+    },
+    "tags": ["audio", "reactive", "live", "chop"]
+  }
+}

@@ -1,0 +1,75 @@
+{
+	"id": "noise-chop",
+	"title": "Noise CHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"noise",
+		"random",
+		"animation",
+		"modulation",
+		"procedural",
+		"channel"
+	],
+	"content": {
+		"summary": "Generates smooth random channel data. Commonly used for animation, modulation, and procedural control."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "medium",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "noiseCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "type"
+			},
+			{
+				"name": "roughness"
+			},
+			{
+				"name": "period"
+			},
+			{
+				"name": "amplitude"
+			},
+			{
+				"name": "offset"
+			},
+			{
+				"name": "seed"
+			},
+			{
+				"name": "channels"
+			}
+		],
+		"examples": [
+			{
+				"label": "Configure smooth random animation",
+				"language": "python",
+				"code": "n = op('noise1')\nn.par.roughness = 0.3\nn.par.period = 5\nn.par.amplitude = 1\nn.par.channels = 'tx ty tz'",
+				"description": "Generate 3 smooth noise channels for position animation.",
+				"context": "textport"
+			},
+			{
+				"label": "Set deterministic seed",
+				"language": "python",
+				"code": "op('noise1').par.seed = 99",
+				"description": "Fix the seed for reproducible output across sessions.",
+				"context": "textport"
+			},
+			{
+				"label": "Read current noise value",
+				"language": "python",
+				"code": "val = op('noise1')['tx'].eval()\nprint(val)",
+				"description": "Evaluate the current value of the tx channel.",
+				"context": "textport"
+			}
+		],
+		"versions": {
+			"addedIn": "2020"
+		}
+	}
+}

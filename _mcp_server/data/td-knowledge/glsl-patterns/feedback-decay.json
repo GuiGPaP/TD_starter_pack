@@ -1,0 +1,87 @@
+{
+	"content": {
+		"summary": "Feedback loop shader with configurable decay and mix. Blends the current input with the previous frame from a Feedback TOP, creating trails and echo effects.",
+		"warnings": [
+			"Requires a Feedback TOP connected to input 1 (second input) of the GLSL TOP",
+			"uDecay values above 1.0 will cause the image to blow out"
+		]
+	},
+	"id": "feedback-decay",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uDecay;\nuniform float uMix;\nuniform float uTime;\nout vec4 fragColor;\nvoid main() {\n    vec2 uv = vUV.st;\n    vec4 current = texture(sTD2DInputs[0], uv);\n    vec4 feedback = texture(sTD2DInputs[1], uv);\n    vec4 color = mix(feedback * uDecay, current, uMix);\n    fragColor = TDOutputSwizzle(color);\n}\n"
+		},
+		"difficulty": "intermediate",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"connections": [
+				{
+					"from": "feedback1",
+					"fromOutput": 0,
+					"to": "glsl1",
+					"toInput": 1
+				}
+			],
+			"operators": [
+				{
+					"family": "TOP",
+					"name": "glsl1",
+					"role": "primary",
+					"type": "glslTOP"
+				},
+				{
+					"family": "TOP",
+					"name": "feedback1",
+					"type": "feedbackTOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Decay multiplier applied to the feedback frame",
+					"expression": "0.95",
+					"name": "uDecay",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Mix factor between feedback and current input",
+					"expression": "0.1",
+					"name": "uMix",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"page": "Vectors 1",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"feedback",
+			"decay",
+			"trails",
+			"echo",
+			"temporal"
+		],
+		"type": "pixel"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"feedback",
+		"decay",
+		"trail",
+		"echo",
+		"temporal",
+		"mix",
+		"loop"
+	],
+	"title": "Feedback Decay"
+}

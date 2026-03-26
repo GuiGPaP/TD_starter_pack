@@ -1,0 +1,32 @@
+{
+  "kind": "workflow",
+  "id": "generative-noise-layers",
+  "title": "Generative Noise Layers",
+  "searchKeywords": ["noise", "layers", "composite", "generative", "blend"],
+  "content": {
+    "summary": "Blend multiple noise layers together for rich generative textures"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "beginner",
+    "operators": [
+      { "opType": "noiseTOP", "family": "TOP", "role": "generator" },
+      { "opType": "noiseTOP", "family": "TOP", "role": "generator" },
+      { "opType": "compositeTOP", "family": "TOP", "role": "combiner" },
+      { "opType": "levelTOP", "family": "TOP", "role": "modifier" },
+      { "opType": "nullTOP", "family": "TOP", "role": "output" }
+    ],
+    "connections": [
+      { "from": "noiseTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "noiseTOP", "to": "compositeTOP", "fromOutput": 0, "toInput": 1 },
+      { "from": "compositeTOP", "to": "levelTOP", "fromOutput": 0, "toInput": 0 },
+      { "from": "levelTOP", "to": "nullTOP", "fromOutput": 0, "toInput": 0 }
+    ],
+    "tags": ["noise", "layers", "composite", "generative"]
+  }
+}

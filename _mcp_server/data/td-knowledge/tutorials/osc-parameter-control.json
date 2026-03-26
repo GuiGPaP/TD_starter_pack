@@ -1,0 +1,48 @@
+{
+  "id": "osc-parameter-control",
+  "title": "OSC Parameter Control",
+  "kind": "tutorial",
+  "aliases": [],
+  "searchKeywords": ["OSC", "control", "parameter", "remote", "CHOP", "tablet", "phone", "TouchOSC"],
+  "content": {
+    "summary": "Learn how to control TouchDesigner parameters remotely using OSC (Open Sound Control) messages. This tutorial covers setting up OSC input, mapping incoming values to operator parameters, and integrating with popular OSC controllers like TouchOSC and mobile apps."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "difficulty": "beginner",
+    "estimatedTime": "20 minutes",
+    "prerequisites": ["Basic TouchDesigner navigation", "An OSC sender app (e.g. TouchOSC on phone)"],
+    "relatedOperators": ["oscinCHOP", "oscoutCHOP", "selectCHOP", "renameCHOP", "nullCHOP", "chopexecuteDAT"],
+    "tags": ["OSC", "control", "remote", "CHOP", "MIDI", "input", "mapping"],
+    "sections": [
+      {
+        "title": "What Is OSC?",
+        "content": "OSC (Open Sound Control) is a networking protocol for sending control messages between devices and applications. It's widely used in creative coding, music production, and live performance. OSC messages consist of an **address** (like `/slider1`) and one or more **values** (like 0.75).\n\nCommon OSC sources:\n- **TouchOSC**: Popular tablet/phone controller app\n- **Max/MSP, Pure Data, Ableton Live**: Music and media software\n- **Custom Python/Processing/openFrameworks apps**\n- **Hardware controllers** with OSC support"
+      },
+      {
+        "title": "Set Up OSC Input",
+        "content": "Create an **OSC In CHOP** to receive OSC messages. The key parameter is the **Network Port** — this must match the port your OSC sender targets. The default is 9000.\n\nOnce active, the OSC In CHOP automatically creates CHOP channels for each received OSC address. The channel name matches the OSC address (e.g., `/slider1` becomes a channel named `/slider1`).",
+        "code": "# Create and configure OSC input\nosc_in = op('/project1').create(oscinCHOP, 'osc_in')\nosc_in.par.port = 9000  # Port to listen on\n\n# Check what addresses are being received\nfor chan in osc_in.chans():\n    print(f'{chan.name} = {chan.eval()}')"
+      },
+      {
+        "title": "Map OSC to Parameters",
+        "content": "There are two main ways to connect OSC values to operator parameters:\n\n1. **CHOP Export**: Right-click the OSC In CHOP channel viewer, select the channel, and drag it onto a parameter. This creates a direct binding.\n\n2. **Parameter Expression**: Reference the channel value in a parameter expression using the `op()` function.\n\nUse a **Select CHOP** to isolate specific channels, and a **Rename CHOP** to clean up OSC address names before exporting.",
+        "code": "# Method 1: Reference in a parameter expression\n# In any operator parameter expression field:\n# op('osc_in')['/slider1']\n\n# Method 2: Set up export via Python\nosc_in = op('/project1/osc_in')\nnoise = op('/project1/noise1')\n\n# Use a Null CHOP to select and export specific channels\nnull = op('/project1').create(nullCHOP, 'osc_export')\nnull.export = True\nnull.inputConnectors[0].connect(osc_in)"
+      },
+      {
+        "title": "Send OSC Output",
+        "content": "TouchDesigner can also send OSC messages using the **OSC Out CHOP**. Connect any CHOP to its input, and each channel is sent as an OSC message where the channel name becomes the address and the value becomes the OSC argument.\n\nThis enables two-way communication — for example, sending parameter feedback to a TouchOSC layout so fader positions stay synchronized.",
+        "code": "# Create OSC output to send values back\nosc_out = op('/project1').create(oscoutCHOP, 'osc_out')\nosc_out.par.address = '192.168.1.100'  # Target device IP\nosc_out.par.port = 8000  # Target device port\n\n# Connect a CHOP to send its channels as OSC\n# Channel names become OSC addresses"
+      },
+      {
+        "title": "React to OSC with Scripts",
+        "content": "For more complex responses to OSC input, use a **CHOP Execute DAT**. This triggers Python callbacks when channel values change, allowing you to run custom logic, trigger cues, or switch states based on incoming OSC messages.\n\nThis is more flexible than simple parameter mapping and lets you implement button presses, scene switching, and conditional logic.",
+        "code": "# CHOP Execute DAT callback — fires when OSC values change\ndef onValueChange(channel, sampleIndex, val, prev):\n    # React to a specific OSC address\n    if channel.name == '/button1' and val == 1.0:\n        # Trigger a scene change\n        op('/project1/scene_switch').par.index = 1\n        print('Scene 1 activated via OSC')\n    \n    elif channel.name == '/fader1':\n        # Map fader to opacity\n        op('/project1/level1').par.opacity = val"
+      }
+    ]
+  }
+}

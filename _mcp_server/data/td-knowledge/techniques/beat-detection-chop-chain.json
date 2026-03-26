@@ -1,0 +1,42 @@
+{
+  "id": "beat-detection-chop-chain",
+  "title": "Beat Detection CHOP Chain",
+  "kind": "technique",
+  "aliases": ["beat detector", "onset detection", "bpm detection"],
+  "searchKeywords": ["beat", "detection", "audio", "bpm", "onset", "chop", "music", "rhythm"],
+  "content": {
+    "summary": "Detects musical beats from a live audio input using a chain of CHOP operators. An Audio Device In captures the signal, an Analyze CHOP extracts RMS or peak levels, and a combination of Filter, Math, and Logic CHOPs isolate beat onsets. The resulting trigger channel can drive visual parameters, animations, or scene changes in sync with the music."
+  },
+  "provenance": {
+    "source": "manual",
+    "confidence": "medium",
+    "license": "MIT"
+  },
+  "payload": {
+    "category": "audio-visual",
+    "difficulty": "intermediate",
+    "tags": ["beat", "audio", "detection", "chop", "music", "reactive", "rhythm"],
+    "operatorChain": [
+      { "family": "CHOP", "opType": "audiodeviceinCHOP", "role": "capture live audio" },
+      { "family": "CHOP", "opType": "analyzeCHOP", "role": "extract RMS level" },
+      { "family": "CHOP", "opType": "filterCHOP", "role": "smooth the level signal" },
+      { "family": "CHOP", "opType": "lagCHOP", "role": "create envelope follower" },
+      { "family": "CHOP", "opType": "mathCHOP", "role": "threshold comparison" },
+      { "family": "CHOP", "opType": "countCHOP", "role": "count beats for BPM estimation" }
+    ],
+    "codeSnippets": [
+      {
+        "label": "Configure beat detection chain parameters",
+        "language": "python",
+        "code": "# Set up a basic beat detection chain\naudio_in = op('audiodevicein1')\nanalyze = op('analyze1')\nlag = op('lag1')\n\n# Analyze RMS of the audio\nanalyze.par.function = 'rms'\n\n# Lag CHOP as envelope follower\n# Short attack, longer release to capture transients\nlag.par.lag1 = 0.005   # 5ms attack\nlag.par.lag2 = 0.1     # 100ms release\n\n# The difference between instant level and lagged envelope\n# gives you onset detection when positive",
+        "description": "Configures the CHOP chain for onset detection by comparing instantaneous RMS against a lagged envelope."
+      }
+    ],
+    "tips": [
+      "Use an Audio Band EQ CHOP before analysis to isolate kick drum frequencies (60-150 Hz) for more reliable beat detection.",
+      "Adjust the lag/filter times based on the tempo range — faster music needs shorter release times.",
+      "Add a Speed CHOP to count zero-crossings on the beat trigger for BPM estimation.",
+      "Use a Select CHOP to pick only the left channel if working with stereo input."
+    ]
+  }
+}

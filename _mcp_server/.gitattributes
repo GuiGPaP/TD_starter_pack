@@ -1,0 +1,10 @@
+# Normalize all text files to LF on commit, regardless of OS
+* text=auto eol=lf
+
+# Binary files — no conversion
+*.tox binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
+*.mcpb binary

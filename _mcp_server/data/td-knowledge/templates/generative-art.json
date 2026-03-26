@@ -1,0 +1,37 @@
+{
+  "kind": "template",
+  "id": "generative-art",
+  "title": "Generative Art",
+  "searchKeywords": ["generative", "feedback", "noise", "art", "procedural"],
+  "content": {
+    "summary": "Generative art setup with noise, feedback loop, and compositing"
+  },
+  "provenance": {
+    "confidence": "high",
+    "source": "manual",
+    "license": "CC-BY-4.0"
+  },
+  "payload": {
+    "category": "generative",
+    "difficulty": "intermediate",
+    "operators": [
+      { "name": "noise1", "opType": "noiseTOP", "family": "TOP", "role": "generator", "x": 0, "y": 0 },
+      { "name": "comp1", "opType": "compositeTOP", "family": "TOP", "role": "filter", "x": 200, "y": 0 },
+      { "name": "feedback1", "opType": "feedbackTOP", "family": "TOP", "role": "filter", "x": 200, "y": 200 },
+      { "name": "level1", "opType": "levelTOP", "family": "TOP", "role": "filter", "x": 400, "y": 0 },
+      { "name": "out1", "opType": "nullTOP", "family": "TOP", "role": "output", "x": 600, "y": 0 }
+    ],
+    "connections": [
+      { "from": "noise1", "to": "comp1", "fromOutput": 0, "toInput": 0 },
+      { "from": "feedback1", "to": "comp1", "fromOutput": 0, "toInput": 1 },
+      { "from": "comp1", "to": "feedback1", "fromOutput": 0, "toInput": 0 },
+      { "from": "comp1", "to": "level1", "fromOutput": 0, "toInput": 0 },
+      { "from": "level1", "to": "out1", "fromOutput": 0, "toInput": 0 }
+    ],
+    "parameters": {
+      "noise1": { "resolutionw": 1920, "resolutionh": 1080 },
+      "level1": { "opacity": 0.98 }
+    },
+    "tags": ["generative", "feedback", "noise", "art"]
+  }
+}

@@ -1,0 +1,74 @@
+{
+	"content": {
+		"summary": "Generative pattern shader that creates visuals without any input textures. Draws a smooth circle pattern using distance fields, with aspect ratio correction.",
+		"warnings": [
+			"No inputs required — this is a fully generative shader"
+		]
+	},
+	"id": "generative-noise",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "uniform float uTime;\nuniform float uAspect;\nuniform float uScale;\nconst float PI = 3.14159265359;\nout vec4 fragColor;\nvoid main() {\n    vec2 uv = vUV.st * 2.0 - 1.0;\n    uv.x *= uAspect;\n    float dist = length(uv);\n    float pattern = smoothstep(0.5, 0.45, dist);\n    vec4 color = vec4(vec3(pattern), 1.0);\n    fragColor = TDOutputSwizzle(color);\n}\n"
+		},
+		"difficulty": "beginner",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"connections": [],
+			"operators": [
+				{
+					"family": "TOP",
+					"name": "glsl1",
+					"role": "primary",
+					"type": "glslTOP"
+				}
+			],
+			"uniforms": [
+				{
+					"description": "Elapsed time in seconds",
+					"expression": "absTime.seconds",
+					"name": "uTime",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Aspect ratio (width / height)",
+					"expression": "me.par.resx / me.par.resy",
+					"name": "uAspect",
+					"page": "Vectors 1",
+					"type": "float"
+				},
+				{
+					"description": "Pattern scale multiplier",
+					"expression": "1.0",
+					"name": "uScale",
+					"page": "Vectors 1",
+					"type": "float"
+				}
+			]
+		},
+		"tags": [
+			"generative",
+			"noise",
+			"circle",
+			"distance-field",
+			"no-input"
+		],
+		"type": "pixel"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "skills-reference"
+	},
+	"searchKeywords": [
+		"generative",
+		"noise",
+		"procedural",
+		"circle",
+		"distance",
+		"pattern",
+		"no-input"
+	],
+	"title": "Generative Noise"
+}

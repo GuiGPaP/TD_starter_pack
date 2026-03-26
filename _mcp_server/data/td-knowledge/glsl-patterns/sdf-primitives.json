@@ -1,0 +1,50 @@
+{
+	"content": {
+		"summary": "Signed Distance Field (SDF) primitive functions and CSG combination operators. Includes sphere, box, torus, cylinder, and plane primitives plus union, subtraction, intersection, and smooth union operations. Useful as a library for raymarching shaders.",
+		"warnings": [
+			"These are utility functions only; a raymarching loop is needed to render SDFs"
+		]
+	},
+	"id": "sdf-primitives",
+	"kind": "glsl-pattern",
+	"payload": {
+		"code": {
+			"glsl": "float sdSphere(vec3 p, float r) { return length(p) - r; }\n\nfloat sdBox(vec3 p, vec3 b) { vec3 q = abs(p) - b; return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0); }\n\nfloat sdTorus(vec3 p, vec2 t) { vec2 q = vec2(length(p.xz) - t.x, p.y); return length(q) - t.y; }\n\nfloat sdCylinder(vec3 p, float h, float r) { vec2 d = abs(vec2(length(p.xz), p.y)) - vec2(r, h); return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)); }\n\nfloat sdPlane(vec3 p) { return p.y; }\n\nfloat opUnion(float d1, float d2) { return min(d1, d2); }\n\nfloat opSubtract(float d1, float d2) { return max(-d1, d2); }\n\nfloat opIntersect(float d1, float d2) { return max(d1, d2); }\n\nfloat opSmoothUnion(float d1, float d2, float k) { float h = clamp(0.5 + 0.5*(d2-d1)/k, 0.0, 1.0); return mix(d2, d1, h) - k*h*(1.0-h); }\n"
+		},
+		"difficulty": "intermediate",
+		"estimatedGpuCost": "low",
+		"setup": {
+			"operators": [],
+			"uniforms": []
+		},
+		"tags": [
+			"sdf",
+			"signed-distance",
+			"primitives",
+			"csg",
+			"raymarching",
+			"utility"
+		],
+		"type": "utility"
+	},
+	"provenance": {
+		"confidence": "high",
+		"license": "MIT",
+		"source": "manual"
+	},
+	"searchKeywords": [
+		"sdf",
+		"signed distance",
+		"sphere",
+		"box",
+		"torus",
+		"cylinder",
+		"union",
+		"subtract",
+		"intersect",
+		"smooth",
+		"raymarching",
+		"primitives"
+	],
+	"title": "SDF Primitives"
+}
