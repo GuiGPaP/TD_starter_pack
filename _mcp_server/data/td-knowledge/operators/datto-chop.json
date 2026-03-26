@@ -1,0 +1,198 @@
+{
+	"id": "datto-chop",
+	"title": "dattoCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"datto",
+		"chop",
+		"dattochop",
+		"extractrows",
+		"rownamestart",
+		"rowindexstart",
+		"rownameend"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "dattoCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "dat",
+				"label": "DAT",
+				"style": "DAT",
+				"description": "The to be used to retrieve values. This should be in"
+			},
+			{
+				"name": "extractrows",
+				"label": "Select Rows",
+				"style": "Menu",
+				"description": "This parameter allows you to pick different ways of specifying the rows selected."
+			},
+			{
+				"name": "rownamestart",
+				"label": "Start Row Name",
+				"style": "Str",
+				"description": "Specify the row name to start the selection range from."
+			},
+			{
+				"name": "rowindexstart",
+				"label": "Start Row Index",
+				"style": "Int",
+				"description": "Specify the row index to start the selection range from."
+			},
+			{
+				"name": "rownameend",
+				"label": "End Row  Name",
+				"style": "Str",
+				"description": "Specify the row name to end the selection range."
+			},
+			{
+				"name": "rowindexend",
+				"label": "End Row Index",
+				"style": "Int",
+				"description": "Specify the row index to end the selection range."
+			},
+			{
+				"name": "rownames",
+				"label": "Row Select Values",
+				"style": "Str",
+				"description": "Specify actual row names that you want to select. You can use pattern matching, for example row[1-4] will select all the rows names row1 thru row4."
+			},
+			{
+				"name": "rowexpr",
+				"label": "Row Select Condition",
+				"style": "Str",
+				"description": "Specify an expression that will be evaluated. If the expression evaluates to true, the row will be selected."
+			},
+			{
+				"name": "fromcol",
+				"label": "From Column",
+				"style": "Int",
+				"description": "When selecting rows by values, this parameter selects which column to use when matching cell values to Selected Row Values to determine which rows are selected."
+			},
+			{
+				"name": "extractcols",
+				"label": "Select Cols",
+				"style": "Menu",
+				"description": "This parameter allows you to pick different ways of specifying the columns selected."
+			},
+			{
+				"name": "colnamestart",
+				"label": "Start Col Name",
+				"style": "Str",
+				"description": "Specify the column name to start the selection range from."
+			},
+			{
+				"name": "colindexstart",
+				"label": "Start Col Index",
+				"style": "Int",
+				"description": "Specify the column index to start the selection range from."
+			},
+			{
+				"name": "colnameend",
+				"label": "End Col Name",
+				"style": "Str",
+				"description": "Specify the column name to end the selection range."
+			},
+			{
+				"name": "colindexend",
+				"label": "End Col Index",
+				"style": "Int",
+				"description": "Specify the column index to end the selection range."
+			},
+			{
+				"name": "colnames",
+				"label": "Col Select Values",
+				"style": "Str",
+				"description": "Specify actual column names that you want to select. You can use pattern matching, for example colvalue[1-4] will select all the columns named colvalue1 thru colvalue4."
+			},
+			{
+				"name": "colexpr",
+				"label": "Col Select Condition",
+				"style": "Str",
+				"description": "Specify an expression that will be evaluated. If the expression evaluates to true, the column will be selected. See Row Select Condition for more details."
+			},
+			{
+				"name": "fromrow",
+				"label": "From Row",
+				"style": "Int",
+				"description": "When extracting columns by Specified Names, this parameter selects which row to use when matching cell values to Selected Col Values to determine which columns are selected."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Specify the form of the channels output."
+			},
+			{
+				"name": "firstrow",
+				"label": "First Row is",
+				"style": "Menu",
+				"description": "Specifies whether the first row is ignored, names, or values."
+			},
+			{
+				"name": "firstcolumn",
+				"label": "First Column is",
+				"style": "Menu",
+				"description": "Specifies whether the first columnn is ignored, names, or values."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "duplicate",
+				"label": "Duplicate",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "defval",
+				"label": "Defval",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

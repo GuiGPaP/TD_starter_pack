@@ -1,0 +1,171 @@
+{
+	"id": "composite-chop",
+	"title": "compositeCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"composite",
+		"chop",
+		"compositechop",
+		"base",
+		"match",
+		"quatrot",
+		"shortrot",
+		"rotscope"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "compositeCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "base",
+				"label": "Base Hold",
+				"style": "Float",
+				"description": "Determines how much of the base to blend into the output at points where the layer has an effect."
+			},
+			{
+				"name": "match",
+				"label": "Match by",
+				"style": "Menu",
+				"description": "Matches channels in the base input with ones in the layer input by either index or name."
+			},
+			{
+				"name": "quatrot",
+				"label": "Quaternion Blend",
+				"style": "Toggle",
+				"description": "Allows rotations with the quaternion attribute set to use spherical interpolation to produce smooth rotation blending (set in the Attribute )."
+			},
+			{
+				"name": "shortrot",
+				"label": "Shortest Path Rotation Blending",
+				"style": "Toggle",
+				"description": "It better-handles the blending from one set of angles to another, taking into account 0 degrees is 360 degrees."
+			},
+			{
+				"name": "rotscope",
+				"label": "Rotation Scope",
+				"style": "Str",
+				"description": "Pattern (like *rx *ry *rz) that identifies which channels are rotations that should be handled specially as per the above option."
+			},
+			{
+				"name": "cyclelen",
+				"label": "Cycle Length",
+				"style": "Float",
+				"description": "Blend 0 degrees to this angle, generally 360."
+			},
+			{
+				"name": "effect",
+				"label": "Effect",
+				"style": "Float",
+				"description": "If the third input is supplied, the Effect page will be overridden by the third input's first channel, which should contain the effect values over the range of the layer."
+			},
+			{
+				"name": "relative",
+				"label": "Unit Values",
+				"style": "Menu",
+				"description": "Sets the meaning of the next four parameters - either Absolute values, Relative to the Start/End of the channel, or Relative to the Current . The layer and base are never shifted."
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Float",
+				"description": "The beginning of the composite interval. Effect is zero at the start."
+			},
+			{
+				"name": "startunit",
+				"label": "Start Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "peak",
+				"label": "Peak",
+				"style": "Float",
+				"description": "Where the composite operation reaches maximum effect. This value is held until the release point."
+			},
+			{
+				"name": "peakunit",
+				"label": "Peak Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "release",
+				"label": "Release",
+				"style": "Float",
+				"description": "The point at which the effect begins to fall back towards zero."
+			},
+			{
+				"name": "releaseunit",
+				"label": "Release Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "end",
+				"label": "End",
+				"style": "Float",
+				"description": "The end of the composite operation's effect. The effect reduces to zero again."
+			},
+			{
+				"name": "endunit",
+				"label": "End Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "risefunc",
+				"label": "Rise Shape",
+				"style": "Menu",
+				"description": "How to interpolate from one to another. It is the shape of the segment between the Start and Peak indices."
+			},
+			{
+				"name": "fallfunc",
+				"label": "Fall Shape",
+				"style": "Menu",
+				"description": "How to interpolate from one to another. It is the shape of the segment between the Release and End."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,111 @@
+{
+	"id": "shift-chop",
+	"title": "shiftCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"shift",
+		"chop",
+		"shiftchop",
+		"reference",
+		"relative",
+		"start",
+		"startunit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "shiftCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "reference",
+				"label": "Reference",
+				"style": "Menu",
+				"description": "The start or the end of the channels can be used as the reference position. The channels are shifted by altering the reference position."
+			},
+			{
+				"name": "relative",
+				"label": "Unit Values",
+				"style": "Menu",
+				"description": "Determines how the Start and End parameters are to be interpreted:"
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Float",
+				"description": "The start of the interval, absolute or relative to the input ."
+			},
+			{
+				"name": "startunit",
+				"label": "Start Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "end",
+				"label": "End",
+				"style": "Float",
+				"description": "The end of the interval, absolute or relative to the input ."
+			},
+			{
+				"name": "endunit",
+				"label": "End Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "scroll",
+				"label": "Scroll Offset",
+				"style": "Float",
+				"description": "Without changing the length of the , you can scroll the channels within its range, and scroll each channel a different amount. By using $C in the parameter, you can make the scroll amount dependent on"
+			},
+			{
+				"name": "scrollunit",
+				"label": "Scroll Offset Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

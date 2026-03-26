@@ -1,0 +1,144 @@
+{
+	"id": "examine-dat",
+	"title": "examineDAT",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"examine",
+		"dat",
+		"examinedat",
+		"source",
+		"subkey",
+		"expression",
+		"level"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "examineDAT",
+		"opFamily": "DAT",
+		"parameters": [
+			{
+				"name": "op",
+				"label": "Operator",
+				"style": "OP",
+				"description": "to the operator to examine."
+			},
+			{
+				"name": "source",
+				"label": "Source",
+				"style": "Menu",
+				"description": "Specifies what part of the operator to examine."
+			},
+			{
+				"name": "subkey",
+				"label": "Subkey",
+				"style": "Str",
+				"description": "If the object to be examined is a dictionary you can specify which element to examine here."
+			},
+			{
+				"name": "expression",
+				"label": "Expression",
+				"style": "Str",
+				"description": "When source is set to , enter your expression in this parameter."
+			},
+			{
+				"name": "level",
+				"label": "Level",
+				"style": "Str",
+				"description": "Clamp the maximum depth level."
+			},
+			{
+				"name": "key",
+				"label": "Key",
+				"style": "Str",
+				"description": "Filter Key results."
+			},
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Str",
+				"description": "Filter Type results."
+			},
+			{
+				"name": "value",
+				"label": "Value",
+				"style": "Str",
+				"description": "Filter Value results."
+			},
+			{
+				"name": "expandclasses",
+				"label": "Expand Classes",
+				"style": "Toggle",
+				"description": "When true, complex object structures (example ) are further expanded."
+			},
+			{
+				"name": "maxlevels",
+				"label": "Max Levels",
+				"style": "Int",
+				"description": "Specify the maximum depth in which to expand a python object."
+			},
+			{
+				"name": "outputheaders",
+				"label": "Output Headers",
+				"style": "Toggle",
+				"description": "Turn this on to display the column names when is set to Table."
+			},
+			{
+				"name": "outputlevel",
+				"label": "Output Level",
+				"style": "Toggle",
+				"description": "Turn this on to output the column of the results."
+			},
+			{
+				"name": "outputkey",
+				"label": "Output Key",
+				"style": "Toggle",
+				"description": "Turn this on to output the column of the results."
+			},
+			{
+				"name": "outputtype",
+				"label": "Output Type",
+				"style": "Toggle",
+				"description": "Turn this on to output the column of the results."
+			},
+			{
+				"name": "outputvalue",
+				"label": "Output Value",
+				"style": "Toggle",
+				"description": "Turn this on to output the column of the results."
+			},
+			{
+				"name": "language",
+				"label": "Language",
+				"style": "Menu",
+				"description": "Select how the decides which script language to operate on."
+			},
+			{
+				"name": "extension",
+				"label": "Edit/View Extension",
+				"style": "Menu",
+				"description": "Select the file extension this should expose to external editors."
+			},
+			{
+				"name": "customext",
+				"label": "Custom Extension",
+				"style": "Str",
+				"description": "Specifiy the custom extension."
+			},
+			{
+				"name": "wordwrap",
+				"label": "Word Wrap",
+				"style": "Menu",
+				"description": "Enable Word Wrap for Node Display."
+			}
+		],
+		"versions": {}
+	}
+}

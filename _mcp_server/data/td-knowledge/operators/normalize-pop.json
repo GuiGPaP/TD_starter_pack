@@ -1,0 +1,220 @@
+{
+	"id": "normalize-pop",
+	"title": "normalizePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"normalize",
+		"pop",
+		"normalizepop",
+		"attrclass",
+		"inputattrscope",
+		"parsize",
+		"aspectcorrect",
+		"replace"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "normalizePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "inputattrscope",
+				"label": "Input Attribute Scope",
+				"style": "StrMenu",
+				"description": "Input's attributes you want to affect within the chosen attribute class, or attribute components."
+			},
+			{
+				"name": "parsize",
+				"label": "Parameter Size",
+				"style": "Menu",
+				"description": "Number of independent configurable parameter values."
+			},
+			{
+				"name": "aspectcorrect",
+				"label": "Aspect Correct",
+				"style": "Toggle",
+				"description": "Whether to preserve the input attribute aspect ratio."
+			},
+			{
+				"name": "replace",
+				"label": "Replace Errors",
+				"style": "Toggle",
+				"description": "Enable replacing inf or nan floating points values by a specific value."
+			},
+			{
+				"name": "errval",
+				"label": "Error Value",
+				"style": "Float",
+				"description": "Sets the replacing value on normalization errors"
+			},
+			{
+				"name": "outputattrscope",
+				"label": "Output Attribute Scope",
+				"style": "StrMenu",
+				"description": "Name of attribute to output (can choose components of attribute), can choose from menu."
+			},
+			{
+				"name": "overrideautoattr",
+				"label": "Override Automatic Attribute",
+				"style": "Toggle",
+				"description": "Whether to override the kind of attribute automatically created based on the input and parameters. Allows to specify manually the type and number of components of the new attribute."
+			},
+			{
+				"name": "attrtype",
+				"label": "Attribute Type",
+				"style": "Menu",
+				"description": "The output attribute's data type, default float."
+			},
+			{
+				"name": "attrnumcomps",
+				"label": "Components",
+				"style": "Menu",
+				"description": "The number of components in the new custom attribute."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "tohigh1",
+				"label": "Tohigh1",
+				"style": "Float"
+			},
+			{
+				"name": "tolow1",
+				"label": "Tolow1",
+				"style": "Float"
+			},
+			{
+				"name": "tolow2",
+				"label": "Tolow2",
+				"style": "Float"
+			},
+			{
+				"name": "bias1",
+				"label": "Bias1",
+				"style": "Float"
+			},
+			{
+				"name": "lookupcurve1",
+				"label": "Lookupcurve1",
+				"style": "Menu"
+			},
+			{
+				"name": "bias0",
+				"label": "Bias0",
+				"style": "Float"
+			},
+			{
+				"name": "attrdefaultval2",
+				"label": "Attrdefaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "tohigh2",
+				"label": "Tohigh2",
+				"style": "Float"
+			},
+			{
+				"name": "tolow0",
+				"label": "Tolow0",
+				"style": "Float"
+			},
+			{
+				"name": "mode1",
+				"label": "Mode1",
+				"style": "Menu"
+			},
+			{
+				"name": "bias2",
+				"label": "Bias2",
+				"style": "Float"
+			},
+			{
+				"name": "attrdefaultval0",
+				"label": "Attrdefaultval0",
+				"style": "Float"
+			},
+			{
+				"name": "attrdefaultval3",
+				"label": "Attrdefaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "lookupcurve0",
+				"label": "Lookupcurve0",
+				"style": "Menu"
+			},
+			{
+				"name": "attrdefaultval1",
+				"label": "Attrdefaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "exp2",
+				"label": "Exp2",
+				"style": "Float"
+			},
+			{
+				"name": "exp0",
+				"label": "Exp0",
+				"style": "Float"
+			},
+			{
+				"name": "lookupcurve2",
+				"label": "Lookupcurve2",
+				"style": "Menu"
+			},
+			{
+				"name": "tohigh0",
+				"label": "Tohigh0",
+				"style": "Float"
+			},
+			{
+				"name": "mode0",
+				"label": "Mode0",
+				"style": "Menu"
+			},
+			{
+				"name": "mode2",
+				"label": "Mode2",
+				"style": "Menu"
+			},
+			{
+				"name": "exp1",
+				"label": "Exp1",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

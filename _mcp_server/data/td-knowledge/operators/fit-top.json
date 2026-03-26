@@ -1,0 +1,125 @@
+{
+	"id": "fit-top",
+	"title": "fitTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"fit",
+		"top",
+		"fittop",
+		"xord",
+		"tunit",
+		"punit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "fitTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "fit",
+				"label": "Fit",
+				"style": "Menu",
+				"description": "Determines how the input is fit to the specified resolution."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "The menu attached to this parameter allows you to specify the order in which the changes to your will take place. Changing the Transform order will change where things go much the same way as going a "
+			},
+			{
+				"name": "tunit",
+				"label": "Translate Unit",
+				"style": "Menu",
+				"description": "Sets the units used in the Translate parameter."
+			},
+			{
+				"name": "r",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "The field for rotation allows you to specify the amount of rotation of the image."
+			},
+			{
+				"name": "punit",
+				"label": "Pivot Unit",
+				"style": "Menu",
+				"description": "Sets the units used in the Pivot parameter."
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Pre-Multiply RGB by Alpha",
+				"style": "Toggle",
+				"description": "This option allows the Background Color to be pre-multiplied by alpha."
+			},
+			{
+				"name": "legacyxform",
+				"label": "Legacy Transform",
+				"style": "Toggle",
+				"description": "When enabled, will use the legacy method of building the transform matrix, which has inverted rotation and transform order."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW",
+				"description": "The Pivot point edit fields allow you to define the point about which the TOP scales and rotates. Altering the pivot point of a TOP produces different results depending on the transformation performed"
+			},
+			{
+				"name": "bgcolora",
+				"label": "Bgcolora",
+				"style": "RGBA",
+				"description": "Color applied behind the foreground image. The background is visible when the image is translated or scaled down. Try scaling an image down 50% in size (Scale = 0.5,0.5) and setting the background col"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW",
+				"description": "The two fields for Translate and Scale allows you to specify transforms in x and y axes. The field for Rotate allow you to specify the amount of rotation."
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "bgcolorr",
+				"label": "Bgcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "bgcolorb",
+				"label": "Bgcolorb",
+				"style": "RGBA"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW",
+				"description": "The two fields for Scale allows you to specify transforms in x and y axes."
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "bgcolorg",
+				"label": "Bgcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

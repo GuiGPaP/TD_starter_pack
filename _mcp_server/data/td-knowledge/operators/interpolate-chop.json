@@ -1,0 +1,85 @@
+{
+	"id": "interpolate-chop",
+	"title": "interpolateCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"interpolate",
+		"chop",
+		"interpolatechop",
+		"blendfunc",
+		"overlap",
+		"match",
+		"timeslice",
+		"scope"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "interpolateCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "blendfunc",
+				"label": "Shape",
+				"style": "Menu",
+				"description": "The shape of the interpolation curve:"
+			},
+			{
+				"name": "overlap",
+				"label": "Overlap Priority",
+				"style": "Menu",
+				"description": "If an input is not a single frame, and if there are overlaps in the input CHOPs, an option is used to resolve the conflict."
+			},
+			{
+				"name": "match",
+				"label": "Match by",
+				"style": "Menu",
+				"description": "Specify how to match the channels of each input."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

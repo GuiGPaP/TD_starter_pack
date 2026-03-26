@@ -1,0 +1,228 @@
+{
+	"id": "perform-chop",
+	"title": "performCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"perform",
+		"chop",
+		"performchop",
+		"msec",
+		"cook",
+		"droppedframes",
+		"mvreadahead"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "performCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "fps",
+				"label": "Frames per Second",
+				"style": "Toggle",
+				"description": "The number of frames rendered in the last second."
+			},
+			{
+				"name": "msec",
+				"label": "Frame Time",
+				"style": "Toggle",
+				"description": "Amount of time each frame takes to cook in msec."
+			},
+			{
+				"name": "cook",
+				"label": "Cook",
+				"style": "Toggle",
+				"description": "Is equal to 1 when a frame is cooked and equal to 0 when a frame is skipped.  It is often useful to view this channel in a to see when frames are skipped (dropped)."
+			},
+			{
+				"name": "droppedframes",
+				"label": "Dropped Frames",
+				"style": "Toggle",
+				"description": "The number of frames dropped between the last frame and the current frame."
+			},
+			{
+				"name": "mvreadahead",
+				"label": "Movie Read Ahead Misses",
+				"style": "Toggle",
+				"description": "How many times the movie read ahead failed to maintain the number of specified Read Ahead frames."
+			},
+			{
+				"name": "gpumemused",
+				"label": "GPU Mem Used (MB)",
+				"style": "Toggle",
+				"description": "Amount of memory used (in megabytes)."
+			},
+			{
+				"name": "totalgpumem",
+				"label": "Total GPU Mem (MB)",
+				"style": "Toggle",
+				"description": "Total amount of memory available on the system (in megabytes)."
+			},
+			{
+				"name": "activeops",
+				"label": "Total Active OPs",
+				"style": "Toggle",
+				"description": "How many OPs are actively cooking."
+			},
+			{
+				"name": "deactivatedops",
+				"label": "Total Deactivated OP Calls",
+				"style": "Toggle",
+				"description": "Number of calls to cook a component that has its turned off."
+			},
+			{
+				"name": "totalops",
+				"label": "Total OPs",
+				"style": "Toggle",
+				"description": "Total number of OPs in the file."
+			},
+			{
+				"name": "cpumemused",
+				"label": "CPU Mem Used (MB)",
+				"style": "Toggle",
+				"description": "Amount of CPU memory used (in megabytes)."
+			},
+			{
+				"name": "cookstate",
+				"label": "Cook State",
+				"style": "Toggle",
+				"description": "Monitors which frames actually cooked. Pass the Perform to a Trail to properly see the trail of frames that did and did not cook. (It appears as always 1 because the viewer is displaying only the curr"
+			},
+			{
+				"name": "cookrealtime",
+				"label": "Cook Realtime",
+				"style": "Toggle",
+				"description": "Monitors the state of the realtime flag, determining if TouchDesigner is running in realtime mode or not."
+			},
+			{
+				"name": "cookrate",
+				"label": "Cookrate",
+				"style": "Toggle",
+				"description": "The global target cook rate (frames per second) of the project. This is the frames per second of the root component, , typically , though due to frames taking too long to cook, the actual frames per s"
+			},
+			{
+				"name": "timeslicestep",
+				"label": "Time Slice Step",
+				"style": "Toggle",
+				"description": "The number of frames that TouchDesigner stepped forward for the current cook. It's the length of the in frames. It will be equal to 1 when the system is taking msec or less to complete one frame (16.6"
+			},
+			{
+				"name": "timeslicemsec",
+				"label": "Time Slice Milliseconds",
+				"style": "Toggle",
+				"description": "The length of the current in milliseconds."
+			},
+			{
+				"name": "performmode",
+				"label": "Perform Mode",
+				"style": "Toggle",
+				"description": "Monitors the state of ."
+			},
+			{
+				"name": "performfocus",
+				"label": "Perform Window Focus",
+				"style": "Toggle",
+				"description": "Monitors if the Perform currently has focus or not."
+			},
+			{
+				"name": "gputemp",
+				"label": "GPU Temperature (Slow)",
+				"style": "Toggle",
+				"description": "Monitors the temperature of the system's GPUs, only works for NVIDIA GPUs."
+			},
+			{
+				"name": "aclinestatus",
+				"label": "AC Line Status",
+				"style": "Toggle",
+				"description": "Indicates if the laptop's AC Charger is plugged in and active. 1 if AC line is detected, 0 otherwise."
+			},
+			{
+				"name": "batterycharging",
+				"label": "Battery Charging",
+				"style": "Toggle",
+				"description": "Indicates if the battery is being charged. 1 if charging, 0 otherwise."
+			},
+			{
+				"name": "batterylife",
+				"label": "Battery Life",
+				"style": "Toggle",
+				"description": "Indicated charge remaining in battery, 1 is battery full, 0 is battery empty."
+			},
+			{
+				"name": "batterytime",
+				"label": "Battery Time",
+				"style": "Toggle",
+				"description": "Estimated time remaining in battery charge. Only works if AC Line is disconnected and battery is not being charged."
+			},
+			{
+				"name": "activeexpressions",
+				"label": "Active Expressions",
+				"style": "Toggle",
+				"description": "The number of active python expressions found in the project."
+			},
+			{
+				"name": "optimizedexpression",
+				"label": "Optimized Expressions",
+				"style": "Toggle",
+				"description": "The number of python expression that have been optimized, see ."
+			},
+			{
+				"name": "cachedexpressions",
+				"label": "Expressions Using Cache",
+				"style": "Toggle",
+				"description": "The number of python expression that have been cached, see ."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "cpumsec",
+				"label": "Cpumsec",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

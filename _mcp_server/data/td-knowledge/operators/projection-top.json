@@ -1,0 +1,62 @@
+{
+	"id": "projection-top",
+	"title": "projectionTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"projection",
+		"top",
+		"projectiontop",
+		"input",
+		"output"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "projectionTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "input",
+				"label": "Input",
+				"style": "Menu",
+				"description": "At this time the only option is a Cube Map input. You can generate a Cube Map by rendering one using the , or converting 2D images into one using the ."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Select output format from the menu."
+			},
+			{
+				"name": "fov",
+				"label": "FOV Angle",
+				"style": "Float",
+				"description": "Only enabled in Fish-Eye output mode to specify the field of view of the Fish-Eye camera."
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "Use this parameter to rotate the map on any axis."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

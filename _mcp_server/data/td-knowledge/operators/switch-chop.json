@@ -1,0 +1,79 @@
+{
+	"id": "switch-chop",
+	"title": "switchCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"switch",
+		"chop",
+		"switchchop",
+		"indexfirst",
+		"index",
+		"timeslice",
+		"scope",
+		"srselect"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "switchCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "indexfirst",
+				"label": "First Input is Index",
+				"style": "Toggle",
+				"description": "If enabled, it will use the first input 's first channel to determine which input to select."
+			},
+			{
+				"name": "index",
+				"label": "Index",
+				"style": "Int",
+				"description": "The input index to use if First Input Is Index is off."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

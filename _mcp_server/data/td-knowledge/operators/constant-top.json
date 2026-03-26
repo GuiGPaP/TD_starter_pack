@@ -1,21 +1,24 @@
 {
 	"id": "constant-top",
-	"title": "Constant TOP",
+	"title": "constantTOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"constant",
-		"color",
-		"solid",
-		"fill",
-		"background"
+		"top",
+		"constanttop",
+		"alpha",
+		"rgbaunit",
+		"operand",
+		"swaporder",
+		"colorg"
 	],
 	"content": {
-		"summary": "Outputs a solid-color image. Useful as background, fill, or uniform input."
+		"summary": "TouchDesigner  COMP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -23,19 +26,56 @@
 		"opFamily": "TOP",
 		"parameters": [
 			{
-				"name": "colorr"
+				"name": "alpha",
+				"label": "Alpha",
+				"style": "Float",
+				"description": "Sets the alpha channel value."
 			},
 			{
-				"name": "colorg"
+				"name": "rgbaunit",
+				"label": "RGBA Units",
+				"style": "Menu",
+				"description": "Specify the color values using different ranges. Note that this is only for purposes of setting the color, the data values in the always use the RGBA Unit range 0-1."
 			},
 			{
-				"name": "colorb"
+				"name": "operand",
+				"label": "Operation",
+				"style": "Menu",
+				"description": "Choose which composite operation is performed from this menu. Search the web for 'blend modes' for more detailed information on the effects of each type."
 			},
 			{
-				"name": "colora"
+				"name": "swaporder",
+				"label": "Swap Order",
+				"style": "Toggle",
+				"description": "Swaps the order of the composite with the input."
 			},
 			{
-				"name": "outputresolution"
+				"name": "colorg",
+				"label": "Colorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "combineinput",
+				"label": "Combineinput",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Premultrgbbyalpha",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "colorr",
+				"label": "Colorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "colorb",
+				"label": "Colorb",
+				"style": "RGBA",
+				"description": "Sets the red, green and blue color channels. Clicking on the color swatch opens a color picker with RGB and HSV (Hue, Sat, and Value) pickers."
 			}
 		],
 		"examples": [
@@ -59,8 +99,6 @@
 				"context": "parameter-expression"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

@@ -1,0 +1,81 @@
+{
+	"id": "crop-top",
+	"title": "cropTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"crop",
+		"top",
+		"croptop",
+		"cropleft",
+		"cropleftunit",
+		"cropright",
+		"croprightunit",
+		"cropbottom"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "cropTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "cropleft",
+				"label": "Crop Left",
+				"style": "Float",
+				"description": "Positions the left edge of the image."
+			},
+			{
+				"name": "cropleftunit",
+				"label": "Crop Left Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "cropright",
+				"label": "Crop Right",
+				"style": "Float",
+				"description": "Positions the right edge of the image."
+			},
+			{
+				"name": "croprightunit",
+				"label": "Crop Right Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "cropbottom",
+				"label": "Crop Bottom",
+				"style": "Float",
+				"description": "Positions the bottom edge of the image."
+			},
+			{
+				"name": "cropbottomunit",
+				"label": "Crop Bottom Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "croptop",
+				"label": "Crop Top",
+				"style": "Float",
+				"description": "Positions the top edge of the image."
+			},
+			{
+				"name": "croptopunit",
+				"label": "Crop Top Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "This parameter determines what happens at the edges of the tiles."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,172 @@
+{
+	"id": "transform-top",
+	"title": "transformTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"transform",
+		"top",
+		"transformtop",
+		"xord",
+		"tunit",
+		"rotate",
+		"punit",
+		"premultrgbbyalpha"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "transformTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "The menu attached to this parameter allows you to specify the order in which the changes to your will take place. Changing the Transform order will change where things go much the same way as going a "
+			},
+			{
+				"name": "tunit",
+				"label": "Translate Unit",
+				"style": "Menu",
+				"description": "Sets the units used in the Translate parameter."
+			},
+			{
+				"name": "rotate",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "The field for rotation allows you to specify the amount of rotation of the image."
+			},
+			{
+				"name": "punit",
+				"label": "Pivot Unit",
+				"style": "Menu",
+				"description": "Sets the units used in the Pivot parameter."
+			},
+			{
+				"name": "premultrgbbyalpha",
+				"label": "Pre-Multiply RGB by Alpha",
+				"style": "Toggle",
+				"description": "This option allows the Background Color to be pre-multiplied by alpha."
+			},
+			{
+				"name": "compover",
+				"label": "Comp Over Background Color",
+				"style": "Toggle",
+				"description": "Fill any area with the background color if it has alpha less than 1."
+			},
+			{
+				"name": "mipmapbias",
+				"label": "Mipmap Bias",
+				"style": "Float",
+				"description": "If the input is sampled using mipmapping, this applies a bias to which mip level(s) are used when sampling the texture. 0 means the levels that would be normally used. Negative will selected higher le"
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "This parameter determines what happens at the edges of the tiles."
+			},
+			{
+				"name": "limittiles",
+				"label": "Limit Tiles",
+				"style": "Toggle",
+				"description": "Turn this On to limit the number of tiles in the U and V directions using the parameters below."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW",
+				"description": "The Pivot point edit fields allow you to define the point about which the TOP scales and rotates. Altering the pivot point of a TOP produces different results depending on the transformation performed"
+			},
+			{
+				"name": "tilev2",
+				"label": "Tilev2",
+				"style": "Float",
+				"description": "The first Tile V parameter sets the number of tiles to repeat on the botttom of the source image. The second Tile V parameter sets the number of tiles to repeat on the top of the source image. The ima"
+			},
+			{
+				"name": "bgcolorr",
+				"label": "Bgcolorr",
+				"style": "RGBA"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "bgcolorg",
+				"label": "Bgcolorg",
+				"style": "RGBA"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "growshrinky",
+				"label": "Growshrinky",
+				"style": "XYZW",
+				"description": "Grow/Shrink is a scale that is given in pixel units. A positive value will cause the image to grow that many pixels while a negative will cause the image to shrink that many pixels."
+			},
+			{
+				"name": "tileu1",
+				"label": "Tileu1",
+				"style": "Float"
+			},
+			{
+				"name": "bgcolorb",
+				"label": "Bgcolorb",
+				"style": "RGBA"
+			},
+			{
+				"name": "tileu2",
+				"label": "Tileu2",
+				"style": "Float",
+				"description": "The first Tile U parameter sets the number of tiles to repeat on the left of the source image. The second Tile U parameter sets the number of tiles to repeat on the right of the source image. The imag"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW",
+				"description": "The two fields for Translate allows you to specify transforms in x and y axes."
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "tilev1",
+				"label": "Tilev1",
+				"style": "Float"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW",
+				"description": "The two fields for Scale allows you to specify transforms in x and y axes."
+			},
+			{
+				"name": "growshrinkx",
+				"label": "Growshrinkx",
+				"style": "XYZW"
+			},
+			{
+				"name": "bgcolora",
+				"label": "Bgcolora",
+				"style": "RGBA",
+				"description": "Color applied behind the foreground image. The background is visible when the image is translated or scaled down. Try scaling an image down 50% in size (Scale = 0.5,0.5) and setting the background col"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,180 @@
+{
+	"id": "count-chop",
+	"title": "countCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"count",
+		"chop",
+		"countchop",
+		"threshold",
+		"threshup",
+		"threshdown",
+		"retrigger",
+		"retriggerunit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "countCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "threshold",
+				"label": "Release = Trigger Threshold",
+				"style": "Toggle",
+				"description": "If on, the trigger threshold is also used as the release threshold."
+			},
+			{
+				"name": "threshup",
+				"label": "Trigger Threshold",
+				"style": "Float",
+				"description": "The channel level that must be exceeded in order to trigger a count."
+			},
+			{
+				"name": "threshdown",
+				"label": "Release Threshold",
+				"style": "Float",
+				"description": "A release count is triggered when the channel level drops below this threshold."
+			},
+			{
+				"name": "retrigger",
+				"label": "Re-Trigger Delay",
+				"style": "Float",
+				"description": "The amount of time after a trigger point that a new trigger may occur."
+			},
+			{
+				"name": "retriggerunit",
+				"label": "Re-Trigger Delay Unit",
+				"style": "Menu"
+			},
+			{
+				"name": "triggeron",
+				"label": "Trigger On",
+				"style": "Menu",
+				"description": "Determines whether a trigger occurs on an increasing slope or decreasing slope when passing the trigger threshold. A release will occur on the opposite slope."
+			},
+			{
+				"name": "output",
+				"label": "Limit",
+				"style": "Menu",
+				"description": "Select limit options such as loop and/or clamp from the menu. The value will remain in the range from Min to Max."
+			},
+			{
+				"name": "limitmin",
+				"label": "Limit Minimum",
+				"style": "Float",
+				"description": "The minimum allowed count number."
+			},
+			{
+				"name": "limitmax",
+				"label": "Limit Maximum",
+				"style": "Float",
+				"description": "The maximum allowed count number."
+			},
+			{
+				"name": "offtoon",
+				"label": "Off to On",
+				"style": "Menu",
+				"description": "The operation to perform when a trigger event (off to on) occurs."
+			},
+			{
+				"name": "on",
+				"label": "While On",
+				"style": "Menu",
+				"description": "The operation to perform while the input remains triggered (on)."
+			},
+			{
+				"name": "ontooff",
+				"label": "On to Off",
+				"style": "Menu",
+				"description": "The operation to perform when a release event (on to off) occurs."
+			},
+			{
+				"name": "off",
+				"label": "While Off",
+				"style": "Menu",
+				"description": "The operation to perform while the input is not triggered (off)."
+			},
+			{
+				"name": "resetcondition",
+				"label": "Reset Condition",
+				"style": "Menu",
+				"description": "This menu determines how the Reset input triggers a reset of the channel(s)."
+			},
+			{
+				"name": "resetvalue",
+				"label": "Reset Value",
+				"style": "Float",
+				"description": "The channel(s) is set to this value when reset."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "When On resets the channel(s) to the Reset Value. The Count will only begin counting again when Reset is Off."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Instantly resets the channel(s) to the Reset Value."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "countdown",
+				"label": "Countdown",
+				"style": "Momentary",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "countup",
+				"label": "Countup",
+				"style": "Momentary",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

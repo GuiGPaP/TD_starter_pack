@@ -1,0 +1,253 @@
+{
+	"id": "scan-chop",
+	"title": "scanCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"scan",
+		"chop",
+		"scanchop",
+		"source",
+		"rate",
+		"swap",
+		"xscale",
+		"yscale"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "scanCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "source",
+				"label": "Source OP",
+				"style": "Menu",
+				"description": "Choose the source node family."
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "Samples per second, the output sample rate."
+			},
+			{
+				"name": "swap",
+				"label": "Swap Output",
+				"style": "Toggle",
+				"description": "Reverse the X and Y channel outputs."
+			},
+			{
+				"name": "xscale",
+				"label": "X Scale",
+				"style": "Float",
+				"description": "Scale the x amplitude."
+			},
+			{
+				"name": "yscale",
+				"label": "Y Scale",
+				"style": "Float",
+				"description": "Scale the y amplitude."
+			},
+			{
+				"name": "rotate",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "Specified in degrees, rotates the output x,y values."
+			},
+			{
+				"name": "randomize",
+				"label": "Randomize Samples",
+				"style": "Toggle",
+				"description": "Output all samples in a random order. Creates a fuzzy chaotic image on an oscilloscope."
+			},
+			{
+				"name": "color",
+				"label": "Output Color",
+				"style": "Toggle",
+				"description": "If on, r,g,b channels are created.If on, r,g,b channels are created."
+			},
+			{
+				"name": "redscale",
+				"label": "Red Scale",
+				"style": "Float",
+				"description": "Scale the output r channel."
+			},
+			{
+				"name": "greenscale",
+				"label": "Green Scale",
+				"style": "Float",
+				"description": "Scale the output g channel."
+			},
+			{
+				"name": "bluescale",
+				"label": "Blue Scale",
+				"style": "Float",
+				"description": "Scale the output b channel."
+			},
+			{
+				"name": "blankingcount",
+				"label": "Blanking Count",
+				"style": "Int",
+				"description": "In the case of input, the number of black/off positions to insert between geometry primitives.  In the case of input, the number of black/off positions to insert between full raster scans. Color outpu"
+			},
+			{
+				"name": "top",
+				"label": "TOP",
+				"style": "TOP",
+				"description": "Path to the TOP node."
+			},
+			{
+				"name": "width",
+				"label": "Width",
+				"style": "Int",
+				"description": "The number of columns to resample the image at."
+			},
+			{
+				"name": "height",
+				"label": "Height",
+				"style": "Int",
+				"description": "The number of rows to resample the image at."
+			},
+			{
+				"name": "level",
+				"label": "Level",
+				"style": "Int",
+				"description": "The number of brightness levels each pixel can have."
+			},
+			{
+				"name": "limit",
+				"label": "Auto Reduce",
+				"style": "Toggle",
+				"description": "Automatically reduce the number of rows and columns dynamically to keep the output frame rate"
+			},
+			{
+				"name": "layered",
+				"label": "Layered",
+				"style": "Toggle",
+				"description": "Output the pixels in order of brightness, else they are output left to right for each row."
+			},
+			{
+				"name": "interleave",
+				"label": "Interleave",
+				"style": "Menu",
+				"description": "Controls the order in which rows are output to minimize flicker."
+			},
+			{
+				"name": "sop",
+				"label": "SOP",
+				"style": "SOP",
+				"description": "Path to the SOP node."
+			},
+			{
+				"name": "vertexorder",
+				"label": "Vertex Order",
+				"style": "Toggle",
+				"description": "Output the points in the same order as the vertices of each polygon, instead of the order in which the points are defined in the geometry."
+			},
+			{
+				"name": "limitstep",
+				"label": "Limit Step Size",
+				"style": "Toggle",
+				"description": "Breakup long x,y jumps into several smaller incremental jumps."
+			},
+			{
+				"name": "stepsize",
+				"label": "Step Size",
+				"style": "Float",
+				"description": "The distance each x,y can change when above option enabled."
+			},
+			{
+				"name": "vertexrepeat",
+				"label": "Vertex Repeat",
+				"style": "Int",
+				"description": "Repeat each vertex of the each primitive multiple times."
+			},
+			{
+				"name": "camera",
+				"label": "Camera",
+				"style": "Object",
+				"description": "Project the geometry onto a 2D plane from this camera, otherwise, only the original x,y components of the geometry are used."
+			},
+			{
+				"name": "chop",
+				"label": "CHOP",
+				"style": "CHOP",
+				"description": "Path to the CHOP node."
+			},
+			{
+				"name": "trigger",
+				"label": "Trigger",
+				"style": "Toggle",
+				"description": "The output graph will begin where its value exceeds this value. This allows for steady 'frozen' waveforms, analagous to an oscilloscope triggered sweep."
+			},
+			{
+				"name": "triggerval",
+				"label": "Trigger Value",
+				"style": "Float",
+				"description": "The value to begin the trigger."
+			},
+			{
+				"name": "trim",
+				"label": "Trim",
+				"style": "Toggle",
+				"description": "Limit the length of the to be scanned."
+			},
+			{
+				"name": "trimval",
+				"label": "Trim Value",
+				"style": "Float",
+				"description": "The length of the to be scanned."
+			},
+			{
+				"name": "trimunits",
+				"label": "Trim Units",
+				"style": "Menu",
+				"description": "Select the units to use for this parameter, Samples, Frames, or Seconds."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

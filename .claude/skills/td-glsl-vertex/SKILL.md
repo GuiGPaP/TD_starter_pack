@@ -31,21 +31,46 @@ description: Write GLSL vertex shaders for TouchDesigner's GLSL MAT operator. Us
 
 8. **Custom VS replaces default varyings.** Once you supply a vertex shader, `vUV`, `vP`, `vN`, `vColor` stop existing. Declare and write every varying your pixel shader reads.
 
+## TD GLSL MAT Reference (from official docs)
+
+### Key Parameters (glslMAT)
+- `glslversion` — GLSL version (4.60 default, Vulkan)
+- `vdat` — Vertex Shader DAT
+- `pdat` — Pixel Shader DAT
+- `gdat` — Geometry Shader DAT (optional)
+- `predat` — Preprocess Directives DAT (#extension, #define)
+- `inherit` — Inherit uniforms/samplers from another GLSL MAT
+- `dodeform` — Enable deforms (skinning/bones)
+- `lightingspace` — World Space (default) or legacy Camera Space
+
+### POP Attribute Access in GLSL MAT
+Declare attributes via the 'Attributes' page (not in shader code). Access via:
+```glsl
+TDAttrib_AttribName()           // for the current vertex
+TDAttrib_AttribName(vertexIdx)  // for any vertex (POPs only)
+TDTexAttrib_AttribName(layer)   // returns TDAttrib for POPs, uv[layer] for SOPs
+```
+
+### Sampler/Texture Setup
+Unlike GLSL TOP, GLSL MAT samplers are configured via the Samplers sequence parameter (name + TOP reference), not auto-detected from inputs.
+
 ## Fetching Documentation
 
 ### Which tool for which question
 
 | Question domain | Tool to use | How |
 |---|---|---|
-| TD GLSL MAT API (TDDeform, uTDMats, instancing) | `mcp__Context7__query-docs` | Resolve `"touchdesigner"` first, then query |
-| TD network setup, Render TOP, instancing config | td-guide skill | Route through td-guide's reference table |
-| GLSL language features, built-in functions | `mcp__exa__get_code_context_exa` | Query with GLSL version context |
-| Shader debugging, OpenGL errors | `mcp__exa__web_search_exa` | Search with TD + error message |
+| GLSL patterns (vertex, displacement, instancing) | `search_glsl_patterns` | query + `type: "vertex"` |
+| Operator params, render setup | `search_operators` | query "render" or "glsl" |
+| TD techniques (instancing, materials) | `search_techniques` | query + category |
+| TD network setup, Render TOP, instancing config | td-guide skill | Route through td-guide |
+| GLSL language features | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | Query with GLSL context |
+| Shader debugging, Vulkan errors | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | TD + error message |
 
 ### When to trust this skill vs. fetch fresh docs
 
-- **Trust the skill** for: transform pipeline, guardrails, varying patterns, TD-specific functions
-- **Fetch fresh docs** for: exact function signatures you haven't used before, new TD versions, OpenGL spec details
+- **Trust the skill** for: transform pipeline, guardrails, varying patterns, TD-specific functions, POP attribute access
+- **Fetch fresh docs** for: exact function signatures you haven't used before, new TD versions, Vulkan spec details
 
 ## Loading References
 

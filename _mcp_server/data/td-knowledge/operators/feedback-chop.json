@@ -1,0 +1,91 @@
+{
+	"id": "feedback-chop",
+	"title": "feedbackCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"feedback",
+		"chop",
+		"feedbackchop",
+		"output",
+		"delta",
+		"reset",
+		"resetpulse",
+		"timeslice"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "feedbackCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Choose what to output from this menu."
+			},
+			{
+				"name": "delta",
+				"label": "Delta Time",
+				"style": "Toggle",
+				"description": "Time differential during feedback. If on, it adds a 'dt' channel whose value is the elapsed time since the last cook."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "Activates feedback when set to 0. Disables feedback when set to 1. When disabled, the Feedback passes thru the data connected to its input."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Resets the feedback in a single frame when clicked."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,143 @@
+{
+	"id": "proximity-pop",
+	"title": "proximityPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"proximity",
+		"pop",
+		"proximitypop",
+		"maxdist",
+		"mindist",
+		"maxlinesperpoint",
+		"uniformdist",
+		"maxtempneighbors"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "proximityPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "maxdist",
+				"label": "Maximum Distance",
+				"style": "Float",
+				"description": "Maximum distance from current point for candidate points to create lines to."
+			},
+			{
+				"name": "mindist",
+				"label": "Minimum Distance",
+				"style": "Float",
+				"description": "Minimum distance from current point for candidate points to create lines to."
+			},
+			{
+				"name": "maxlinesperpoint",
+				"label": "Max Lines per Point",
+				"style": "Int",
+				"description": "Specifies the max number of lines emanating from each point in the first input."
+			},
+			{
+				"name": "uniformdist",
+				"label": "Uniform Distribution",
+				"style": "Toggle",
+				"description": "Allows evenly distributed selection among nearby points, rather than defaulting to the first ones found."
+			},
+			{
+				"name": "maxtempneighbors",
+				"label": "Max Temp Neighbors",
+				"style": "Int",
+				"description": "Used internally to store candidate points to create lines to before removing some to reach the max number of lines per point."
+			},
+			{
+				"name": "duplines",
+				"label": "Duplicate Lines",
+				"style": "Menu",
+				"description": "Determines what to do with duplicated proximity lines"
+			},
+			{
+				"name": "numhashbuckets",
+				"label": "Num Hash Buckets",
+				"style": "Int",
+				"description": "The number of buckets the points will be sorted in based on their position. A good heuristic is to choose it to be close to the number of points."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Whether to output points with attributes or lines."
+			},
+			{
+				"name": "linedir",
+				"label": "Line Direction",
+				"style": "Toggle",
+				"description": "Enable addition of line direction attribute."
+			},
+			{
+				"name": "linelength",
+				"label": "Line Length",
+				"style": "Toggle",
+				"description": "Enable addition of line length attribute."
+			},
+			{
+				"name": "endptattrs",
+				"label": "End Point Attributes",
+				"style": "Toggle",
+				"description": "Enable outputting end point attributes from second input"
+			},
+			{
+				"name": "origin",
+				"label": "Origin",
+				"style": "Menu",
+				"description": "Sets whether the lines origin comes from the first input or the second input."
+			},
+			{
+				"name": "remunusedpoints",
+				"label": "Remove Unused Points",
+				"style": "Toggle",
+				"description": "Removes unused points not referenced by primitives."
+			},
+			{
+				"name": "cpureadback",
+				"label": "Copy Topology Info Back to CPU",
+				"style": "Toggle",
+				"description": "Enable copying the point count and topology information held on the to the CPU."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "linelengthname",
+				"label": "Linelengthname",
+				"style": "Str"
+			},
+			{
+				"name": "linedirname",
+				"label": "Linedirname",
+				"style": "Str"
+			}
+		],
+		"versions": {}
+	}
+}

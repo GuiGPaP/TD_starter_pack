@@ -1,0 +1,97 @@
+{
+	"id": "bloom-top",
+	"title": "bloomTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"bloom",
+		"top",
+		"bloomtop",
+		"preblacklevel",
+		"pregamma",
+		"prebrightness",
+		"minbloomradius",
+		"maxbloomradius"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "bloomTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "preblacklevel",
+				"label": "Pre-Black Level",
+				"style": "Float",
+				"description": "Similar to the Black Level parameter of a Luma Level . Pixels with a luminosity less than this value are pushed to black."
+			},
+			{
+				"name": "pregamma",
+				"label": "Pre-Gamma",
+				"style": "Float",
+				"description": "Similar to the Gamma parameter of a Luma Level , applies a gamma adjustment to the pixel value after the Pre-Black Level stage, which makes all non-zero values closer to RGB = 1, 1, 1."
+			},
+			{
+				"name": "prebrightness",
+				"label": "Pre-Brightness",
+				"style": "Float",
+				"description": "Similar to the Brightness parameter of a Luma Level , it is a multiplier for the pixel value after the Pre-Gamma stage."
+			},
+			{
+				"name": "minbloomradius",
+				"label": "Min Bloom Radius",
+				"style": "Float",
+				"description": "Determines the minimum blur level to start sampling from. It is 0 to 1, so given a 1024x1024 image has 10 blur levels, if Minimum Bloom Size is set to .2, we will begin sampling from blur level 2 (the"
+			},
+			{
+				"name": "maxbloomradius",
+				"label": "Max Bloom Radius",
+				"style": "Float",
+				"description": "Determines the maximum blur level we sample from. It is 0 to 1, so if the image has 10 blur levels and a Maximum Bloom Size is set to .8, we will sample mipmap levels up to level 8. If Max<Min, Max is"
+			},
+			{
+				"name": "bloomthreshold",
+				"label": "Bloom Threshold",
+				"style": "Float",
+				"description": "After the blur levels have been mixed, this cuts away the darkest part of the image, or, when < 0, it adds more of the full-image average."
+			},
+			{
+				"name": "bloomscurve",
+				"label": "Bloom S-Curve",
+				"style": "Float",
+				"description": "Reshapes the bloom rolloff so that it is tighter/steeper to the hot spots."
+			},
+			{
+				"name": "bloomfill",
+				"label": "Bloom Fill",
+				"style": "Float",
+				"description": "Makes the bloom wider."
+			},
+			{
+				"name": "bloomintensity",
+				"label": "Bloom Intensity",
+				"style": "Float",
+				"description": "Final multiplier of accumulated bloom value."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Permits the user to select the image that is output; useful for previewing the outputs of each stage of the bloom pipeline. If set to \"Input\", the original image is output; if set to \"Preprocess\", the"
+			},
+			{
+				"name": "inputimage",
+				"label": "Inputimage",
+				"style": "Float",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

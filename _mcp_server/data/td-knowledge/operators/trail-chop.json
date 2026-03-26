@@ -1,0 +1,133 @@
+{
+	"id": "trail-chop",
+	"title": "trailCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"trail",
+		"chop",
+		"trailchop",
+		"active",
+		"growlength",
+		"wlength",
+		"wlengthunit",
+		"capture"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "trailCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When On the Trail will record its input."
+			},
+			{
+				"name": "growlength",
+				"label": "Grow Length",
+				"style": "Toggle",
+				"description": "When On the length of the Trail 's recording will keep getting longer as the timeline moves forward. Use this for recording any length as needed."
+			},
+			{
+				"name": "wlength",
+				"label": "Window Length",
+				"style": "Float",
+				"description": "The amount of history recorded is set by Length. The Units menu on the right determine which units to use in the parameter (Samples, Frames, Seconds). A setting of 4 seconds will show the value of the"
+			},
+			{
+				"name": "wlengthunit",
+				"label": "Window Length Unit",
+				"style": "Menu",
+				"description": "Choose between using Samples, Frames, or Seconds as the units for the Length parameter."
+			},
+			{
+				"name": "capture",
+				"label": "Capture",
+				"style": "Menu",
+				"description": "Determines when to capture values."
+			},
+			{
+				"name": "resample",
+				"label": "Resample",
+				"style": "Toggle",
+				"description": "Enable parameter below to resample the output to a different length."
+			},
+			{
+				"name": "samples",
+				"label": "Resample",
+				"style": "Int",
+				"description": "Resample the output to this specified length."
+			},
+			{
+				"name": "setrate",
+				"label": "Rate",
+				"style": "Toggle",
+				"description": "Enable parameter below to use a different sample rate."
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "Resample using this sample rate instead of the global frame rate ( )."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "While On, this toggle resets the channel(s) to 0."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Click to instantly resets the channel(s) to 0."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

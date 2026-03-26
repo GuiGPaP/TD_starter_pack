@@ -1,0 +1,217 @@
+{
+	"id": "kinect-chop",
+	"title": "kinectCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"kinect",
+		"chop",
+		"kinectchop",
+		"active",
+		"hwversion",
+		"sensor",
+		"skeleton",
+		"maxplayers"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "kinectCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "When 'On' data is captured from the Kinect sensor."
+			},
+			{
+				"name": "hwversion",
+				"label": "Hardware Version",
+				"style": "Menu",
+				"description": "Choose between Kinect v1 or Kinect v2 sensors."
+			},
+			{
+				"name": "sensor",
+				"label": "Sensor",
+				"style": "Menu",
+				"description": "Selects which Kinect sensor to use. Only available when using Kinect v1."
+			},
+			{
+				"name": "skeleton",
+				"label": "Skeleton",
+				"style": "Menu",
+				"description": "Selects options for skeletal tracking."
+			},
+			{
+				"name": "maxplayers",
+				"label": "Max Players",
+				"style": "Int",
+				"description": "Limits how many players to track."
+			},
+			{
+				"name": "interactions",
+				"label": "Interactions",
+				"style": "Toggle",
+				"description": "Enables interactions, which returns interaction data such as \"grip\" and \"press\".  The additional channels output are prefixed with and .<"
+			},
+			{
+				"name": "relbonerotations",
+				"label": "Relative Bone Rotations",
+				"style": "Toggle",
+				"description": "Returns rx, ry, and rz relative rotation channels for each bone. The rotation is relative to the previous joint."
+			},
+			{
+				"name": "absbonerotations",
+				"label": "Absolute Bone Rotations",
+				"style": "Toggle",
+				"description": "Returns rx, ry, and rz absolute rotation channels for each bone."
+			},
+			{
+				"name": "bonelengths",
+				"label": "Bone Lengths",
+				"style": "Toggle",
+				"description": "Returns the length for each bone."
+			},
+			{
+				"name": "unrollbones",
+				"label": "Unroll Bone Values",
+				"style": "Toggle",
+				"description": "Return the rx, ry, and rz values in a form that includes no discontinuities (or wrap arounds), so that they can be safely blended, filtered, lagged etc. For example, a rotation value running from 0 to"
+			},
+			{
+				"name": "worldspace",
+				"label": "World Space Positions",
+				"style": "Toggle",
+				"description": "Returns the tracked positions in world space coordinates. For each tracked point, a , , triplet of channels will be output."
+			},
+			{
+				"name": "colorspace",
+				"label": "Color Space Positions",
+				"style": "Toggle",
+				"description": "Returns the tracked positions in image space coordinates relative to the color camera. For each tracked point, a , , triplet of channels will be output. Note this is only available on Kinectv2."
+			},
+			{
+				"name": "depthspace",
+				"label": "Depth Space Positions",
+				"style": "Toggle",
+				"description": "Returns the tracked positions in image space coordinates relative to the depth camera. For each tracked point, a , , triplet of channels will be output. Works on both Kinectv1 and Kinectv2."
+			},
+			{
+				"name": "facetracking",
+				"label": "Face Tracking",
+				"style": "Toggle",
+				"description": "Returns face tracking channels for detected faces."
+			},
+			{
+				"name": "statuschans",
+				"label": "Status Channels",
+				"style": "Toggle",
+				"description": "A number of additional status channels are reported when this is turned on. A group of channels will report if a joint is currently being tracked, and another group of channels reports if part of the "
+			},
+			{
+				"name": "neardepthmode",
+				"label": "Near Depth Mode",
+				"style": "Toggle",
+				"description": "Enables near mode for skeleton tracking, which allows the depth camera to see objects as close as 40cm to the camera (instead of the default 80cm)."
+			},
+			{
+				"name": "flipskelu",
+				"label": "Flip Skeleton U Direction",
+				"style": "Toggle",
+				"description": "Flips the u-axis for skeleton channels, helpful when using a mirror image from the camera."
+			},
+			{
+				"name": "flipfaceu",
+				"label": "Flip Face U Direction",
+				"style": "Toggle",
+				"description": "Flips the u-axis for face channels, helpful when using a mirror image from the camera."
+			},
+			{
+				"name": "jointsmoothing",
+				"label": "Joint Smoothing",
+				"style": "Toggle",
+				"description": "Activates Kinect's smoothing algorithm for joint tracking and enables the smoothing parameters below."
+			},
+			{
+				"name": "smoothing",
+				"label": "Smoothing",
+				"style": "Float",
+				"description": "Increasing the smoothing parameter value leads to more highly-smoothed skeleton position values being returned. It is the nature of smoothing that, as the smoothing value is increased, responsiveness "
+			},
+			{
+				"name": "correction",
+				"label": "Correction",
+				"style": "Float",
+				"description": "Lower values are slower to correct towards the raw data and appear smoother, while higher values will correct toward the raw data more quickly. Values must be in the range 0 through 1.0."
+			},
+			{
+				"name": "prediction",
+				"label": "Prediction",
+				"style": "Float",
+				"description": "The number of frames to predict into the future. Values must be greater than or equal to zero. Values greater than 0.5 will likely lead to overshooting when moving quickly. This effect can be damped b"
+			},
+			{
+				"name": "jitterrad",
+				"label": "Jitter Radius",
+				"style": "Float",
+				"description": "The radius in meters for jitter reduction. Any jitter beyond this radius is clamped to the radius."
+			},
+			{
+				"name": "maxdevrad",
+				"label": "Max Deviation Radius",
+				"style": "Float",
+				"description": "The maximum radius in meters that filtered positions are allowed to deviate from raw data. Filtered values that would be more than this radius from the raw data are clamped at this distance, in the di"
+			},
+			{
+				"name": "rotationsmoothing",
+				"label": "Rotation Smoothing",
+				"style": "Float",
+				"description": "Activates Kinect's smoothing algorithm for rotations. As with joint smoothing above, higher levels of smoothing will introduce more latency."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

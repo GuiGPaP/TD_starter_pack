@@ -42,16 +42,38 @@ description: Write GLSL compute shaders for TouchDesigner's POP (Point Operator)
 
 9. **Guard against division by zero in force calculations.** Clamp distances with `max(dist, EPSILON)` — zero-distance singularities produce NaN that propagates to every downstream attribute.
 
+## TD GLSL POP Reference (from official docs)
+
+### Key Parameters (glslPOP)
+- `computedat` — Compute Shader DAT
+- `attrclass` — Attribute class to process (point, vertex, primitive)
+- `initoutputattrs` — Initialize output attributes (copy input defaults)
+- `prevpassoutput` — Copy previous pass output to next pass input
+- `npasses` — Number of shader passes
+- `simplexnoise` — Performance vs Quality TDSimplexNoise()
+- `attr` sequence — Declare new output attributes (name, type)
+- `input` sequence — Additional input POPs (besides connected ones)
+
+### POP Attribute Access in GLSL TOP
+POPs can expose attributes to GLSL TOPs via the Buffer page:
+```glsl
+attribType TDBuffer_AttribName(uint elementIndex);
+attribType TDBuffer_AttribName(uint elementIndex, uint arrayIndex);
+const uint TDBufferLength_AttribName();
+const uint cTDBufferArraySize_AttribName;
+```
+
 ## Fetching Documentation
 
 ### Which tool for which question
 
 | Question domain | Tool to use | How |
 |---|---|---|
-| TD POP API (TDIndex, TDIn_*, attribute arrays, SSBO layout) | `mcp__Context7__query-docs` | Resolve `"touchdesigner"` first, then query with POP-specific terms |
-| Compute shader patterns, SSBO examples, particle systems | `mcp__exa__get_code_context_exa` | `"TouchDesigner GLSL POP compute shader particle"` |
-| General GPU compute, GLSL 4.3 compute shaders | `mcp__exa__web_search_exa` | `"OpenGL compute shader SSBO workgroup"` |
-| TD network setup, operator wiring | td-guide skill | Use `create_geometry_comp` with `pop=true` for POP geometry |
+| GLSL patterns (compute, particle) | `search_glsl_patterns` | query + `type: "compute"` |
+| Operator params, POP setup | `search_operators` | query "glsl pop" or "particle" |
+| TD techniques (particle systems, GPU compute) | `search_techniques` | query + `category: "gpu-compute"` |
+| TD network setup, operator wiring | td-guide skill | Use `create_geometry_comp` with `pop=true` |
+| General GPU compute, GLSL compute shaders | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | `"OpenGL compute shader SSBO workgroup"` |
 
 ### When to trust this skill vs. fetch fresh docs
 

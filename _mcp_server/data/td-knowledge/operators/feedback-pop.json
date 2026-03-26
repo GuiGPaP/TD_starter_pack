@@ -1,0 +1,107 @@
+{
+	"id": "feedback-pop",
+	"title": "feedbackPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"feedback",
+		"pop",
+		"feedbackpop",
+		"initializepulse",
+		"startpulse",
+		"play",
+		"preroll",
+		"donepulse"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "feedbackPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "initializepulse",
+				"label": "Initialize",
+				"style": "Pulse",
+				"description": "Initializes the from its input and parameters, it indicates it’s ready by turning on the ready channel in an attached Info , awaiting a Start pulse."
+			},
+			{
+				"name": "startpulse",
+				"label": "Start",
+				"style": "Pulse",
+				"description": "Start playback."
+			},
+			{
+				"name": "play",
+				"label": "Play",
+				"style": "Toggle",
+				"description": "Pause or play the feedback loop."
+			},
+			{
+				"name": "preroll",
+				"label": "Pre-Roll",
+				"style": "Float",
+				"description": "Run the loop for this time before it is ready during initialization.."
+			},
+			{
+				"name": "donepulse",
+				"label": "Go to Done",
+				"style": "Pulse",
+				"description": "Will immediately go to the done state."
+			},
+			{
+				"name": "usememlimit",
+				"label": "Use Memory Limit",
+				"style": "Toggle",
+				"description": "Enable a memory limit on the target data that can be copied back."
+			},
+			{
+				"name": "inputmul",
+				"label": "Input Multiplier",
+				"style": "Int",
+				"description": "Limits the memory usage of this to a multiplier of the input memory usage."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "prerollunit",
+				"label": "Prerollunit",
+				"style": "Menu"
+			},
+			{
+				"name": "steppulse",
+				"label": "Steppulse",
+				"style": "Pulse",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pop",
+				"label": "Pop",
+				"style": "POP"
+			}
+		],
+		"versions": {}
+	}
+}

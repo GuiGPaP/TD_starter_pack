@@ -1,0 +1,67 @@
+{
+	"id": "substance-top",
+	"title": "substanceTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"substance",
+		"top",
+		"substancetop",
+		"file",
+		"reloadconfig",
+		"graph",
+		"output",
+		"invertnormal"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "substanceTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "file",
+				"label": "Substance Designer File",
+				"style": "File",
+				"description": "Specify the .sbsar material file from Substance Designer."
+			},
+			{
+				"name": "reloadconfig",
+				"label": "Reload File",
+				"style": "Pulse",
+				"description": "Reloads the file from disk."
+			},
+			{
+				"name": "graph",
+				"label": "Graph",
+				"style": "Menu",
+				"description": "Specify which graph in the file to use. See for more details."
+			},
+			{
+				"name": "output",
+				"label": "Output",
+				"style": "Menu",
+				"description": "Choose what the output of the will be. Grid Preview can be used to see all the texture maps inside the material at once."
+			},
+			{
+				"name": "invertnormal",
+				"label": "Invert Normal Map",
+				"style": "Toggle",
+				"description": "Inverts the normal map coming from the sbsar file. This parameter should be used when the normal map in the sbsar is -Y (DirectX) since normal map usage in TouchDesigner expects the normal map as Y+ ("
+			},
+			{
+				"name": "engine",
+				"label": "Engine",
+				"style": "Menu",
+				"description": "Select the Substance Engine used for rendering. The engine has much lower render times and is the default engine, while the CPU is included as a legacy mode and was the engine used in TouchDesigner ve"
+			}
+		],
+		"versions": {}
+	}
+}

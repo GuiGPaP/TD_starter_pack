@@ -1,0 +1,97 @@
+{
+	"id": "expression-chop",
+	"title": "expressionCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"expression",
+		"chop",
+		"expressionchop",
+		"chanperexpr",
+		"limitexpr",
+		"limitnum",
+		"expr",
+		"expr0expr"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "expressionCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "chanperexpr",
+				"label": "Channels per Expr",
+				"style": "Int",
+				"description": "The number of channels that use the current expression before the next expression is selected."
+			},
+			{
+				"name": "limitexpr",
+				"label": "Limit Output Channels",
+				"style": "Toggle",
+				"description": "Turn On this parameter to limit the number of channels the will output."
+			},
+			{
+				"name": "limitnum",
+				"label": "Number of Channels",
+				"style": "Int",
+				"description": "When the above parameter is On, set the maximum number of channels to output."
+			},
+			{
+				"name": "expr",
+				"label": "Expression",
+				"style": "Sequence",
+				"description": "The sequence of expressions used"
+			},
+			{
+				"name": "expr0expr",
+				"label": "Expression",
+				"style": "Float",
+				"description": "Enter your expression here. The input values are in the expressions. gets from the channel of the second input."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

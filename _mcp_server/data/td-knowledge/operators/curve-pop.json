@@ -1,0 +1,289 @@
+{
+	"id": "curve-pop",
+	"title": "curvePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"curve",
+		"pop",
+		"curvepop",
+		"totallength",
+		"outputcurve",
+		"normalizeu",
+		"symmetric",
+		"parsize"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "curvePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "totallength",
+				"label": "Total Length",
+				"style": "Int",
+				"description": "Determines the number of points."
+			},
+			{
+				"name": "outputcurve",
+				"label": "Output Curve",
+				"style": "Menu",
+				"description": "Selects the type of primitive to output."
+			},
+			{
+				"name": "normalizeu",
+				"label": "Normalize U",
+				"style": "Toggle",
+				"description": "Normalize all the U values so their range is 0 to 1."
+			},
+			{
+				"name": "symmetric",
+				"label": "Symmetric",
+				"style": "Toggle",
+				"description": "Enable mirroring the curve segments."
+			},
+			{
+				"name": "parsize",
+				"label": "Parameter Size",
+				"style": "Menu",
+				"description": "Number of independent configurable parameter values."
+			},
+			{
+				"name": "startu",
+				"label": "Start U",
+				"style": "Float",
+				"description": "Start U position for the first segment."
+			},
+			{
+				"name": "seg",
+				"label": "Segment",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for creating curve segments."
+			},
+			{
+				"name": "seg0type",
+				"label": "Curve Type",
+				"style": "Menu",
+				"description": "The interponation type of the curve between the start and end of the segment."
+			},
+			{
+				"name": "seg0u",
+				"label": "U",
+				"style": "Float",
+				"description": "Sets the segments end U."
+			},
+			{
+				"name": "seg0specstartval",
+				"label": "Specify Start Value",
+				"style": "Toggle",
+				"description": "When set, the segment has a start value, otherwise it is a continuation of the previous segment."
+			},
+			{
+				"name": "seg0alpha",
+				"label": "Alpha",
+				"style": "Float",
+				"description": "One paramter that affects the curve, usually a form of steepness."
+			},
+			{
+				"name": "seg0beta",
+				"label": "Beta",
+				"style": "Float",
+				"description": "A second paramter that affects the curve, usually a form of bias to the start or end of a curve segment."
+			},
+			{
+				"name": "seg0slopein",
+				"label": "Slope in",
+				"style": "Float",
+				"description": "Bezier slope factor for the incoming curve segment."
+			},
+			{
+				"name": "seg0slopeout",
+				"label": "Slope Out",
+				"style": "Float",
+				"description": "Bezier slope factor for the outgoing curve segment."
+			},
+			{
+				"name": "applylookup",
+				"label": "Apply Lookup",
+				"style": "Toggle",
+				"description": "The Lookup page lets you apply the curve as a lookup without first converting anything to points."
+			},
+			{
+				"name": "lookupindexattr",
+				"label": "Lookup Index Attribute",
+				"style": "StrMenu",
+				"description": "Attribute to use as the index for the lookup."
+			},
+			{
+				"name": "fromlow",
+				"label": "From Low High",
+				"style": "Float",
+				"description": "Reranges the attribute value."
+			},
+			{
+				"name": "tolow",
+				"label": "To Low High",
+				"style": "Float",
+				"description": "Reranges the input lookup attribute value."
+			},
+			{
+				"name": "extendleft",
+				"label": "Extend Left and Right",
+				"style": "Menu",
+				"description": "What happens when the lookup samples outside of the range."
+			},
+			{
+				"name": "lookup",
+				"label": "Lookup",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks of lookups."
+			},
+			{
+				"name": "lookup0multiply",
+				"label": "Multiply",
+				"style": "Float",
+				"description": "A multiplier that is applied to the lookup result."
+			},
+			{
+				"name": "lookup0add",
+				"label": "Add",
+				"style": "Float",
+				"description": "A value you add to the result of a lookup."
+			},
+			{
+				"name": "lookup0combineop",
+				"label": "Combine Operation",
+				"style": "Menu",
+				"description": "After a value is retrieved doing the lookup, it can be added or multiplied with an attribute."
+			},
+			{
+				"name": "lookup0outputattrscope",
+				"label": "Output Attribute Scope",
+				"style": "StrMenu",
+				"description": "Name of attribute to output (can choose components of attribute), can choose from menu."
+			},
+			{
+				"name": "lookup0overrideautoattr",
+				"label": "Override Automatic Attribute",
+				"style": "Toggle",
+				"description": "Whether to override the kind of attribute automatically created based on the input and parameters. Allows to specify manually the type and number of components of the new attribute."
+			},
+			{
+				"name": "lookup0attrtype",
+				"label": "Attribute Type",
+				"style": "Menu",
+				"description": "The lookup attribute type."
+			},
+			{
+				"name": "lookup0attrnumcomps",
+				"label": "Components",
+				"style": "Menu",
+				"description": "The number of components in the new custom attribute."
+			},
+			{
+				"name": "extendright",
+				"label": "Extend Right",
+				"style": "Menu"
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "fromhigh",
+				"label": "Fromhigh",
+				"style": "Float"
+			},
+			{
+				"name": "seg0endval0",
+				"label": "Seg0Endval0",
+				"style": "Float"
+			},
+			{
+				"name": "lookup0defaultval3",
+				"label": "Lookup0Defaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "seg0startval1",
+				"label": "Seg0Startval1",
+				"style": "Float"
+			},
+			{
+				"name": "seg0startval0",
+				"label": "Seg0Startval0",
+				"style": "Float"
+			},
+			{
+				"name": "seg0endval3",
+				"label": "Seg0Endval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "seg0startval3",
+				"label": "Seg0Startval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "seg0endval1",
+				"label": "Seg0Endval1",
+				"style": "Float"
+			},
+			{
+				"name": "lookup0defaultval1",
+				"label": "Lookup0Defaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "lookup0defaultval2",
+				"label": "Lookup0Defaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "tohigh",
+				"label": "Tohigh",
+				"style": "Float"
+			},
+			{
+				"name": "seg0endval2",
+				"label": "Seg0Endval2",
+				"style": "Float"
+			},
+			{
+				"name": "seg0startval2",
+				"label": "Seg0Startval2",
+				"style": "Float"
+			},
+			{
+				"name": "lookup0defaultval0",
+				"label": "Lookup0Defaultval0",
+				"style": "Float"
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,0 +1,60 @@
+{
+	"id": "dimension-pop",
+	"title": "dimensionPOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"dimension",
+		"pop",
+		"dimensionpop",
+		"dim0number",
+		"bypass",
+		"freeextragpumem",
+		"delinputattrs"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "dimensionPOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "dim",
+				"label": "Dimension",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for dimensions."
+			},
+			{
+				"name": "dim0number",
+				"label": "Number",
+				"style": "Int",
+				"description": "The size of the dimension in the current block."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			}
+		],
+		"versions": {}
+	}
+}

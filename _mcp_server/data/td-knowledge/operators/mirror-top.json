@@ -1,0 +1,72 @@
+{
+	"id": "mirror-top",
+	"title": "mirrorTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"mirror",
+		"top",
+		"mirrortop",
+		"pivotunit",
+		"rotate",
+		"extend",
+		"flipx",
+		"flipy"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "mirrorTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "pivotunit",
+				"label": "Pivot Unit",
+				"style": "Menu",
+				"description": "Specify the units used to position the pivot point."
+			},
+			{
+				"name": "rotate",
+				"label": "Rotate",
+				"style": "Float",
+				"description": "Rotates a copy of the image around the pivot point specified above."
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "This parameter determines what happens at the edge of the image."
+			},
+			{
+				"name": "flipx",
+				"label": "Flip X",
+				"style": "Toggle",
+				"description": "Flips the image in X."
+			},
+			{
+				"name": "flipy",
+				"label": "Flip Y",
+				"style": "Toggle",
+				"description": "Flips the image in Y."
+			},
+			{
+				"name": "pivoty",
+				"label": "Pivoty",
+				"style": "XYZW",
+				"description": "The pivot point determines where in the image the Rotate parameter will rotate around."
+			},
+			{
+				"name": "pivotx",
+				"label": "Pivotx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

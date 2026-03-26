@@ -1,0 +1,25 @@
+{
+	"id": "null-top",
+	"title": "nullTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"null",
+		"top",
+		"nulltop"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "nullTOP",
+		"opFamily": "TOP",
+		"parameters": [],
+		"versions": {}
+	}
+}

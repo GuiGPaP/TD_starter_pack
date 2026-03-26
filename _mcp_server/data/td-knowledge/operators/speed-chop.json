@@ -1,0 +1,150 @@
+{
+	"id": "speed-chop",
+	"title": "speedCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"speed",
+		"chop",
+		"speedchop",
+		"order",
+		"constant1",
+		"constant2",
+		"constant3"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "speedCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "order",
+				"label": "Order",
+				"style": "Menu",
+				"description": "Determines the order of the integral to use. If the input is a velocity, a First Order integral will return the position. If the input is an acceleration, a Second Order integral will return the posit"
+			},
+			{
+				"name": "speed",
+				"label": "Speed",
+				"style": "Float",
+				"description": "Allows generating values when no inputs are connected. This parameter is disabled as soon as an input is connected to the Speed ."
+			},
+			{
+				"name": "constant1",
+				"label": "First Constant",
+				"style": "Float",
+				"description": "Constant to add to the entire result after integrating once."
+			},
+			{
+				"name": "constant2",
+				"label": "Second Constant",
+				"style": "Float",
+				"description": "Constant to add to the entire result after integrating twice."
+			},
+			{
+				"name": "constant3",
+				"label": "Third Constant",
+				"style": "Float",
+				"description": "Constant to add to the entire result after integrating three times."
+			},
+			{
+				"name": "limittype",
+				"label": "Limit Type",
+				"style": "Menu",
+				"description": "Select limit options such as loop, clamp, or zigzag from the menu. The value will remain in the range from Min to less than Max."
+			},
+			{
+				"name": "min",
+				"label": "Minimum",
+				"style": "Float",
+				"description": "The minimum value the output channel can have."
+			},
+			{
+				"name": "max",
+				"label": "Maximum",
+				"style": "Float",
+				"description": "The maximum value the output channel can have."
+			},
+			{
+				"name": "speedsamples",
+				"label": "Speed per Sample",
+				"style": "Toggle",
+				"description": "Applies the speed to each sample of the channel instead of across the whole channel. Useful for working with multi-sample channels."
+			},
+			{
+				"name": "resetcondition",
+				"label": "Reset Condition",
+				"style": "Menu",
+				"description": "This menu determines how the Reset input triggers a reset of the channel(s)."
+			},
+			{
+				"name": "resetvalue",
+				"label": "Reset Value",
+				"style": "Float",
+				"description": "The channel(s) is set to this value when reset."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "While On, this toggle resets the channel(s) to the ."
+			},
+			{
+				"name": "resetonstart",
+				"label": "Reset on Start",
+				"style": "Toggle",
+				"description": "While On, the Speed will reset each time the file is restarted. If the Speed 's value gets too large it can start stepping as when it reaches the limit of 's number resolution. This is useful for proj"
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Click to instantly resets the channel(s) to the ."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

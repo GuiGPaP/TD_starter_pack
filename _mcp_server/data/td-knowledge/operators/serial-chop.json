@@ -1,0 +1,121 @@
+{
+	"id": "serial-chop",
+	"title": "serialCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"serial",
+		"chop",
+		"serialchop",
+		"active",
+		"state",
+		"port",
+		"baudrate",
+		"databits"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "serialCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "active",
+				"label": "Active",
+				"style": "Toggle",
+				"description": "This check box enables the serial connection."
+			},
+			{
+				"name": "state",
+				"label": "State",
+				"style": "Menu",
+				"description": "The type of input transition to monitor."
+			},
+			{
+				"name": "port",
+				"label": "Port",
+				"style": "StrMenu",
+				"description": "Selects the COM port that the serial connection will use."
+			},
+			{
+				"name": "baudrate",
+				"label": "Baud Rate",
+				"style": "Int",
+				"description": "The maximum number of bits of information, including \"control\" bits, that are transmitted per second. Check your input device's default baud rate and set accordingly."
+			},
+			{
+				"name": "databits",
+				"label": "Data Bits",
+				"style": "Menu",
+				"description": "This parameter sets the number of data bits sent in each. Data bits are transmitted \"backwards\". Backwards refers to the order of transmission, which is from least significant bit (LSB) to most signif"
+			},
+			{
+				"name": "parity",
+				"label": "Parity",
+				"style": "Menu",
+				"description": "This parameter can be set to none, even, or odd. The optional parity bit follows the data bits and is included as a simple means of error checking. Parity bits work by specifying ahead of time whether"
+			},
+			{
+				"name": "stopbits",
+				"label": "Stop Bits",
+				"style": "Menu",
+				"description": "The last part of transmission packet consists of 1 or 2 Stop bits. The connection will now wait for the next Start bit."
+			},
+			{
+				"name": "script",
+				"label": "Script",
+				"style": "Sequence",
+				"description": "Sequence of scripts corresponding to input channels. These strings are sent out the serial port when the corresponding channel change is detected. For example, 2 is sent to the serial port when the th"
+			},
+			{
+				"name": "script0callback",
+				"label": "Callback",
+				"style": "Str",
+				"description": "Enter the script for 0 here."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

@@ -1,22 +1,24 @@
 {
 	"id": "noise-top",
-	"title": "Noise TOP",
+	"title": "noiseTOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"noise",
-		"random",
-		"perlin",
-		"simplex",
-		"procedural",
-		"texture"
+		"top",
+		"noisetop",
+		"type",
+		"seed",
+		"period",
+		"harmon",
+		"spread"
 	],
 	"content": {
-		"summary": "Generates procedural noise textures (Perlin, Simplex, etc.) for displacement, masks, or animated backgrounds."
+		"summary": "TouchDesigner  COMP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -24,28 +26,206 @@
 		"opFamily": "TOP",
 		"parameters": [
 			{
-				"name": "type"
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The noise function used to generate noise. The functions available are:"
 			},
 			{
-				"name": "monochrome"
+				"name": "seed",
+				"label": "Seed",
+				"style": "Float",
+				"description": "Any number, integer or non-integer, which starts the random number generator. Each number gives completely different noise patterns, but with similar characteristics."
 			},
 			{
-				"name": "period"
+				"name": "period",
+				"label": "Period",
+				"style": "Float",
+				"description": "The approximate separation between peaks of a noise cycle. It is expressed in Units. Increasing the period stretches the noise pattern out."
 			},
 			{
-				"name": "harmonics"
+				"name": "harmon",
+				"label": "Harmonics",
+				"style": "Int",
+				"description": "The number of higher frequency components to layer on top of the base frequency. The higher this number, the bumpier the noise will be (as long as roughness is not set to zero). 0 harmonics give the b"
 			},
 			{
-				"name": "roughness"
+				"name": "spread",
+				"label": "Harmonic Spread",
+				"style": "Float",
+				"description": "The factor by which the frequency of the harmonics are increased. It is normally 2. A spread of 3 and a base frequency of 0.1Hz will produce harmonics at 0.3Hz, 0.9Hz, 2.7Hz, etc.. This parameter is o"
 			},
 			{
-				"name": "amplitude"
+				"name": "gain",
+				"label": "Harmonic Gain",
+				"style": "Float",
+				"description": "Amount of the Harmonic Gain layered on top of the base frequency."
 			},
 			{
-				"name": "offset"
+				"name": "rough",
+				"label": "Roughness",
+				"style": "Float",
+				"description": "Controls the effect of the higher frequency noise. When roughness is zero, all harmonics above the base frequency have no effect. At one, all harmonics are equal in amplitude to the base frequency. Wh"
 			},
 			{
-				"name": "seed"
+				"name": "exp",
+				"label": "Exponent",
+				"style": "Float",
+				"description": "Pushes the noise values toward 0, or +1 and -1. (It raises the value to the power of the exponent.) Exponents greater than one will pull the channel toward zero, and powers less than one will pull pea"
+			},
+			{
+				"name": "amp",
+				"label": "Amplitude",
+				"style": "Float",
+				"description": "Defines the noise value's amplitude (a scale on the values output)."
+			},
+			{
+				"name": "offset",
+				"label": "Offset",
+				"style": "Float",
+				"description": "Defines the midpoint color of the noise pattern, the default is 0.5 grey."
+			},
+			{
+				"name": "mono",
+				"label": "Monochrome",
+				"style": "Toggle",
+				"description": "Toggle color or monochrome noise."
+			},
+			{
+				"name": "aspectcorrect",
+				"label": "Aspect Correct",
+				"style": "Toggle",
+				"description": "Controls if the noise takes aspect ratio into account when calculating it's noise coordinates. When this is off, the noise will stretch to fit a non-square aspect ratio texture."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "The menu attached to this parameter allows you to specify the order in which the transforms will take place. Changing the Transform order will change where things go much the same way as going a block"
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "The rotational matrix presented when you click on this option allows you to set the transform order for the rotations. As with transform order (above), changing the order in which the rotations take p"
+			},
+			{
+				"name": "t4d",
+				"label": "Translate 4D",
+				"style": "Float",
+				"description": "When doing 4D noise, this applies a translation to the 4th coordinate. The previous transformation parameters do not affect the 4th coordinate."
+			},
+			{
+				"name": "s4d",
+				"label": "Scale 4D",
+				"style": "Float",
+				"description": "When doing 4D noise, this applies a scale to the 4th coordinate."
+			},
+			{
+				"name": "rgb",
+				"label": "RGB",
+				"style": "Menu",
+				"description": "When an input is connected to the Noise , the noise pattern is placed over the input image using UV coordinates and the settings from this menu."
+			},
+			{
+				"name": "inputscale",
+				"label": "Input Scale",
+				"style": "Float",
+				"description": "Adjusts how much of the input image is added to the output."
+			},
+			{
+				"name": "noisescale",
+				"label": "Noise Scale",
+				"style": "Float",
+				"description": "Adjusts how much of the noise is added to the output."
+			},
+			{
+				"name": "alpha",
+				"label": "Alpha",
+				"style": "Menu",
+				"description": "Sets the alpha channel for the output image."
+			},
+			{
+				"name": "dither",
+				"label": "Dither",
+				"style": "Toggle",
+				"description": "Dithers the output to help deal with banding and other artifacts created by precision limitations of 8-bit displays."
+			},
+			{
+				"name": "derivative",
+				"label": "Derivative (Slope)",
+				"style": "Toggle",
+				"description": "Turn this on to output the derivative (also known as slope) of the noise function. Currently, only supported for Simplex2D, Simplex3D, Perlin2D and Perlin3D noise types. For 2D noise derivatives, the "
+			},
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "Pick between Performance vs Quality noise. Performance noise is the existing TD noise. Quality noise reduces certain artifacts and axis alignment issues with the existing noise at the cost of speed. C"
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW",
+				"description": "Scale the sampling plane."
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW",
+				"description": "Control the pivot for the transform of the sampling plane."
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "Rotate the sampling plane in the noise space."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "Translate the sampling plane through the noise space."
 			}
 		],
 		"examples": [
@@ -69,8 +249,6 @@
 				"context": "textport"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

@@ -1,0 +1,33 @@
+{
+	"id": "resolution-top",
+	"title": "resolutionTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"resolution",
+		"top",
+		"resolutiontop",
+		"highqualresize"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "resolutionTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "highqualresize",
+				"label": "High Quality Resize",
+				"style": "Toggle",
+				"description": "Uses weighted averages of multiple-pixels when scaling down the image."
+			}
+		],
+		"versions": {}
+	}
+}

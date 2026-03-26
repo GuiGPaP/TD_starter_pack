@@ -1,0 +1,176 @@
+{
+	"id": "rectangle-pop",
+	"title": "rectanglePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"rectangle",
+		"pop",
+		"rectanglepop",
+		"surftype",
+		"modifybounds",
+		"orient",
+		"camera",
+		"distfromcam"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "rectanglePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "surftype",
+				"label": "Connectivity",
+				"style": "Menu",
+				"description": "Determines the primitive used to connect the points."
+			},
+			{
+				"name": "modifybounds",
+				"label": "Modify Bounds",
+				"style": "Toggle",
+				"description": "Available only when an input is connected to the to set bounds for the . When Modify Bounds is On the parameters below will further modify the shape of the ."
+			},
+			{
+				"name": "orient",
+				"label": "Orientation",
+				"style": "Menu",
+				"description": "Sets the rectangle orientation."
+			},
+			{
+				"name": "camera",
+				"label": "Camera",
+				"style": "Object",
+				"description": "Specify the camera component."
+			},
+			{
+				"name": "distfromcam",
+				"label": "Dist from Camera",
+				"style": "Float",
+				"description": "Sets the distance of the rectangle from the camera when orienting it to face the camera"
+			},
+			{
+				"name": "cornerradius",
+				"label": "Corner Radius",
+				"style": "Float",
+				"description": "Set the corner radius for the round corners rectagle"
+			},
+			{
+				"name": "cornersides",
+				"label": "Corner Sides",
+				"style": "Int",
+				"description": "Sets the number of sides on round corners"
+			},
+			{
+				"name": "anchoru",
+				"label": "Anchor U",
+				"style": "Float",
+				"description": "Puts the left side, the middle or the right side at the origin 0."
+			},
+			{
+				"name": "anchorv",
+				"label": "Anchor V",
+				"style": "Float",
+				"description": "Puts the bottom side, the middle or the top side at the origin 0."
+			},
+			{
+				"name": "normal",
+				"label": "Normal",
+				"style": "Menu",
+				"description": "Choose whether to create a normal attribute and the attribute class of the normal attribute."
+			},
+			{
+				"name": "texture",
+				"label": "Texture Coordinates",
+				"style": "Menu",
+				"description": "Sets the attribute class where the texture coordinates should be created."
+			},
+			{
+				"name": "texturefit",
+				"label": "Texture Fit",
+				"style": "Menu",
+				"description": "Determines how the texture coordinates are scaled and positioned relative to the rectangle."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW"
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizey",
+				"label": "Sizey",
+				"style": "XYZW"
+			},
+			{
+				"name": "roundedcorners",
+				"label": "Roundedcorners",
+				"style": "Toggle"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "cameraaspectx",
+				"label": "Cameraaspectx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sizex",
+				"label": "Sizex",
+				"style": "XYZW"
+			},
+			{
+				"name": "cameraaspecty",
+				"label": "Cameraaspecty",
+				"style": "XYZW"
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

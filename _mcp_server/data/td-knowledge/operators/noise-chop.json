@@ -1,22 +1,24 @@
 {
 	"id": "noise-chop",
-	"title": "Noise CHOP",
+	"title": "noiseCHOP",
 	"kind": "operator",
 	"aliases": [],
 	"searchKeywords": [
 		"noise",
-		"random",
-		"animation",
-		"modulation",
-		"procedural",
-		"channel"
+		"chop",
+		"noisechop",
+		"type",
+		"seed",
+		"period",
+		"periodunit",
+		"harmon"
 	],
 	"content": {
-		"summary": "Generates smooth random channel data. Commonly used for animation, modulation, and procedural control."
+		"summary": "TouchDesigner  COMP operator."
 	},
 	"provenance": {
 		"source": "td-docs",
-		"confidence": "medium",
+		"confidence": "high",
 		"license": "MIT"
 	},
 	"payload": {
@@ -24,25 +26,278 @@
 		"opFamily": "CHOP",
 		"parameters": [
 			{
-				"name": "type"
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "The noise function used to generate noise. The functions available are:"
 			},
 			{
-				"name": "roughness"
+				"name": "seed",
+				"label": "Seed",
+				"style": "Float",
+				"description": "Any number, integer or non-integer, which starts the random number generator. Each number gives completely different noise patterns, but with similar characteristics."
 			},
 			{
-				"name": "period"
+				"name": "period",
+				"label": "Period",
+				"style": "Float",
+				"description": "The approximate separation between peaks of a noise cycle. It is expressed in Units. Increasing the period stretches the noise pattern out."
 			},
 			{
-				"name": "amplitude"
+				"name": "periodunit",
+				"label": "Period Unit",
+				"style": "Menu",
+				"description": "Select the units to use for this parameter, Samples, Frames, Seconds, or Fraction."
 			},
 			{
-				"name": "offset"
+				"name": "harmon",
+				"label": "Harmonics",
+				"style": "Int",
+				"description": "The number of higher frequency components to layer on top of the base frequency. The higher this number, the bumpier the noise will be (as long as roughness is not set to zero). 0 harmonics give the b"
 			},
 			{
-				"name": "seed"
+				"name": "spread",
+				"label": "Harmonic Spread",
+				"style": "Float",
+				"description": "The factor by which the frequency of the harmonics are increased. It is normally 2. A spread of 3 and a base frequency of 0.1Hz will produce harmonics at 0.3Hz, 0.9Hz, 2.7Hz, etc. This parameter is on"
 			},
 			{
-				"name": "channels"
+				"name": "rough",
+				"label": "Roughness",
+				"style": "Float",
+				"description": "Controls the effect of the higher frequency noise. When roughness is zero, all harmonics above the base frequency have no effect. At one, all harmonics are equal in amplitude to the base frequency. Wh"
+			},
+			{
+				"name": "exp",
+				"label": "Exponent",
+				"style": "Float",
+				"description": "Pushes the noise values toward 0, or +1 and -1. (It raises the value to the power of the exponent.) Exponents greater than one will pull the channel toward zero, and powers less than one will pull pea"
+			},
+			{
+				"name": "numint",
+				"label": "Num of Integrals",
+				"style": "Int",
+				"description": "Defines the number of times to integrate (see the Area p. 114) the Brownian noise. Higher values produce smoother curves with fewer features. Values beyond 4 produce somewhat identical curves. This pa"
+			},
+			{
+				"name": "amp",
+				"label": "Amplitude",
+				"style": "Float",
+				"description": "Defines the noise value's amplitude (a scale on the values output)."
+			},
+			{
+				"name": "reset",
+				"label": "Reset",
+				"style": "Toggle",
+				"description": "Only available if operator's Parameter is on. Toggling this parameter will reset the noise calculation and hold the value until the parameter is released again."
+			},
+			{
+				"name": "resetpulse",
+				"label": "Reset Pulse",
+				"style": "Pulse",
+				"description": "Only available if operator's Parameter is on. Pulsing this parameter will reset the noise calculation."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Changing the Transform Order will change where things go much the same way as going a block and turning east gets you to a different place than turning east and then going a block. In matrix math term"
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "As with transform order (above), changing the order in which the rotations take place will alter the final position and orientation. A Rotation order of Rx Ry Rz would create the final rotation matrix"
+			},
+			{
+				"name": "constraint",
+				"label": "Constraint",
+				"style": "Menu",
+				"description": "Constraint and its parameters allows the noise curve to start and/or end at selected values. The mean value may also be enforced. This only works when is Off because time slicing has no pre-determined"
+			},
+			{
+				"name": "constrstart",
+				"label": "Starting Value",
+				"style": "Float",
+				"description": "Value for the starting position."
+			},
+			{
+				"name": "constrend",
+				"label": "Ending Value",
+				"style": "Float",
+				"description": "Value for the ending position."
+			},
+			{
+				"name": "constrmean",
+				"label": "Mean Value",
+				"style": "Float",
+				"description": "Value for the mean value of the noise."
+			},
+			{
+				"name": "normal",
+				"label": "Normalize",
+				"style": "Toggle",
+				"description": "Ensures that all noise curves fall between -1 and 1. Applied before the Amplitude parameter. Only valid for Random and Harmonic Summation noise types, since Hermite and Sparse noise are always normali"
+			},
+			{
+				"name": "channelname",
+				"label": "Channel Names",
+				"style": "Str",
+				"description": "You can creates many channels with simple patterns like \" \", which generates 20 channels from chan1 to chan20. See the section, Common Parameters for a description of this and all Options. See Options"
+			},
+			{
+				"name": "start",
+				"label": "Start",
+				"style": "Float",
+				"description": "Start of the interval, expressed in Units (seconds, frames or samples)."
+			},
+			{
+				"name": "startunit",
+				"label": "Start Unit",
+				"style": "Menu",
+				"description": "Select the units to use for this parameter, Samples, Frames, or Seconds."
+			},
+			{
+				"name": "end",
+				"label": "End",
+				"style": "Float",
+				"description": "End of the interval, expressed in Units (seconds, frames or samples)."
+			},
+			{
+				"name": "endunit",
+				"label": "End Unit",
+				"style": "Menu",
+				"description": "Select the units to use for this parameter, Samples, Frames, or Seconds."
+			},
+			{
+				"name": "rate",
+				"label": "Sample Rate",
+				"style": "Float",
+				"description": "The sample rate of the channels, in samples per second. Default:"
+			},
+			{
+				"name": "left",
+				"label": "Extend Left",
+				"style": "Menu",
+				"description": "The left extend conditions (before/after range)."
+			},
+			{
+				"name": "right",
+				"label": "Extend Right",
+				"style": "Menu",
+				"description": "The right extend conditions (before/after range)."
+			},
+			{
+				"name": "defval",
+				"label": "Default Value",
+				"style": "Float",
+				"description": "The value used for the Default Value extend condition."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW",
+				"description": "XYZ scale to shrink or enlarge the transform."
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW",
+				"description": "XYZ pivot to apply the above operations around."
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW",
+				"description": "XYZ rotation, in degrees."
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "offset",
+				"label": "Offset",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW",
+				"description": "XYZ translation values."
 			}
 		],
 		"examples": [
@@ -68,8 +323,6 @@
 				"context": "textport"
 			}
 		],
-		"versions": {
-			"addedIn": "2020"
-		}
+		"versions": {}
 	}
 }

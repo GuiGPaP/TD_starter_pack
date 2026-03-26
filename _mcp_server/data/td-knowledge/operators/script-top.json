@@ -1,0 +1,47 @@
+{
+	"id": "script-top",
+	"title": "scriptTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"script",
+		"top",
+		"scripttop",
+		"callbacks",
+		"setuppars",
+		"modoutsidecook"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "scriptTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "callbacks",
+				"label": "Callbacks DAT",
+				"style": "DAT",
+				"description": "Specifies the which holds the callbacks."
+			},
+			{
+				"name": "setuppars",
+				"label": "Setup Parameters",
+				"style": "Pulse",
+				"description": "Clicking the button runs the callback function."
+			},
+			{
+				"name": "modoutsidecook",
+				"label": "Modify Outside of Cook",
+				"style": "Toggle",
+				"description": "Allows to be updated by external script without having to lock the"
+			}
+		],
+		"versions": {}
+	}
+}

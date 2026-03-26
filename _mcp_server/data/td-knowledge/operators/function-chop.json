@@ -1,0 +1,127 @@
+{
+	"id": "function-chop",
+	"title": "functionCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"function",
+		"chop",
+		"functionchop",
+		"func",
+		"baseval",
+		"expval",
+		"angunit",
+		"match"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "functionCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "func",
+				"label": "Function",
+				"style": "Menu",
+				"description": "Which math function to apply to the channels. All of the functions are unary functions except for the binary functions 'arctan (Input1/Input2)' and 'Input1 ^ Input2'. In the cases of power functions, "
+			},
+			{
+				"name": "baseval",
+				"label": "Base Value",
+				"style": "Float",
+				"description": "The value of the base for 'Log base N' and 'Base ^ Input1'. parameter name"
+			},
+			{
+				"name": "expval",
+				"label": "Exponent Value",
+				"style": "Float",
+				"description": "The value of the exponent for . channel name"
+			},
+			{
+				"name": "angunit",
+				"label": "Angle Units",
+				"style": "Menu",
+				"description": "For trigonometric functions, the angles can be measured in Degrees, Radians, or Cycles (0 to 1)."
+			},
+			{
+				"name": "match",
+				"label": "Match by",
+				"style": "Menu",
+				"description": "How to pair channels together from the two inputs for the binary functions, by name or by channel index."
+			},
+			{
+				"name": "error",
+				"label": "Error Handling",
+				"style": "Menu",
+				"description": "How to correct samples with math errors:"
+			},
+			{
+				"name": "pinfval",
+				"label": "+ Infinity Value",
+				"style": "Float",
+				"description": "Value to use when an infinity error occurs. Caused by sinh(), cosh() and tan()."
+			},
+			{
+				"name": "ninfval",
+				"label": "- Infinity Value",
+				"style": "Float",
+				"description": "Value to use when a negative infinity error occurs. Caused by sinh() and tan()."
+			},
+			{
+				"name": "domval",
+				"label": "Domain Error Value",
+				"style": "Float",
+				"description": "Value to use when a domain error occurs. Caused by asin(), acos(), log10(), logN(), ln() and sqrt()."
+			},
+			{
+				"name": "divval",
+				"label": "Divide Error Value",
+				"style": "Float",
+				"description": "Value to use when a divide by zero error occurs. Caused by pow(x,y)."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

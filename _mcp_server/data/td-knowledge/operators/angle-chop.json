@@ -1,0 +1,91 @@
+{
+	"id": "angle-chop",
+	"title": "angleCHOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"angle",
+		"chop",
+		"anglechop",
+		"inunit",
+		"inorder",
+		"outunit",
+		"outorder",
+		"timeslice"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "angleCHOP",
+		"opFamily": "CHOP",
+		"parameters": [
+			{
+				"name": "inunit",
+				"label": "Input Units",
+				"style": "Menu",
+				"description": "Units of incoming channels:"
+			},
+			{
+				"name": "inorder",
+				"label": "Input Order",
+				"style": "Menu",
+				"description": "The order that rotation angles are assumed to be applied in (Euler angles as they are called). Applicable when converting to and from Quaternions or Vectors."
+			},
+			{
+				"name": "outunit",
+				"label": "Output Units",
+				"style": "Menu",
+				"description": "Units of outgoing channels:"
+			},
+			{
+				"name": "outorder",
+				"label": "Output Order",
+				"style": "Menu",
+				"description": "The order that rotation angles are assumed to be applied in (Euler angles as they are called). Applicable when converting to and from Quaternions or Vectors."
+			},
+			{
+				"name": "timeslice",
+				"label": "Time Slice",
+				"style": "Toggle",
+				"description": "Turning this on forces the channels to be \" \".  A is the time between the last cook frame and the current cook frame."
+			},
+			{
+				"name": "scope",
+				"label": "Scope",
+				"style": "StrMenu",
+				"description": "To determine which channels get affected, some CHOPs use a string on the Common page. See ."
+			},
+			{
+				"name": "srselect",
+				"label": "Sample Rate Match",
+				"style": "Menu",
+				"description": "Handle cases where multiple input CHOPs' sample rates are different. When Resampling occurs, the curves are interpolated according to the Interpolation Method Option, or \"Linear\" if the Interpolate Op"
+			},
+			{
+				"name": "exportmethod",
+				"label": "Export Method",
+				"style": "Menu",
+				"description": "This will determine how to connect the channel to the parameter. Refer to the article for more information."
+			},
+			{
+				"name": "autoexportroot",
+				"label": "Export Root",
+				"style": "OP",
+				"description": "This path points to the root node where all of the paths that exporting by are relative to."
+			},
+			{
+				"name": "exporttable",
+				"label": "Export Table",
+				"style": "DAT",
+				"description": "The used to hold the export information when using the Table Methods (See above)."
+			}
+		],
+		"versions": {}
+	}
+}

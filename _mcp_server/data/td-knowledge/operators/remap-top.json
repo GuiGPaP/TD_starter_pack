@@ -1,0 +1,85 @@
+{
+	"id": "remap-top",
+	"title": "remapTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"remap",
+		"top",
+		"remaptop",
+		"horzsource",
+		"vertsource",
+		"fliphorz",
+		"flipvert",
+		"extend"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "remapTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "horzsource",
+				"label": "Horizontal Source",
+				"style": "Menu",
+				"description": "Select which of the second input's channels to use for the horizontal warp of the first input."
+			},
+			{
+				"name": "vertsource",
+				"label": "Vertical Source",
+				"style": "Menu",
+				"description": "Select which of the second input's channels to use for the vertical warp of the first input."
+			},
+			{
+				"name": "fliphorz",
+				"label": "Flip Horizontal Direction",
+				"style": "Toggle",
+				"description": "Reverses the direction of the horizontal warp. A pixel value of 0 for the horizontal warp will mean that it fetches a pixel from the right most column of the first input."
+			},
+			{
+				"name": "flipvert",
+				"label": "Flip Vertical Direction",
+				"style": "Toggle",
+				"description": "Reverses the direction of the vertical warp. A pixel value of 0 for the vertical warp will mean that it fetches a pixel from the top most row of the first input."
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "Controls what is returned from your first input when the second input's values are outside the [0-1] range."
+			},
+			{
+				"name": "interp",
+				"label": "Interpolation",
+				"style": "Menu",
+				"description": "Select which interpolation method to apply when sampling the first input."
+			},
+			{
+				"name": "flipdepth",
+				"label": "Flipdepth",
+				"style": "Toggle",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "ressource",
+				"label": "Ressource",
+				"style": "Menu",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "depthsource",
+				"label": "Depthsource",
+				"style": "Menu",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}

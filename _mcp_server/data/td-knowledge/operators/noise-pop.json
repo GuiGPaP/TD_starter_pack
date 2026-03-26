@@ -1,0 +1,361 @@
+{
+	"id": "noise-pop",
+	"title": "noisePOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"noise",
+		"pop",
+		"noisepop",
+		"noiselookupattrib",
+		"type",
+		"noisesize",
+		"seed",
+		"period"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "noisePOP",
+		"opFamily": "POP",
+		"parameters": [
+			{
+				"name": "noiselookupattrib",
+				"label": "Noise Lookup Attribute",
+				"style": "StrMenu",
+				"description": "Point input attribute to use when computing the noise."
+			},
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "Determines the noise type."
+			},
+			{
+				"name": "noisesize",
+				"label": "Noise Size",
+				"style": "Menu",
+				"description": "Number of noise components to compute."
+			},
+			{
+				"name": "seed",
+				"label": "Seed",
+				"style": "Float",
+				"description": "Numerical value that initializes the randomization."
+			},
+			{
+				"name": "period",
+				"label": "Period",
+				"style": "Float",
+				"description": "Period (scale) of the noise field."
+			},
+			{
+				"name": "harmon",
+				"label": "Harmonics",
+				"style": "Int",
+				"description": "The number of higher frequency components to layer on top of the base frequency. 0 harmonics give the base shape."
+			},
+			{
+				"name": "spread",
+				"label": "Harmonic Spread",
+				"style": "Float",
+				"description": "The factor by which the frequency of a harmonic increases relative to the previous harmonic."
+			},
+			{
+				"name": "gain",
+				"label": "Harmonic Gain",
+				"style": "Float",
+				"description": "Amplitude of the Harmonics layered on top of the base frequency."
+			},
+			{
+				"name": "parsize",
+				"label": "Parameter Size",
+				"style": "Menu",
+				"description": "Number of independent configurable parameter values."
+			},
+			{
+				"name": "attrclass",
+				"label": "Attribute Class",
+				"style": "Menu",
+				"description": "Makes the operate on point attributes, vertex attributes or primitive attributes where applicable."
+			},
+			{
+				"name": "group",
+				"label": "Group",
+				"style": "StrMenu",
+				"description": "If there are input groups, specifying a group name in this field will cause this to act only upon the group specified."
+			},
+			{
+				"name": "xord",
+				"label": "Transform Order",
+				"style": "Menu",
+				"description": "Sets the overall transform order for the transformations."
+			},
+			{
+				"name": "rord",
+				"label": "Rotate Order",
+				"style": "Menu",
+				"description": "Sets the order of the rotations within the overall transform order."
+			},
+			{
+				"name": "t4d",
+				"label": "Translate 4D",
+				"style": "Float",
+				"description": "Translates the points through the 4th noise dimension."
+			},
+			{
+				"name": "noise",
+				"label": "Noise",
+				"style": "Toggle",
+				"description": "Enable the addition of the noise attribute."
+			},
+			{
+				"name": "gradient",
+				"label": "Gradient",
+				"style": "Toggle",
+				"description": "Whether to output the noise gradient."
+			},
+			{
+				"name": "curl3d",
+				"label": "Curl 3D",
+				"style": "Toggle",
+				"description": "Whether to output the 3D curl of the noise."
+			},
+			{
+				"name": "curl2d",
+				"label": "Curl 2D",
+				"style": "Toggle",
+				"description": "Whether to output the 2D curl of the noise."
+			},
+			{
+				"name": "combineop",
+				"label": "Combine Operation",
+				"style": "Menu",
+				"description": "Specify how to combine the output value with the combine attribute value."
+			},
+			{
+				"name": "combineentity",
+				"label": "Combine Entity",
+				"style": "Menu",
+				"description": "Specify which computed value to use for the combine operation."
+			},
+			{
+				"name": "combineattrscope",
+				"label": "Combine Attribute Scope",
+				"style": "StrMenu",
+				"description": "Input attribute scope for the combine operation."
+			},
+			{
+				"name": "outputattrscope",
+				"label": "Output Attribute Scope",
+				"style": "StrMenu",
+				"description": "Name of attribute to output (can choose components of attribute), can choose from menu."
+			},
+			{
+				"name": "overrideautoattr",
+				"label": "Override Automatic Attribute",
+				"style": "Toggle",
+				"description": "Whether to override the kind of attribute automatically created based on the input and parameters. Allows to specify manually the type and number of components of the new attribute."
+			},
+			{
+				"name": "attrtype",
+				"label": "Attribute Type",
+				"style": "Menu",
+				"description": "The output attribute's data type, default float."
+			},
+			{
+				"name": "attrnumcomps",
+				"label": "Components",
+				"style": "Menu",
+				"description": "The number of components in the new custom attribute."
+			},
+			{
+				"name": "computenormals",
+				"label": "Compute Point Normals",
+				"style": "Toggle",
+				"description": "Whether to compute point normals as a post operation."
+			},
+			{
+				"name": "mode",
+				"label": "Mode",
+				"style": "Menu",
+				"description": "Selects the shape of the field."
+			},
+			{
+				"name": "map",
+				"label": "Mapping",
+				"style": "Sequence",
+				"description": "Start of Sequential Parameter Blocks for attribute-to-parameter mapping."
+			},
+			{
+				"name": "map0op",
+				"label": "OP",
+				"style": "POP",
+				"description": "Source OP for parameter mapping. The default of _in0 means the input ."
+			},
+			{
+				"name": "map0element",
+				"label": "Element",
+				"style": "StrMenu",
+				"description": "The attribute (or component of an attribute) that will be mapped to a parameter per-point."
+			},
+			{
+				"name": "map0parm",
+				"label": "Parameter",
+				"style": "StrMenu",
+				"description": "Parameter on the current that will be mapped from the Element (the attribute)."
+			},
+			{
+				"name": "map0combineop",
+				"label": "Combine Operation",
+				"style": "Menu",
+				"description": "Combine operation for attribute value with parameter value."
+			},
+			{
+				"name": "bypass",
+				"label": "Bypass",
+				"style": "Toggle",
+				"description": "Pass through the first input to the output unchanged."
+			},
+			{
+				"name": "freeextragpumem",
+				"label": "Free Extra GPU Memory",
+				"style": "Pulse",
+				"description": "Free memory that has accumulated when output memory has grown and shrunk."
+			},
+			{
+				"name": "delinputattrs",
+				"label": "Delete Input Attributes",
+				"style": "Toggle",
+				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
+			},
+			{
+				"name": "py",
+				"label": "Py",
+				"style": "XYZW"
+			},
+			{
+				"name": "offset0",
+				"label": "Offset0",
+				"style": "Float"
+			},
+			{
+				"name": "attrdefaultval2",
+				"label": "Attrdefaultval2",
+				"style": "Float"
+			},
+			{
+				"name": "px",
+				"label": "Px",
+				"style": "XYZW"
+			},
+			{
+				"name": "curl2doutputattscope",
+				"label": "Curl2Doutputattscope",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "tx",
+				"label": "Tx",
+				"style": "XYZW"
+			},
+			{
+				"name": "tz",
+				"label": "Tz",
+				"style": "XYZW"
+			},
+			{
+				"name": "gradientoutputattscope0derivoutputattscope",
+				"label": "Gradientoutputattscope0Derivoutputattscope",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "pz",
+				"label": "Pz",
+				"style": "XYZW"
+			},
+			{
+				"name": "attrdefaultval0",
+				"label": "Attrdefaultval0",
+				"style": "Float"
+			},
+			{
+				"name": "amp0",
+				"label": "Amp0",
+				"style": "Float"
+			},
+			{
+				"name": "attrdefaultval3",
+				"label": "Attrdefaultval3",
+				"style": "Float",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "attrdefaultval1",
+				"label": "Attrdefaultval1",
+				"style": "Float"
+			},
+			{
+				"name": "ty",
+				"label": "Ty",
+				"style": "XYZW"
+			},
+			{
+				"name": "sx",
+				"label": "Sx",
+				"style": "XYZW"
+			},
+			{
+				"name": "sy",
+				"label": "Sy",
+				"style": "XYZW"
+			},
+			{
+				"name": "exp0",
+				"label": "Exp0",
+				"style": "Float"
+			},
+			{
+				"name": "ry",
+				"label": "Ry",
+				"style": "XYZW"
+			},
+			{
+				"name": "sz",
+				"label": "Sz",
+				"style": "XYZW"
+			},
+			{
+				"name": "noiseoutputattscope",
+				"label": "Noiseoutputattscope",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rz",
+				"label": "Rz",
+				"style": "XYZW"
+			},
+			{
+				"name": "curl3doutputattscope",
+				"label": "Curl3Doutputattscope",
+				"style": "Str",
+				"description": "Help Not Available."
+			},
+			{
+				"name": "rx",
+				"label": "Rx",
+				"style": "XYZW"
+			}
+		],
+		"versions": {}
+	}
+}

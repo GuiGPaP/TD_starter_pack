@@ -1,0 +1,115 @@
+{
+	"id": "blur-top",
+	"title": "blurTOP",
+	"kind": "operator",
+	"aliases": [],
+	"searchKeywords": [
+		"blur",
+		"top",
+		"blurtop",
+		"type",
+		"extend",
+		"preshrink",
+		"size",
+		"offsetunit"
+	],
+	"content": {
+		"summary": "TouchDesigner  COMP operator."
+	},
+	"provenance": {
+		"source": "td-docs",
+		"confidence": "high",
+		"license": "MIT"
+	},
+	"payload": {
+		"opType": "blurTOP",
+		"opFamily": "TOP",
+		"parameters": [
+			{
+				"name": "type",
+				"label": "Type",
+				"style": "Menu",
+				"description": "Determines the mathematical function used to create the blur."
+			},
+			{
+				"name": "extend",
+				"label": "Extend",
+				"style": "Menu",
+				"description": "Sets the extend conditions to determine what happens to the blur at the edge of the image."
+			},
+			{
+				"name": "preshrink",
+				"label": "Pre-Shrink",
+				"style": "Int",
+				"description": "Reduces the image's resolution before applying the blur.\tThis effectively applies a 2x2 box filter on the input and creates a smaller texture to do the full blur operation on. It behaves as if the ker"
+			},
+			{
+				"name": "size",
+				"label": "Filter Size",
+				"style": "Int",
+				"description": "The amount of blur in pixels. If you want a resolution-independent blur, use an expression like in this parameter (which would result in a 1% image blur)."
+			},
+			{
+				"name": "offsetunit",
+				"label": "Sample Step Unit",
+				"style": "Menu",
+				"description": "Select between Pixel, Fraction, or Fraction Aspect as the units to use for the Sample Step parameter."
+			},
+			{
+				"name": "dither",
+				"label": "Dither",
+				"style": "Toggle",
+				"description": "Enabling makes 8-bit blurs look smoother.  This can help if the blur operation introduces banding or other unexpected artifacts."
+			},
+			{
+				"name": "rotatey",
+				"label": "Rotatey",
+				"style": "XYZW"
+			},
+			{
+				"name": "offsetz",
+				"label": "Offsetz",
+				"style": "XYZW",
+				"description": "When sampling the image, this determines the distance from each pixel to the sample pixel. When units are set to pixels, it is the number of pixels away from the current pixel which is sampled to blur"
+			},
+			{
+				"name": "rotatex",
+				"label": "Rotatex",
+				"style": "XYZW"
+			},
+			{
+				"name": "rotatez",
+				"label": "Rotatez",
+				"style": "XYZW",
+				"description": "Rotates the blur filter. More noticeable when Method is set to Horizontal."
+			},
+			{
+				"name": "filterscaley",
+				"label": "Filterscaley",
+				"style": "Int"
+			},
+			{
+				"name": "offsetx",
+				"label": "Offsetx",
+				"style": "XYZW"
+			},
+			{
+				"name": "offsety",
+				"label": "Offsety",
+				"style": "XYZW"
+			},
+			{
+				"name": "filterscalex",
+				"label": "Filterscalex",
+				"style": "Int"
+			},
+			{
+				"name": "filterscalez",
+				"label": "Filterscalez",
+				"style": "Int",
+				"description": "Help Not Available."
+			}
+		],
+		"versions": {}
+	}
+}
