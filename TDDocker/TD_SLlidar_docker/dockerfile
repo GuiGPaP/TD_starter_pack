@@ -1,0 +1,75 @@
+# Multi-stage Dockerfile for security and optimization
+FROM ros:humble-ros-base-jammy as builder
+
+# Install build dependencies with version pinning
+RUN apt-get update && apt-get install -y \
+    python3-pip=22.0.2* \
+    python3-colcon-common-extensions=0.3.0* \
+    build-essential=12.9* \
+    cmake=3.22.1* \
+    git=1:2.34.1* \
+    curl=7.81.0* \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create workspace and build ROS2 package
+WORKDIR /ros2_ws
+COPY ./sllidar_ros2 /ros2_ws/src/sllidar_ros2
+
+# Build ROS2 package with optimization
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && \
+    cd /ros2_ws && \
+    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
+
+# Runtime stage - minimal image
+FROM ros:humble-ros-base-jammy as runtime
+
+# Install only runtime dependencies
+RUN apt-get update && apt-get install -y \
+    python3-pip=22.0.2* \
+    usbutils=1:014* \
+    curl=7.81.0* \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Install Python packages — OSC bridge dependencies
+RUN pip3 install --no-cache-dir --upgrade pip==22.0.4 && \
+    pip3 install --no-cache-dir \
+    python-osc==1.8.3
+
+# Create non-root user with home directory (ROS2 launch writes logs to ~/.ros/)
+RUN groupadd -r lidar && useradd -r -g lidar -G dialout -u 1001 -m -d /home/lidar lidar && \
+    mkdir -p /var/lib/lidar /home/lidar/.ros/log && \
+    chown -R lidar:lidar /var/lib/lidar /home/lidar
+
+# Create workspace with proper permissions
+WORKDIR /ros2_ws
+COPY --from=builder --chown=lidar:lidar /ros2_ws /ros2_ws
+
+# Copy OSC bridge with proper ownership
+COPY --chown=lidar:lidar ./osc_bridge /ros2_ws/osc_bridge
+
+# Copy unified launch file
+COPY --chown=lidar:lidar ./launch /ros2_ws/launch
+
+# Create and setup secure entrypoint
+COPY --chown=lidar:lidar ./ros_entrypoint.sh /usr/local/bin/ros_entrypoint.sh
+RUN chmod +x /usr/local/bin/ros_entrypoint.sh
+
+# Switch to non-root user
+USER lidar
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV ROS_DOMAIN_ID=0
+
+# Health check — verify the osc_bridge node is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD pgrep -f osc_bridge_node || exit 1
+
+# Expose OSC UDP port
+EXPOSE 7000/udp
+
+ENTRYPOINT ["/usr/local/bin/ros_entrypoint.sh"]
+CMD ["ros2", "launch", "/ros2_ws/launch/sllidar_osc_launch.py"]
