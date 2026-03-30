@@ -81,6 +81,10 @@ def onResponse(status, headers, data, id):
 
 For threading and ThreadManager, see **td-guide** → `python-environment.md`.
 
+## ThreadManager (Caveats)
+
+`op.TDResources.ThreadManager` exists (TD 2023+) with `TDTask(target, SuccessHook, ExceptHook)` API, but **SuccessHook/ExceptHook callbacks do not fire reliably** in practice. Use `threading.Thread(daemon=True)` + `run(delayFrames=1)` polling pattern instead. See td-guide → `python-environment.md` for the full pattern.
+
 ## FileDownloader
 
 ```python

@@ -82,6 +82,40 @@ op('out1').render = True
 
 If an operator with the same name exists, TD increments the number (`null1` -> `null2`). Always check the returned operator's `.name` if you need the actual name.
 
+## Extension Wiring on baseCOMP
+
+To add a Python extension to a dynamically created baseCOMP:
+
+```python
+comp = parent_op.create(baseCOMP, 'myComp')
+
+# 1. Enable extension slots (sequence parameter)
+comp.par.ext.sequence.numBlocks = 1
+
+# 2. Create the extension textDAT with inline code (recommended)
+ext_dat = comp.create(textDAT, 'my_ext')
+ext_dat.text = '''
+class MyExt:
+    def __init__(self, ownerComp):
+        self.ownerComp = ownerComp
+    def onParPulse(self, par):
+        pass
+'''
+
+# 3. Set ext0object in CONSTANT mode (NOT expression)
+comp.par.ext0object.val = "op('./my_ext').module.MyExt(me)"
+comp.par.ext0promote.val = True
+
+# 4. Reinit
+comp.par.reinitextensions.pulse()
+```
+
+**Critical rules:**
+- `ext0object` must be **CONSTANT mode** — this is how TDDocker does it. Expression mode works but is less reliable.
+- **`project` is NOT available** in the ext0object evaluation context. Do not use `project.folder` in module-level code or `__init__`. Resolve paths inside methods instead (called later when `project` is available).
+- **Inline extensions** (code in textDAT) are more reliable than external file imports for dynamically created COMPs.
+- Use `parexecDAT` to route parameter callbacks to the extension (TD promote doesn't fire reliably on dynamic baseCOMPs).
+
 ## Coordinate System
 
 OpenGL right-handed: Y-up, Z toward camera, SRT order default.

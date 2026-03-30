@@ -57,6 +57,18 @@ For shader work, use the specialized skill — do not attempt GLSL in td-guide:
 
 16. **Geo COMP crée un torus par défaut.** Un `geometryCOMP` créé via `create()` contient automatiquement un `torus1` SOP. Le supprimer si non désiré : `geo.op('torus1').destroy()`.
 
+17. **oscinCHOP pour données haute fréquence.** Pour des données OSC à haute fréquence (capteurs, lidar, >10Hz), utiliser `oscinCHOP` (natif, performant) plutôt que `oscinDAT` + tableDAT (parsing coûteux = FPS drops). TDDocker crée oscinDAT par défaut via `Datatransport = 'osc'` — pour les capteurs, créer l'oscinCHOP manuellement.
+
+18. **`pulse()` est frame-delayed.** `comp.par.Load.pulse()`, `comp.par.Up.pulse()` etc. ne s'exécutent qu'au frame suivant. Ne jamais essayer de lire le résultat dans le même script. Utiliser `run("...", delayFrames=2)` pour chaîner des opérations dépendantes. `time.sleep()` bloque TD et empêche aussi le cook.
+
+19. **parexecDAT callbacks minimaux.** Les callbacks dans un `parameterexecuteDAT` doivent être minimaux — pas de `debug()`, pas de logique complexe. `debug()` peut ne pas exister dans ce contexte et fail silencieusement. Pattern exact :
+```python
+def onPulse(par):
+    ext = par.owner.ext.MyExtName
+    if ext and hasattr(ext, 'onParPulse'):
+        ext.onParPulse(par)
+```
+
 ## Python Utilities Routing
 
 | Task | Skill |
