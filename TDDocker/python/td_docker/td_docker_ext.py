@@ -375,6 +375,23 @@ class TDDockerExt:
         if not comp.op("log_dat"):
             comp.create("textDAT", "log_dat")
 
+        # Wire container extension
+        if not comp.op("td_container_ext"):
+            ext_dat = comp.create("textDAT", "td_container_ext")
+            ext_dat.text = (
+                "import sys, os\n"
+                "_py = os.path.join(project.folder, 'python')\n"
+                "if _py not in sys.path:\n"
+                "    sys.path.insert(0, _py)\n"
+                "from td_docker.td_container_ext import TDContainerExt\n"
+            )
+            ext_dat.viewer = True
+        comp.par.ext = 1
+        comp.par.ext0object = (
+            f"op('{comp.path}/td_container_ext').module.TDContainerExt(me)"
+        )
+        comp.par.ext0promote = True
+
     def _destroy_container_comps(self) -> None:
         """Remove all child COMPs from /containers."""
         containers = self.ownerComp.op("containers")
