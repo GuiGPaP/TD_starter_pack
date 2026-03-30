@@ -43,6 +43,15 @@ def _add_menu(page, name: str, label: str, names: list, labels: list, default: s
     return par
 
 
+_STATE_COLORS: dict[str, dict[str, tuple[float, float, float]]] = {
+    "running": {"comp": (0.2, 0.6, 0.2), "bg": (0.05, 0.15, 0.05), "fg": (0.3, 0.9, 0.3)},
+    "created": {"comp": (0.4, 0.4, 0.4), "bg": (0.15, 0.15, 0.15), "fg": (0.6, 0.6, 0.6)},
+    "paused":  {"comp": (0.7, 0.6, 0.1), "bg": (0.15, 0.12, 0.02), "fg": (0.9, 0.8, 0.2)},
+    "exited":  {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
+    "dead":    {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
+}
+
+
 class TDDockerExt:
     """Extension class for the TDDocker orchestrator COMP."""
 
@@ -399,6 +408,50 @@ class TDDockerExt:
         )
         comp.par.ext0promote = True
 
+        # Create status display TOP for visual feedback
+        if not comp.op("status_display"):
+            txt = comp.create("textTOP", "status_display")
+            txt.par.resolutionw = 320
+            txt.par.resolutionh = 200
+            txt.par.fontsizex = 18
+            txt.par.alignx = 1  # center
+            txt.par.aligny = 1  # center
+            txt.par.bgalpha = 1
+            txt.viewer = True
+        self._update_container_display(comp, "created", "none")
+
+    def _update_container_display(self, comp, state: str, health: str) -> None:
+        """Update the visual status display on a container COMP."""
+        txt = comp.op("status_display")
+        if not txt:
+            return
+        svc_name = ""
+        if hasattr(comp.par, "Servicename"):
+            svc_name = comp.par.Servicename.eval()
+
+        # Determine effective state for color lookup
+        effective = state
+        if state == "running" and health == "unhealthy":
+            effective = "dead"  # red
+
+        colors = _STATE_COLORS.get(effective, _STATE_COLORS["created"])
+
+        # Yellow for "has container ID but not yet running" (starting)
+        cid = ""
+        if hasattr(comp.par, "Containerid"):
+            cid = comp.par.Containerid.eval()
+        if cid and state == "created":
+            colors = _STATE_COLORS["paused"]
+
+        # Update text
+        label = "UNHEALTHY" if health == "unhealthy" else state.upper()
+        txt.par.text = f"{svc_name}\n━━━━━━━━\n● {label}"
+
+        # Update colors
+        txt.par.fontcolorr, txt.par.fontcolorg, txt.par.fontcolorb = colors["fg"]
+        txt.par.bgcolorr, txt.par.bgcolorg, txt.par.bgcolorb = colors["bg"]
+        comp.color = colors["comp"]
+
     def _destroy_container_comps(self) -> None:
         """Remove all child COMPs from /containers."""
         containers = self.ownerComp.op("containers")
@@ -444,8 +497,10 @@ class TDDockerExt:
                     child.par.Containerid = st.container_id
                 if hasattr(child.par, "State"):
                     child.par.State = st.state
+                health = st.health if st.health else "none"
                 if hasattr(child.par, "Health"):
-                    child.par.Health = st.health if st.health else "none"
+                    child.par.Health = health
+                self._update_container_display(child, st.state, health)
 
         # Update the status table DAT
         self._update_status_from_compose(statuses)
