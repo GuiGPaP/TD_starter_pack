@@ -18,6 +18,7 @@ import { registerBuildTools } from "./handlers/buildTools.js";
 import { registerExecLogTools } from "./handlers/execLogTools.js";
 import { registerGlslPatternTools } from "./handlers/glslPatternTools.js";
 import { registerHealthTools } from "./handlers/healthTools.js";
+import { registerPerfTools } from "./handlers/perfTools.js";
 import { registerLessonTools } from "./handlers/lessonTools.js";
 import { registerNetworkTemplateTools } from "./handlers/networkTemplateTools.js";
 import { registerPaletteTools } from "./handlers/paletteTools.js";
@@ -50,6 +51,7 @@ export function registerTools(
 	const auditLog = new ExecAuditLog();
 	registerTdTools(server, logger, tdClient, serverMode, auditLog);
 	registerHealthTools(server, logger, tdClient, serverMode);
+	registerPerfTools(server, logger, tdClient, serverMode);
 	registerExecLogTools(server, logger, auditLog);
 
 	// Initialize asset registry with discovered paths
