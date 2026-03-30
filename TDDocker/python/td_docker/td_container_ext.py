@@ -64,6 +64,8 @@ class TDContainerExt:
         result = start_container(cid)
         if result.ok:
             self._log("Container started")
+        elif "No such container" in result.stderr:
+            self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
         else:
             self._log(f"ERROR starting container: {result.stderr}")
 
@@ -74,6 +76,8 @@ class TDContainerExt:
         result = stop_container(cid)
         if result.ok:
             self._log("Container stopped")
+        elif "No such container" in result.stderr:
+            self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
         else:
             self._log(f"ERROR stopping container: {result.stderr}")
 
