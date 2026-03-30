@@ -1,0 +1,491 @@
+"""TDDockerExt — Orchestrator extension for the TDDocker COMP.
+
+Manages docker-compose lifecycle, watchdog, and per-service container COMPs.
+Loaded as an extension on the TDDocker base COMP.
+
+Requires custom parameters on ownerComp (see setup_parameters()).
+"""
+
+from __future__ import annotations
+
+import os
+import uuid
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+# TD modules are available at runtime inside TouchDesigner
+if TYPE_CHECKING:
+    pass
+
+# Imports from our package — these files live alongside this script
+# and are added to sys.path by the COMP's module loading
+from td_docker.compose import (
+    OverlayConfig,
+    ServiceOverlay,
+    compose_down,
+    compose_logs,
+    compose_ps,
+    compose_up,
+    write_overlay,
+)
+from td_docker.docker_status import check_docker, start_docker_desktop
+from td_docker.validator import validate_compose
+from td_docker.watchdog import cleanup_orphans, send_shutdown_signal, spawn_watchdog
+
+
+class TDDockerExt:
+    """Extension class for the TDDocker orchestrator COMP."""
+
+    def __init__(self, ownerComp):
+        self.ownerComp = ownerComp
+        self._watchdog_pid: int | None = None
+        self._session_id: str = ""
+        self._overlay_path: Path | None = None
+        self._compose_dir: Path | None = None
+        self._service_configs: dict[str, ServiceOverlay] = {}
+
+        # Generate session ID on init
+        self._session_id = uuid.uuid4().hex[:12]
+        if hasattr(ownerComp.par, "Sessionid"):
+            ownerComp.par.Sessionid = self._session_id
+
+        # Orphan cleanup on init
+        if hasattr(ownerComp.par, "Orphancleanup") and ownerComp.par.Orphancleanup:
+            self._cleanup_orphans()
+
+    # ------------------------------------------------------------------
+    # Parameter callbacks (pulse buttons)
+    # ------------------------------------------------------------------
+
+    def onParValueChange(self, par, prev):
+        """Called by TD when any custom parameter changes."""
+
+    def onParPulse(self, par):
+        """Called by TD when a pulse parameter is pressed."""
+        name = par.name
+        if name == "Load":
+            self._load()
+        elif name == "Up":
+            self._up()
+        elif name == "Down":
+            self._down()
+        elif name == "Rebuild":
+            self._rebuild()
+        elif name == "Viewlogs":
+            self._view_logs()
+        elif name == "Startdocker":
+            self._start_docker()
+        elif name == "Checkdocker":
+            self._check_docker()
+
+    # ------------------------------------------------------------------
+    # Docker status
+    # ------------------------------------------------------------------
+
+    def _require_docker(self) -> bool:
+        """Check Docker is running. Logs error if not. Returns True if OK."""
+        status = check_docker()
+        if not status.available:
+            self._log(f"ERROR: {status.message}")
+            return False
+        return True
+
+    def _check_docker(self) -> None:
+        """Manual Docker status check (pulse button)."""
+        status = check_docker()
+        self._log(status.message)
+
+    def _start_docker(self) -> None:
+        """Launch Docker Desktop."""
+        msg = start_docker_desktop()
+        self._log(msg)
+
+    # ------------------------------------------------------------------
+    # Core lifecycle
+    # ------------------------------------------------------------------
+
+    def _load(self) -> None:
+        """Parse and validate the compose file, create container COMPs."""
+        if not self._require_docker():
+            return
+        compose_path = self._get_compose_path()
+        if not compose_path:
+            return
+
+        self._compose_dir = compose_path.parent
+        self._log(f"Loading compose file: {compose_path}")
+
+        # Read and validate
+        try:
+            content = compose_path.read_text(encoding="utf-8")
+        except OSError as e:
+            self._log(f"ERROR: Cannot read file: {e}")
+            return
+
+        result = validate_compose(content)
+        for issue in result.warnings:
+            self._log(f"WARNING [{issue.service}]: {issue.message}")
+        if result.has_errors:
+            for issue in result.errors:
+                self._log(f"ERROR [{issue.service}]: {issue.message}")
+            self._log("Compose file has security errors — aborting load")
+            return
+
+        # Parse services
+        import yaml
+
+        doc = yaml.safe_load(content)
+        services = doc.get("services", {})
+
+        # Clear existing container COMPs
+        self._destroy_container_comps()
+
+        # Create one COMP per service
+        containers_comp = self._get_containers_comp()
+        for svc_name, svc_cfg in services.items():
+            self._create_container_comp(containers_comp, svc_name, svc_cfg)
+
+        # Generate overlay
+        config = OverlayConfig(
+            session_id=self._session_id,
+            service_overrides=self._service_configs,
+        )
+        try:
+            self._overlay_path = write_overlay(
+                compose_path, config, output_dir=self._compose_dir
+            )
+            self._log(f"Overlay written: {self._overlay_path}")
+        except ValueError as e:
+            self._log(f"ERROR generating overlay: {e}")
+            return
+
+        # Update status table
+        self._update_status_table(services)
+        self._log(f"Loaded {len(services)} service(s)")
+
+    def _up(self) -> None:
+        """Start all containers via docker compose."""
+        if not self._require_docker():
+            return
+        compose_path = self._get_compose_path()
+        if not compose_path or not self._overlay_path:
+            self._log("ERROR: Must Load before Up")
+            return
+
+        self._log("Starting containers...")
+        result = compose_up(
+            compose_path,
+            self._overlay_path,
+            self._session_id,
+        )
+
+        if result.ok:
+            self._log("Containers started successfully")
+            # Spawn watchdog
+            if (
+                hasattr(self.ownerComp.par, "Autoshutdown")
+                and self.ownerComp.par.Autoshutdown
+            ):
+                self._spawn_watchdog()
+            # Start status polling
+            self._start_polling()
+            # Update container IDs
+            self._refresh_container_ids()
+        else:
+            self._log(f"ERROR: compose up failed:\n{result.stderr}")
+
+    def _down(self) -> None:
+        """Stop all containers via docker compose."""
+        if not self._session_id:
+            return
+
+        self._log("Stopping containers...")
+
+        # Signal watchdog for clean shutdown
+        if self._compose_dir:
+            send_shutdown_signal(self._compose_dir)
+
+        result = compose_down(self._session_id)
+        if result.ok:
+            self._log("Containers stopped")
+        else:
+            self._log(f"WARNING: compose down issues:\n{result.stderr}")
+
+        self._stop_polling()
+        self._watchdog_pid = None
+
+    def _rebuild(self) -> None:
+        """Down + destroy COMPs + re-Load + Up."""
+        self._down()
+        self._destroy_container_comps()
+        self._load()
+        self._up()
+
+    def _view_logs(self) -> None:
+        """Fetch compose logs into the log DAT."""
+        if not self._session_id:
+            return
+        result = compose_logs(self._session_id, tail=200)
+        log_dat = self.ownerComp.op("log")
+        if log_dat:
+            log_dat.text = result.stdout if result.ok else result.stderr
+
+    # ------------------------------------------------------------------
+    # NDI overlay regeneration
+    # ------------------------------------------------------------------
+
+    def NotifyNdiChanged(self, svc_name: str, enabled: bool) -> None:
+        """Called by container ext when NDI transport is toggled."""
+        if svc_name in self._service_configs:
+            self._service_configs[svc_name].ndi_enabled = enabled
+            self._regenerate_overlay()
+
+    def _regenerate_overlay(self) -> None:
+        """Re-generate overlay and apply changes (e.g., after NDI toggle)."""
+        compose_path = self._get_compose_path()
+        if not compose_path or not self._overlay_path:
+            return
+        config = OverlayConfig(
+            session_id=self._session_id,
+            service_overrides=self._service_configs,
+        )
+        try:
+            self._overlay_path = write_overlay(
+                compose_path, config, output_dir=self._compose_dir
+            )
+        except ValueError as e:
+            self._log(f"ERROR regenerating overlay: {e}")
+            return
+        result = compose_up(compose_path, self._overlay_path, self._session_id)
+        if result.ok:
+            self._log("Overlay regenerated and applied")
+        else:
+            self._log(f"WARNING: overlay reapply failed: {result.stderr}")
+
+    # ------------------------------------------------------------------
+    # Watchdog
+    # ------------------------------------------------------------------
+
+    def _spawn_watchdog(self) -> None:
+        if not self._compose_dir:
+            return
+        td_pid = os.getpid()
+        self._watchdog_pid = spawn_watchdog(
+            td_pid, self._session_id, self._compose_dir
+        )
+        self._log(f"Watchdog spawned (PID {self._watchdog_pid})")
+
+    def _cleanup_orphans(self) -> None:
+        removed = cleanup_orphans()
+        if removed:
+            self._log(f"Cleaned up {len(removed)} orphan container(s)")
+
+    # ------------------------------------------------------------------
+    # Container COMP management
+    # ------------------------------------------------------------------
+
+    def _get_containers_comp(self):
+        """Get or create the /containers base COMP."""
+        comp = self.ownerComp.op("containers")
+        if comp is None:
+            comp = self.ownerComp.create("baseCOMP", "containers")
+        return comp
+
+    def _create_container_comp(self, parent_comp, svc_name: str, svc_cfg: dict) -> None:
+        """Create a container COMP for a service using the template."""
+        # Try to load from template TOX, fall back to creating a base COMP
+        template_path = self.ownerComp.par.Containertemplate.eval() if hasattr(
+            self.ownerComp.par, "Containertemplate"
+        ) else ""
+
+        if template_path and Path(template_path).exists():
+            comp = parent_comp.loadTox(template_path)
+            comp.name = svc_name
+        else:
+            comp = parent_comp.create("baseCOMP", svc_name)
+
+        # Set up the extension if not from template
+        self._init_container_comp(comp, svc_name, svc_cfg)
+
+    def _init_container_comp(self, comp, svc_name: str, svc_cfg: dict) -> None:
+        """Initialize custom parameters on a container COMP."""
+        image = svc_cfg.get("image", "")
+
+        # Create custom parameter pages if they don't exist
+        if not comp.customPages:
+            info_page = comp.appendCustomPage("Info")
+            info_page.appendStr("Servicename", label="Service Name")[0].val = svc_name
+            info_page.appendStr("Image", label="Image")[0].val = image
+            info_page.appendStr("Containerid", label="Container ID")[0].val = ""
+            info_page.appendMenu(
+                "State",
+                label="State",
+                menuNames=["created", "running", "paused", "exited", "dead"],
+                menuLabels=["Created", "Running", "Paused", "Exited", "Dead"],
+            )[0].val = "created"
+            info_page.appendMenu(
+                "Health",
+                label="Health",
+                menuNames=["none", "healthy", "unhealthy"],
+                menuLabels=["None", "Healthy", "Unhealthy"],
+            )[0].val = "none"
+
+            actions_page = comp.appendCustomPage("Actions")
+            actions_page.appendPulse("Start", label="Start")
+            actions_page.appendPulse("Stop", label="Stop")
+            actions_page.appendPulse("Restart", label="Restart")
+            actions_page.appendPulse("Logs", label="Logs")
+
+            transport_page = comp.appendCustomPage("Transport")
+            transport_page.appendMenu(
+                "Datatransport",
+                label="Data Transport",
+                menuNames=["none", "websocket", "osc"],
+                menuLabels=["None", "WebSocket", "OSC"],
+            )[0].val = "none"
+            transport_page.appendInt("Dataport", label="Data Port")[0].val = 0
+            transport_page.appendMenu(
+                "Videotransport",
+                label="Video Transport",
+                menuNames=["none", "ndi"],
+                menuLabels=["None", "NDI"],
+            )[0].val = "none"
+            transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
+        else:
+            # Template loaded — just update values
+            if hasattr(comp.par, "Servicename"):
+                comp.par.Servicename = svc_name
+            if hasattr(comp.par, "Image"):
+                comp.par.Image = image
+
+        # Store service overlay config
+        self._service_configs[svc_name] = ServiceOverlay(ndi_enabled=False)
+
+        # Create internal operators if not from template
+        if not comp.op("log_dat"):
+            comp.create("textDAT", "log_dat")
+
+    def _destroy_container_comps(self) -> None:
+        """Remove all child COMPs from /containers."""
+        containers = self.ownerComp.op("containers")
+        if containers is None:
+            return
+        for child in containers.children:
+            child.destroy()
+        self._service_configs.clear()
+
+    # ------------------------------------------------------------------
+    # Status polling
+    # ------------------------------------------------------------------
+
+    def _start_polling(self) -> None:
+        """Start the timer CHOP for status polling."""
+        timer = self.ownerComp.op("poll_timer")
+        if timer:
+            timer.par.active = True
+
+    def _stop_polling(self) -> None:
+        """Stop the status polling timer."""
+        timer = self.ownerComp.op("poll_timer")
+        if timer:
+            timer.par.active = False
+
+    def PollStatus(self) -> None:
+        """Called by the timer CHOP callback — refresh container states."""
+        if not self._session_id:
+            return
+
+        statuses = compose_ps(self._session_id)
+        containers_comp = self.ownerComp.op("containers")
+        if not containers_comp:
+            return
+
+        status_map = {s.service: s for s in statuses}
+
+        for child in containers_comp.children:
+            svc_name = child.par.Servicename.eval() if hasattr(child.par, "Servicename") else ""
+            if svc_name in status_map:
+                st = status_map[svc_name]
+                if hasattr(child.par, "Containerid"):
+                    child.par.Containerid = st.container_id
+                if hasattr(child.par, "State"):
+                    child.par.State = st.state
+                if hasattr(child.par, "Health"):
+                    child.par.Health = st.health if st.health else "none"
+
+        # Update the status table DAT
+        self._update_status_from_compose(statuses)
+
+    def _refresh_container_ids(self) -> None:
+        """One-shot refresh of container IDs after compose up."""
+        self.PollStatus()
+
+    def _update_status_table(self, services: dict) -> None:
+        """Initialize the status table DAT with service names."""
+        status_dat = self.ownerComp.op("status")
+        if not status_dat:
+            return
+        status_dat.clear()
+        status_dat.appendRow(["service", "state", "health", "container_id", "image"])
+        for svc_name, svc_cfg in services.items():
+            status_dat.appendRow([
+                svc_name,
+                "loaded",
+                "",
+                "",
+                svc_cfg.get("image", ""),
+            ])
+
+    def _update_status_from_compose(self, statuses) -> None:
+        """Update status table from compose_ps results."""
+        status_dat = self.ownerComp.op("status")
+        if not status_dat:
+            return
+        status_dat.clear()
+        status_dat.appendRow(["service", "state", "health", "container_id", "image"])
+        for st in statuses:
+            status_dat.appendRow([
+                st.service,
+                st.state,
+                st.health or "",
+                st.container_id,
+                st.image,
+            ])
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def _get_compose_path(self) -> Path | None:
+        """Read the Composefile parameter and return as Path, or None."""
+        if not hasattr(self.ownerComp.par, "Composefile"):
+            self._log("ERROR: No Composefile parameter")
+            return None
+        raw = self.ownerComp.par.Composefile.eval()
+        if not raw:
+            self._log("ERROR: Composefile parameter is empty")
+            return None
+        p = Path(raw)
+        if not p.exists():
+            self._log(f"ERROR: File not found: {p}")
+            return None
+        return p
+
+    def _log(self, msg: str) -> None:
+        """Append a message to the log DAT and print to textport."""
+        print(f"[TDDocker] {msg}")
+        log_dat = self.ownerComp.op("log")
+        if log_dat:
+            log_dat.text += msg + "\n"
+
+    # ------------------------------------------------------------------
+    # TD lifecycle callbacks
+    # ------------------------------------------------------------------
+
+    def destroy(self) -> None:
+        """Called when the COMP is destroyed or TD is closing."""
+        if (
+            hasattr(self.ownerComp.par, "Autoshutdown")
+            and self.ownerComp.par.Autoshutdown
+        ):
+            self._down()
