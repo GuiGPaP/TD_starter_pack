@@ -64,6 +64,7 @@ class TDContainerExt:
         result = start_container(cid)
         if result.ok:
             self._log("Container started")
+            self._refresh_orchestrator()
         elif "No such container" in result.stderr:
             self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
         else:
@@ -76,6 +77,7 @@ class TDContainerExt:
         result = stop_container(cid)
         if result.ok:
             self._log("Container stopped")
+            self._refresh_orchestrator()
         elif "No such container" in result.stderr:
             self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
         else:
@@ -88,8 +90,16 @@ class TDContainerExt:
         result = restart_container(cid)
         if result.ok:
             self._log("Container restarted")
+            self._refresh_orchestrator()
         else:
             self._log(f"ERROR restarting container: {result.stderr}")
+
+    def _refresh_orchestrator(self) -> None:
+        """Tell the orchestrator to refresh all container statuses."""
+        orchestrator = self.ownerComp.parent(2)  # TDDocker COMP
+        has_ext = hasattr(orchestrator, "ext") and hasattr(orchestrator.ext, "TDDockerExt")
+        if orchestrator and has_ext:
+            orchestrator.ext.TDDockerExt.PollStatus()
 
     def _fetch_logs(self) -> None:
         cid = self._get_container_id()
