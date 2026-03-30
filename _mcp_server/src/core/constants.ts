@@ -36,6 +36,7 @@ export const TOOL_NAMES = {
 	GET_EXPERIMENTAL_BUILD: "get_experimental_build",
 	GET_GLSL_PATTERN: "get_glsl_pattern",
 	GET_HEALTH: "get_health",
+	GET_PERFORMANCE: "get_performance",
 	GET_LESSON: "get_lesson",
 	GET_NETWORK_TEMPLATE: "get_network_template",
 	GET_NODE_PARAMETER_SCHEMA: "get_node_parameter_schema",
