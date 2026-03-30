@@ -89,21 +89,87 @@ Simplified callback-based wrapper. Create from Palette > ThreadManager. Callback
 
 Live debugging UI — tracks active threads, queued tasks, workload. Access built-in logger via "Open Logger".
 
-### Safe Pattern for Thread Results
+### ThreadManager Caveats
 
-Use an Execute DAT frame callback to dequeue results from the thread:
+**`SuccessHook` / `ExceptHook` callbacks may not fire reliably.** In practice, TDTask callbacks were observed to never execute despite tasks completing successfully. The cause is unclear — may require a subscriber or specific PostProcess setup. **Prefer the non-blocking pattern below.**
+
+### Non-blocking Subprocess Pattern (Recommended)
+
+Use `threading.Thread(daemon=True)` for blocking calls + `run(delayFrames=1)` for main-thread polling:
 
 ```python
-# In the threaded function — no TD access
-def my_task():
-    result = expensive_computation()
-    return result  # returned via TDTask
+import threading
 
-# In Execute DAT onFrameStart — safe TD access
-def onFrameStart(frame):
-    # Check thread results and update TD operators here
-    pass
+class MyExt:
+    def __init__(self, ownerComp):
+        self.ownerComp = ownerComp
+        self._thread_result = None
+        self._thread_error = None
+
+    def start_async(self):
+        self._thread_result = None
+        self._thread_error = None
+        t = threading.Thread(target=self._blocking_work, daemon=True)
+        t.start()
+        run(f"op('{self.ownerComp.path}').ext.MyExt._poll()", delayFrames=1)
+
+    def _blocking_work(self):
+        """Background thread — NO TD ops allowed here."""
+        try:
+            import subprocess
+            r = subprocess.run(['docker', 'info'], capture_output=True, timeout=10)
+            self._thread_result = {'ok': r.returncode == 0}
+        except Exception as e:
+            self._thread_error = str(e)
+
+    def _poll(self):
+        """Main thread — polls for background thread completion."""
+        if self._thread_error:
+            self.ownerComp.par.Status.val = f'Error: {self._thread_error}'
+            return
+        if self._thread_result is None:
+            # Still running — poll again next frame
+            run(f"op('{self.ownerComp.path}').ext.MyExt._poll()", delayFrames=1)
+            return
+        # Done — safe to use TD ops
+        self.ownerComp.par.Status.val = 'Done'
 ```
+
+**Key rules:**
+- Background thread: no `op()`, no `par.`, no TD objects
+- Communicate via instance attributes (`self._result`)
+- `run(delayFrames=1)` polls each frame (~0 cost)
+- Result handling on main thread: full TD access
+
+---
+
+## Performance Profiling
+
+### Perform CHOP
+
+28 channels available (enable via toggle parameters): `fps`, `msec`, `cpumsec`, `cook`, `dropped_frames`, `gpu_mem_used`, `cpu_mem_used`, `cookrate`, `gpu0_chip_temp`, `active_expressions`, etc.
+
+**Tip:** Connect a Trail CHOP (5s window) after Perform CHOP for time-series visualization of FPS drops.
+
+### Per-Operator Metrics (Python)
+
+| Attribute | Type | Notes |
+|-----------|------|-------|
+| `op.cpuCookTime` | float | **Cumulative** since creation — NOT per-frame |
+| `op.cookStartTime` | float | Offset from frame start (seconds) — per-frame |
+| `op.cookEndTime` | float | Offset from frame end (seconds) — per-frame |
+| `op.cookedThisFrame` | bool | Whether op cooked current frame |
+| `op.gpuCookTime` | float | GPU cook time |
+| `op.totalCooks` | int | Total cook count |
+| `op.cpuMemory` | int | CPU memory (bytes) |
+| `op.gpuMemory` | int | GPU memory (bytes) |
+| `comp.childrenCPUCookTime` | float | Aggregate children CPU time |
+
+**Per-frame cost** = `cookEndTime - cookStartTime` (only when `cookedThisFrame` is True).
+
+### MCP Tool
+
+`get_performance(scope="/path", topN=20)` — returns global metrics + per-operator profiling sorted by frame cost.
 
 ---
 
