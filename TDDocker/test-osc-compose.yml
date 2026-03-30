@@ -1,0 +1,5 @@
+services:
+  osc-test:
+    build: ./docker/osc-test
+    ports:
+      - "9001:9001/udp"

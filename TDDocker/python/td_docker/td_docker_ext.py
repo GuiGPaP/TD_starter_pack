@@ -301,8 +301,15 @@ class TDDockerExt:
             comp = self.ownerComp.create("baseCOMP", "containers")
         return comp
 
+    @staticmethod
+    def _sanitize_name(name: str) -> str:
+        """Make a service name safe for TD operator naming."""
+        return name.replace("-", "_").replace(".", "_").replace(" ", "_")
+
     def _create_container_comp(self, parent_comp, svc_name: str, svc_cfg: dict) -> None:
         """Create a container COMP for a service using the template."""
+        safe_name = self._sanitize_name(svc_name)
+
         # Try to load from template TOX, fall back to creating a base COMP
         template_path = self.ownerComp.par.Containertemplate.eval() if hasattr(
             self.ownerComp.par, "Containertemplate"
@@ -310,9 +317,9 @@ class TDDockerExt:
 
         if template_path and Path(template_path).exists():
             comp = parent_comp.loadTox(template_path)
-            comp.name = svc_name
+            comp.name = safe_name
         else:
-            comp = parent_comp.create("baseCOMP", svc_name)
+            comp = parent_comp.create("baseCOMP", safe_name)
 
         # Set up the extension if not from template
         self._init_container_comp(comp, svc_name, svc_cfg)
