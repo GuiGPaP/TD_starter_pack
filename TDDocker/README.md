@@ -4,12 +4,14 @@ Docker container lifecycle management for TouchDesigner. Load a standard `docker
 
 ## Features
 
+- **Docker status check** — Detects if Docker is running, launches Docker Desktop with one click
 - **Compose overlay** — Never modifies your YAML. Generates a `td-overlay.yml` with labels and networking, uses `docker compose -f user.yml -f td-overlay.yml`
 - **Security validation** — Blocks `privileged`, `pid: host`, dangerous volume mounts (`/var/run/docker.sock`, `/etc`, `/proc`), and risky Linux capabilities before anything reaches Docker
 - **Watchdog** — Detached Python process polls the TD PID every 2s. If TD crashes, containers are torn down automatically. Orphan cleanup on startup catches power-loss scenarios
-- **Per-container COMPs** — Each service in your compose file becomes a baseCOMP with custom parameters (state, health, container ID) and pulse actions (start, stop, restart, logs)
-- **Status polling** — Timer CHOP polls `docker compose ps` every 2s and propagates state to each container COMP
-- **Data transport** — WebSocket DAT or OSC In/Out per container
+- **Per-container COMPs** — Each service becomes a baseCOMP with custom parameters, pulse actions, and a visual status display
+- **Visual feedback** — Container COMPs show service name + state indicator, with color-coded nodes (green=running, red=exited, yellow=starting, grey=created)
+- **Immediate refresh** — UI updates instantly after Start/Stop/Restart, no polling delay
+- **Data transport** — WebSocket or OSC per container, with parsed incoming data in `data_in` tableDAT
 - **Video transport** — NDI In/Out TOPs per container (injects `network_mode: host` via overlay)
 
 ## Requirements
@@ -23,10 +25,13 @@ Docker container lifecycle management for TouchDesigner. Load a standard `docker
 
 1. Open `TDDocker.toe` in TouchDesigner
 2. Select the `/TDDocker` COMP and open its parameters
-3. On the **Config** page, set **Compose File** to your `docker-compose.yml`
-4. On the **Actions** page:
+3. On the **Actions** page:
+   - Pulse **Check Docker** — verifies Docker is running
+   - If not running, pulse **Start Docker** — launches Docker Desktop (wait 15-30s)
+4. On the **Config** page, set **Compose File** to your `docker-compose.yml`
+5. On the **Actions** page:
    - Pulse **Load** — validates YAML, generates overlay, creates container COMPs
-   - Pulse **Up** — starts containers, spawns watchdog, begins status polling
+   - Pulse **Up** — starts containers, spawns watchdog
    - Pulse **Down** — stops containers, signals watchdog
    - Pulse **Rebuild** — Down + destroy COMPs + re-Load + Up
 
@@ -39,7 +44,12 @@ TDDocker/
 ├── TDDocker.toe                    # Main TD project
 ├── pyproject.toml                  # Python project config (pytest, ruff, pyright)
 ├── td-overlay.yml                  # Generated at runtime (gitignored)
-├── test-compose.yml                # Example compose for testing
+├── test-compose.yml                # Example compose for testing (nginx + echo)
+├── test-osc-compose.yml            # OSC integration test compose
+├── docker/
+│   └── osc-test/                   # OSC echo container (integration tests)
+│       ├── Dockerfile
+│       └── osc_echo.py
 └── python/
     ├── td_docker/
     │   ├── __init__.py             # Package (v0.1.0)
@@ -48,12 +58,12 @@ TDDocker/
     │   ├── watchdog.py             # PID polling + orphan cleanup
     │   ├── docker_status.py        # Docker daemon check + auto-launch
     │   ├── container_manager.py    # Per-container start/stop/restart/logs
-    │   ├── td_docker_ext.py        # Orchestrator extension (reference)
-    │   ├── td_container_ext.py     # Container extension (reference)
+    │   ├── td_docker_ext.py        # Orchestrator extension
+    │   ├── td_container_ext.py     # Container extension
     │   └── transports/
     │       ├── __init__.py         # Re-exports WebSocketBridge, OscBridge
-    │       ├── websocket.py        # WS bridge (parse, state, reconnect, callback script)
-    │       └── osc.py              # OSC bridge (parse address+args, callback script)
+    │       ├── websocket.py        # WS bridge (parse, state, reconnect)
+    │       └── osc.py              # OSC bridge (parse address+args)
     └── tests/
         ├── conftest.py
         ├── test_validator.py       # 19 tests — security rules
@@ -69,16 +79,22 @@ TDDocker/
 
 ```
 /TDDocker (containerCOMP)              Orchestrator
-├── td_docker_ext (textDAT)            Extension script (sys.path + import)
+├── td_docker_ext (textDAT)            Extension loader (sys.path + import)
+├── parexec1 (parameterexecuteDAT)     Routes pulse/value → extension
 ├── log (textDAT)                      Rolling log output
 ├── status (tableDAT)                  Service status table
-├── poll_timer (timerCHOP)             2s polling cycle
-├── poll_timer_callbacks (textDAT)     Timer → PollStatus()
+├── poll_script (textDAT)              run()-based 2s polling loop
 ├── containers (baseCOMP)              Parent for service COMPs
 │   ├── web (baseCOMP)                 One per compose service
-│   │   └── log_dat (textDAT)
+│   │   ├── status_display (textTOP)   Visual: name + state + color
+│   │   ├── log_dat (textDAT)          Container-specific logs
+│   │   ├── td_container_ext (textDAT) Extension loader
+│   │   └── parexec1 (parexecDAT)      Routes pulse/value → extension
 │   └── echo (baseCOMP)
-│       └── log_dat (textDAT)
+│       ├── status_display (textTOP)
+│       ├── log_dat (textDAT)
+│       ├── td_container_ext (textDAT)
+│       └── parexec1 (parexecDAT)
 └── mcp_webserver_base (baseCOMP)      MCP bridge (optional)
 ```
 
@@ -103,8 +119,8 @@ TDDocker/
 | Check Docker | Pulse | Check if Docker daemon is running |
 | Start Docker | Pulse | Launch Docker Desktop (Win/macOS) |
 | Load | Pulse | Parse, validate, generate overlay, create COMPs |
-| Up | Pulse | `docker compose up -d` + spawn watchdog |
-| Down | Pulse | `docker compose down` + signal watchdog |
+| Up | Pulse | `docker compose up -d` + spawn watchdog + start polling |
+| Down | Pulse | `docker compose down` + signal watchdog + refresh displays |
 | Rebuild | Pulse | Down + destroy COMPs + Load + Up |
 | View Logs | Pulse | Fetch compose logs into log DAT |
 
@@ -124,9 +140,9 @@ TDDocker/
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| Start | Pulse | `docker start` this container |
-| Stop | Pulse | `docker stop` this container |
-| Restart | Pulse | `docker restart` this container |
+| Start | Pulse | `docker start` — refreshes display immediately |
+| Stop | Pulse | `docker stop` — refreshes display immediately |
+| Restart | Pulse | `docker restart` — refreshes display immediately |
 | Logs | Pulse | Fetch logs into container's log_dat |
 
 #### Transport Page
@@ -137,6 +153,21 @@ TDDocker/
 | Data Port | Int | Port for data communication |
 | Video Transport | Menu | None / NDI |
 | NDI Source | String | NDI source name (manual entry) |
+
+## Visual Feedback
+
+Each container COMP displays a color-coded status preview:
+
+| State | Node color | Display |
+|-------|-----------|---------|
+| Never started | Grey | `● CREATED` |
+| Starting (has ID, not running) | Yellow | `● CREATED` |
+| Running + healthy | Green | `● RUNNING` |
+| Running + unhealthy | Red | `● UNHEALTHY` |
+| Exited / dead | Red | `● EXITED` |
+| Paused | Yellow | `● PAUSED` |
+
+Updates immediately after Start/Stop/Restart/Down, and via 2s background polling during Up.
 
 ## Security
 
@@ -177,15 +208,16 @@ On TDDocker init (if Orphan Cleanup is ON), queries `docker ps --filter label=td
 
 Set **Data Transport** on a container COMP to enable:
 
-- **WebSocket** — Creates a `websocketDAT`, a `data_in` tableDAT (parsed incoming messages), and a `ws_callbacks` textDAT (callback script). Set **Data Port** to the host-mapped port your container exposes.
+- **WebSocket** — Creates `websocketDAT`, `data_in` tableDAT, and `ws_callbacks` textDAT. Set **Data Port** to the host-mapped port your container exposes.
   - Incoming JSON objects are parsed into key/value rows in `data_in`
   - JSON arrays become one row per element
   - Plain text becomes `{"message": raw}`
   - Auto-reconnect with exponential backoff (1/2/4/8/16s, max 5 attempts)
-- **OSC** — Creates `oscinDAT` (on Data Port), `oscoutDAT` (on Data Port + 1), a `data_in` tableDAT, and an `osc_callbacks` textDAT.
+- **OSC** — Creates `oscinDAT` (on Data Port), `oscoutDAT` (on Data Port + 1), `data_in` tableDAT, and `osc_callbacks` textDAT.
   - Incoming OSC messages are parsed into rows: `address`, `arg0`, `arg1`, ...
   - Header auto-expands when messages with more arguments arrive
   - Rolling buffer (max 1000 rows)
+  - Bidirectional: verified with `docker/osc-test/` integration test
 
 Your container application must implement the corresponding server/client.
 
@@ -195,6 +227,7 @@ Set **Video Transport** to **NDI** on a container COMP:
 
 - Creates `ndiin` (video_in) and `ndiout` (video_out) TOPs
 - The overlay automatically injects `network_mode: host` for that service (required for NDI discovery)
+- Toggling NDI on/off regenerates the overlay and re-applies compose (idempotent)
 - Set **NDI Source** to the source name broadcast by your container (e.g., `HOSTNAME/stream`)
 
 Your container must run NDI-capable software and have NDI SDK available.
@@ -223,8 +256,10 @@ pyright
 | `watchdog.py` | `spawn_watchdog()`, `cleanup_orphans()`, `send_shutdown_signal()`, `pid_exists()` |
 | `docker_status.py` | `check_docker()`, `start_docker_desktop()` — daemon check + auto-launch |
 | `container_manager.py` | `start_container()`, `stop_container()`, `restart_container()`, `container_logs()`, `inspect_container()` |
-| `transports/websocket.py` | `WebSocketBridge` (parse, state, reconnect), `CALLBACK_SCRIPT` (TD textDAT injection) |
-| `transports/osc.py` | `OscBridge` (parse address+args), `CALLBACK_SCRIPT` (TD textDAT injection) |
+| `td_docker_ext.py` | `TDDockerExt` — orchestrator: Load/Up/Down/Rebuild, PollStatus, visual feedback |
+| `td_container_ext.py` | `TDContainerExt` — per-container: Start/Stop/Restart/Logs, transport setup |
+| `transports/websocket.py` | `WebSocketBridge` (parse, state, reconnect), `CALLBACK_SCRIPT` |
+| `transports/osc.py` | `OscBridge` (parse address+args), `CALLBACK_SCRIPT` |
 
 ## Roadmap (V2+)
 
