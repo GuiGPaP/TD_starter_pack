@@ -25,3 +25,7 @@ TDImportCache/
 
 # Toolkit knowledge data (populated via live TD introspection, not committed)
 _mcp_server/data/td-knowledge/toolkits/
+_mcp_server/data/introspection/
+
+# TDDocker generated files
+TDDocker/td-overlay.yml
