@@ -408,6 +408,27 @@ class TDDockerExt:
         )
         comp.par.ext0promote = True
 
+        # Parameter execute DAT — routes pulse/value callbacks to extension
+        if not comp.op("parexec1"):
+            pe = comp.create("parameterexecuteDAT", "parexec1")
+            pe.par.op = comp.path
+            pe.par.pars = "Start Stop Restart Logs Datatransport Videotransport Ndisource"
+            pe.par.onpulse = True
+            pe.par.valuechange = True
+            pe.par.custom = True
+            pe.par.builtin = False
+            pe.text = (
+                "def onValueChange(par, prev):\n"
+                "\text = par.owner.ext.TDContainerExt\n"
+                "\tif ext and hasattr(ext, 'onParValueChange'):\n"
+                "\t\text.onParValueChange(par, prev)\n"
+                "\n"
+                "def onPulse(par):\n"
+                "\text = par.owner.ext.TDContainerExt\n"
+                "\tif ext and hasattr(ext, 'onParPulse'):\n"
+                "\t\text.onParPulse(par)\n"
+            )
+
         # Create status display TOP for visual feedback
         if not comp.op("status_display"):
             txt = comp.create("textTOP", "status_display")
