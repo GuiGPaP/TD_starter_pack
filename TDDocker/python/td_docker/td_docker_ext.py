@@ -33,6 +33,16 @@ from td_docker.validator import validate_compose
 from td_docker.watchdog import cleanup_orphans, send_shutdown_signal, spawn_watchdog
 
 
+def _add_menu(page, name: str, label: str, names: list, labels: list, default: str = ""):
+    """Create a string menu parameter (TD 2025 compatible)."""
+    par = page.appendStrMenu(name, label=label)[0]
+    par.menuNames = names
+    par.menuLabels = labels
+    if default:
+        par.val = default
+    return par
+
+
 class TDDockerExt:
     """Extension class for the TDDocker orchestrator COMP."""
 
@@ -317,18 +327,18 @@ class TDDockerExt:
             info_page.appendStr("Servicename", label="Service Name")[0].val = svc_name
             info_page.appendStr("Image", label="Image")[0].val = image
             info_page.appendStr("Containerid", label="Container ID")[0].val = ""
-            info_page.appendMenu(
-                "State",
-                label="State",
-                menuNames=["created", "running", "paused", "exited", "dead"],
-                menuLabels=["Created", "Running", "Paused", "Exited", "Dead"],
-            )[0].val = "created"
-            info_page.appendMenu(
-                "Health",
-                label="Health",
-                menuNames=["none", "healthy", "unhealthy"],
-                menuLabels=["None", "Healthy", "Unhealthy"],
-            )[0].val = "none"
+            _add_menu(
+                info_page, "State", "State",
+                ["created", "running", "paused", "exited", "dead"],
+                ["Created", "Running", "Paused", "Exited", "Dead"],
+                "created",
+            )
+            _add_menu(
+                info_page, "Health", "Health",
+                ["none", "healthy", "unhealthy"],
+                ["None", "Healthy", "Unhealthy"],
+                "none",
+            )
 
             actions_page = comp.appendCustomPage("Actions")
             actions_page.appendPulse("Start", label="Start")
@@ -337,19 +347,19 @@ class TDDockerExt:
             actions_page.appendPulse("Logs", label="Logs")
 
             transport_page = comp.appendCustomPage("Transport")
-            transport_page.appendMenu(
-                "Datatransport",
-                label="Data Transport",
-                menuNames=["none", "websocket", "osc"],
-                menuLabels=["None", "WebSocket", "OSC"],
-            )[0].val = "none"
+            _add_menu(
+                transport_page, "Datatransport", "Data Transport",
+                ["none", "websocket", "osc"],
+                ["None", "WebSocket", "OSC"],
+                "none",
+            )
             transport_page.appendInt("Dataport", label="Data Port")[0].val = 0
-            transport_page.appendMenu(
-                "Videotransport",
-                label="Video Transport",
-                menuNames=["none", "ndi"],
-                menuLabels=["None", "NDI"],
-            )[0].val = "none"
+            _add_menu(
+                transport_page, "Videotransport", "Video Transport",
+                ["none", "ndi"],
+                ["None", "NDI"],
+                "none",
+            )
             transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
         else:
             # Template loaded — just update values
