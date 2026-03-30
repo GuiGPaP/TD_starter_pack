@@ -62,6 +62,7 @@ class TDDockerExt:
         self._overlay_path: Path | None = None
         self._compose_dir: Path | None = None
         self._service_configs: dict[str, ServiceOverlay] = {}
+        self._polling_active: bool = False
 
         # Generate session ID on init
         self._session_id = uuid.uuid4().hex[:12]
@@ -515,17 +516,41 @@ class TDDockerExt:
     # Status polling
     # ------------------------------------------------------------------
 
+    _POLL_SCRIPT = (
+        "def poll():\n"
+        "\ttry:\n"
+        "\t\ttd_docker = op('/TDDocker')\n"
+        "\t\text = td_docker.ext.TDDockerExt\n"
+        "\t\tif ext and getattr(ext, '_polling_active', False):\n"
+        "\t\t\text.PollStatus()\n"
+        "\t\t\t# Schedule next poll in 2 seconds\n"
+        "\t\t\trun('op(\\\"/TDDocker/poll_script\\\").module.poll()',\n"
+        "\t\t\t    delayFrames=int(2 * me.time.rate))\n"
+        "\texcept Exception as e:\n"
+        "\t\tprint(f'Poll error: {e}')\n"
+    )
+
+    def _ensure_poll_script(self) -> None:
+        """Create the poll_script DAT if it doesn't exist."""
+        ps = self.ownerComp.op("poll_script")
+        if not ps:
+            ps = self.ownerComp.create("textDAT", "poll_script")
+            ps.nodeX = 400
+            ps.nodeY = -100
+            ps.viewer = True
+        ps.text = self._POLL_SCRIPT
+
     def _start_polling(self) -> None:
-        """Start the timer CHOP for status polling."""
-        timer = self.ownerComp.op("poll_timer")
-        if timer:
-            timer.par.active = True
+        """Start the polling loop via poll_script DAT."""
+        self._polling_active = True
+        self._ensure_poll_script()
+        ps = self.ownerComp.op("poll_script")
+        if ps and hasattr(ps, "module") and hasattr(ps.module, "poll"):
+            ps.module.poll()
 
     def _stop_polling(self) -> None:
-        """Stop the status polling timer."""
-        timer = self.ownerComp.op("poll_timer")
-        if timer:
-            timer.par.active = False
+        """Stop the polling loop."""
+        self._polling_active = False
 
     def PollStatus(self) -> None:
         """Called by the timer CHOP callback — refresh container states."""
