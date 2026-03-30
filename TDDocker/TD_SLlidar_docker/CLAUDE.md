@@ -5,47 +5,41 @@ Docker-based ROS2 integration for SLAMTEC LIDAR sensors with TouchDesigner via O
 ## Architecture
 
 ```
-LIDAR (USB/Ethernet) → Docker (ROS2 Humble)
-                         ├── sllidar_node (C++ driver, publishes /scan)
-                         └── osc_bridge_node (Python, /scan → OSC UDP)
-                                    │
-                                    ▼ OSC UDP (port 7000)
-                         TouchDesigner (Windows)
-                         └── COMP SLlidar_ros2
-                              ├── oscin1 CHOP (receives scans)
-                              ├── select_polar / select_cartesian
-                              └── null_out → out1 CHOP
+RPLidar (USB/Ethernet) → Docker (ROS2 Humble)
+                          ├── sllidar_node (C++ driver, publishes /scan)
+                          └── osc_bridge_node (Python, /scan → OSC UDP)
+                                     │
+                                     ▼ OSC UDP (port 7000)
+                          TouchDesigner (Windows)
+                          └── TDDocker
+                               ├── SLlidar launcher COMP (one-click Start/Stop)
+                               └── containers/sllidar/
+                                    └── oscin_chop (port 7000) → select_polar → null_out → out1
 ```
+
+**Integration method:** Uses TDDocker's container management (Load compose → Up). The SLlidar launcher COMP at `/TDDocker/SLlidar` orchestrates USB detection, compose loading, OSC transport setup, and container lifecycle.
+
+## One-Click Usage (in TouchDesigner)
+
+1. Open the `SLlidar` COMP in `/TDDocker`
+2. Select Lidar Model, Scan Mode, OSC Format in custom parameters
+3. Click **Start** → auto-detects USB lidar, attaches to WSL2, launches Docker
+4. Click **Stop** → stops container, detaches USB
 
 ## Supported Lidar Models
 
+All USB models use Silicon Labs CP210x (VID:PID 10c4:ea60) — auto-detected.
+
 | Model | Channel | Baudrate | Notes |
 |-------|---------|----------|-------|
-| A1 | serial | 115200 | Entry level |
+| A1 | serial | 115200 | Entry level, tested |
 | A2M7/A2M8/A2M12 | serial | 115200-256000 | |
 | A3 | serial | 256000 | High performance |
 | S1 | serial/tcp | 256000 | TOF |
-| S2/S3 | serial | 1000000 | High speed TOF |
-| S2E | tcp | - | Ethernet variant |
-| C1 | serial | 460800 | Omnidirectional |
-| T1 | udp | - | Network-based |
-
-## Quick Start
-
-```bash
-# 1. Setup environment
-cp .env.example .env
-# Edit .env — set LIDAR_CHANNEL_TYPE, OSC_FORMAT, etc.
-
-# 2. Start (dev mode, no hardware)
-docker compose -f docker-compose.dev.yml up --build
-
-# 3. Start (Windows with hardware)
-docker compose -f docker-compose.windows.yml up --build
-
-# 4. Start (Linux production)
-docker compose up --build
-```
+| S2/S3 | serial | 1000000 | High speed TOF (CP2102N) |
+| S2E | tcp | — | Ethernet only, no USB |
+| C1 | serial | 460800 | Omnidirectional (CP2102N) |
+| T1 | udp | — | Ethernet only |
 
 ## OSC Messages
 
@@ -55,46 +49,40 @@ docker compose up --build
 | `/lidar/polar` | `[angle0, range0, intensity0, angle1, ...]` | Polar scan data (triplets) |
 | `/lidar/cartesian` | `[x0, y0, intensity0, x1, ...]` | Cartesian scan data (triplets) |
 
-Output format controlled by `OSC_FORMAT` env var (or COMP parameter): `polar`, `cartesian`, or `both`.
-
-## TouchDesigner COMP
-
-### Build the COMP
-
-In TD Script Editor or a Text DAT:
-```python
-exec(op('build_sllidar_comp').text)
-```
-
-### COMP Custom Parameters
-
-- **Connection**: Lidarmodel (menu), Channeltype, Serialport, Tcpip, Tcpport, Baudrate, Scanmode
-- **OSC**: Oscport, Oscformat (polar/cartesian/both)
-- **Docker**: Dockermode (dev/windows/production), Start (pulse), Stop (pulse), Status (read-only)
-
-Changing the Lidar Model auto-configures baudrate, channel type, and available scan modes.
-
-### Extension
-
-`SLlidarExt.py` — loaded via Text DAT with sys.path setup. Routes parameter changes through `parexec1` (parameterexecuteDAT).
+In TD oscinCHOP, channels are named `lidar/polar1`, `lidar/polar2`, etc. (no leading `/`).
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `osc_bridge/osc_bridge_node.py` | ROS2 node: /scan → OSC UDP |
-| `launch/sllidar_osc_launch.py` | Unified launch (sllidar + osc_bridge) |
-| `sllidar_ros2/` | Slamtec ROS2 driver (C++) |
-| `dockerfile` | Multi-stage Docker build |
+| `launch/sllidar_osc_launch.py` | Unified launch (all models, serial/TCP/UDP + OSC) |
+| `sllidar_ros2/` | Slamtec ROS2 driver (C++, vendored, has own .git) |
+| `dockerfile` | Multi-stage build, non-root user with dialout group |
+| `docker-compose.windows.yml` | Windows + USB/WSL2 (device mapping) |
 | `docker-compose.dev.yml` | Dev mode (no hardware) |
-| `docker-compose.windows.yml` | Windows + USB/WSL2 |
 | `docker-compose.yml` | Linux production |
-| `Touchdesigner/SLlidarExt.py` | TD COMP extension |
-| `Touchdesigner/build_sllidar_comp.py` | COMP builder script |
+| `.env.example` | All configurable env vars |
+
+## Critical Implementation Notes
+
+### Docker Permissions (3 issues)
+1. **Home dir required:** ROS2 launch needs `~/.ros/log/` → `useradd -m -d /home/lidar`
+2. **dialout group:** `user: "1001:1001"` in compose overrides groups → use `group_add: [dialout]`
+3. **Empty launch args:** `scan_mode:=` (empty) is invalid → entrypoint filters `key:=` with no value
+
+### TouchDesigner Performance
+- **Use oscinCHOP, NOT oscinDAT** for sensor data (DAT parsing = 780K cells/sec = FPS drops)
+- **Disable TDDocker polling** after Up (`_polling_active = False`) — `docker compose ps` takes 200ms
+- **Frame-delayed ops:** Load.pulse() and Up.pulse() complete on next frame → use `run(delayFrames=2)` for dependent operations
+
+### Extension Pattern
+- Extension is **inline** in textDAT (not external file) — `project` not available in ext0object context
+- ext0object in **CONSTANT mode** (not EXPRESSION): `op('./sllidar_ext').module.SLlidarLauncherExt(me)`
+- parexecDAT callbacks must be **minimal** (no debug(), match TDDocker 3-line pattern)
+- Background subprocess via `threading.Thread(daemon=True)` + `run(delayFrames=1)` polling
 
 ## Environment Variables
-
-All configurable via `.env` file or COMP custom parameters:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -105,7 +93,7 @@ All configurable via `.env` file or COMP custom parameters:
 | `LIDAR_TCP_PORT` | 20108 | TCP port |
 | `LIDAR_UDP_IP` | 192.168.11.2 | UDP IP for T1 |
 | `LIDAR_UDP_PORT` | 8089 | UDP port |
-| `LIDAR_SCAN_MODE` | (auto) | Standard, Express, Boost, DenseBoost |
+| `LIDAR_SCAN_MODE` | (empty=auto) | Standard, Express, Boost, DenseBoost |
 | `OSC_HOST` | host.docker.internal | OSC target host |
 | `OSC_PORT` | 7000 | OSC target UDP port |
 | `OSC_FORMAT` | polar | polar, cartesian, or both |
@@ -113,13 +101,10 @@ All configurable via `.env` file or COMP custom parameters:
 ## Development
 
 ```bash
-# View logs
-docker compose -f docker-compose.dev.yml logs -f
+# CLI test (bypass TDDocker)
+docker compose -f docker-compose.windows.yml up -d --build
+docker logs sllidar_ros2 -f
 
-# Shell into container
-docker compose -f docker-compose.dev.yml exec sllidar bash
-
-# Inside container: check ROS2 topics
-ros2 topic list
-ros2 topic echo /scan
+# View ROS2 topics inside container
+docker exec sllidar_ros2 bash -c 'source /ros2_ws/install/setup.bash && ros2 topic list'
 ```
