@@ -335,6 +335,7 @@ class TDDockerExt:
         # Position container COMPs side by side
         comp.nodeX = index * 250
         comp.nodeY = 0
+        comp.viewer = True
 
         # Set up the extension if not from template
         self._init_container_comp(comp, svc_name, svc_cfg)
