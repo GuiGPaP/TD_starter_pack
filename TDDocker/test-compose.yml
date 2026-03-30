@@ -1,0 +1,9 @@
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+  echo:
+    image: ealen/echo-server:latest
+    ports:
+      - "3000:80"
