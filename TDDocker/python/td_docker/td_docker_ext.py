@@ -234,6 +234,9 @@ class TDDockerExt:
         self._stop_polling()
         self._watchdog_pid = None
 
+        # Refresh displays to show exited state
+        self.PollStatus()
+
     def _rebuild(self) -> None:
         """Down + destroy COMPs + re-Load + Up."""
         self._down()
