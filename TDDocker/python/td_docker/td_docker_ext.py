@@ -551,6 +551,16 @@ class TDDockerExt:
                 if hasattr(child.par, "Health"):
                     child.par.Health = health
                 self._update_container_display(child, st.state, health)
+            else:
+                # Service not in compose ps → exited or not started
+                cid = ""
+                if hasattr(child.par, "Containerid"):
+                    cid = child.par.Containerid.eval()
+                if cid:
+                    # Had a container ID → it exited
+                    if hasattr(child.par, "State"):
+                        child.par.State = "exited"
+                    self._update_container_display(child, "exited", "none")
 
         # Update the status table DAT
         self._update_status_from_compose(statuses)

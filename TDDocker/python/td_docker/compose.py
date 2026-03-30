@@ -202,7 +202,7 @@ def compose_ps(project_name: str) -> list[ContainerStatus]:
 
     Returns a list of ContainerStatus objects.
     """
-    result = _run_compose(["ps", "--format", "json"], project_name, timeout=15)
+    result = _run_compose(["ps", "-a", "--format", "json"], project_name, timeout=15)
     if not result.ok:
         return []
 
