@@ -161,8 +161,8 @@ class TDDockerExt:
 
         # Create one COMP per service
         containers_comp = self._get_containers_comp()
-        for svc_name, svc_cfg in services.items():
-            self._create_container_comp(containers_comp, svc_name, svc_cfg)
+        for i, (svc_name, svc_cfg) in enumerate(services.items()):
+            self._create_container_comp(containers_comp, svc_name, svc_cfg, i)
 
         # Generate overlay
         config = OverlayConfig(
@@ -315,7 +315,9 @@ class TDDockerExt:
         """Make a service name safe for TD operator naming."""
         return name.replace("-", "_").replace(".", "_").replace(" ", "_")
 
-    def _create_container_comp(self, parent_comp, svc_name: str, svc_cfg: dict) -> None:
+    def _create_container_comp(
+        self, parent_comp, svc_name: str, svc_cfg: dict, index: int = 0,
+    ) -> None:
         """Create a container COMP for a service using the template."""
         safe_name = self._sanitize_name(svc_name)
 
@@ -329,6 +331,10 @@ class TDDockerExt:
             comp.name = safe_name
         else:
             comp = parent_comp.create("baseCOMP", safe_name)
+
+        # Position container COMPs side by side
+        comp.nodeX = index * 250
+        comp.nodeY = 0
 
         # Set up the extension if not from template
         self._init_container_comp(comp, svc_name, svc_cfg)
@@ -439,7 +445,29 @@ class TDDockerExt:
             txt.par.aligny = 1  # center
             txt.par.bgalpha = 1
             txt.viewer = True
+        comp.par.opviewer = comp.op("status_display")
+
+        # Layout internal operators
+        self._layout_container_ops(comp)
+
         self._update_container_display(comp, "created", "none")
+
+    @staticmethod
+    def _layout_container_ops(comp) -> None:
+        """Position internal operators in a tidy grid."""
+        layout = {
+            # Row 1: display + log
+            "status_display":    (0, 0),
+            "log_dat":           (250, 0),
+            # Row 2: extension + parexec
+            "td_container_ext":  (0, -150),
+            "parexec1":          (250, -150),
+        }
+        for name, (x, y) in layout.items():
+            op_node = comp.op(name)
+            if op_node:
+                op_node.nodeX = x
+                op_node.nodeY = y
 
     def _update_container_display(self, comp, state: str, health: str) -> None:
         """Update the visual status display on a container COMP."""
