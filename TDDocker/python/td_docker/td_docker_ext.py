@@ -104,9 +104,16 @@ class TDDockerExt:
     ``/TDDocker/containers/{project_name}/``.
     """
 
+    _TRANSPORT_PARAMS = (
+        "Oscenable", "Oscinport", "Oscoutport",
+        "Wsenable", "Wsport",
+        "Ndienable", "Ndisource",
+    )
+
     def __init__(self, ownerComp):
         self.ownerComp = ownerComp
         self._projects: dict[str, ProjectState] = {}
+        self._transport_cache: dict[str, dict[str, dict]] = {}
         self._polling_active: bool = False
         self._poll_in_flight: bool = False
         self._poll_result: dict[str, list[dict]] | None = None
@@ -123,6 +130,12 @@ class TDDockerExt:
 
         # Ensure multi-project parameters and table exist
         self._setup_multi_project()
+
+        # Migrate existing container COMPs (old params → new toggles)
+        self._migrate_container_comps()
+
+        # Restore projects from surviving table DAT (after .toe reload)
+        self._restore_projects()
 
         # Orphan cleanup on init
         if hasattr(ownerComp.par, "Orphancleanup") and ownerComp.par.Orphancleanup:
@@ -212,6 +225,147 @@ class TDDockerExt:
 
         # Initial display
         self._update_orchestrator_display()
+
+    def _migrate_container_comps(self) -> None:
+        """Migrate existing container COMPs from old params to new toggles.
+
+        Runs on every init so that COMPs saved with the old Transport
+        page (Datatransport/Videotransport menus) get upgraded in-place.
+        Also assigns default ports to COMPs that have zero ports.
+        """
+        containers_comp = self.ownerComp.op("containers")
+        if not containers_comp:
+            return
+        for i, comp in enumerate(containers_comp.children):
+            if (
+                hasattr(comp.par, "Datatransport")
+                and not hasattr(comp.par, "Oscenable")
+            ):
+                project_name = (
+                    comp.par.Projectname.eval()
+                    if hasattr(comp.par, "Projectname") else ""
+                )
+                svc_name = (
+                    comp.par.Servicename.eval()
+                    if hasattr(comp.par, "Servicename") else ""
+                )
+                self._init_container_comp(comp, project_name, svc_name, {}, i)
+            elif hasattr(comp.par, "Oscenable"):
+                # Assign default ports if still at zero
+                self._assign_default_ports(comp, i)
+                self._sync_transport_enables(comp)
+                self._layout_container_ops(comp)
+
+    def _restore_projects(self) -> None:
+        """Reconstruct _projects from the surviving projects table DAT.
+
+        After a .toe save/reload, the projects table DAT and container COMPs
+        survive but _projects dict is empty.  This reads the table and rebuilds
+        the dict so the extension knows about previously loaded projects.
+        Transport parameter values on the COMPs are already preserved by TD.
+        """
+        dat = self.ownerComp.op("projects")
+        if not dat or dat.numRows <= 1:  # header only or missing
+            return
+
+        import yaml
+
+        containers_comp = self.ownerComp.op("containers")
+
+        for row_idx in range(1, dat.numRows):
+            project_name = str(dat[row_idx, 0])
+            compose_str = str(dat[row_idx, 1])
+            session_id = str(dat[row_idx, 2])
+
+            if project_name in self._projects:
+                continue
+
+            compose_path = Path(compose_str)
+            if not compose_path.exists():
+                self._log(
+                    f"Restore skipped '{project_name}': "
+                    f"{compose_str} not found"
+                )
+                continue
+
+            # Parse services from compose file
+            try:
+                content = compose_path.read_text(encoding="utf-8")
+                doc = yaml.safe_load(content)
+                services = doc.get("services", {})
+            except Exception as e:
+                self._log(f"Restore skipped '{project_name}': {e}")
+                continue
+
+            # Migrate and read state from surviving COMPs
+            svc_list = list(services.items())
+            multi = len(svc_list) > 1
+            service_configs: dict[str, ServiceOverlay] = {}
+            for svc_name, svc_cfg in svc_list:
+                comp_name = self._sanitize_name(
+                    f"{project_name}_{svc_name}" if multi else project_name
+                )
+                ndi_enabled = False
+                if containers_comp:
+                    comp = containers_comp.op(comp_name)
+                    if comp:
+                        # Re-run init to migrate old params → new toggles
+                        self._init_container_comp(
+                            comp, project_name, svc_name, svc_cfg,
+                        )
+                        if hasattr(comp.par, "Ndienable"):
+                            ndi_enabled = bool(comp.par.Ndienable.eval())
+                service_configs[svc_name] = ServiceOverlay(
+                    ndi_enabled=ndi_enabled,
+                )
+
+            # Check for surviving overlay file
+            overlay_path = compose_path.parent / "td-overlay.yml"
+
+            project = ProjectState(
+                name=project_name,
+                compose_path=compose_path,
+                compose_dir=compose_path.parent,
+                session_id=session_id,
+                overlay_path=overlay_path if overlay_path.exists() else None,
+                service_configs=service_configs,
+                status="loaded",  # PollStatus will correct if running
+            )
+            self._projects[project_name] = project
+            self._log(f"Restored project '{project_name}' from saved state")
+
+        if self._projects:
+            self._update_active_menu()
+            # Defer transport operator restoration by one frame —
+            # container extensions aren't wired yet during __init__.
+            self._ensure_transports_deferred()
+
+    def _ensure_transports_deferred(self) -> None:
+        """Schedule ensureTransports() on all container COMPs next frame.
+
+        Uses the deferred-callback queue so container extensions are fully
+        wired before we touch them (they aren't ready during __init__).
+        """
+        containers_comp = self.ownerComp.op("containers")
+        if not containers_comp:
+            return
+        paths = [
+            c.path for c in containers_comp.children
+            if hasattr(c, "par") and hasattr(c.par, "Oscenable")
+        ]
+        if not paths:
+            return
+
+        def _do_ensure():
+            for p in paths:
+                c = op(p)
+                if not c:
+                    continue
+                ext = getattr(getattr(c, "ext", None), "TDContainerExt", None)
+                if ext:
+                    ext.ensureTransports()
+
+        self._run_on_main(_do_ensure)
 
     def _update_projects_table(self) -> None:
         """Sync the projects table DAT with _projects dict."""
@@ -746,6 +900,7 @@ class TDDockerExt:
         name = project.name
 
         def _after_down():
+            self._cache_transport(name)
             self._destroy_project_comps(name)
             if name in self._projects:
                 del self._projects[name]
@@ -774,6 +929,7 @@ class TDDockerExt:
         name = project.name
 
         def _after_down():
+            self._cache_transport(name)
             self._destroy_project_comps(name)
             if name in self._projects:
                 del self._projects[name]
@@ -922,10 +1078,11 @@ class TDDockerExt:
         comp.viewer = True
 
         # Set up the extension if not from template
-        self._init_container_comp(comp, project_name, svc_name, svc_cfg)
+        self._init_container_comp(comp, project_name, svc_name, svc_cfg, index)
 
     def _init_container_comp(
-        self, comp, project_name: str, svc_name: str, svc_cfg: dict
+        self, comp, project_name: str, svc_name: str, svc_cfg: dict,
+        index: int = 0,
     ) -> None:
         """Initialize custom parameters on a container COMP."""
         image = svc_cfg.get("image", "")
@@ -941,6 +1098,12 @@ class TDDockerExt:
             ].val = svc_name
             info_page.appendStr("Image", label="Image")[0].val = image
             info_page.appendStr("Containerid", label="Container ID")[0].val = ""
+            ports_str = ", ".join(
+                str(p) for p in svc_cfg.get("ports", [])
+            )
+            p = info_page.appendStr("Ports", label="Ports")[0]
+            p.val = ports_str
+            p.readOnly = True
             _add_menu(
                 info_page, "State", "State",
                 ["created", "running", "paused", "exited", "dead"],
@@ -961,20 +1124,26 @@ class TDDockerExt:
             actions_page.appendPulse("Logs", label="Logs")
 
             transport_page = comp.appendCustomPage("Transport")
-            _add_menu(
-                transport_page, "Datatransport", "Data Transport",
-                ["none", "websocket", "osc"],
-                ["None", "WebSocket", "OSC"],
-                "none",
-            )
-            transport_page.appendInt("Dataport", label="Data Port")[0].val = 0
-            _add_menu(
-                transport_page, "Videotransport", "Video Transport",
-                ["none", "ndi"],
-                ["None", "NDI"],
-                "none",
-            )
+            # OSC — unique ports per container (base 9000)
+            transport_page.appendToggle("Oscenable", label="OSC")[0].val = False
+            transport_page.appendInt("Oscinport", label="OSC In Port")[
+                0
+            ].val = 9000 + index * 2
+            transport_page.appendInt("Oscoutport", label="OSC Out Port")[
+                0
+            ].val = 9001 + index * 2
+            # WebSocket — unique port per container (base 8080)
+            transport_page.appendToggle("Wsenable", label="WebSocket")[0].val = False
+            transport_page.appendInt("Wsport", label="WS Port")[
+                0
+            ].val = 8080 + index
+            # NDI
+            transport_page.appendToggle("Ndienable", label="NDI")[0].val = False
             transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
+            # Restore cached transport config (from previous Remove)
+            self._restore_transport_cache(comp, project_name, svc_name)
+            # Grey out sub-params based on toggle state
+            self._sync_transport_enables(comp)
         else:
             # Template loaded — just update values
             if hasattr(comp.par, "Projectname"):
@@ -983,6 +1152,42 @@ class TDDockerExt:
                 comp.par.Servicename = svc_name
             if hasattr(comp.par, "Image"):
                 comp.par.Image = image
+            # Update ports from YAML
+            if hasattr(comp.par, "Ports"):
+                comp.par.Ports = ", ".join(
+                    str(p) for p in svc_cfg.get("ports", [])
+                )
+
+        # Migrate old Transport page (Datatransport/Videotransport) to toggles
+        if hasattr(comp.par, "Datatransport") and not hasattr(comp.par, "Oscenable"):
+            # Remove old Transport page
+            for page in comp.customPages:
+                if page.name == "Transport":
+                    page.destroy()
+                    break
+            # Recreate with new toggle layout
+            transport_page = comp.appendCustomPage("Transport")
+            transport_page.appendToggle("Oscenable", label="OSC")[0].val = False
+            transport_page.appendInt("Oscinport", label="OSC In Port")[
+                0
+            ].val = 9000 + index * 2
+            transport_page.appendInt("Oscoutport", label="OSC Out Port")[
+                0
+            ].val = 9001 + index * 2
+            transport_page.appendToggle("Wsenable", label="WebSocket")[0].val = False
+            transport_page.appendInt("Wsport", label="WS Port")[
+                0
+            ].val = 8080 + index
+            transport_page.appendToggle("Ndienable", label="NDI")[0].val = False
+            transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
+            self._sync_transport_enables(comp)
+            # Clean up old/stale transport operators
+            for op_name in ("data_in", "osc_data", "ws_data",
+                            "osc_callbacks", "ws_callbacks",
+                            "osc_in_callbacks", "websocket_dat_callbacks"):
+                old_op = comp.op(op_name)
+                if old_op:
+                    old_op.destroy()
 
         # Create internal operators if not from template
         if not comp.op("log_dat"):
@@ -1006,13 +1211,14 @@ class TDDockerExt:
         comp.par.ext0promote = True
 
         # Parameter execute DAT — routes pulse/value callbacks to extension
-        if not comp.op("parexec1"):
+        _pars_str = (
+            "Start Stop Restart Logs "
+            "Oscenable Wsenable Ndienable Ndisource"
+        )
+        pe = comp.op("parexec1")
+        if not pe:
             pe = comp.create("parameterexecuteDAT", "parexec1")
             pe.par.op = comp.path
-            pe.par.pars = (
-                "Start Stop Restart Logs "
-                "Datatransport Videotransport Ndisource"
-            )
             pe.par.onpulse = True
             pe.par.valuechange = True
             pe.par.custom = True
@@ -1028,6 +1234,8 @@ class TDDockerExt:
                 "\tif ext and hasattr(ext, 'onParPulse'):\n"
                 "\t\text.onParPulse(par)\n"
             )
+        # Always update monitored params (handles migration)
+        pe.par.pars = _pars_str
 
         # Create status display TOP for visual feedback
         if not comp.op("status_display"):
@@ -1047,15 +1255,63 @@ class TDDockerExt:
         self._update_container_display(comp, "created", "none")
 
     @staticmethod
+    def _assign_default_ports(comp, index: int) -> None:
+        """Set default unique ports on a container COMP if still at zero."""
+        defaults = {
+            "Oscinport": 9000 + index * 2,
+            "Oscoutport": 9001 + index * 2,
+            "Wsport": 8080 + index,
+        }
+        for par_name, default_val in defaults.items():
+            if hasattr(comp.par, par_name):
+                if int(comp.par[par_name].eval()) == 0:
+                    comp.par[par_name].val = default_val
+
+    @staticmethod
+    def _sync_transport_enables(comp) -> None:
+        """Enable/disable transport sub-params based on their toggle."""
+        toggles = {
+            "Oscenable": ("Oscinport", "Oscoutport"),
+            "Wsenable": ("Wsport",),
+            "Ndienable": ("Ndisource",),
+        }
+        for toggle, pars in toggles.items():
+            enabled = bool(
+                hasattr(comp.par, toggle)
+                and comp.par[toggle].eval()
+            )
+            for p in pars:
+                if hasattr(comp.par, p):
+                    comp.par[p].enable = enabled
+
+    @staticmethod
     def _layout_container_ops(comp) -> None:
         """Position internal operators in a tidy grid."""
+        # Remove stale operators from old transport implementations
+        for stale in ("data_in", "osc_data", "ws_data",
+                       "osc_callbacks", "ws_callbacks",
+                       "osc_in_callbacks", "websocket_dat_callbacks"):
+            old = comp.op(stale)
+            if old:
+                old.destroy()
+
         layout = {
             # Row 1: display + log
-            "status_display":    (0, 0),
-            "log_dat":           (250, 0),
+            "status_display":        (0, 0),
+            "log_dat":               (200, 0),
             # Row 2: extension + parexec
-            "td_container_ext":  (0, -150),
-            "parexec1":          (250, -150),
+            "td_container_ext":      (0, -200),
+            "parexec1":              (200, -200),
+            # Row 3: transport operators
+            "osc_in":                (0, -400),
+            "osc_out":               (200, -400),
+            "websocket_dat":         (400, -400),
+            # Row 4: callbacks (under their operator)
+            "oscin_callbacks":       (0, -600),
+            "websocket_callbacks":   (400, -600),
+            # Row 5: video transports
+            "video_in":              (0, -800),
+            "video_out":             (200, -800),
         }
         for name, (x, y) in layout.items():
             op_node = comp.op(name)
@@ -1182,7 +1438,7 @@ class TDDockerExt:
                 if is_last:
                     lines.append(f" \u2514 {_fc(color_key, svc_text)}")
                 else:
-                    lines.append(f"\u251c {_fc(color_key, svc_text)}")
+                    lines.append(f" \u251c {_fc(color_key, svc_text)}")
             lines.append("")
 
         # Set text — use expr so \n is interpreted as newlines
@@ -1215,6 +1471,36 @@ class TDDockerExt:
         """Remove all container COMPs belonging to a project."""
         for comp in self._get_project_comps(project_name):
             comp.destroy()
+
+    def _cache_transport(self, project_name: str) -> None:
+        """Save transport params from all COMPs of a project before destruction."""
+        cache: dict[str, dict] = {}
+        for comp in self._get_project_comps(project_name):
+            svc = (
+                comp.par.Servicename.eval()
+                if hasattr(comp.par, "Servicename") else ""
+            )
+            if not svc:
+                continue
+            params = {}
+            for p in self._TRANSPORT_PARAMS:
+                if hasattr(comp.par, p):
+                    params[p] = comp.par[p].eval()
+            cache[svc] = params
+        if cache:
+            self._transport_cache[project_name] = cache
+
+    def _restore_transport_cache(
+        self, comp, project_name: str, svc_name: str,
+    ) -> None:
+        """Restore cached transport params onto a freshly created COMP."""
+        cached = self._transport_cache.get(project_name, {}).get(svc_name)
+        if not cached:
+            return
+        for p, val in cached.items():
+            if hasattr(comp.par, p):
+                comp.par[p].val = val
+        self._sync_transport_enables(comp)
 
     # ------------------------------------------------------------------
     # Status polling (async via worker thread, multi-project)
