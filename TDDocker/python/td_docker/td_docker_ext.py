@@ -1,7 +1,12 @@
 """TDDockerExt — Orchestrator extension for the TDDocker COMP.
 
 Manages docker-compose lifecycle, watchdog, and per-service container COMPs.
+Supports multiple Docker projects simultaneously, each with its own session.
 Loaded as an extension on the TDDocker base COMP.
+
+Uses ``threading.Thread`` + a deferred-callback queue for non-blocking
+subprocess execution — ``docker compose ps``, ``up``, ``down`` all run
+in a daemon worker thread so the main TD cook loop stays at 60 fps.
 
 Requires custom parameters on ownerComp (see setup_parameters()).
 """
@@ -9,7 +14,10 @@ Requires custom parameters on ownerComp (see setup_parameters()).
 from __future__ import annotations
 
 import os
+import threading
+import time
 import uuid
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -43,6 +51,20 @@ def _add_menu(page, name: str, label: str, names: list, labels: list, default: s
     return par
 
 
+@dataclass
+class ProjectState:
+    """State for a single loaded Docker project."""
+
+    name: str
+    compose_path: Path
+    compose_dir: Path
+    session_id: str
+    overlay_path: Path | None = None
+    watchdog_pid: int | None = None
+    service_configs: dict[str, ServiceOverlay] = field(default_factory=dict)
+    status: str = "loaded"  # loaded | running | stopped
+
+
 _STATE_COLORS: dict[str, dict[str, tuple[float, float, float]]] = {
     "running": {"comp": (0.2, 0.6, 0.2), "bg": (0.05, 0.15, 0.05), "fg": (0.3, 0.9, 0.3)},
     "created": {"comp": (0.4, 0.4, 0.4), "bg": (0.15, 0.15, 0.15), "fg": (0.6, 0.6, 0.6)},
@@ -51,27 +73,243 @@ _STATE_COLORS: dict[str, dict[str, tuple[float, float, float]]] = {
     "dead":    {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
 }
 
+# RGB (0-255) for Text COMP inline formatting codes
+_FMT_COLORS: dict[str, str] = {
+    "running":   "100,220,100",
+    "healthy":   "100,220,100",
+    "created":   "160,160,160",
+    "loaded":    "160,160,160",
+    "paused":    "220,200,50",
+    "starting":  "220,200,50",
+    "exited":    "220,80,80",
+    "dead":      "220,80,80",
+    "error":     "220,80,80",
+    "unhealthy": "220,140,50",
+    "online":    "100,220,100",
+    "offline":   "220,80,80",
+}
+
+
+def _fc(state: str, text: str) -> str:
+    """Wrap *text* in Text COMP color formatting for *state*."""
+    rgb = _FMT_COLORS.get(state, "160,160,160")
+    return "{" + f"#color({rgb})" + "}" + text + "{#reset()}"
+
 
 class TDDockerExt:
-    """Extension class for the TDDocker orchestrator COMP."""
+    """Extension class for the TDDocker orchestrator COMP.
+
+    Supports multiple Docker projects, each with its own session ID,
+    overlay file, watchdog, and set of container COMPs grouped under
+    ``/TDDocker/containers/{project_name}/``.
+    """
 
     def __init__(self, ownerComp):
         self.ownerComp = ownerComp
-        self._watchdog_pid: int | None = None
-        self._session_id: str = ""
-        self._overlay_path: Path | None = None
-        self._compose_dir: Path | None = None
-        self._service_configs: dict[str, ServiceOverlay] = {}
+        self._projects: dict[str, ProjectState] = {}
         self._polling_active: bool = False
+        self._poll_in_flight: bool = False
+        self._poll_result: dict[str, list[dict]] | None = None
 
-        # Generate session ID on init
-        self._session_id = uuid.uuid4().hex[:12]
-        if hasattr(ownerComp.par, "Sessionid"):
-            ownerComp.par.Sessionid = self._session_id
+        # Deferred callback queue for main-thread execution
+        self._deferred_callbacks: list = []
+
+        # Start the poll_script loop (handles deferred callback flush
+        # even before any project is loaded/started)
+        self._ensure_poll_script()
+        ps = ownerComp.op("poll_script")
+        if ps and hasattr(ps, "module") and hasattr(ps.module, "tick"):
+            ps.module.tick()
+
+        # Ensure multi-project parameters and table exist
+        self._setup_multi_project()
 
         # Orphan cleanup on init
         if hasattr(ownerComp.par, "Orphancleanup") and ownerComp.par.Orphancleanup:
             self._cleanup_orphans()
+
+    # ------------------------------------------------------------------
+    # Multi-project setup
+    # ------------------------------------------------------------------
+
+    def _setup_multi_project(self) -> None:
+        """Create the projects table DAT and new parameters if missing."""
+        # Projects table
+        projects_dat = self.ownerComp.op("projects")
+        if not projects_dat:
+            projects_dat = self.ownerComp.create("tableDAT", "projects")
+            projects_dat.appendRow(
+                ["project_name", "compose_path", "session_id", "status"]
+            )
+            projects_dat.nodeX = 400
+            projects_dat.nodeY = 0
+            projects_dat.viewer = True
+
+        # Add Activeproject menu if missing
+        if not hasattr(self.ownerComp.par, "Activeproject"):
+            config_page = None
+            for page in self.ownerComp.customPages:
+                if page.name == "Config":
+                    config_page = page
+                    break
+            if config_page:
+                _add_menu(
+                    config_page, "Activeproject", "Active Project", [], [], ""
+                )
+
+        # Add new action pulses if missing
+        if not hasattr(self.ownerComp.par, "Removeproject"):
+            actions_page = None
+            for page in self.ownerComp.customPages:
+                if page.name == "Actions":
+                    actions_page = page
+                    break
+            if actions_page:
+                actions_page.appendPulse("Removeproject", label="Remove Project")
+                actions_page.appendPulse("Upall", label="Up All")
+                actions_page.appendPulse("Downall", label="Down All")
+
+        # Library page — folder, project menu, load pulse
+        if not hasattr(self.ownerComp.par, "Library"):
+            lib_page = None
+            for page in self.ownerComp.customPages:
+                if page.name == "Library":
+                    lib_page = page
+                    break
+            if not lib_page:
+                lib_page = self.ownerComp.appendCustomPage("Library")
+            lib_page.appendFolder("Library", label="Library Folder")
+            _add_menu(
+                lib_page, "Libraryproject", "Project", [], [], ""
+            )
+            lib_page.appendPulse("Scanlibrary", label="Scan Library")
+            lib_page.appendPulse("Loadfromlibrary", label="Load from Library")
+
+        # Orchestrator status display (textCOMP for rich formatting)
+        sd = self.ownerComp.op("status_display")
+        if sd and sd.OPType != "textCOMP":
+            sd.destroy()
+            sd = None
+        if not sd:
+            sd = self.ownerComp.create("textCOMP", "status_display")
+            sd.par.w = 480
+            sd.par.h = 300
+            sd.par.fontsize = 16
+            sd.par.font = "Verdana"
+            sd.par.formatcodes = True
+            sd.par.bgalpha = 1
+            sd.nodeX = 0
+            sd.nodeY = 100
+            sd.viewer = True
+        self.ownerComp.par.opviewer = sd
+
+        # Create the poll_script DAT — it auto-starts a per-frame
+        # flush loop so deferred callbacks always execute.
+        self._ensure_poll_script()
+
+        # Auto-scan library on init
+        self._scan_library()
+
+        # Initial display
+        self._update_orchestrator_display()
+
+    def _update_projects_table(self) -> None:
+        """Sync the projects table DAT with _projects dict."""
+        dat = self.ownerComp.op("projects")
+        if not dat:
+            return
+        dat.clear()
+        dat.appendRow(["project_name", "compose_path", "session_id", "status"])
+        for proj in self._projects.values():
+            dat.appendRow([
+                proj.name,
+                str(proj.compose_path),
+                proj.session_id,
+                proj.status,
+            ])
+
+    def _update_active_menu(self) -> None:
+        """Update the Activeproject menu with current project names."""
+        if not hasattr(self.ownerComp.par, "Activeproject"):
+            return
+        names = list(self._projects.keys())
+        labels = names[:]
+        self.ownerComp.par.Activeproject.menuNames = names
+        self.ownerComp.par.Activeproject.menuLabels = labels
+
+    @property
+    def _active_project(self) -> ProjectState | None:
+        """Get the currently selected project, or None."""
+        if not hasattr(self.ownerComp.par, "Activeproject"):
+            return None
+        name = self.ownerComp.par.Activeproject.eval()
+        return self._projects.get(name)
+
+    # ------------------------------------------------------------------
+    # Background task helpers
+    # ------------------------------------------------------------------
+
+    def _enqueue_task(self, target, success_hook, except_hook=None, args=()):
+        """Run *target* in a daemon thread; schedule hooks on the main thread.
+
+        Uses ``threading.Thread`` + TD ``run()`` so the subprocess call
+        never blocks the main cook loop.  TD's built-in ThreadManager was
+        measured to block the main thread for the full duration of the
+        worker (~300 ms per ``docker compose ps``), so we use raw
+        ``threading.Thread`` + a deferred-callback queue instead.
+        """
+
+        # Test-only: when _sync_mode is True, run inline instead of
+        # spawning a thread.  This exists solely for unit tests that
+        # need deterministic execution order.  Never set in production.
+        if getattr(self, '_sync_mode', False):
+            try:
+                target(*args)
+                if success_hook:
+                    success_hook()
+            except Exception as e:
+                if except_hook:
+                    except_hook(type(e), e, e.__traceback__)
+                else:
+                    self._log(f"ERROR: {e}")
+            return
+
+        def _thread_body():
+            try:
+                target(*args)
+                # Schedule success_hook on main thread next frame
+                if success_hook:
+                    # run() is a TD global available at module level in
+                    # the textDAT, but not in a package import.  Access
+                    # it via the ownerComp's parent.
+                    self._run_on_main(success_hook)
+            except Exception as e:
+                if except_hook:
+                    self._run_on_main(except_hook, type(e), e, e.__traceback__)
+                else:
+                    self._log(f"ERROR: {e}")
+
+        t = threading.Thread(target=_thread_body, daemon=True)
+        t.start()
+
+    def _run_on_main(self, fn, *args):
+        """Schedule *fn(*args)* on TD's main thread via a deferred call.
+
+        Thread-safe: only touches a plain Python list, never TD objects.
+        The poll_script's ``tick()`` loop calls ``_flush_deferred()``
+        every frame.  The loop auto-starts when the poll_script DAT is
+        created by ``_ensure_poll_script()``.
+        """
+        self._deferred_callbacks.append((fn, args))
+
+    def _flush_deferred(self):
+        """Execute all pending deferred callbacks on the main thread."""
+        while self._deferred_callbacks:
+            fn, args = self._deferred_callbacks.pop(0)
+            try:
+                fn(*args)
+            except Exception as e:
+                self._log(f"ERROR in deferred callback: {e}")
 
     # ------------------------------------------------------------------
     # Parameter callbacks (pulse buttons)
@@ -97,43 +335,172 @@ class TDDockerExt:
             self._start_docker()
         elif name == "Checkdocker":
             self._check_docker()
+        elif name == "Removeproject":
+            self._remove_project()
+        elif name == "Upall":
+            self._up_all()
+        elif name == "Downall":
+            self._down_all()
+        elif name == "Scanlibrary":
+            self._scan_library()
+        elif name == "Loadfromlibrary":
+            self._load_from_library()
 
     # ------------------------------------------------------------------
     # Docker status
     # ------------------------------------------------------------------
 
-    def _require_docker(self) -> bool:
-        """Check Docker is running. Logs error if not. Returns True if OK."""
-        status = check_docker()
-        if not status.available:
-            self._log(f"ERROR: {status.message}")
-            return False
-        return True
+    _docker_ok: bool = False
+    _docker_check_time: float = 0.0
+
+    def _require_docker(self, on_ready=None) -> bool:
+        """Check Docker is running (cached 30 s), then call *on_ready*.
+
+        Args:
+            on_ready: Optional callback invoked on the main thread once
+                Docker is confirmed available.  When provided, the check
+                runs async and *on_ready* is called only if Docker is up.
+                When ``None``, behaves as a simple bool guard using the
+                cached value.
+
+        Returns:
+            ``True`` immediately when the cache confirms Docker is up.
+            ``False`` when the cache says Docker is down and no async
+            check is needed.  When a fresh async check is launched the
+            return value is ``True`` only if *on_ready* is ``None``
+            (legacy optimistic path); with *on_ready* the caller should
+            **not** proceed — *on_ready* will be called instead.
+        """
+        now = time.monotonic()
+        if self._docker_ok and (now - self._docker_check_time) < 30:
+            if on_ready:
+                on_ready()
+            return True
+
+        # Run check in background thread to avoid blocking the cook loop
+        result_holder: list = [None]
+
+        def _worker():
+            result_holder[0] = check_docker()
+
+        def _done():
+            status = result_holder[0]
+            if status and status.available:
+                self._docker_ok = True
+                self._docker_check_time = time.monotonic()
+                if on_ready:
+                    on_ready()
+            elif status:
+                self._docker_ok = False
+                self._log(f"ERROR: {status.message}")
+                self._update_orchestrator_display()
+                self._show_docker_popup(status)
+
+        self._enqueue_task(target=_worker, success_hook=_done)
+        # With on_ready: caller must NOT proceed — on_ready fires later.
+        # Without on_ready: legacy optimistic return.
+        return not on_ready
 
     def _check_docker(self) -> None:
-        """Manual Docker status check (pulse button)."""
-        status = check_docker()
-        self._log(status.message)
+        """Manual Docker status check (pulse button, async)."""
+        result_holder: list = [None]
+
+        def _worker():
+            result_holder[0] = check_docker()
+
+        def _done():
+            status = result_holder[0]
+            if status:
+                self._docker_ok = status.available
+                if status.available:
+                    self._docker_check_time = time.monotonic()
+                self._log(status.message)
+                self._update_orchestrator_display()
+
+        self._enqueue_task(target=_worker, success_hook=_done)
 
     def _start_docker(self) -> None:
         """Launch Docker Desktop."""
         msg = start_docker_desktop()
         self._log(msg)
 
+    def _show_docker_popup(self, status) -> None:
+        """Show a popup dialog when Docker is unavailable."""
+        try:
+            pop = self.ownerComp.op("/TDResources/popDialog")
+            if not pop:
+                return
+        except Exception:
+            return
+
+        if getattr(status, "cli_missing", False):
+            pop.Open(
+                text=(
+                    "Docker is not installed.\n\n"
+                    "Install Docker Desktop to use TDDocker."
+                ),
+                title="TDDocker",
+                buttons=["Download", "Cancel"],
+                callback=self._on_docker_install_popup,
+                escButton=2,
+                enterButton=1,
+                escOnClickAway=True,
+            )
+        else:
+            pop.Open(
+                text=(
+                    "Docker Desktop is not running.\n\n"
+                    "Start Docker Desktop?"
+                ),
+                title="TDDocker",
+                buttons=["Start Docker", "Cancel"],
+                callback=self._on_docker_start_popup,
+                escButton=2,
+                enterButton=1,
+                escOnClickAway=True,
+            )
+
+    def _on_docker_start_popup(self, info) -> None:
+        """Callback for the 'Start Docker' popup."""
+        if info.get("buttonNum") == 1:
+            self._start_docker()
+
+    def _on_docker_install_popup(self, info) -> None:
+        """Callback for the 'Install Docker' popup."""
+        if info.get("buttonNum") == 1:
+            import webbrowser
+
+            webbrowser.open("https://www.docker.com/products/docker-desktop/")
+
     # ------------------------------------------------------------------
     # Core lifecycle
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _derive_project_name(compose_path: Path) -> str:
+        """Derive a project name from the compose file's parent directory."""
+        name = compose_path.parent.name
+        if not name or name in (".", "/", "\\"):
+            name = compose_path.stem
+        return TDDockerExt._sanitize_name(name)
+
     def _load(self) -> None:
-        """Parse and validate the compose file, create container COMPs."""
-        if not self._require_docker():
-            return
+        """Parse and validate the compose file, add as a new project."""
         compose_path = self._get_compose_path()
         if not compose_path:
             return
 
-        self._compose_dir = compose_path.parent
-        self._log(f"Loading compose file: {compose_path}")
+        project_name = self._derive_project_name(compose_path)
+
+        # Check if project already loaded
+        if project_name in self._projects:
+            self._log(
+                f"Project '{project_name}' already loaded — "
+                "use Rebuild to reload or Remove first"
+            )
+            return
+
+        self._log(f"Loading project '{project_name}': {compose_path}")
 
         # Read and validate
         try:
@@ -157,146 +524,355 @@ class TDDockerExt:
         doc = yaml.safe_load(content)
         services = doc.get("services", {})
 
-        # Clear existing container COMPs
-        self._destroy_container_comps()
+        # Create project state with service configs
+        session_id = uuid.uuid4().hex[:12]
+        service_configs = {
+            svc_name: ServiceOverlay(ndi_enabled=False) for svc_name in services
+        }
+        project = ProjectState(
+            name=project_name,
+            compose_path=compose_path,
+            compose_dir=compose_path.parent,
+            session_id=session_id,
+            service_configs=service_configs,
+        )
+        self._projects[project_name] = project
 
-        # Create one COMP per service
+        # Create container COMPs directly under /containers
+        # Single service → COMP named after project
+        # Multi service → COMPs named {project}_{service}
         containers_comp = self._get_containers_comp()
-        for i, (svc_name, svc_cfg) in enumerate(services.items()):
-            self._create_container_comp(containers_comp, svc_name, svc_cfg, i)
+        svc_list = list(services.items())
+        multi = len(svc_list) > 1
+
+        # Offset new COMPs after existing ones
+        existing_count = len(containers_comp.children)
+
+        for i, (svc_name, svc_cfg) in enumerate(svc_list):
+            if multi:
+                comp_name = self._sanitize_name(f"{project_name}_{svc_name}")
+            else:
+                comp_name = self._sanitize_name(project_name)
+            # Skip if COMP already exists (e.g. after extension reinit)
+            if containers_comp.op(comp_name):
+                continue
+            self._create_container_comp(
+                containers_comp, comp_name, project_name, svc_name, svc_cfg,
+                existing_count + i,
+            )
 
         # Generate overlay
         config = OverlayConfig(
-            session_id=self._session_id,
-            service_overrides=self._service_configs,
+            session_id=session_id,
+            service_overrides=project.service_configs,
         )
         try:
-            self._overlay_path = write_overlay(
-                compose_path, config, output_dir=self._compose_dir
+            project.overlay_path = write_overlay(
+                compose_path, config, output_dir=project.compose_dir,
             )
-            self._log(f"Overlay written: {self._overlay_path}")
+            self._log(f"Overlay written: {project.overlay_path}")
         except ValueError as e:
             self._log(f"ERROR generating overlay: {e}")
+            del self._projects[project_name]
+            self._destroy_project_comps(project_name)
             return
+
+        # Update UI
+        self._update_projects_table()
+        self._update_active_menu()
+
+        # Set as active project
+        if hasattr(self.ownerComp.par, "Activeproject"):
+            self.ownerComp.par.Activeproject = project_name
 
         # Update status table
-        self._update_status_table(services)
-        self._log(f"Loaded {len(services)} service(s)")
+        self._rebuild_status_table()
+        self._log(f"Loaded {len(services)} service(s) in project '{project_name}'")
 
     def _up(self) -> None:
-        """Start all containers via docker compose."""
-        if not self._require_docker():
+        """Start containers for the active project."""
+        project = self._active_project
+        if not project:
+            self._log("ERROR: No active project — Load a compose file first")
             return
-        compose_path = self._get_compose_path()
-        if not compose_path or not self._overlay_path:
-            self._log("ERROR: Must Load before Up")
+        self._up_project(project)
+
+    def _up_project(self, project: ProjectState) -> None:
+        """Start containers for a specific project (async).
+
+        Checks Docker availability first; the actual ``compose up`` only
+        runs once Docker is confirmed reachable.
+        """
+        if not project.overlay_path:
+            self._log(f"ERROR: Project '{project.name}' has no overlay — reload it")
             return
 
-        self._log("Starting containers...")
-        result = compose_up(
-            compose_path,
-            self._overlay_path,
-            self._session_id,
-        )
+        def _do_up():
+            self._log(f"Starting project '{project.name}'...")
 
-        if result.ok:
-            self._log("Containers started successfully")
-            # Spawn watchdog
-            if (
-                hasattr(self.ownerComp.par, "Autoshutdown")
-                and self.ownerComp.par.Autoshutdown
-            ):
-                self._spawn_watchdog()
-            # Start status polling
-            self._start_polling()
-            # Update container IDs
-            self._refresh_container_ids()
-        else:
-            self._log(f"ERROR: compose up failed:\n{result.stderr}")
+            result_holder = [None]
+
+            def _target(compose_path, overlay_path, session_id):
+                result_holder[0] = compose_up(compose_path, overlay_path, session_id)
+
+            def _on_success():
+                result = result_holder[0]
+                if result and result.ok:
+                    project.status = "running"
+                    self._log(f"Project '{project.name}' started")
+
+                    # Spawn watchdog
+                    if (
+                        hasattr(self.ownerComp.par, "Autoshutdown")
+                        and self.ownerComp.par.Autoshutdown
+                    ):
+                        self._spawn_watchdog(project)
+
+                    # Start polling (shared across all projects)
+                    self._start_polling()
+                    self._refresh_project_status(project)
+                    self._update_projects_table()
+                elif result:
+                    self._log(
+                        f"ERROR: compose up failed for '{project.name}':\n"
+                        f"{result.stderr}"
+                    )
+
+            def _on_except(*args):
+                self._log(
+                    f"ERROR: compose up exception for '{project.name}': {args}"
+                )
+
+            self._enqueue_task(
+                target=_target,
+                success_hook=_on_success,
+                except_hook=_on_except,
+                args=(
+                    project.compose_path,
+                    project.overlay_path,
+                    project.session_id,
+                ),
+            )
+
+        self._require_docker(on_ready=_do_up)
 
     def _down(self) -> None:
-        """Stop all containers via docker compose."""
-        if not self._session_id:
+        """Stop containers for the active project."""
+        project = self._active_project
+        if not project:
+            self._log("ERROR: No active project")
             return
+        self._down_project(project)
 
-        self._log("Stopping containers...")
+    def _down_project(self, project: ProjectState, on_complete=None) -> None:
+        """Stop containers for a specific project (async).
+
+        Args:
+            project: The project to stop.
+            on_complete: Optional callback executed on the main thread after
+                the down operation finishes (success or failure).  Used by
+                ``_remove_project`` and ``_rebuild`` to chain cleanup safely.
+        """
+        self._log(f"Stopping project '{project.name}'...")
 
         # Signal watchdog for clean shutdown
-        if self._compose_dir:
-            send_shutdown_signal(self._compose_dir)
+        if project.compose_dir:
+            send_shutdown_signal(project.compose_dir)
 
-        result = compose_down(self._session_id)
-        if result.ok:
-            self._log("Containers stopped")
+        result_holder = [None]
+
+        def _target(session_id):
+            result_holder[0] = compose_down(session_id)
+
+        def _on_success():
+            result = result_holder[0]
+            if result and result.ok:
+                project.status = "stopped"
+                self._log(f"Project '{project.name}' stopped")
+            elif result:
+                self._log(
+                    f"WARNING: compose down issues for '{project.name}':\n"
+                    f"{result.stderr}"
+                )
+
+            project.watchdog_pid = None
+            self._update_projects_table()
+
+            # Stop polling if no projects are running
+            if not any(p.status == "running" for p in self._projects.values()):
+                self._stop_polling()
+
+            # Refresh displays to show exited state
+            self._refresh_project_status(project)
+
+            if on_complete:
+                on_complete()
+
+        def _on_except(*args):
+            self._log(f"ERROR: compose down exception for '{project.name}': {args}")
+            if on_complete:
+                on_complete()
+
+        self._enqueue_task(
+            target=_target,
+            success_hook=_on_success,
+            except_hook=_on_except,
+            args=(project.session_id,),
+        )
+
+    def _up_all(self) -> None:
+        """Start all loaded projects that are not already running."""
+        for project in self._projects.values():
+            if project.status != "running":
+                self._up_project(project)
+
+    def _down_all(self) -> None:
+        """Stop all running projects."""
+        for project in list(self._projects.values()):
+            if project.status == "running":
+                self._down_project(project)
+
+    def _remove_project(self) -> None:
+        """Remove the active project (stops it first if running).
+
+        If the project is running, cleanup is deferred until the async
+        down operation completes via ``on_complete``.
+        """
+        project = self._active_project
+        if not project:
+            self._log("ERROR: No active project to remove")
+            return
+
+        name = project.name
+
+        def _after_down():
+            self._destroy_project_comps(name)
+            if name in self._projects:
+                del self._projects[name]
+            self._update_projects_table()
+            self._update_active_menu()
+            self._log(f"Removed project '{name}'")
+            self._update_orchestrator_display()
+
+        if project.status == "running":
+            self._down_project(project, on_complete=_after_down)
         else:
-            self._log(f"WARNING: compose down issues:\n{result.stderr}")
-
-        self._stop_polling()
-        self._watchdog_pid = None
-
-        # Refresh displays to show exited state
-        self.PollStatus()
+            _after_down()
 
     def _rebuild(self) -> None:
-        """Down + destroy COMPs + re-Load + Up."""
-        self._down()
-        self._destroy_container_comps()
-        self._load()
-        self._up()
+        """Rebuild the active project: Down + destroy + re-Load + Up.
+
+        If the project is running, the destroy/reload/up sequence is
+        deferred until the async down completes via ``on_complete``.
+        """
+        project = self._active_project
+        if not project:
+            self._log("ERROR: No active project to rebuild")
+            return
+
+        compose_path = project.compose_path
+        name = project.name
+
+        def _after_down():
+            self._destroy_project_comps(name)
+            if name in self._projects:
+                del self._projects[name]
+            if hasattr(self.ownerComp.par, "Composefile"):
+                self.ownerComp.par.Composefile = str(compose_path)
+            self._load()
+            self._up()
+
+        if project.status == "running":
+            self._down_project(project, on_complete=_after_down)
+        else:
+            _after_down()
 
     def _view_logs(self) -> None:
-        """Fetch compose logs into the log DAT."""
-        if not self._session_id:
+        """Fetch compose logs for the active project into the log DAT (async)."""
+        project = self._active_project
+        if not project:
             return
-        result = compose_logs(self._session_id, tail=200)
-        log_dat = self.ownerComp.op("log")
-        if log_dat:
-            log_dat.text = result.stdout if result.ok else result.stderr
+
+        result_holder: list = [None]
+
+        def _worker():
+            result_holder[0] = compose_logs(project.session_id, tail=200)
+
+        def _on_success():
+            result = result_holder[0]
+            log_dat = self.ownerComp.op("log")
+            if log_dat and result:
+                log_dat.text = result.stdout if result.ok else result.stderr
+
+        self._enqueue_task(target=_worker, success_hook=_on_success)
 
     # ------------------------------------------------------------------
     # NDI overlay regeneration
     # ------------------------------------------------------------------
 
-    def NotifyNdiChanged(self, svc_name: str, enabled: bool) -> None:
-        """Called by container ext when NDI transport is toggled."""
-        if svc_name in self._service_configs:
-            self._service_configs[svc_name].ndi_enabled = enabled
-            self._regenerate_overlay()
+    def NotifyNdiChanged(
+        self, project_name: str, svc_name: str, enabled: bool
+    ) -> None:
+        """Called by container ext when NDI transport is toggled.
 
-    def _regenerate_overlay(self) -> None:
-        """Re-generate overlay and apply changes (e.g., after NDI toggle)."""
-        compose_path = self._get_compose_path()
-        if not compose_path or not self._overlay_path:
+        Args:
+            project_name: Name of the project the service belongs to.
+            svc_name: Name of the service toggling NDI.
+            enabled: Whether NDI is being enabled or disabled.
+        """
+        project = self._projects.get(project_name)
+        if not project:
+            return
+        if svc_name in project.service_configs:
+            project.service_configs[svc_name].ndi_enabled = enabled
+            self._regenerate_overlay(project)
+
+    def _regenerate_overlay(self, project: ProjectState) -> None:
+        """Re-generate overlay for a project and apply changes."""
+        if not project.overlay_path:
             return
         config = OverlayConfig(
-            session_id=self._session_id,
-            service_overrides=self._service_configs,
+            session_id=project.session_id,
+            service_overrides=project.service_configs,
         )
         try:
-            self._overlay_path = write_overlay(
-                compose_path, config, output_dir=self._compose_dir
+            project.overlay_path = write_overlay(
+                project.compose_path, config, output_dir=project.compose_dir,
             )
         except ValueError as e:
-            self._log(f"ERROR regenerating overlay: {e}")
+            self._log(f"ERROR regenerating overlay for '{project.name}': {e}")
             return
-        result = compose_up(compose_path, self._overlay_path, self._session_id)
-        if result.ok:
-            self._log("Overlay regenerated and applied")
-        else:
-            self._log(f"WARNING: overlay reapply failed: {result.stderr}")
+        result_holder: list = [None]
+
+        def _worker():
+            result_holder[0] = compose_up(
+                project.compose_path, project.overlay_path, project.session_id
+            )
+
+        def _on_success():
+            result = result_holder[0]
+            if result and result.ok:
+                self._log(f"Overlay regenerated for '{project.name}'")
+            elif result:
+                self._log(
+                    f"WARNING: overlay reapply failed for '{project.name}': "
+                    f"{result.stderr}"
+                )
+
+        self._enqueue_task(target=_worker, success_hook=_on_success)
 
     # ------------------------------------------------------------------
     # Watchdog
     # ------------------------------------------------------------------
 
-    def _spawn_watchdog(self) -> None:
-        if not self._compose_dir:
-            return
+    def _spawn_watchdog(self, project: ProjectState) -> None:
         td_pid = os.getpid()
-        self._watchdog_pid = spawn_watchdog(
-            td_pid, self._session_id, self._compose_dir
+        project.watchdog_pid = spawn_watchdog(
+            td_pid, project.session_id, project.compose_dir,
         )
-        self._log(f"Watchdog spawned (PID {self._watchdog_pid})")
+        self._log(
+            f"Watchdog spawned for '{project.name}' (PID {project.watchdog_pid})"
+        )
 
     def _cleanup_orphans(self) -> None:
         removed = cleanup_orphans()
@@ -320,11 +896,15 @@ class TDDockerExt:
         return name.replace("-", "_").replace(".", "_").replace(" ", "_")
 
     def _create_container_comp(
-        self, parent_comp, svc_name: str, svc_cfg: dict, index: int = 0,
+        self,
+        parent_comp,
+        comp_name: str,
+        project_name: str,
+        svc_name: str,
+        svc_cfg: dict,
+        index: int = 0,
     ) -> None:
         """Create a container COMP for a service using the template."""
-        safe_name = self._sanitize_name(svc_name)
-
         # Try to load from template TOX, fall back to creating a base COMP
         template_path = self.ownerComp.par.Containertemplate.eval() if hasattr(
             self.ownerComp.par, "Containertemplate"
@@ -332,9 +912,9 @@ class TDDockerExt:
 
         if template_path and Path(template_path).exists():
             comp = parent_comp.loadTox(template_path)
-            comp.name = safe_name
+            comp.name = comp_name
         else:
-            comp = parent_comp.create("baseCOMP", safe_name)
+            comp = parent_comp.create("baseCOMP", comp_name)
 
         # Position container COMPs side by side
         comp.nodeX = index * 250
@@ -342,16 +922,23 @@ class TDDockerExt:
         comp.viewer = True
 
         # Set up the extension if not from template
-        self._init_container_comp(comp, svc_name, svc_cfg)
+        self._init_container_comp(comp, project_name, svc_name, svc_cfg)
 
-    def _init_container_comp(self, comp, svc_name: str, svc_cfg: dict) -> None:
+    def _init_container_comp(
+        self, comp, project_name: str, svc_name: str, svc_cfg: dict
+    ) -> None:
         """Initialize custom parameters on a container COMP."""
         image = svc_cfg.get("image", "")
 
         # Create custom parameter pages if they don't exist
         if not comp.customPages:
             info_page = comp.appendCustomPage("Info")
-            info_page.appendStr("Servicename", label="Service Name")[0].val = svc_name
+            info_page.appendStr("Projectname", label="Project Name")[
+                0
+            ].val = project_name
+            info_page.appendStr("Servicename", label="Service Name")[
+                0
+            ].val = svc_name
             info_page.appendStr("Image", label="Image")[0].val = image
             info_page.appendStr("Containerid", label="Container ID")[0].val = ""
             _add_menu(
@@ -390,13 +977,12 @@ class TDDockerExt:
             transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
         else:
             # Template loaded — just update values
+            if hasattr(comp.par, "Projectname"):
+                comp.par.Projectname = project_name
             if hasattr(comp.par, "Servicename"):
                 comp.par.Servicename = svc_name
             if hasattr(comp.par, "Image"):
                 comp.par.Image = image
-
-        # Store service overlay config
-        self._service_configs[svc_name] = ServiceOverlay(ndi_enabled=False)
 
         # Create internal operators if not from template
         if not comp.op("log_dat"):
@@ -423,7 +1009,10 @@ class TDDockerExt:
         if not comp.op("parexec1"):
             pe = comp.create("parameterexecuteDAT", "parexec1")
             pe.par.op = comp.path
-            pe.par.pars = "Start Stop Restart Logs Datatransport Videotransport Ndisource"
+            pe.par.pars = (
+                "Start Stop Restart Logs "
+                "Datatransport Videotransport Ndisource"
+            )
             pe.par.onpulse = True
             pe.par.valuechange = True
             pe.par.custom = True
@@ -506,79 +1095,311 @@ class TDDockerExt:
         txt.par.bgcolorr, txt.par.bgcolorg, txt.par.bgcolorb = colors["bg"]
         comp.color = colors["comp"]
 
-    def _destroy_container_comps(self) -> None:
-        """Remove all child COMPs from /containers."""
-        containers = self.ownerComp.op("containers")
-        if containers is None:
+    def _update_orchestrator_display(self) -> None:
+        """Update the orchestrator-level status display on /TDDocker."""
+        txt = self.ownerComp.op("status_display")
+        if not txt:
             return
-        for child in containers.children:
-            child.destroy()
-        self._service_configs.clear()
+
+        lines = ["TDDocker", "━━━━━━━━━━━━━━"]
+
+        # Docker status line — use cached flag, never subprocess here
+        docker_state = "online" if self._docker_ok else "offline"
+        docker_label = "Online" if self._docker_ok else "Offline"
+        lines.append(f"Docker: {_fc(docker_state, docker_label)}")
+
+        # Project count
+        n = len(self._projects)
+        lines.append(f"{n} project{'s' if n != 1 else ''}")
+        lines.append("")
+
+        # Per-project summary
+        worst_state = "none"  # none < loaded < running < error
+        for proj_name, project in self._projects.items():
+            # Get service states from COMPs
+            comps = self._get_project_comps(proj_name)
+            svc_entries = []
+            proj_has_error = False
+            proj_all_running = True
+
+            for comp in comps:
+                svc = (
+                    comp.par.Servicename.eval()
+                    if hasattr(comp.par, "Servicename")
+                    else "?"
+                )
+                state = (
+                    comp.par.State.eval()
+                    if hasattr(comp.par, "State")
+                    else "created"
+                )
+                health = (
+                    comp.par.Health.eval()
+                    if hasattr(comp.par, "Health")
+                    else "none"
+                )
+                if state in ("exited", "dead") or health == "unhealthy":
+                    proj_has_error = True
+                if state != "running":
+                    proj_all_running = False
+
+                indicator = state.upper()
+                color_key = state
+                if health == "unhealthy":
+                    indicator = "UNHEALTHY"
+                    color_key = "unhealthy"
+                elif state == "running" and health == "healthy":
+                    indicator = "HEALTHY"
+                    color_key = "healthy"
+                svc_entries.append((svc, indicator, color_key))
+
+            # Project status label
+            if proj_has_error:
+                proj_label = "ERROR"
+                proj_color = "error"
+                worst_state = "error"
+            elif proj_all_running and comps:
+                proj_label = "RUNNING"
+                proj_color = "running"
+                if worst_state not in ("error",):
+                    worst_state = "running"
+            else:
+                proj_label = project.status.upper()
+                proj_color = "loaded"
+                if worst_state not in ("error", "running"):
+                    worst_state = "loaded"
+
+            # Tree-style layout with colors
+            folder = "\U0001f4c1"
+            dash = "\u2014"
+            dot = "\u2022"
+            lines.append(
+                _fc(proj_color, f"{folder} {proj_name} {dash} {proj_label}")
+            )
+            for i, (svc, indicator, color_key) in enumerate(svc_entries):
+                is_last = i == len(svc_entries) - 1
+                svc_text = f"{svc} {dot} {indicator}"
+                if is_last:
+                    lines.append(f" \u2514 {_fc(color_key, svc_text)}")
+                else:
+                    lines.append(f"\u251c {_fc(color_key, svc_text)}")
+            lines.append("")
+
+        # Set text — use expr so \n is interpreted as newlines
+        txt.par.text.expr = repr("\n".join(lines))
+
+        # Set colors based on worst state
+        color_map = {
+            "none":    _STATE_COLORS["created"],
+            "loaded":  _STATE_COLORS["paused"],
+            "running": _STATE_COLORS["running"],
+            "error":   _STATE_COLORS["exited"],
+        }
+        colors = color_map.get(worst_state, _STATE_COLORS["created"])
+        txt.par.fontcolorr, txt.par.fontcolorg, txt.par.fontcolorb = colors["fg"]
+        txt.par.bgcolorr, txt.par.bgcolorg, txt.par.bgcolorb = colors["bg"]
+        self.ownerComp.color = colors["comp"]
+
+    def _get_project_comps(self, project_name: str) -> list:
+        """Find all container COMPs belonging to a project."""
+        containers_comp = self.ownerComp.op("containers")
+        if not containers_comp:
+            return []
+        return [
+            child for child in containers_comp.children
+            if hasattr(child.par, "Projectname")
+            and child.par.Projectname.eval() == project_name
+        ]
+
+    def _destroy_project_comps(self, project_name: str) -> None:
+        """Remove all container COMPs belonging to a project."""
+        for comp in self._get_project_comps(project_name):
+            comp.destroy()
 
     # ------------------------------------------------------------------
-    # Status polling
+    # Status polling (async via worker thread, multi-project)
     # ------------------------------------------------------------------
 
     _POLL_SCRIPT = (
-        "def poll():\n"
+        "import time as _time\n"
+        "_last_poll = [0]\n"
+        "\n"
+        "def tick():\n"
         "\ttry:\n"
         "\t\ttd_docker = op('/TDDocker')\n"
-        "\t\text = td_docker.ext.TDDockerExt\n"
-        "\t\tif ext and getattr(ext, '_polling_active', False):\n"
-        "\t\t\text.PollStatus()\n"
-        "\t\t\t# Schedule next poll in 2 seconds\n"
-        "\t\t\trun('op(\\\"/TDDocker/poll_script\\\").module.poll()',\n"
-        "\t\t\t    delayFrames=int(2 * me.time.rate))\n"
+        "\t\text = getattr(td_docker.ext, 'TDDockerExt', None)\n"
+        "\t\tif not ext:\n"
+        "\t\t\treturn\n"
+        "\t\text._flush_deferred()\n"
+        "\t\tnow = _time.monotonic()\n"
+        "\t\tif getattr(ext, '_polling_active', False) "
+        "and (now - _last_poll[0]) >= 2:\n"
+        "\t\t\t_last_poll[0] = now\n"
+        "\t\t\text.PollStatusAsync()\n"
         "\texcept Exception as e:\n"
         "\t\tprint(f'Poll error: {e}')\n"
+        "\t\treturn\n"
+        "\trun('op(\\\"/TDDocker/poll_script\\\").module.tick()',\n"
+        "\t    delayFrames=1)\n"
+        "\n"
+        "# Auto-start: schedule first tick on module load\n"
+        "run('op(\\\"/TDDocker/poll_script\\\").module.tick()',\n"
+        "    delayFrames=1)\n"
     )
 
     def _ensure_poll_script(self) -> None:
-        """Create the poll_script DAT if it doesn't exist."""
+        """Create or update the poll_script DAT.
+
+        Only rewrites the text when the DAT is new or its content has
+        changed, to avoid resetting the module and spawning duplicate
+        tick loops.
+        """
         ps = self.ownerComp.op("poll_script")
+        created = False
         if not ps:
             ps = self.ownerComp.create("textDAT", "poll_script")
             ps.nodeX = 400
             ps.nodeY = -100
             ps.viewer = True
-        ps.text = self._POLL_SCRIPT
+            created = True
+        if created or ps.text.strip() != self._POLL_SCRIPT.strip():
+            ps.text = self._POLL_SCRIPT
 
     def _start_polling(self) -> None:
-        """Start the polling loop via poll_script DAT."""
+        """Enable Docker status polling (every 2 s) inside the tick loop."""
         self._polling_active = True
-        self._ensure_poll_script()
-        ps = self.ownerComp.op("poll_script")
-        if ps and hasattr(ps, "module") and hasattr(ps.module, "poll"):
-            ps.module.poll()
 
     def _stop_polling(self) -> None:
         """Stop the polling loop."""
         self._polling_active = False
 
+    def _poll_worker(
+        self, project_sessions: list[tuple[str, str]]
+    ) -> None:
+        """Run ``compose_ps`` in a worker thread for each active project.
+
+        Stores the result in ``_poll_result`` — safe because
+        SuccessHook runs on the main thread after the worker finishes.
+        """
+        results: dict[str, list[dict]] = {}
+        for proj_name, session_id in project_sessions:
+            statuses = compose_ps(session_id)
+            results[proj_name] = [
+                {
+                    "service": s.service,
+                    "container_id": s.container_id,
+                    "state": s.state,
+                    "health": s.health,
+                    "image": s.image,
+                }
+                for s in statuses
+            ]
+        self._poll_result = results
+
+    def _poll_success(self) -> None:
+        """Main-thread callback after ``_poll_worker`` completes."""
+        data = self._poll_result
+        self._poll_result = None
+        self._poll_in_flight = False
+
+        if data is None:
+            return
+        self._apply_poll_result(data)
+
+    def _poll_except(self, *args) -> None:
+        """Main-thread callback if ``_poll_worker`` raises."""
+        self._poll_in_flight = False
+        self._log(f"Poll error: {args}")
+
+    def PollStatusAsync(self) -> None:
+        """Non-blocking poll — runs ``compose_ps`` in a worker thread.
+
+        Polls all running projects. Skips if a poll is already in flight.
+        """
+        if self._poll_in_flight:
+            return
+        active = [
+            (name, p.session_id)
+            for name, p in self._projects.items()
+            if p.status == "running"
+        ]
+        if not active:
+            return
+        self._poll_in_flight = True
+        self._enqueue_task(
+            target=self._poll_worker,
+            success_hook=self._poll_success,
+            except_hook=self._poll_except,
+            args=(active,),
+        )
+
     def PollStatus(self) -> None:
-        """Called by the timer CHOP callback — refresh container states."""
-        if not self._session_id:
+        """Refresh container statuses (non-blocking).
+
+        Delegates to PollStatusAsync so callers never block the main thread.
+        """
+        self.PollStatusAsync()
+
+    def _refresh_project_status(self, project: ProjectState) -> None:
+        """One-shot async refresh for a single project."""
+        result_holder: list = [None]
+
+        def _worker(session_id):
+            result_holder[0] = compose_ps(session_id)
+
+        def _on_success():
+            statuses = result_holder[0]
+            if statuses is None:
+                return
+            data = [
+                {
+                    "service": s.service,
+                    "container_id": s.container_id,
+                    "state": s.state,
+                    "health": s.health,
+                    "image": s.image,
+                }
+                for s in statuses
+            ]
+            self._apply_project_poll(project.name, data)
+
+        self._enqueue_task(
+            target=_worker,
+            success_hook=_on_success,
+            args=(project.session_id,),
+        )
+
+    def _apply_poll_result(self, data: dict[str, list[dict]]) -> None:
+        """Apply poll results for all projects (main thread)."""
+        for proj_name, statuses in data.items():
+            self._apply_project_poll(proj_name, statuses)
+
+    def _apply_project_poll(
+        self, project_name: str, data: list[dict]
+    ) -> None:
+        """Apply parsed compose_ps results to a single project's COMPs."""
+        comps = self._get_project_comps(project_name)
+        if not comps:
             return
 
-        statuses = compose_ps(self._session_id)
-        containers_comp = self.ownerComp.op("containers")
-        if not containers_comp:
-            return
+        status_map = {d["service"]: d for d in data}
 
-        status_map = {s.service: s for s in statuses}
-
-        for child in containers_comp.children:
-            svc_name = child.par.Servicename.eval() if hasattr(child.par, "Servicename") else ""
+        for child in comps:
+            svc_name = (
+                child.par.Servicename.eval()
+                if hasattr(child.par, "Servicename")
+                else ""
+            )
             if svc_name in status_map:
                 st = status_map[svc_name]
                 if hasattr(child.par, "Containerid"):
-                    child.par.Containerid = st.container_id
+                    child.par.Containerid = st["container_id"]
                 if hasattr(child.par, "State"):
-                    child.par.State = st.state
-                health = st.health if st.health else "none"
+                    child.par.State = st["state"]
+                health = st["health"] if st["health"] else "none"
                 if hasattr(child.par, "Health"):
                     child.par.Health = health
-                self._update_container_display(child, st.state, health)
+                self._update_container_display(child, st["state"], health)
             else:
                 # Service not in compose ps → exited or not started
                 cid = ""
@@ -591,43 +1412,117 @@ class TDDockerExt:
                     self._update_container_display(child, "exited", "none")
 
         # Update the status table DAT
-        self._update_status_from_compose(statuses)
+        self._rebuild_status_table()
 
-    def _refresh_container_ids(self) -> None:
-        """One-shot refresh of container IDs after compose up."""
-        self.PollStatus()
-
-    def _update_status_table(self, services: dict) -> None:
-        """Initialize the status table DAT with service names."""
+    def _rebuild_status_table(self) -> None:
+        """Rebuild the entire status table from all loaded projects."""
         status_dat = self.ownerComp.op("status")
         if not status_dat:
             return
         status_dat.clear()
-        status_dat.appendRow(["service", "state", "health", "container_id", "image"])
-        for svc_name, svc_cfg in services.items():
-            status_dat.appendRow([
-                svc_name,
-                "loaded",
-                "",
-                "",
-                svc_cfg.get("image", ""),
-            ])
+        status_dat.appendRow(
+            ["project", "service", "state", "health", "container_id", "image"]
+        )
+        for proj_name in self._projects:
+            comps = self._get_project_comps(proj_name)
+            for comp in comps:
+                svc = (
+                    comp.par.Servicename.eval()
+                    if hasattr(comp.par, "Servicename")
+                    else ""
+                )
+                state = (
+                    comp.par.State.eval()
+                    if hasattr(comp.par, "State")
+                    else "loaded"
+                )
+                health = (
+                    comp.par.Health.eval()
+                    if hasattr(comp.par, "Health")
+                    else ""
+                )
+                cid = (
+                    comp.par.Containerid.eval()
+                    if hasattr(comp.par, "Containerid")
+                    else ""
+                )
+                img = (
+                    comp.par.Image.eval()
+                    if hasattr(comp.par, "Image")
+                    else ""
+                )
+                status_dat.appendRow([proj_name, svc, state, health, cid, img])
 
-    def _update_status_from_compose(self, statuses) -> None:
-        """Update status table from compose_ps results."""
-        status_dat = self.ownerComp.op("status")
-        if not status_dat:
+        self._update_orchestrator_display()
+
+    # ------------------------------------------------------------------
+    # Library
+    # ------------------------------------------------------------------
+
+    def _get_library_dir(self) -> Path | None:
+        """Get the library directory from the Library parameter."""
+        if not hasattr(self.ownerComp.par, "Library"):
+            return None
+        raw = self.ownerComp.par.Library.eval()
+        if raw:
+            p = Path(raw)
+            if p.is_dir():
+                return p
+        # Default: library/ next to the .toe file
+        try:
+            default = Path(project.folder) / "library"  # type: ignore[name-defined]
+            if default.is_dir():
+                return default
+        except NameError:
+            pass  # Not running inside TouchDesigner
+        return None
+
+    def _scan_library(self) -> None:
+        """Scan the library directory and update the Libraryproject menu."""
+        if not hasattr(self.ownerComp.par, "Libraryproject"):
             return
-        status_dat.clear()
-        status_dat.appendRow(["service", "state", "health", "container_id", "image"])
-        for st in statuses:
-            status_dat.appendRow([
-                st.service,
-                st.state,
-                st.health or "",
-                st.container_id,
-                st.image,
-            ])
+        lib_dir = self._get_library_dir()
+        if not lib_dir:
+            self.ownerComp.par.Libraryproject.menuNames = []
+            self.ownerComp.par.Libraryproject.menuLabels = []
+            return
+
+        # Find subdirectories containing a docker-compose.yml
+        projects = []
+        for child in sorted(lib_dir.iterdir()):
+            if child.is_dir() and (child / "docker-compose.yml").exists():
+                projects.append(child.name)
+
+        self.ownerComp.par.Libraryproject.menuNames = projects
+        self.ownerComp.par.Libraryproject.menuLabels = projects
+
+        if projects:
+            self._log(f"Library: found {len(projects)} project(s)")
+
+    def _load_from_library(self) -> None:
+        """Load the selected library project into TDDocker."""
+        if not hasattr(self.ownerComp.par, "Libraryproject"):
+            return
+        selected = self.ownerComp.par.Libraryproject.eval()
+        if not selected:
+            self._log("ERROR: No library project selected")
+            return
+
+        lib_dir = self._get_library_dir()
+        if not lib_dir:
+            self._log("ERROR: Library directory not found")
+            return
+
+        project_dir = lib_dir / selected
+        compose_file = project_dir / "docker-compose.yml"
+        if not compose_file.exists():
+            self._log(f"ERROR: {compose_file} not found")
+            return
+
+        # Point Composefile to the library project and Load
+        if hasattr(self.ownerComp.par, "Composefile"):
+            self.ownerComp.par.Composefile = str(compose_file)
+        self._load()
 
     # ------------------------------------------------------------------
     # Helpers
@@ -665,4 +1560,4 @@ class TDDockerExt:
             hasattr(self.ownerComp.par, "Autoshutdown")
             and self.ownerComp.par.Autoshutdown
         ):
-            self._down()
+            self._down_all()

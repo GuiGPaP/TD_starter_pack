@@ -141,6 +141,76 @@ class MyExt:
 - `run(delayFrames=1)` polls each frame (~0 cost)
 - Result handling on main thread: full TD access
 
+### Self-Scheduling DAT Loop Pattern
+
+For per-frame callbacks (flush queues, polling), use a textDAT that reschedules itself via `run(delayFrames=1)` at module level:
+
+```python
+# poll_script textDAT content
+import time as _time
+
+def tick():
+    try:
+        ext = getattr(op('/myComp').ext, 'MyExt', None)
+        if not ext:
+            return  # Stop loop — no reschedule
+        ext.on_tick()
+    except Exception as e:
+        print(f'tick error: {e}')
+        return  # Stop loop on error
+    # Only reschedule on success
+    run('op("/myComp/poll_script").module.tick()', delayFrames=1)
+
+# Auto-start on module load
+run('op("/myComp/poll_script").module.tick()', delayFrames=1)
+```
+
+**Key rules:**
+- Auto-start via module-level `run(delayFrames=1)` — NOT `tick()` directly (calling `tick()` during extension `__init__` is unreliable — TD may not process `run()` scheduled during init)
+- `getattr(comp.ext, 'Name', None)` — never bare `.ext.Name` (throws `AttributeError` if ext is unloaded → spam every frame)
+- `return` without rescheduling on error or missing ext → loop dies gracefully
+- `_ensure_poll_script` must NOT rewrite text if unchanged (rewriting resets the module → duplicate loops)
+
+**WARNING:** `textDAT.run()` is NOT the same as the global `run()`. `textDAT.run()` executes the **DAT's own text content** as a script — it does NOT execute an arbitrary string argument. To schedule code from an extension, use the module-level auto-start pattern above.
+
+### Extension Reinit & TD Persistence
+
+When `__init__` runs (project save/load, extension toggle), the Python instance is fresh (`self._state = {}`) but **TD operators persist** (COMPs, DATs, TOPs created by previous init). Always guard against duplicates:
+
+```python
+# BAD — creates duplicates on reinit
+comp = parent.create("baseCOMP", "myComp")
+
+# GOOD — reuse existing
+comp = parent.op("myComp")
+if not comp:
+    comp = parent.create("baseCOMP", "myComp")
+```
+
+This also applies to text DATs written by the extension (poll scripts, callback scripts). Check existence and content before overwriting:
+
+```python
+def _ensure_script(self):
+    ps = self.ownerComp.op("my_script")
+    created = False
+    if not ps:
+        ps = self.ownerComp.create("textDAT", "my_script")
+        created = True
+    if created or ps.text.strip() != self._SCRIPT.strip():
+        ps.text = self._SCRIPT  # Triggers module recompile + auto-start
+```
+
+### Module Reload in TD
+
+`importlib.reload()` updates `sys.modules` but does **NOT** update a textDAT's `.module` cache. The textDAT keeps its stale compiled module. To force a textDAT to re-import from updated code on disk:
+
+```python
+ext_dat = op('/myComp/my_ext_dat')
+old = ext_dat.text
+ext_dat.text = old + '\n'  # Toggle forces recompile
+ext_dat.text = old
+```
+
 ---
 
 ## Performance Profiling

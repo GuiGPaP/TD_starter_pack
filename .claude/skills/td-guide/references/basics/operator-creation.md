@@ -71,6 +71,32 @@ params = [p.name for p in op('sphere1').pars() if 'rad' in p.name.lower()]
 print(params)  # ['radx', 'rady', 'radz']
 ```
 
+### textCOMP: Newlines and Formatting
+
+`par.text` in **constant mode** treats escape sequences as literals — `\n` renders as-is, not as a newline.
+
+```python
+# BAD — all on one line in constant mode
+txt.par.text = "line1\nline2"
+
+# GOOD — use expression mode
+txt.par.text.expr = repr("line1\nline2")
+```
+
+For rich text with inline colors, use [Text Formatting Codes](https://derivative.ca/UserGuide/Text_Formatting_Codes) with `par.formatcodes = True`:
+
+```python
+txt = comp.create("textCOMP", "status_display")
+txt.par.formatcodes = True
+txt.par.text.expr = repr(
+    "{#color(100,220,100)}green text{#reset()}\n"
+    "white text\n"
+    "{#color(220,80,80)}red text{#reset()}"
+)
+```
+
+Formatting codes: `{#color(R,G,B)}` sets text color (0-255), `{#reset()}` resets. Other codes: `{#under(true)}`, `{#strike(true)}`, `{#scale(x,y)}`.
+
 ## Display/Render Flags (SOP)
 
 ```python

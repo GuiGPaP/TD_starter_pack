@@ -1,0 +1,18 @@
+services:
+  web:
+    labels:
+      td.managed: 'true'
+      td.session: df6e8d08fa5c
+      td.service: web
+    networks:
+    - td_default
+  echo:
+    labels:
+      td.managed: 'true'
+      td.session: df6e8d08fa5c
+      td.service: echo
+    networks:
+    - td_default
+networks:
+  td_default:
+    driver: bridge

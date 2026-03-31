@@ -49,6 +49,33 @@ op.TDResources.op('popDialog').Open(
 - Callback `info['enteredText']` contains the text field value if `textEntry=True`
 - Max 4 buttons — additional buttons are silently ignored
 
+### PopDialog from Extension Code
+
+Access via absolute path (`/TDResources`) — `op.TDResources` may not resolve from inside a package import:
+
+```python
+def _show_popup(self):
+    try:
+        pop = self.ownerComp.op("/TDResources/popDialog")
+        if not pop:
+            return
+    except Exception:
+        return
+    pop.Open(
+        text="Docker is not running.\nStart Docker Desktop?",
+        title="MyExt",
+        buttons=["Start", "Cancel"],
+        callback=self._on_popup,
+        escButton=2, enterButton=1, escOnClickAway=True,
+    )
+
+def _on_popup(self, info):
+    if info.get("buttonNum") == 1:  # 1-based index
+        self._do_action()
+```
+
+**Tip:** To open a URL in the browser from the callback, use `import webbrowser; webbrowser.open(url)`.
+
 ## WebClient
 
 ```python
