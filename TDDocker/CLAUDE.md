@@ -10,8 +10,8 @@ TDDocker/
 ├── pyproject.toml                  # pytest, ruff, pyright config
 ├── td-overlay.yml                  # GENERATED at runtime — do not commit
 ├── Tests/
-│   ├── test-compose.yml            # Test compose (nginx + echo-server)
-│   └── test-osc-compose.yml        # OSC integration test compose
+│   ├── test-compose.yml            # Test compose (nginx + echo-server + OSC)
+│   └── td-overlay.yml              # GENERATED at runtime — do not commit
 ├── docker/
 │   └── osc-test/                   # OSC echo container for integration tests
 │       ├── Dockerfile
@@ -93,7 +93,7 @@ TD extension promote (`ext0promote=True`) does **not** reliably fire `onParPulse
 ```python
 pe = comp.create("parameterexecuteDAT", "parexec1")
 pe.par.op = comp.path
-pe.par.pars = "Start Stop Restart Logs Datatransport Videotransport Ndisource"
+pe.par.pars = "Start Stop Restart Logs Oscenable Wsenable Ndienable Ndisource"
 pe.par.onpulse = True
 pe.par.valuechange = True
 # Script routes callbacks to the extension:
@@ -199,7 +199,7 @@ The validator (`validator.py`) enforces a deny-list before any Docker operation:
 ## Testing
 
 - **Unit tests** (`python/tests/`): 85 tests, pure Python, no Docker needed
-- **OSC integration test**: `Tests/test-osc-compose.yml` + `docker/osc-test/` — bidirectional verified
+- **OSC integration test**: `Tests/test-compose.yml` (osc-test service) + `docker/osc-test/` — bidirectional verified
 - **Crash test**: Up → kill TD process → verify watchdog kills containers within ~5s
 - **Orphan test**: Kill both TD and watchdog → restart TD → verify orphan cleanup on init
 

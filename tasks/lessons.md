@@ -22,6 +22,14 @@ Patterns and corrections captured during work sessions. Review at session start.
 - MCP security analyzer uses regex: `read-only` blocks `.eval()` even in `par.Mypar.eval()`. Use `safe-write` mode.
 - Script output must be assigned to `result` variable. MCP expects `{ result: T }`.
 
+## Threading & Performance
+
+- TD's built-in ThreadManager (`/sys/TDResources/threadManager`) works for async subprocess. Use `EnqueueTask()` directly — skip the Palette `threadManagerClient` comp.
+- SuccessHook/ExceptHook callbacks fire correctly on the main thread. Previous "SuccessHook broken" lesson was wrong — the issue was MCP pulse routing, not ThreadManager.
+- Worker threads must NOT touch TD ops (no `op()`, `par`, `comp`). Pass data back via `threading.Lock`-protected attributes.
+- MCP `update_td_node_parameters` pulse doesn't reliably trigger parexec callbacks. Call `ext.setupAndRun()` or `ext.method()` directly via `execute_python_script`.
+- Use `PollStatusAsync()` for periodic polling, `PollStatus()` only for immediate post-Up/Down refresh.
+
 ## Skills
 
 - Skill frontmatters must have mutually exclusive triggers — no overlap between td-guide, td-glsl, td-glsl-vertex, td-pops.
