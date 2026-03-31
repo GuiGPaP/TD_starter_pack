@@ -22,7 +22,7 @@ export function registerKnowledgeResources(
 		RESOURCE_URIS.MODULES_INDEX,
 		{ mimeType: "application/json" },
 		() => {
-			const index = registry.getModuleIndex();
+			const index = registry.getIndexByKind("python-module");
 			return {
 				contents: [
 					{
@@ -38,7 +38,7 @@ export function registerKnowledgeResources(
 	// Template resource: module detail
 	const moduleTemplate = new ResourceTemplate(RESOURCE_URIS.MODULE_DETAIL, {
 		list: async () => ({
-			resources: registry.getModuleIndex().map((e) => ({
+			resources: registry.getIndexByKind("python-module").map((e) => ({
 				mimeType: "application/json",
 				name: e.title,
 				uri: `td://modules/${e.id}`,

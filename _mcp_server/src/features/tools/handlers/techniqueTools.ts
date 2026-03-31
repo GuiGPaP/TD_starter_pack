@@ -143,7 +143,7 @@ export function registerTechniqueTools(
 
 				if (!entry || entry.kind !== "technique") {
 					const allIds = registry
-						.getTechniqueIndex()
+						.getIndexByKind("technique")
 						.map((e) => e.id)
 						.join(", ");
 					return {

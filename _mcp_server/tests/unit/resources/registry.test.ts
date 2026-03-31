@@ -279,7 +279,7 @@ describe("KnowledgeRegistry", () => {
 			const registry = new KnowledgeRegistry(mockLogger);
 			registry.loadAll(tempDir);
 
-			const index = registry.getGlslPatternIndex();
+			const index = registry.getIndexByKind("glsl-pattern");
 			expect(index).toHaveLength(2);
 			expect(index[0]).toEqual({
 				id: "pattern1",

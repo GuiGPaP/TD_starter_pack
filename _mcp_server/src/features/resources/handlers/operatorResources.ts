@@ -24,7 +24,7 @@ export function registerOperatorResources(
 		RESOURCE_URIS.OPERATORS_INDEX,
 		{ mimeType: "application/json" },
 		() => {
-			const index = registry.getOperatorIndex();
+			const index = registry.getIndexByKind("operator");
 			return {
 				contents: [
 					{
@@ -40,7 +40,7 @@ export function registerOperatorResources(
 	// Template resource: operator detail (async — may call live TD)
 	const operatorTemplate = new ResourceTemplate(RESOURCE_URIS.OPERATOR_DETAIL, {
 		list: async () => ({
-			resources: registry.getOperatorIndex().map((e) => ({
+			resources: registry.getIndexByKind("operator").map((e) => ({
 				mimeType: "application/json",
 				name: e.title,
 				uri: `td://operators/${e.id}`,

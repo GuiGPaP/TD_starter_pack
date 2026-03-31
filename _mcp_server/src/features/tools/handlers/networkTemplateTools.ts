@@ -141,7 +141,7 @@ export function registerNetworkTemplateTools(
 
 				if (!entry || entry.kind !== "template") {
 					const allIds = registry
-						.getTemplateIndex()
+						.getIndexByKind("template")
 						.map((e) => e.id)
 						.join(", ");
 					return {

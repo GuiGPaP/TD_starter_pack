@@ -68,9 +68,9 @@ function createMockRegistry(entries: TDKnowledgeEntry[]) {
 		getByKind: vi.fn((kind: string) =>
 			entries.filter((e) => e.kind === kind),
 		),
-		getToolkitIndex: vi.fn(() =>
+		getIndexByKind: vi.fn((kind: string) =>
 			entries
-				.filter((e) => e.kind === "toolkit")
+				.filter((e) => e.kind === kind)
 				.map((e) => ({ id: e.id, kind: e.kind, title: e.title })),
 		),
 		search: vi.fn(),
