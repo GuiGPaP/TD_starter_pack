@@ -22,8 +22,23 @@ class CmdResult:
 
 
 def _run(cmd: list[str], timeout: int = 30) -> CmdResult:
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-    return CmdResult(proc.returncode, proc.stdout, proc.stderr)
+    """Run a docker command. Uses Popen+wait instead of subprocess.run
+    to avoid holding the GIL during the subprocess wait."""
+    proc = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, encoding="utf-8", errors="replace",
+    )
+    try:
+        proc.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait()
+        return CmdResult(-1, "", "timeout")
+    return CmdResult(
+        proc.returncode,
+        proc.stdout.read() if proc.stdout else "",
+        proc.stderr.read() if proc.stderr else "",
+    )
 
 
 def start_container(container_id: str) -> CmdResult:

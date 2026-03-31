@@ -96,6 +96,8 @@ def _compose_down(session_id: str, compose_dir: str | Path) -> None:
             ["docker", "compose", "-p", session_id, "down", "--timeout", str(COMPOSE_DOWN_TIMEOUT)],
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=COMPOSE_DOWN_TIMEOUT + 15,
             cwd=str(compose_dir),
         )
@@ -193,6 +195,8 @@ def cleanup_orphans() -> list[str]:
             ],
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=15,
         )
     except Exception:
@@ -236,6 +240,8 @@ def cleanup_orphans() -> list[str]:
                 ["docker", "stop", "--time", "5", container_id],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=20,
             )
             removed.append(container_id)
