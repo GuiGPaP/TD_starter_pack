@@ -139,18 +139,33 @@ def _run_compose(
     project_name: str,
     timeout: int = 60,
 ) -> ComposeResult:
-    """Run a docker compose command and capture output."""
+    """Run a docker compose command and capture output.
+
+    Uses Popen + wait() instead of subprocess.run(capture_output=True)
+    because communicate() holds the Python GIL for the entire duration
+    of the subprocess, blocking TD's main cook loop even when called
+    from a ThreadManager worker thread.  Popen.wait() releases the GIL
+    while waiting, then we read the (already buffered) pipes after.
+    """
     cmd = ["docker", "compose", "-p", project_name, *args]
-    proc = subprocess.run(
+    proc = subprocess.Popen(
         cmd,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
-        timeout=timeout,
+        encoding="utf-8",
+        errors="replace",
     )
+    try:
+        proc.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait()
+        return ComposeResult(returncode=-1, stdout="", stderr="timeout")
     return ComposeResult(
         returncode=proc.returncode,
-        stdout=proc.stdout,
-        stderr=proc.stderr,
+        stdout=proc.stdout.read() if proc.stdout else "",
+        stderr=proc.stderr.read() if proc.stderr else "",
     )
 
 
