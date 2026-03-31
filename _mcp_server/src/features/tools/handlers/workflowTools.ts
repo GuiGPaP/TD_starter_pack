@@ -199,7 +199,7 @@ export function registerWorkflowTools(
 
 				if (!entry || entry.kind !== "workflow") {
 					const allIds = registry
-						.getWorkflowIndex()
+						.getIndexByKind("workflow")
 						.map((e) => e.id)
 						.join(", ");
 					return {

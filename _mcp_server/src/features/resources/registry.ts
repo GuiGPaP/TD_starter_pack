@@ -88,103 +88,10 @@ export class KnowledgeRegistry {
 	}
 
 	/**
-	 * Return a lightweight index filtered to python-module entries.
+	 * Return a lightweight index filtered to entries of a given kind.
 	 */
-	getModuleIndex(): Array<{ id: string; title: string; kind: string }> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "python-module")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	/**
-	 * Return a lightweight index filtered to operator entries.
-	 */
-	getOperatorIndex(): Array<{ id: string; title: string; kind: string }> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "operator")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	/**
-	 * Return a lightweight index filtered to glsl-pattern entries.
-	 */
-	getGlslPatternIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "glsl-pattern")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	/**
-	 * Return a lightweight index filtered to lesson entries.
-	 */
-	getLessonIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "lesson")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	/**
-	 * Return a lightweight index filtered to toolkit entries.
-	 */
-	getToolkitIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "toolkit")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	/**
-	 * Return a lightweight index filtered to workflow pattern entries.
-	 */
-	getTemplateIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "template")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	getWorkflowIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "workflow")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	getTechniqueIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "technique")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
-	}
-
-	getTutorialIndex(): Array<{
-		id: string;
-		title: string;
-		kind: string;
-	}> {
-		return [...this.entries.values()]
-			.filter((e) => e.kind === "tutorial")
-			.map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
+	getIndexByKind(kind: string): Array<{ id: string; title: string; kind: string }> {
+		return this.getByKind(kind).map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
 	}
 
 	/**

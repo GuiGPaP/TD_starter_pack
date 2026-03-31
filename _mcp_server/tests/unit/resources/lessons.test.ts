@@ -71,7 +71,7 @@ describe("KnowledgeRegistry — lesson support", () => {
 		const registry = new KnowledgeRegistry(mockLogger);
 		registry.loadAll(tempDir);
 
-		const index = registry.getLessonIndex();
+		const index = registry.getIndexByKind("lesson");
 		expect(index).toHaveLength(1);
 		expect(index[0]).toEqual({
 			id: "lesson1",
@@ -140,7 +140,7 @@ describe("KnowledgeRegistry — lesson support", () => {
 
 		expect(registry.addEntry(entry)).toBe(true);
 		expect(registry.getById("hot-added")).toBeDefined();
-		expect(registry.getLessonIndex()).toHaveLength(1);
+		expect(registry.getIndexByKind("lesson")).toHaveLength(1);
 	});
 
 	it("addEntry should reject duplicate IDs", () => {

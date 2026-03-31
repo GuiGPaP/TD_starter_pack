@@ -62,9 +62,9 @@ function createMockRegistry(entries: TDKnowledgeEntry[]) {
 	return {
 		getById: vi.fn((id: string) => entries.find((e) => e.id === id)),
 		getByKind: vi.fn((kind: string) => entries.filter((e) => e.kind === kind)),
-		getGlslPatternIndex: vi.fn(() =>
+		getIndexByKind: vi.fn((kind: string) =>
 			entries
-				.filter((e) => e.kind === "glsl-pattern")
+				.filter((e) => e.kind === kind)
 				.map((e) => ({ id: e.id, kind: e.kind, title: e.title })),
 		),
 		search: vi.fn(),

@@ -130,7 +130,7 @@ export function registerTutorialTools(
 
 				if (!entry || entry.kind !== "tutorial") {
 					const allIds = registry
-						.getTutorialIndex()
+						.getIndexByKind("tutorial")
 						.map((e) => e.id)
 						.join(", ");
 					return {
