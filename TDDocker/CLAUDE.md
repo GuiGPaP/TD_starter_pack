@@ -8,9 +8,10 @@ TDDocker manages Docker container lifecycles from TouchDesigner. Users load a st
 TDDocker/
 ├── TDDocker.toe                    # Main TD project
 ├── pyproject.toml                  # pytest, ruff, pyright config
-├── test-compose.yml                # Test compose (nginx + echo-server)
-├── test-osc-compose.yml            # OSC integration test compose
 ├── td-overlay.yml                  # GENERATED at runtime — do not commit
+├── Tests/
+│   ├── test-compose.yml            # Test compose (nginx + echo-server)
+│   └── test-osc-compose.yml        # OSC integration test compose
 ├── docker/
 │   └── osc-test/                   # OSC echo container for integration tests
 │       ├── Dockerfile
@@ -198,7 +199,7 @@ The validator (`validator.py`) enforces a deny-list before any Docker operation:
 ## Testing
 
 - **Unit tests** (`python/tests/`): 85 tests, pure Python, no Docker needed
-- **OSC integration test**: `test-osc-compose.yml` + `docker/osc-test/` — bidirectional verified
+- **OSC integration test**: `Tests/test-osc-compose.yml` + `docker/osc-test/` — bidirectional verified
 - **Crash test**: Up → kill TD process → verify watchdog kills containers within ~5s
 - **Orphan test**: Kill both TD and watchdog → restart TD → verify orphan cleanup on init
 

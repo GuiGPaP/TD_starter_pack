@@ -112,6 +112,21 @@ class MyExtension:
 
 Extension method names are PascalCase by TD convention — ruff's naming rules (`N801`, `N802`) are not in the active ruleset but would conflict if added.
 
+## f-string Unicode Escapes (Python < 3.12)
+
+Backslash escapes (`\uXXXX`, `\n`) are **NOT allowed** inside f-string expression parts before Python 3.12 (TD ships 3.11). Extract to a variable first:
+
+```python
+# BAD — SyntaxError in Python 3.11
+text = f"  {branch} {_fc(key, f'{svc} \u2022 {ind}')}"
+
+# GOOD — extract unicode to variable
+dot = "\u2022"
+text = f"  {branch} {_fc(key, f'{svc} {dot} {ind}')}"
+```
+
+This also applies to `\n`, `\t`, `\U0001fXXX` (emoji) inside nested f-strings. Always assign escape sequences to local variables before embedding in f-string expressions.
+
 ## Common Patterns That Confuse Ruff
 
 | Pattern | Why it looks wrong to ruff | What to do |

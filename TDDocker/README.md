@@ -44,8 +44,9 @@ TDDocker/
 ├── TDDocker.toe                    # Main TD project
 ├── pyproject.toml                  # Python project config (pytest, ruff, pyright)
 ├── td-overlay.yml                  # Generated at runtime (gitignored)
-├── test-compose.yml                # Example compose for testing (nginx + echo)
-├── test-osc-compose.yml            # OSC integration test compose
+├── Tests/
+│   ├── test-compose.yml            # Example compose for testing (nginx + echo)
+│   └── test-osc-compose.yml        # OSC integration test compose
 ├── docker/
 │   └── osc-test/                   # OSC echo container (integration tests)
 │       ├── Dockerfile

@@ -29,6 +29,7 @@ class DockerStatus:
 
     available: bool
     message: str
+    cli_missing: bool = False
 
 
 def check_docker() -> DockerStatus:
@@ -38,17 +39,34 @@ def check_docker() -> DockerStatus:
     (even with warnings) means Docker is available.
     """
     try:
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             ["docker", "info"],
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=10,
+            encoding="utf-8",
+            errors="replace",
         )
+        try:
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()
+            return DockerStatus(
+                False,
+                "Docker daemon not responding (timeout). "
+                "Press 'Start Docker' to launch Docker Desktop.",
+            )
         if proc.returncode == 0:
             return DockerStatus(True, "Docker is running")
         # docker CLI found but daemon not responding
-        stderr = proc.stderr.strip()
-        if "Cannot connect" in stderr or "connection refused" in stderr.lower():
+        stderr = (proc.stderr.read() if proc.stderr else "").strip()
+        stderr_lower = stderr.lower()
+        if (
+            "cannot connect" in stderr_lower
+            or "connection refused" in stderr_lower
+            or "failed to connect" in stderr_lower
+        ):
             return DockerStatus(
                 False,
                 "Docker CLI found but daemon is not running. "
@@ -60,12 +78,7 @@ def check_docker() -> DockerStatus:
             False,
             "Docker CLI not found. "
             "Install Docker Desktop: https://docker.com/products/docker-desktop/",
-        )
-    except subprocess.TimeoutExpired:
-        return DockerStatus(
-            False,
-            "Docker daemon not responding (timeout). "
-            "Press 'Start Docker' to launch Docker Desktop.",
+            cli_missing=True,
         )
 
 
