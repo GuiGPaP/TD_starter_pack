@@ -937,87 +937,74 @@ class TouchDesignerApiService(IApiService):
             contextlib.redirect_stdout(stdout_capture),
             contextlib.redirect_stderr(stderr_capture),
         ):
+            evaluated = False
             if "\n" not in script and ";" not in script:
                 try:
                     result = eval(script, namespace, namespace)
                     namespace["result"] = result
-                    processed_result = self._process_method_result(result)
-
+                    evaluated = True
                     log_message(
                         f"Script evaluated. Raw result: {result!r}",
                         LogLevel.DEBUG,
                     )
-
-                    stdout_val = stdout_capture.getvalue()
-                    stderr_val = stderr_capture.getvalue()
-
-                    return success_result(
-                        {
-                            "result": processed_result,
-                            "stdout": stdout_val,
-                            "stderr": stderr_val,
-                        }
-                    )
                 except SyntaxError:
                     pass
 
-            try:
-                exec(script, namespace, namespace)
+            if not evaluated:
+                try:
+                    exec(script, namespace, namespace)
 
-                if namespace.get("result") is no_result_sentinel:
-                    lines = script.strip().split("\n")
-                    if lines:
-                        last_expr = lines[-1].strip()
-                        if last_expr and not last_expr.startswith(
-                            (
-                                "import",
-                                "from",
-                                "#",
-                                "if",
-                                "def",
-                                "class",
-                                "for",
-                                "while",
-                            )
-                        ):
-                            try:
-                                namespace["result"] = eval(last_expr, namespace, namespace)
-                                log_message(
-                                    f"Extracted result from last line: {last_expr}",
-                                    LogLevel.DEBUG,
+                    if namespace.get("result") is no_result_sentinel:
+                        lines = script.strip().split("\n")
+                        if lines:
+                            last_expr = lines[-1].strip()
+                            if last_expr and not last_expr.startswith(
+                                (
+                                    "import",
+                                    "from",
+                                    "#",
+                                    "if",
+                                    "def",
+                                    "class",
+                                    "for",
+                                    "while",
                                 )
-                            except Exception:
-                                pass
+                            ):
+                                try:
+                                    namespace["result"] = eval(last_expr, namespace, namespace)
+                                    log_message(
+                                        f"Extracted result from last line: {last_expr}",
+                                        LogLevel.DEBUG,
+                                    )
+                                except Exception:
+                                    pass
+                except Exception as exec_error:
+                    tb = traceback.format_exc()
+                    script_lines = script.split("\n")
+                    numbered = "\n".join(
+                        f"  {i + 1}: {line}"
+                        for i, line in enumerate(script_lines[:30])
+                    )
+                    if len(script_lines) > 30:
+                        numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
+                    return error_result(
+                        f"Script execution failed: {exec_error!s}\n\n"
+                        f"Traceback:\n{tb}\n"
+                        f"Script ({len(script_lines)} lines):\n{numbered}"
+                    )
 
-                result = namespace.get("result")
-                if result is no_result_sentinel:
-                    result = None
-                processed_result = self._process_method_result(result)
+        result = namespace.get("result")
+        if result is no_result_sentinel:
+            result = None
+        processed_result = self._process_method_result(result)
 
-                stdout_val = stdout_capture.getvalue()
-                stderr_val = stderr_capture.getvalue()
-
-                return success_result(
-                    {
-                        "result": processed_result,
-                        "stdout": stdout_val,
-                        "stderr": stderr_val,
-                    }
-                )
-            except Exception as exec_error:
-                tb = traceback.format_exc()
-                script_lines = script.split("\n")
-                numbered = "\n".join(
-                    f"  {i + 1}: {line}"
-                    for i, line in enumerate(script_lines[:30])
-                )
-                if len(script_lines) > 30:
-                    numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
-                return error_result(
-                    f"Script execution failed: {exec_error!s}\n\n"
-                    f"Traceback:\n{tb}\n"
-                    f"Script ({len(script_lines)} lines):\n{numbered}"
-                )
+        return success_result(
+            {
+                "result": processed_result,
+                "stdout": stdout_capture.getvalue(),
+                "stderr": stderr_capture.getvalue(),
+            }
+        )
 
     def update_node(self, node_path: str, properties: dict[str, Any]) -> Result:
         """Update properties of the node at the specified path"""
