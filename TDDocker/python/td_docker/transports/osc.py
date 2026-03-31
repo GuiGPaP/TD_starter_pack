@@ -11,7 +11,7 @@ class OscBridge:
     """Manages OSC message parsing into table rows.
 
     Used by the TD callback script to parse incoming OSC messages
-    into rows in a data_in tableDAT.
+    into rows in an osc_data tableDAT.
     """
 
     def __init__(self, service_name: str, *, max_rows: int = 1000) -> None:
@@ -65,38 +65,7 @@ def _get_bridge():
 
 
 def onReceiveOSC(dat, rowIndex, message, bytes, timeStamp, address, args, peer):
-    global _max_args_seen
     bridge = _get_bridge()
-    row = bridge.parse_message(address, args)
-    data_in = parent().op('data_in')
-    if data_in is None:
-        return
-
-    # Expand header if we see more args than before
-    n_args = len(args)
-    if n_args > _max_args_seen:
-        _max_args_seen = n_args
-        header = bridge.header_for_args(_max_args_seen)
-        if data_in.numRows > 0:
-            data_in.replaceRow(0, header)
-        else:
-            data_in.appendRow(header)
-
-    # Ensure header exists
-    if data_in.numRows == 0:
-        _max_args_seen = max(_max_args_seen, n_args)
-        data_in.appendRow(bridge.header_for_args(_max_args_seen))
-
-    # Append row padded to header width
-    header_width = data_in.numCols
-    values = [row.get(data_in[0, col].val, '') for col in range(header_width)]
-    data_in.appendRow(values)
-
-    # Trim to max rows (header + data)
-    while data_in.numRows > bridge.max_rows + 1:
-        data_in.deleteRow(1)
-
-    # Log
     log = parent().op('log_dat')
     if log:
         args_str = ', '.join(str(a) for a in args)

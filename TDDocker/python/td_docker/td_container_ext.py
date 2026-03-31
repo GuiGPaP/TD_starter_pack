@@ -38,10 +38,15 @@ class TDContainerExt:
 
     def onParValueChange(self, par, prev):
         name = par.name
-        if name == "Datatransport":
-            self._configure_data_transport()
-        elif name == "Videotransport":
-            self._configure_video_transport()
+        if name == "Oscenable":
+            self._configure_osc()
+            self._sync_enables_and_layout()
+        elif name == "Wsenable":
+            self._configure_websocket()
+            self._sync_enables_and_layout()
+        elif name == "Ndienable":
+            self._configure_ndi()
+            self._sync_enables_and_layout()
         elif name == "Ndisource":
             self._update_ndi_source()
 
@@ -57,153 +62,213 @@ class TDContainerExt:
             self._log("ERROR: No container ID — is the container running?")
         return cid
 
+    def _run_container_action(self, action_fn, action_name: str, cid: str) -> None:
+        """Run a container action via the orchestrator's thread pool."""
+        result_holder = [None]
+        orchestrator = self._find_orchestrator()
+
+        def _worker():
+            result_holder[0] = action_fn(cid)
+
+        def _on_success():
+            result = result_holder[0]
+            if result and result.ok:
+                self._log(f"Container {action_name}")
+            elif result and "No such container" in result.stderr:
+                self._log(
+                    "ERROR: Container no longer exists — press Rebuild on TDDocker"
+                )
+            elif result:
+                self._log(f"ERROR {action_name}: {result.stderr}")
+            self._refresh_orchestrator()
+
+        if orchestrator and hasattr(orchestrator.ext, "TDDockerExt"):
+            orchestrator.ext.TDDockerExt._enqueue_task(
+                target=_worker, success_hook=_on_success,
+            )
+        else:
+            _worker()
+            _on_success()
+
     def _start(self) -> None:
         cid = self._get_container_id()
         if not cid:
             return
-        result = start_container(cid)
-        if result.ok:
-            self._log("Container started")
-            self._refresh_orchestrator()
-        elif "No such container" in result.stderr:
-            self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
-        else:
-            self._log(f"ERROR starting container: {result.stderr}")
+        self._run_container_action(start_container, "started", cid)
 
     def _stop(self) -> None:
         cid = self._get_container_id()
         if not cid:
             return
-        result = stop_container(cid)
-        if result.ok:
-            self._log("Container stopped")
-            self._refresh_orchestrator()
-        elif "No such container" in result.stderr:
-            self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
-        else:
-            self._log(f"ERROR stopping container: {result.stderr}")
+        self._run_container_action(stop_container, "stopped", cid)
 
     def _restart(self) -> None:
         cid = self._get_container_id()
         if not cid:
             return
-        result = restart_container(cid)
-        if result.ok:
-            self._log("Container restarted")
-            self._refresh_orchestrator()
-        else:
-            self._log(f"ERROR restarting container: {result.stderr}")
+        self._run_container_action(restart_container, "restarted", cid)
+
+    def _find_orchestrator(self):
+        """Walk up the COMP hierarchy to find the TDDockerExt orchestrator."""
+        comp = self.ownerComp.parent()
+        while comp:
+            if hasattr(comp, "ext") and hasattr(comp.ext, "TDDockerExt"):
+                return comp
+            comp = comp.parent()
+        return None
 
     def _refresh_orchestrator(self) -> None:
         """Tell the orchestrator to refresh all container statuses."""
-        orchestrator = self.ownerComp.parent(2)  # TDDocker COMP
-        has_ext = hasattr(orchestrator, "ext") and hasattr(orchestrator.ext, "TDDockerExt")
-        if orchestrator and has_ext:
+        orchestrator = self._find_orchestrator()
+        if orchestrator:
             orchestrator.ext.TDDockerExt.PollStatus()
 
     def _fetch_logs(self) -> None:
         cid = self._get_container_id()
         if not cid:
             return
-        result = container_logs(cid, tail=200)
-        log_dat = self.ownerComp.op("log_dat")
-        if log_dat:
-            log_dat.text = result.stdout if result.ok else result.stderr
+        result_holder = [None]
+        orchestrator = self._find_orchestrator()
+
+        def _worker():
+            result_holder[0] = container_logs(cid, tail=200)
+
+        def _on_success():
+            result = result_holder[0]
+            log_dat = self.ownerComp.op("log_dat")
+            if log_dat and result:
+                log_dat.text = result.stdout if result.ok else result.stderr
+
+        if orchestrator and hasattr(orchestrator.ext, "TDDockerExt"):
+            orchestrator.ext.TDDockerExt._enqueue_task(
+                target=_worker, success_hook=_on_success,
+            )
+        else:
+            _worker()
+            _on_success()
 
     # ------------------------------------------------------------------
     # Transport configuration
     # ------------------------------------------------------------------
 
-    def _configure_data_transport(self) -> None:
-        """Set up or tear down the WebSocket/OSC connection."""
-        transport = self.ownerComp.par.Datatransport.eval() if hasattr(
-            self.ownerComp.par, "Datatransport"
-        ) else "none"
+    # Expected operators per transport toggle
+    _TRANSPORT_OPS: dict[str, tuple[str, ...]] = {
+        "osc": ("osc_in", "osc_out", "oscin_callbacks"),
+        "ws": ("websocket_dat", "websocket_callbacks"),
+        "ndi": ("video_in", "video_out"),
+    }
 
-        # Remove existing transport operators
-        for op_name in (
-            "websocket_dat", "osc_in", "osc_out",
-            "data_in", "ws_callbacks", "osc_callbacks",
-        ):
+    def ensureTransports(self) -> None:
+        """Recreate transport operators only if they are missing.
+
+        Called after a .toe restore to materialise operators that match
+        the persisted toggle values without destroying anything that
+        already exists.
+        """
+        checks = [
+            ("osc", "Oscenable", self._configure_osc),
+            ("ws", "Wsenable", self._configure_websocket),
+            ("ndi", "Ndienable", self._configure_ndi),
+        ]
+        for key, enable_par, configure_fn in checks:
+            enabled = bool(
+                getattr(self.ownerComp.par, enable_par, None)
+                and self.ownerComp.par[enable_par].eval()
+            )
+            expected = self._TRANSPORT_OPS[key]
+            if enabled and any(not self.ownerComp.op(n) for n in expected):
+                configure_fn()
+
+    def _configure_osc(self) -> None:
+        """Create or destroy OSC operators based on Oscenable toggle."""
+        enabled = bool(
+            hasattr(self.ownerComp.par, "Oscenable")
+            and self.ownerComp.par.Oscenable.eval()
+        )
+
+        # Tear down
+        for op_name in self._TRANSPORT_OPS["osc"]:
             existing = self.ownerComp.op(op_name)
             if existing:
                 existing.destroy()
 
-        if transport == "websocket":
-            ws = self.ownerComp.create("websocketDAT", "websocket_dat")
-            port = 0
-            if hasattr(self.ownerComp.par, "Dataport"):
-                port = int(self.ownerComp.par.Dataport.eval())
-            if port > 0:
-                ws.par.port = port
+        if not enabled:
+            self._log("OSC transport disabled")
+            return
 
-            # Create data_in table for parsed messages
-            data_in = self.ownerComp.create("tableDAT", "data_in")
+        osc_in = self.ownerComp.create("oscinDAT", "osc_in")
+        osc_out = self.ownerComp.create("oscoutDAT", "osc_out")
+        osc_in.par.port.bindExpr = "parent().par.Oscinport"
+        osc_out.par.port.bindExpr = "parent().par.Oscoutport"
 
-            # Create callback script and wire it to the WebSocket DAT
-            from td_docker.transports.websocket import CALLBACK_SCRIPT
+        from td_docker.transports.osc import CALLBACK_SCRIPT as OSC_SCRIPT
 
-            cb = self.ownerComp.create("textDAT", "ws_callbacks")
-            cb.text = CALLBACK_SCRIPT
-            ws.par.callbacks = cb
+        cb = self.ownerComp.create("textDAT", "oscin_callbacks")
+        cb.text = OSC_SCRIPT
+        osc_in.par.callbacks = cb
 
-            self._log(f"WebSocket transport configured on port {port}")
-            _ = data_in  # used by callback script at runtime
+        self._log("OSC transport enabled")
 
-        elif transport == "osc":
-            osc_in = self.ownerComp.create("oscinDAT", "osc_in")
-            osc_out = self.ownerComp.create("oscoutDAT", "osc_out")
-            port = 0
-            if hasattr(self.ownerComp.par, "Dataport"):
-                port = int(self.ownerComp.par.Dataport.eval())
-            if port > 0:
-                osc_in.par.port = port
-                osc_out.par.port = port + 1
+    def _configure_websocket(self) -> None:
+        """Create or destroy WebSocket operators based on Wsenable toggle."""
+        enabled = bool(
+            hasattr(self.ownerComp.par, "Wsenable")
+            and self.ownerComp.par.Wsenable.eval()
+        )
 
-            # Create data_in table for parsed messages
-            data_in = self.ownerComp.create("tableDAT", "data_in")
+        # Tear down
+        for op_name in self._TRANSPORT_OPS["ws"]:
+            existing = self.ownerComp.op(op_name)
+            if existing:
+                existing.destroy()
 
-            # Create callback script and wire it to the OSC In DAT
-            from td_docker.transports.osc import CALLBACK_SCRIPT as OSC_SCRIPT
+        if not enabled:
+            self._log("WebSocket transport disabled")
+            return
 
-            cb = self.ownerComp.create("textDAT", "osc_callbacks")
-            cb.text = OSC_SCRIPT
-            osc_in.par.callbacks = cb
+        ws = self.ownerComp.create("websocketDAT", "websocket_dat")
+        ws.par.port.bindExpr = "parent().par.Wsport"
 
-            self._log(f"OSC transport configured on ports {port}/{port + 1}")
-            _ = data_in  # used by callback script at runtime
+        from td_docker.transports.websocket import CALLBACK_SCRIPT
 
-    def _configure_video_transport(self) -> None:
-        """Set up or tear down NDI In/Out TOPs."""
-        transport = self.ownerComp.par.Videotransport.eval() if hasattr(
-            self.ownerComp.par, "Videotransport"
-        ) else "none"
+        cb = self.ownerComp.create("textDAT", "websocket_callbacks")
+        cb.text = CALLBACK_SCRIPT
+        ws.par.callbacks = cb
 
-        # Notify orchestrator when leaving NDI mode
-        if transport != "ndi":
+        self._log("WebSocket transport enabled")
+
+    def _configure_ndi(self) -> None:
+        """Create or destroy NDI operators based on Ndienable toggle."""
+        enabled = bool(
+            hasattr(self.ownerComp.par, "Ndienable")
+            and self.ownerComp.par.Ndienable.eval()
+        )
+
+        # Notify orchestrator when disabling
+        if not enabled:
             self._notify_ndi_enabled(False)
 
-        # Remove existing video operators
-        for op_name in ("video_in", "video_out"):
+        # Tear down
+        for op_name in self._TRANSPORT_OPS["ndi"]:
             existing = self.ownerComp.op(op_name)
             if existing:
                 existing.destroy()
 
-        if transport == "ndi":
-            ndi_in = self.ownerComp.create("ndiin", "video_in")
-            self.ownerComp.create("ndiout", "video_out")
+        if not enabled:
+            self._log("NDI transport disabled")
+            return
 
-            # Set NDI source if configured
-            ndi_source = ""
-            if hasattr(self.ownerComp.par, "Ndisource"):
-                ndi_source = self.ownerComp.par.Ndisource.eval()
-            if ndi_source and hasattr(ndi_in.par, "sourcename"):
-                ndi_in.par.sourcename = ndi_source
+        ndi_in = self.ownerComp.create("ndiin", "video_in")
+        self.ownerComp.create("ndiout", "video_out")
 
-            self._log(f"NDI transport configured (source: {ndi_source or 'auto'})")
+        ndi_source = ""
+        if hasattr(self.ownerComp.par, "Ndisource"):
+            ndi_source = self.ownerComp.par.Ndisource.eval()
+        if ndi_source and hasattr(ndi_in.par, "sourcename"):
+            ndi_in.par.sourcename = ndi_source
 
-            # Notify orchestrator that this service needs host mode
-            self._notify_ndi_enabled(True)
+        self._log(f"NDI transport enabled (source: {ndi_source or 'auto'})")
+        self._notify_ndi_enabled(True)
 
     def _update_ndi_source(self) -> None:
         """Update NDI In source name when parameter changes."""
@@ -216,14 +281,26 @@ class TDContainerExt:
 
     def _notify_ndi_enabled(self, enabled: bool) -> None:
         """Tell the orchestrator this service needs network_mode: host."""
-        orchestrator = self.ownerComp.parent(2)  # TDDocker COMP
-        has_ext = hasattr(orchestrator, "ext") and hasattr(orchestrator.ext, "TDDockerExt")
-        if orchestrator and has_ext:
-            svc_name = ""
-            if hasattr(self.ownerComp.par, "Servicename"):
-                svc_name = self.ownerComp.par.Servicename.eval()
-            if svc_name:
-                orchestrator.ext.TDDockerExt.NotifyNdiChanged(svc_name, enabled)
+        orchestrator = self._find_orchestrator()
+        if not orchestrator:
+            return
+        svc_name = ""
+        if hasattr(self.ownerComp.par, "Servicename"):
+            svc_name = self.ownerComp.par.Servicename.eval()
+        project_name = ""
+        if hasattr(self.ownerComp.par, "Projectname"):
+            project_name = self.ownerComp.par.Projectname.eval()
+        if svc_name and project_name:
+            orchestrator.ext.TDDockerExt.NotifyNdiChanged(
+                project_name, svc_name, enabled
+            )
+
+    def _sync_enables_and_layout(self) -> None:
+        """Grey out sub-params and re-layout operators after toggle change."""
+        from td_docker.td_docker_ext import TDDockerExt
+
+        TDDockerExt._sync_transport_enables(self.ownerComp)
+        TDDockerExt._layout_container_ops(self.ownerComp)
 
     # ------------------------------------------------------------------
     # Helpers

@@ -80,5 +80,5 @@ class TestCallbackScript:
     def test_script_has_required_callback(self) -> None:
         assert "def onReceiveOSC" in CALLBACK_SCRIPT
 
-    def test_script_uses_data_in(self) -> None:
-        assert "data_in" in CALLBACK_SCRIPT
+    def test_script_uses_log_dat(self) -> None:
+        assert "log_dat" in CALLBACK_SCRIPT

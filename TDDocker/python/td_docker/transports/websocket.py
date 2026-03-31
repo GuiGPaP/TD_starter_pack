@@ -127,16 +127,8 @@ def onDisconnect(dat):
 
 
 def onReceiveText(dat, rowIndex, message, bytes):
-    rows = _get_bridge().parse_message(message)
-    data_in = parent().op('data_in')
-    if data_in is None or not rows:
-        return
-    # Ensure header row matches first message's keys
-    if data_in.numRows == 0:
-        data_in.appendRow(list(rows[0].keys()))
-    for row in rows:
-        data_in.appendRow([row.get(k, '') for k in rows[0]])
-        # Trim to max rows (header + data)
-        while data_in.numRows > _get_bridge().max_rows + 1:
-            data_in.deleteRow(1)
+    bridge = _get_bridge()
+    log = parent().op('log_dat')
+    if log:
+        log.text += f'[{bridge.service_name}] WS: {message}\\n'
 '''
