@@ -30,20 +30,21 @@ if include_global:
         'cookRate': project.cookRate,
         'realTime': project.realTime,
     }
-    # Find any performCHOP in the project for real-time metrics
-    for comp_path in ['/', '/TDDocker', '/TDDocker/containers/sllidar']:
+    # Find any Perform CHOP in the project for real-time metrics
+    for comp_path in [scope, '/']:
         c = op(comp_path)
-        if not c:
+        if not c or not c.isCOMP:
             continue
-        for child in c.findChildren(type=performCHOP, depth=1):
-            chans = {}
-            for ch in child.chans():
-                chans[ch.name] = round(ch[0], 3)
-            result_data['global']['performCHOP'] = {
-                'path': child.path,
-                'channels': chans,
-            }
-            break
+        for child in c.findChildren(depth=2):
+            if child.OPType == 'perform' and child.isCHOP:
+                chans = {}
+                for ch in child.chans():
+                    chans[ch.name] = round(ch[0], 3)
+                result_data['global']['performCHOP'] = {
+                    'path': child.path,
+                    'channels': chans,
+                }
+                break
         if 'performCHOP' in result_data.get('global', {}):
             break
 
@@ -99,6 +100,12 @@ function buildPerfScript(
 }
 
 const getPerformanceSchema = {
+	includeGlobal: z
+		.boolean()
+		.describe(
+			"Include global performance metrics (FPS, cook rate, Perform CHOP data). Default: true",
+		)
+		.optional(),
 	scope: z
 		.string()
 		.describe(
@@ -111,12 +118,6 @@ const getPerformanceSchema = {
 		.min(1)
 		.max(100)
 		.describe("Max number of operators to return, sorted by cost (default: 20)")
-		.optional(),
-	includeGlobal: z
-		.boolean()
-		.describe(
-			"Include global performance metrics (FPS, cook rate, Perform CHOP data). Default: true",
-		)
 		.optional(),
 };
 
@@ -138,8 +139,8 @@ export function registerPerfTools(
 				try {
 					const script = buildPerfScript(scope, topN, includeGlobal);
 					const result = await tdClient.execPythonScript({
-						script,
 						mode: "read-only",
+						script,
 					});
 
 					if (!result.success) {
@@ -173,7 +174,7 @@ export function registerPerfTools(
 					const text = formatPerformanceResult(perfData, scope, topN);
 
 					logger.sendLog({
-						data: { scope, topN, includeGlobal },
+						data: { includeGlobal, scope, topN },
 						level: "debug",
 						logger: "get_performance",
 					});
@@ -182,11 +183,7 @@ export function registerPerfTools(
 						content: [{ text, type: "text" as const }],
 					};
 				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_PERFORMANCE,
-					);
+					return handleToolError(error, logger, TOOL_NAMES.GET_PERFORMANCE);
 				}
 			},
 		),
@@ -226,7 +223,9 @@ function formatPerformanceResult(
 	}
 
 	// Per-operator table
-	const operators = data.operators as Array<Record<string, unknown>> | undefined;
+	const operators = data.operators as
+		| Array<Record<string, unknown>>
+		| undefined;
 	const totalScanned = data.totalScanned as number | undefined;
 	if (operators && operators.length > 0) {
 		lines.push(
