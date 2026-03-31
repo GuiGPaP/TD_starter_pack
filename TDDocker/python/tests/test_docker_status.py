@@ -12,36 +12,45 @@ from td_docker.docker_status import check_docker, start_docker_desktop
 # ---------------------------------------------------------------------------
 
 
+def _mock_popen(returncode: int = 0, stderr: str = "", stdout: str = ""):
+    """Create a mock Popen that works with wait() + pipe reads."""
+    from io import StringIO
+
+    proc = MagicMock()
+    proc.returncode = returncode
+    proc.stdout = StringIO(stdout)
+    proc.stderr = StringIO(stderr)
+    proc.wait = MagicMock()
+    return proc
+
+
 class TestCheckDocker:
     def test_docker_running(self) -> None:
-        proc = MagicMock(returncode=0, stderr="")
-        with patch("td_docker.docker_status.subprocess.run", return_value=proc):
+        proc = _mock_popen(returncode=0)
+        with patch("td_docker.docker_status.subprocess.Popen", return_value=proc):
             status = check_docker()
         assert status.available is True
         assert "running" in status.message.lower()
 
     def test_daemon_not_running(self) -> None:
-        proc = MagicMock(
+        proc = _mock_popen(
             returncode=1,
             stderr="Cannot connect to the Docker daemon",
         )
-        with patch("td_docker.docker_status.subprocess.run", return_value=proc):
+        with patch("td_docker.docker_status.subprocess.Popen", return_value=proc):
             status = check_docker()
         assert status.available is False
         assert "Start Docker" in status.message
 
     def test_connection_refused(self) -> None:
-        proc = MagicMock(
-            returncode=1,
-            stderr="connection refused",
-        )
-        with patch("td_docker.docker_status.subprocess.run", return_value=proc):
+        proc = _mock_popen(returncode=1, stderr="connection refused")
+        with patch("td_docker.docker_status.subprocess.Popen", return_value=proc):
             status = check_docker()
         assert status.available is False
 
     def test_docker_cli_not_found(self) -> None:
         with patch(
-            "td_docker.docker_status.subprocess.run",
+            "td_docker.docker_status.subprocess.Popen",
             side_effect=FileNotFoundError,
         ):
             status = check_docker()
@@ -49,17 +58,23 @@ class TestCheckDocker:
         assert "not found" in status.message.lower()
 
     def test_timeout(self) -> None:
-        with patch(
-            "td_docker.docker_status.subprocess.run",
-            side_effect=subprocess.TimeoutExpired(cmd="docker", timeout=10),
-        ):
+        proc = _mock_popen()
+        # First wait(timeout=10) raises, second wait() (after kill) succeeds
+        proc.wait = MagicMock(
+            side_effect=[
+                subprocess.TimeoutExpired(cmd="docker", timeout=10),
+                None,
+            ],
+        )
+        proc.kill = MagicMock()
+        with patch("td_docker.docker_status.subprocess.Popen", return_value=proc):
             status = check_docker()
         assert status.available is False
         assert "timeout" in status.message.lower()
 
     def test_unknown_error(self) -> None:
-        proc = MagicMock(returncode=1, stderr="something unexpected")
-        with patch("td_docker.docker_status.subprocess.run", return_value=proc):
+        proc = _mock_popen(returncode=1, stderr="something unexpected")
+        with patch("td_docker.docker_status.subprocess.Popen", return_value=proc):
             status = check_docker()
         assert status.available is False
         assert "something unexpected" in status.message
