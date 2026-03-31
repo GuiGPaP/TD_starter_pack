@@ -3,6 +3,7 @@ import type { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { REFERENCE_COMMENT, TOOL_NAMES } from "../../../core/constants.js";
 import { handleToolError } from "../../../core/errorHandling.js";
+import type { ToolNames } from "../index.js";
 import type { ILogger } from "../../../core/logger.js";
 import type { ServerMode } from "../../../core/serverMode.js";
 import {
@@ -298,6 +299,29 @@ export function registerTdTools(
 ): void {
 	const toolMetadataEntries = getTouchDesignerToolMetadata();
 
+	/** Wrap a handler that returns formatted text with try/catch + createToolResult. */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const wrap = <T = any>(
+		toolName: ToolNames,
+		handler: (params: T) => Promise<string>,
+		referenceComment?: string,
+	) => {
+		return async (params: T) => {
+			try {
+				const text = await handler(params);
+				return createToolResult(tdClient, text);
+			} catch (error) {
+				return handleToolError(
+					error,
+					logger,
+					toolName,
+					referenceComment,
+					serverMode,
+				);
+			}
+		};
+	};
+
 	server.tool(
 		TOOL_NAMES.DESCRIBE_TD_TOOLS,
 		"Generate a filesystem-oriented manifest of available TouchDesigner tools",
@@ -354,28 +378,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_INFO,
 			serverMode,
 			tdClient,
-			async (params: TdInfoToolParams = {}) => {
-				try {
-					const { detailLevel, responseFormat } = params;
-					const result = await tdClient.getTdInfo();
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatTdInfo(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_INFO,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_INFO, async (params: TdInfoToolParams = {}) => {
+				const { detailLevel, responseFormat } = params;
+				const result = await tdClient.getTdInfo();
+				if (!result.success) throw result.error;
+				return formatTdInfo(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -590,29 +601,15 @@ export function registerTdTools(
 			TOOL_NAMES.CREATE_TD_NODE,
 			serverMode,
 			tdClient,
-			async (params: CreateNodeToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...createParams } = params;
-
-					const result = await tdClient.createNode(createParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatCreateNodeResult(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.CREATE_TD_NODE,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.CREATE_TD_NODE, async (params: CreateNodeToolParams) => {
+				const { detailLevel, responseFormat, ...createParams } = params;
+				const result = await tdClient.createNode(createParams);
+				if (!result.success) throw result.error;
+				return formatCreateNodeResult(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -624,28 +621,15 @@ export function registerTdTools(
 			TOOL_NAMES.DELETE_TD_NODE,
 			serverMode,
 			tdClient,
-			async (params: DeleteNodeToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...deleteParams } = params;
-					const result = await tdClient.deleteNode(deleteParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatDeleteNodeResult(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.DELETE_TD_NODE,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.DELETE_TD_NODE, async (params: DeleteNodeToolParams) => {
+				const { detailLevel, responseFormat, ...deleteParams } = params;
+				const result = await tdClient.deleteNode(deleteParams);
+				if (!result.success) throw result.error;
+				return formatDeleteNodeResult(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -657,28 +641,15 @@ export function registerTdTools(
 			TOOL_NAMES.COPY_NODE,
 			serverMode,
 			tdClient,
-			async (params: CopyNodeToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...copyParams } = params;
-					const result = await tdClient.copyNode(copyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatCopyNodeResult(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.COPY_NODE,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.COPY_NODE, async (params: CopyNodeToolParams) => {
+				const { detailLevel, responseFormat, ...copyParams } = params;
+				const result = await tdClient.copyNode(copyParams);
+				if (!result.success) throw result.error;
+				return formatCopyNodeResult(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -690,28 +661,15 @@ export function registerTdTools(
 			TOOL_NAMES.CONNECT_NODES,
 			serverMode,
 			tdClient,
-			async (params: ConnectNodesToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...connectParams } = params;
-					const result = await tdClient.connectNodes(connectParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatConnectNodesResult(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.CONNECT_NODES,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.CONNECT_NODES, async (params: ConnectNodesToolParams) => {
+				const { detailLevel, responseFormat, ...connectParams } = params;
+				const result = await tdClient.connectNodes(connectParams);
+				if (!result.success) throw result.error;
+				return formatConnectNodesResult(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -723,28 +681,15 @@ export function registerTdTools(
 			TOOL_NAMES.LAYOUT_NODES,
 			serverMode,
 			tdClient,
-			async (params: LayoutNodesToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...layoutParams } = params;
-					const result = await tdClient.layoutNodes(layoutParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatLayoutNodesResult(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.LAYOUT_NODES,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.LAYOUT_NODES, async (params: LayoutNodesToolParams) => {
+				const { detailLevel, responseFormat, ...layoutParams } = params;
+				const result = await tdClient.layoutNodes(layoutParams);
+				if (!result.success) throw result.error;
+				return formatLayoutNodesResult(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -756,35 +701,20 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_NODES,
 			serverMode,
 			tdClient,
-			async (params: GetNodesToolParams) => {
-				try {
-					const { detailLevel, limit, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getNodes(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
+			wrap(TOOL_NAMES.GET_TD_NODES, async (params: GetNodesToolParams) => {
+				const { detailLevel, limit, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getNodes(queryParams);
+				if (!result.success) throw result.error;
 
-					// Use formatter for token-optimized response
-					const fallbackMode = queryParams.includeProperties
-						? "detailed"
-						: "summary";
-					const formattedText = formatNodeList(result.data, {
-						detailLevel: detailLevel ?? fallbackMode,
-						limit,
-						responseFormat,
-					});
-
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_NODES,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+				const fallbackMode = queryParams.includeProperties
+					? "detailed"
+					: "summary";
+				return formatNodeList(result.data, {
+					detailLevel: detailLevel ?? fallbackMode,
+					limit,
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -796,32 +726,16 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_NODE_PARAMETERS,
 			serverMode,
 			tdClient,
-			async (params: GetNodeDetailToolParams) => {
-				try {
-					const { detailLevel, limit, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getNodeDetail(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-
-					// Use formatter for token-optimized response
-					const formattedText = formatNodeDetails(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						limit,
-						responseFormat,
-					});
-
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_NODE_PARAMETERS,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_NODE_PARAMETERS, async (params: GetNodeDetailToolParams) => {
+				const { detailLevel, limit, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getNodeDetail(queryParams);
+				if (!result.success) throw result.error;
+				return formatNodeDetails(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					limit,
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -833,31 +747,16 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_NODE_ERRORS,
 			serverMode,
 			tdClient,
-			async (params: GetNodeErrorsToolParams) => {
-				try {
-					const { detailLevel, limit, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getNodeErrors(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-
-					const formattedText = formatNodeErrors(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						limit,
-						responseFormat,
-					});
-
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_NODE_ERRORS,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_NODE_ERRORS, async (params: GetNodeErrorsToolParams) => {
+				const { detailLevel, limit, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getNodeErrors(queryParams);
+				if (!result.success) throw result.error;
+				return formatNodeErrors(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					limit,
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -869,28 +768,15 @@ export function registerTdTools(
 			TOOL_NAMES.UPDATE_TD_NODE_PARAMETERS,
 			serverMode,
 			tdClient,
-			async (params: UpdateNodeToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...updateParams } = params;
-					const result = await tdClient.updateNode(updateParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatUpdateNodeResult(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.UPDATE_TD_NODE_PARAMETERS,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.UPDATE_TD_NODE_PARAMETERS, async (params: UpdateNodeToolParams) => {
+				const { detailLevel, responseFormat, ...updateParams } = params;
+				const result = await tdClient.updateNode(updateParams);
+				if (!result.success) throw result.error;
+				return formatUpdateNodeResult(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -902,35 +788,17 @@ export function registerTdTools(
 			TOOL_NAMES.EXECUTE_NODE_METHOD,
 			serverMode,
 			tdClient,
-			async (params: ExecNodeMethodToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...execParams } = params;
-					const { nodePath, method, args, kwargs } = execParams;
-
-					const result = await tdClient.execNodeMethod(execParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatExecNodeMethodResult(
-						result.data,
-						{ args, kwargs, method, nodePath },
-						{ detailLevel: detailLevel ?? "summary", responseFormat },
-					);
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					logger.sendLog({
-						data: error,
-						level: "error",
-					});
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.EXECUTE_NODE_METHOD,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.EXECUTE_NODE_METHOD, async (params: ExecNodeMethodToolParams) => {
+				const { detailLevel, responseFormat, ...execParams } = params;
+				const { nodePath, method, args, kwargs } = execParams;
+				const result = await tdClient.execNodeMethod(execParams);
+				if (!result.success) throw result.error;
+				return formatExecNodeMethodResult(
+					result.data,
+					{ args, kwargs, method, nodePath },
+					{ detailLevel: detailLevel ?? "summary", responseFormat },
+				);
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -942,31 +810,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_CLASSES,
 			serverMode,
 			tdClient,
-			async (params: ClassListToolParams = {}) => {
-				try {
-					const result = await tdClient.getClasses();
-					if (!result.success) {
-						throw result.error;
-					}
-
-					// Use formatter for token-optimized response
-					const formattedText = formatClassList(result.data, {
-						detailLevel: params.detailLevel ?? "summary",
-						limit: params.limit ?? 50,
-						responseFormat: params.responseFormat,
-					});
-
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_CLASSES,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_CLASSES, async (params: ClassListToolParams = {}) => {
+				const result = await tdClient.getClasses();
+				if (!result.success) throw result.error;
+				return formatClassList(result.data, {
+					detailLevel: params.detailLevel ?? "summary",
+					limit: params.limit ?? 50,
+					responseFormat: params.responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -978,32 +830,16 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_CLASS_DETAILS,
 			serverMode,
 			tdClient,
-			async (params: ClassDetailToolParams) => {
-				try {
-					const { className, detailLevel, limit, responseFormat } = params;
-					const result = await tdClient.getClassDetails(className);
-					if (!result.success) {
-						throw result.error;
-					}
-
-					// Use formatter for token-optimized response
-					const formattedText = formatClassDetails(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						limit: limit ?? 30,
-						responseFormat,
-					});
-
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_CLASS_DETAILS,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_CLASS_DETAILS, async (params: ClassDetailToolParams) => {
+				const { className, detailLevel, limit, responseFormat } = params;
+				const result = await tdClient.getClassDetails(className);
+				if (!result.success) throw result.error;
+				return formatClassDetails(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					limit: limit ?? 30,
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -1015,28 +851,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_MODULE_HELP,
 			serverMode,
 			tdClient,
-			async (params: ModuleHelpToolParams) => {
-				try {
-					const { detailLevel, moduleName, responseFormat } = params;
-					const result = await tdClient.getModuleHelp({ moduleName });
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatModuleHelp(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_MODULE_HELP,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_MODULE_HELP, async (params: ModuleHelpToolParams) => {
+				const { detailLevel, moduleName, responseFormat } = params;
+				const result = await tdClient.getModuleHelp({ moduleName });
+				if (!result.success) throw result.error;
+				return formatModuleHelp(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1048,28 +871,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_DAT_TEXT,
 			serverMode,
 			tdClient,
-			async (params: GetDatTextToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getDatText(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatDatText(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_DAT_TEXT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_DAT_TEXT, async (params: GetDatTextToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getDatText(queryParams);
+				if (!result.success) throw result.error;
+				return formatDatText(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1081,28 +891,15 @@ export function registerTdTools(
 			TOOL_NAMES.SET_DAT_TEXT,
 			serverMode,
 			tdClient,
-			async (params: SetDatTextToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.setDatText(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatSetDatText(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.SET_DAT_TEXT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.SET_DAT_TEXT, async (params: SetDatTextToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.setDatText(bodyParams);
+				if (!result.success) throw result.error;
+				return formatSetDatText(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1114,28 +911,15 @@ export function registerTdTools(
 			TOOL_NAMES.LINT_DAT,
 			serverMode,
 			tdClient,
-			async (params: LintDatToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.lintDat(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatLintDat(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.LINT_DAT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.LINT_DAT, async (params: LintDatToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.lintDat(bodyParams);
+				if (!result.success) throw result.error;
+				return formatLintDat(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1147,28 +931,15 @@ export function registerTdTools(
 			TOOL_NAMES.TYPECHECK_DAT,
 			serverMode,
 			tdClient,
-			async (params: TypecheckDatToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.typecheckDat(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatTypecheckDat(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.TYPECHECK_DAT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.TYPECHECK_DAT, async (params: TypecheckDatToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.typecheckDat(bodyParams);
+				if (!result.success) throw result.error;
+				return formatTypecheckDat(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1180,28 +951,15 @@ export function registerTdTools(
 			TOOL_NAMES.LINT_DATS,
 			serverMode,
 			tdClient,
-			async (params: LintDatsToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.lintDats(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatLintDats(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.LINT_DATS,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.LINT_DATS, async (params: LintDatsToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.lintDats(bodyParams);
+				if (!result.success) throw result.error;
+				return formatLintDats(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1213,28 +971,15 @@ export function registerTdTools(
 			TOOL_NAMES.FORMAT_DAT,
 			serverMode,
 			tdClient,
-			async (params: FormatDatToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.formatDat(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatFormatDat(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.FORMAT_DAT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.FORMAT_DAT, async (params: FormatDatToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.formatDat(bodyParams);
+				if (!result.success) throw result.error;
+				return formatFormatDat(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1246,28 +991,15 @@ export function registerTdTools(
 			TOOL_NAMES.VALIDATE_JSON_DAT,
 			serverMode,
 			tdClient,
-			async (params: ValidateJsonDatToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.validateJsonDat(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatValidateJsonDat(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.VALIDATE_JSON_DAT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.VALIDATE_JSON_DAT, async (params: ValidateJsonDatToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.validateJsonDat(bodyParams);
+				if (!result.success) throw result.error;
+				return formatValidateJsonDat(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1279,28 +1011,15 @@ export function registerTdTools(
 			TOOL_NAMES.VALIDATE_GLSL_DAT,
 			serverMode,
 			tdClient,
-			async (params: ValidateGlslDatToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.validateGlslDat(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatValidateGlslDat(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.VALIDATE_GLSL_DAT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.VALIDATE_GLSL_DAT, async (params: ValidateGlslDatToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.validateGlslDat(bodyParams);
+				if (!result.success) throw result.error;
+				return formatValidateGlslDat(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1312,28 +1031,15 @@ export function registerTdTools(
 			TOOL_NAMES.DISCOVER_DAT_CANDIDATES,
 			serverMode,
 			tdClient,
-			async (params: DiscoverDatCandidatesToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.discoverDatCandidates(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatDiscoverDatCandidates(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.DISCOVER_DAT_CANDIDATES,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.DISCOVER_DAT_CANDIDATES, async (params: DiscoverDatCandidatesToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.discoverDatCandidates(queryParams);
+				if (!result.success) throw result.error;
+				return formatDiscoverDatCandidates(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1345,28 +1051,15 @@ export function registerTdTools(
 			TOOL_NAMES.CREATE_GEOMETRY_COMP,
 			serverMode,
 			tdClient,
-			async (params: CreateGeometryCompToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.createGeometryComp(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatCreateGeometryComp(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.CREATE_GEOMETRY_COMP,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.CREATE_GEOMETRY_COMP, async (params: CreateGeometryCompToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.createGeometryComp(bodyParams);
+				if (!result.success) throw result.error;
+				return formatCreateGeometryComp(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -1378,28 +1071,15 @@ export function registerTdTools(
 			TOOL_NAMES.CREATE_FEEDBACK_LOOP,
 			serverMode,
 			tdClient,
-			async (params: CreateFeedbackLoopToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.createFeedbackLoop(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatCreateFeedbackLoop(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.CREATE_FEEDBACK_LOOP,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.CREATE_FEEDBACK_LOOP, async (params: CreateFeedbackLoopToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.createFeedbackLoop(bodyParams);
+				if (!result.success) throw result.error;
+				return formatCreateFeedbackLoop(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -1411,28 +1091,15 @@ export function registerTdTools(
 			TOOL_NAMES.CONFIGURE_INSTANCING,
 			serverMode,
 			tdClient,
-			async (params: ConfigureInstancingToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...bodyParams } = params;
-					const result = await tdClient.configureInstancing(bodyParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatConfigureInstancing(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.CONFIGURE_INSTANCING,
-						REFERENCE_COMMENT,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.CONFIGURE_INSTANCING, async (params: ConfigureInstancingToolParams) => {
+				const { detailLevel, responseFormat, ...bodyParams } = params;
+				const result = await tdClient.configureInstancing(bodyParams);
+				if (!result.success) throw result.error;
+				return formatConfigureInstancing(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}, REFERENCE_COMMENT),
 		),
 	);
 
@@ -1444,28 +1111,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_NODE_PARAMETER_SCHEMA,
 			serverMode,
 			tdClient,
-			async (params: GetNodeParameterSchemaToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getNodeParameterSchema(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatParameterSchema(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_NODE_PARAMETER_SCHEMA,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_NODE_PARAMETER_SCHEMA, async (params: GetNodeParameterSchemaToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getNodeParameterSchema(queryParams);
+				if (!result.success) throw result.error;
+				return formatParameterSchema(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1477,28 +1131,15 @@ export function registerTdTools(
 			TOOL_NAMES.COMPLETE_OP_PATHS,
 			serverMode,
 			tdClient,
-			async (params: CompleteOpPathsToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.completeOpPaths(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatCompleteOpPaths(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.COMPLETE_OP_PATHS,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.COMPLETE_OP_PATHS, async (params: CompleteOpPathsToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.completeOpPaths(queryParams);
+				if (!result.success) throw result.error;
+				return formatCompleteOpPaths(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1510,28 +1151,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_CHOP_CHANNELS,
 			serverMode,
 			tdClient,
-			async (params: GetChopChannelsToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getChopChannels(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatChopChannels(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_CHOP_CHANNELS,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_CHOP_CHANNELS, async (params: GetChopChannelsToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getChopChannels(queryParams);
+				if (!result.success) throw result.error;
+				return formatChopChannels(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1543,28 +1171,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_DAT_TABLE_INFO,
 			serverMode,
 			tdClient,
-			async (params: GetDatTableInfoToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getDatTableInfo(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatDatTableInfo(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_DAT_TABLE_INFO,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_DAT_TABLE_INFO, async (params: GetDatTableInfoToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getDatTableInfo(queryParams);
+				if (!result.success) throw result.error;
+				return formatDatTableInfo(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1576,28 +1191,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_COMP_EXTENSIONS,
 			serverMode,
 			tdClient,
-			async (params: GetCompExtensionsToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getCompExtensions(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatCompExtensions(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_COMP_EXTENSIONS,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_COMP_EXTENSIONS, async (params: GetCompExtensionsToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getCompExtensions(queryParams);
+				if (!result.success) throw result.error;
+				return formatCompExtensions(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1616,28 +1218,15 @@ export function registerTdTools(
 			TOOL_NAMES.INDEX_TD_PROJECT,
 			serverMode,
 			tdClient,
-			async (params: IndexTdProjectToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.indexTdProject(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatProjectIndex(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.INDEX_TD_PROJECT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.INDEX_TD_PROJECT, async (params: IndexTdProjectToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.indexTdProject(queryParams);
+				if (!result.success) throw result.error;
+				return formatProjectIndex(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 
@@ -1656,28 +1245,15 @@ export function registerTdTools(
 			TOOL_NAMES.GET_TD_CONTEXT,
 			serverMode,
 			tdClient,
-			async (params: GetTdContextToolParams) => {
-				try {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getTdContext(queryParams);
-					if (!result.success) {
-						throw result.error;
-					}
-					const formattedText = formatTdContext(result.data, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
-					});
-					return createToolResult(tdClient, formattedText);
-				} catch (error) {
-					return handleToolError(
-						error,
-						logger,
-						TOOL_NAMES.GET_TD_CONTEXT,
-						undefined,
-						serverMode,
-					);
-				}
-			},
+			wrap(TOOL_NAMES.GET_TD_CONTEXT, async (params: GetTdContextToolParams) => {
+				const { detailLevel, responseFormat, ...queryParams } = params;
+				const result = await tdClient.getTdContext(queryParams);
+				if (!result.success) throw result.error;
+				return formatTdContext(result.data, {
+					detailLevel: detailLevel ?? "summary",
+					responseFormat,
+				});
+			}),
 		),
 	);
 }
