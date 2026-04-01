@@ -353,3 +353,118 @@ len(log.text.strip()) if log else 0`,
 		}
 	});
 });
+
+// ---------------------------------------------------------------------------
+// Pulse contract tests — _sync_mode makes actions deterministic
+// ---------------------------------------------------------------------------
+
+describe("TDDocker pulse contract", { timeout: 120_000 }, () => {
+	let initialTransportsPulse: TransportSnapshot[] = [];
+
+	beforeAll(async () => {
+		const config = getLiveTdConfig();
+		process.env.TD_WEB_SERVER_HOST = config.host;
+		process.env.TD_WEB_SERVER_PORT = config.port;
+
+		// Preflight
+		const info = await tdClient.getTdInfo();
+		if (!info.success) {
+			throw new Error(
+				`TouchDesigner not reachable at ${config.host}:${config.port}`,
+			);
+		}
+
+		// Resolve docker project name
+		await resolveDockerProjectName();
+
+		// Snapshot transport toggles
+		initialTransportsPulse = await snapshotTransports();
+
+		// Reload compose module to pick up communicate() fix,
+		// enable sync mode, then Up + PollStatus inline
+		await execScript(
+			`import importlib, td_docker.compose
+importlib.reload(td_docker.compose)
+ext = op('/TDDocker').ext.TDDockerExt
+ext._sync_mode = True
+ext._up()
+ext.PollStatus()`,
+		);
+
+		// Verify precondition: web container running with ContainerID
+		const state = await readScript<string>(
+			"op('/TDDocker/containers/Tests_web').par.State.val",
+		);
+		if (state !== "running") {
+			throw new Error(
+				`Precondition failed: Tests_web State=${state}, expected running`,
+			);
+		}
+	});
+
+	afterAll(async () => {
+		// Always restore sync mode
+		try {
+			await execScript("op('/TDDocker').ext.TDDockerExt._sync_mode = False");
+		} catch {
+			// best-effort
+		}
+
+		// Restore transport toggles
+		await restoreTransports(initialTransportsPulse);
+
+		// Down containers
+		try {
+			if (dockerProjectName) {
+				execSync(`docker compose -p ${dockerProjectName} down`, {
+					encoding: "utf-8",
+					timeout: 30000,
+				});
+			}
+		} catch {
+			// best-effort
+		}
+	});
+
+	test("Stop pulse → State becomes exited", async () => {
+		await execScript("op('/TDDocker/containers/Tests_web').par.Stop.pulse()");
+		const state = await readScript<string>(
+			"op('/TDDocker/containers/Tests_web').par.State.val",
+		);
+		expect(state).toBe("exited");
+	});
+
+	test("Start pulse → State becomes running with ContainerID", async () => {
+		await execScript("op('/TDDocker/containers/Tests_web').par.Start.pulse()");
+		const state = await readScript<string>(
+			"op('/TDDocker/containers/Tests_web').par.State.val",
+		);
+		const cid = await readScript<string>(
+			"op('/TDDocker/containers/Tests_web').par.Containerid.val",
+		);
+		expect(state).toBe("running");
+		expect(cid.length).toBeGreaterThan(0);
+	});
+
+	test("Restart pulse → State remains running", async () => {
+		await execScript(
+			"op('/TDDocker/containers/Tests_web').par.Restart.pulse()",
+		);
+		const state = await readScript<string>(
+			"op('/TDDocker/containers/Tests_web').par.State.val",
+		);
+		expect(state).toBe("running");
+	});
+
+	test("Logs pulse → log_dat has content", async () => {
+		// Clear log_dat first
+		await execScript(
+			"log = op('/TDDocker/containers/Tests_web').op('log_dat')\nif log: log.text = ''",
+		);
+		await execScript("op('/TDDocker/containers/Tests_web').par.Logs.pulse()");
+		const logLen = await readScript<number>(
+			"log = op('/TDDocker/containers/Tests_web').op('log_dat')\nlen(log.text.strip()) if log else 0",
+		);
+		expect(logLen).toBeGreaterThan(0);
+	});
+});
