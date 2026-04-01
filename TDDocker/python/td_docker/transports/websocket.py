@@ -89,7 +89,7 @@ class WebSocketBridge:
 # TD Callback Script — injected into a textDAT at runtime
 # ---------------------------------------------------------------------------
 
-CALLBACK_SCRIPT = '''\
+CALLBACK_SCRIPT = """\
 import sys
 import os
 
@@ -131,4 +131,4 @@ def onReceiveText(dat, rowIndex, message, bytes):
     log = parent().op('log_dat')
     if log:
         log.text += f'[{bridge.service_name}] WS: {message}\\n'
-'''
+"""

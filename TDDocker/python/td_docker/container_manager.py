@@ -25,8 +25,12 @@ def _run(cmd: list[str], timeout: int = 30) -> CmdResult:
     """Run a docker command. Uses Popen+wait instead of subprocess.run
     to avoid holding the GIL during the subprocess wait."""
     proc = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, encoding="utf-8", errors="replace",
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     try:
         proc.wait(timeout=timeout)

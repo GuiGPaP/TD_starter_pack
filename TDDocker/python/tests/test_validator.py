@@ -38,21 +38,21 @@ def _assert_clean(result: ValidationResult) -> None:
 
 class TestValidCompose:
     def test_simple_service(self) -> None:
-        result = validate_compose(_compose(
-            "  web:\n    image: nginx:latest\n    ports:\n      - '8080:80'\n"
-        ))
+        result = validate_compose(
+            _compose("  web:\n    image: nginx:latest\n    ports:\n      - '8080:80'\n")
+        )
         _assert_clean(result)
 
     def test_multiple_services(self) -> None:
-        result = validate_compose(_compose(
-            "  web:\n    image: nginx\n  db:\n    image: postgres\n"
-        ))
+        result = validate_compose(
+            _compose("  web:\n    image: nginx\n  db:\n    image: postgres\n")
+        )
         _assert_clean(result)
 
     def test_safe_volumes(self) -> None:
-        result = validate_compose(_compose(
-            "  app:\n    image: node\n    volumes:\n      - ./data:/app/data\n"
-        ))
+        result = validate_compose(
+            _compose("  app:\n    image: node\n    volumes:\n      - ./data:/app/data\n")
+        )
         _assert_clean(result)
 
 
@@ -63,15 +63,11 @@ class TestValidCompose:
 
 class TestPrivileged:
     def test_privileged_blocked(self) -> None:
-        result = validate_compose(_compose(
-            "  evil:\n    image: alpine\n    privileged: true\n"
-        ))
+        result = validate_compose(_compose("  evil:\n    image: alpine\n    privileged: true\n"))
         _assert_error(result, "no-privileged")
 
     def test_privileged_false_ok(self) -> None:
-        result = validate_compose(_compose(
-            "  safe:\n    image: alpine\n    privileged: false\n"
-        ))
+        result = validate_compose(_compose("  safe:\n    image: alpine\n    privileged: false\n"))
         _assert_clean(result)
 
 
@@ -82,9 +78,7 @@ class TestPrivileged:
 
 class TestPidMode:
     def test_pid_host_blocked(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    pid: host\n"
-        ))
+        result = validate_compose(_compose("  svc:\n    image: alpine\n    pid: host\n"))
         _assert_error(result, "no-pid-host")
 
 
@@ -95,9 +89,7 @@ class TestPidMode:
 
 class TestNetworkMode:
     def test_user_host_network_warns(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    network_mode: host\n"
-        ))
+        result = validate_compose(_compose("  svc:\n    image: alpine\n    network_mode: host\n"))
         _assert_warning(result, "user-host-network")
         assert not result.has_errors
 
@@ -109,28 +101,30 @@ class TestNetworkMode:
 
 class TestVolumes:
     def test_docker_socket_blocked(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    volumes:\n"
-            "      - /var/run/docker.sock:/var/run/docker.sock\n"
-        ))
+        result = validate_compose(
+            _compose(
+                "  svc:\n    image: alpine\n    volumes:\n"
+                "      - /var/run/docker.sock:/var/run/docker.sock\n"
+            )
+        )
         _assert_error(result, "no-dangerous-volume")
 
     def test_etc_blocked(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    volumes:\n      - /etc:/host-etc\n"
-        ))
+        result = validate_compose(
+            _compose("  svc:\n    image: alpine\n    volumes:\n      - /etc:/host-etc\n")
+        )
         _assert_error(result, "no-dangerous-volume")
 
     def test_proc_blocked(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    volumes:\n      - /proc:/host-proc\n"
-        ))
+        result = validate_compose(
+            _compose("  svc:\n    image: alpine\n    volumes:\n      - /proc:/host-proc\n")
+        )
         _assert_error(result, "no-dangerous-volume")
 
     def test_windows_system_blocked(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    volumes:\n      - C:\\Windows:/win\n"
-        ))
+        result = validate_compose(
+            _compose("  svc:\n    image: alpine\n    volumes:\n      - C:\\Windows:/win\n")
+        )
         _assert_error(result, "no-dangerous-volume")
 
     def test_long_syntax_blocked(self) -> None:
@@ -154,15 +148,15 @@ class TestVolumes:
 class TestCapabilities:
     @pytest.mark.parametrize("cap", ["SYS_ADMIN", "SYS_PTRACE", "NET_ADMIN", "NET_RAW"])
     def test_dangerous_cap_blocked(self, cap: str) -> None:
-        result = validate_compose(_compose(
-            f"  svc:\n    image: alpine\n    cap_add:\n      - {cap}\n"
-        ))
+        result = validate_compose(
+            _compose(f"  svc:\n    image: alpine\n    cap_add:\n      - {cap}\n")
+        )
         _assert_error(result, "no-dangerous-cap")
 
     def test_safe_cap_ok(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    cap_add:\n      - CHOWN\n"
-        ))
+        result = validate_compose(
+            _compose("  svc:\n    image: alpine\n    cap_add:\n      - CHOWN\n")
+        )
         _assert_clean(result)
 
 
@@ -173,9 +167,9 @@ class TestCapabilities:
 
 class TestDevices:
     def test_raw_device_warns(self) -> None:
-        result = validate_compose(_compose(
-            "  svc:\n    image: alpine\n    devices:\n      - /dev/sda:/dev/sda\n"
-        ))
+        result = validate_compose(
+            _compose("  svc:\n    image: alpine\n    devices:\n      - /dev/sda:/dev/sda\n")
+        )
         _assert_warning(result, "raw-device-access")
 
 
