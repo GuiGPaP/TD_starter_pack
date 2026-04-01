@@ -13,6 +13,23 @@ import {
 
 type FormatterOpts = Pick<FormatterOptions, "detailLevel" | "responseFormat">;
 
+function pushParameterLines(
+	lines: string[],
+	parameters: NonNullable<GetNodeParameterSchema200Data["parameters"]>,
+): void {
+	for (const p of parameters) {
+		const range =
+			p.min != null || p.max != null ? ` [${p.min ?? ""}..${p.max ?? ""}]` : "";
+		const menu =
+			p.menuNames && p.menuNames.length > 0
+				? ` menu=[${p.menuNames.join(",")}]`
+				: "";
+		lines.push(
+			`  ${p.name} (${p.style ?? "?"})${range}${menu} = ${JSON.stringify(p.val)}`,
+		);
+	}
+}
+
 export function formatParameterSchema(
 	data: GetNodeParameterSchema200Data | undefined,
 	options?: FormatterOpts,
@@ -35,19 +52,7 @@ export function formatParameterSchema(
 
 	const lines = [`${path} (${data.opType ?? "?"}) — ${count} parameter(s)`];
 	if (data.parameters && opts.detailLevel !== "minimal") {
-		for (const p of data.parameters) {
-			const range =
-				p.min != null || p.max != null
-					? ` [${p.min ?? ""}..${p.max ?? ""}]`
-					: "";
-			const menu =
-				p.menuNames && p.menuNames.length > 0
-					? ` menu=[${p.menuNames.join(",")}]`
-					: "";
-			lines.push(
-				`  ${p.name} (${p.style ?? "?"})${range}${menu} = ${JSON.stringify(p.val)}`,
-			);
-		}
+		pushParameterLines(lines, data.parameters);
 	}
 
 	return finalizeFormattedText(lines.join("\n"), opts, {
