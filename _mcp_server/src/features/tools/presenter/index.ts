@@ -71,18 +71,14 @@ export {
 export type { ScriptResultData } from "./scriptResultFormatter.js";
 export { formatScriptResult } from "./scriptResultFormatter.js";
 export {
-	formatAssetDetail,
-	formatAssetSearchResults,
-	formatDeployResult,
-} from "./templateFormatter.js";
-export {
 	formatTechniqueDetail,
 	formatTechniqueSearchResults,
 } from "./techniqueFormatter.js";
 export {
-	formatTutorialDetail,
-	formatTutorialSearchResults,
-} from "./tutorialFormatter.js";
+	formatAssetDetail,
+	formatAssetSearchResults,
+	formatDeployResult,
+} from "./templateFormatter.js";
 export type { DetectedToolkit } from "./toolkitFormatter.js";
 export {
 	formatDetectResult,
@@ -90,6 +86,10 @@ export {
 	formatToolkitSearchResults,
 } from "./toolkitFormatter.js";
 export { formatToolMetadata } from "./toolMetadataFormatter.js";
+export {
+	formatTutorialDetail,
+	formatTutorialSearchResults,
+} from "./tutorialFormatter.js";
 export {
 	formatVersionDetail,
 	formatVersionList,

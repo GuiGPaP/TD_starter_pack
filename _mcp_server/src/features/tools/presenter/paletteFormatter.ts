@@ -19,9 +19,7 @@ export function formatIndexResult(
 	const builtinCount = index.entries.filter((e) => e.source !== "user").length;
 	const userCount = index.entries.filter((e) => e.source === "user").length;
 	const sourceSummary =
-		userCount > 0
-			? ` (${builtinCount} builtin, ${userCount} user)`
-			: "";
+		userCount > 0 ? ` (${builtinCount} builtin, ${userCount} user)` : "";
 
 	const lines = [
 		`Palette indexed: ${index.entryCount} components from ${categories.size} categories${sourceSummary}`,

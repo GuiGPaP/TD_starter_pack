@@ -71,9 +71,11 @@ function generateDetectScript(
 	rootPath: string,
 ): string {
 	const checks = toolkits
-		.filter((t) => t.payload.detectionPaths && t.payload.detectionPaths.length > 0)
+		.filter(
+			(t) => t.payload.detectionPaths && t.payload.detectionPaths.length > 0,
+		)
 		.map((t) => {
-			const paths = t.payload.detectionPaths!.map((p) => {
+			const paths = t.payload.detectionPaths?.map((p) => {
 				// Replace /project1 with the user-specified root if different
 				if (rootPath !== "/project1" && p.startsWith("/project1")) {
 					return p.replace("/project1", rootPath);

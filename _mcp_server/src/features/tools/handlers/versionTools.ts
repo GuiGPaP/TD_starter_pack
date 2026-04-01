@@ -4,10 +4,7 @@ import { TOOL_NAMES } from "../../../core/constants.js";
 import { handleToolError } from "../../../core/errorHandling.js";
 import type { ILogger } from "../../../core/logger.js";
 import type { VersionManifest } from "../../resources/versionManifest.js";
-import {
-	formatVersionDetail,
-	formatVersionList,
-} from "../presenter/index.js";
+import { formatVersionDetail, formatVersionList } from "../presenter/index.js";
 import { detailOnlyFormattingSchema } from "../types.js";
 
 // --- Schemas ---
@@ -45,9 +42,7 @@ export function registerVersionTools(
 				let versions = versionManifest.getAllVersions();
 
 				if (params.status) {
-					versions = versions.filter(
-						(v) => v.supportStatus === params.status,
-					);
+					versions = versions.filter((v) => v.supportStatus === params.status);
 				}
 
 				const text = formatVersionList(versions, {
