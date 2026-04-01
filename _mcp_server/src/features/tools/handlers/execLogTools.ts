@@ -28,6 +28,38 @@ type GetExecLogParams = {
 	outcome?: "blocked" | "error" | "executed" | "previewed";
 };
 
+// --- Formatting helpers ---
+
+const STATUS_LABELS: Record<string, string> = {
+	blocked: "BLOCKED",
+	error: "ERROR",
+	executed: "OK",
+	previewed: "PREVIEW",
+};
+
+function formatExecLogEntry(
+	lines: string[],
+	e: ReturnType<ExecAuditLog["getEntries"]>[number],
+): void {
+	const status = STATUS_LABELS[e.outcome] ?? "ERROR";
+	lines.push(
+		`#${e.id} [${status}] mode=${e.mode} ${e.durationMs}ms — ${e.script.slice(0, 80)}`,
+	);
+	if (e.error) {
+		lines.push(`  Error: ${e.error.slice(0, 120)}`);
+	}
+	if (e.violations && e.violations.length > 0) {
+		for (const v of e.violations.slice(0, 3)) {
+			lines.push(`  L${v.line}: ${v.description}`);
+		}
+		if (e.violations.length > 3) {
+			lines.push(`  ... and ${e.violations.length - 3} more`);
+		}
+	}
+}
+
+// --- Registration ---
+
 export function registerExecLogTools(
 	server: McpServer,
 	_logger: ILogger,
@@ -47,43 +79,16 @@ export function registerExecLogTools(
 			if (entries.length === 0) {
 				return {
 					content: [
-						{
-							text: "No audit log entries found.",
-							type: "text" as const,
-						},
+						{ text: "No audit log entries found.", type: "text" as const },
 					],
 				};
 			}
 
 			const lines = [`Execution audit log (${entries.length} entries):\n`];
 			for (const e of entries) {
-				const status =
-					e.outcome === "executed"
-						? "OK"
-						: e.outcome === "blocked"
-							? "BLOCKED"
-							: e.outcome === "previewed"
-								? "PREVIEW"
-								: "ERROR";
-				lines.push(
-					`#${e.id} [${status}] mode=${e.mode} ${e.durationMs}ms — ${e.script.slice(0, 80)}`,
-				);
-				if (e.error) {
-					lines.push(`  Error: ${e.error.slice(0, 120)}`);
-				}
-				if (e.violations && e.violations.length > 0) {
-					for (const v of e.violations.slice(0, 3)) {
-						lines.push(`  L${v.line}: ${v.description}`);
-					}
-					if (e.violations.length > 3) {
-						lines.push(`  ... and ${e.violations.length - 3} more`);
-					}
-				}
+				formatExecLogEntry(lines, e);
 			}
-
-			return {
-				content: [{ text: lines.join("\n"), type: "text" as const }],
-			};
+			return { content: [{ text: lines.join("\n"), type: "text" as const }] };
 		},
 	);
 }
