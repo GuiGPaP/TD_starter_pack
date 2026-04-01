@@ -7,6 +7,8 @@ Loaded as an extension on each container COMP created by TDDockerExt.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from td_docker.container_manager import (
     container_logs,
     restart_container,
@@ -152,7 +154,7 @@ class TDContainerExt:
     # ------------------------------------------------------------------
 
     # Expected operators per transport toggle
-    _TRANSPORT_OPS: dict[str, tuple[str, ...]] = {
+    _TRANSPORT_OPS: ClassVar[dict[str, tuple[str, ...]]] = {
         "osc": ("osc_in", "osc_out", "oscin_callbacks"),
         "ws": ("websocket_dat", "websocket_callbacks"),
         "ndi": ("video_in", "video_out"),
