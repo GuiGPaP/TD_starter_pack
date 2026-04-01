@@ -209,4 +209,75 @@ describe("formatGlslDeployResult", () => {
 		expect(result).toContain("skipped");
 		expect(result).toContain("unavailable");
 	});
+
+	it("should show planned uniforms for dry_run", () => {
+		const result = formatGlslDeployResult({
+			patternId: "test",
+			status: "dry_run",
+			uniforms: [
+				{ expression: "absTime.seconds", name: "uTime", type: "float" },
+			],
+		});
+		expect(result).toContain("Planned Uniforms");
+		expect(result).toContain("uTime");
+		expect(result).toContain("absTime.seconds");
+		expect(result).not.toContain("manual configuration");
+	});
+
+	it("should show manual uniforms for deployed status", () => {
+		const result = formatGlslDeployResult({
+			patternId: "test",
+			status: "deployed",
+			uniforms: [
+				{
+					description: "Time value",
+					name: "uTime",
+					page: "Custom",
+					type: "float",
+				},
+			],
+		});
+		expect(result).toContain("manual configuration needed");
+		expect(result).toContain("uTime");
+		expect(result).toContain("Time value");
+		expect(result).toContain("Page: Custom");
+		expect(result).not.toContain("Planned Uniforms");
+	});
+
+	it("should show created nodes", () => {
+		const result = formatGlslDeployResult({
+			createdNodes: [
+				{ name: "glsl1", path: "/project1/test/glsl1", type: "glslTOP" },
+			],
+			patternId: "test",
+			status: "deployed",
+		});
+		expect(result).toContain("Created Nodes");
+		expect(result).toContain("glsl1");
+		expect(result).toContain("glslTOP");
+	});
+});
+
+describe("formatGlslPatternDetail — optional sections", () => {
+	it("should omit warnings section when no warnings", () => {
+		const entry = makeEntry({
+			content: { summary: "No warnings here" },
+		});
+		const result = formatGlslPatternDetail(entry);
+		expect(result).not.toContain("## Warnings");
+	});
+
+	it("should omit tags when empty", () => {
+		const entry = makeEntry();
+		entry.payload.tags = [];
+		const result = formatGlslPatternDetail(entry);
+		expect(result).not.toContain("**Tags:**");
+	});
+
+	it("should omit GPU cost when not set", () => {
+		const entry = makeEntry();
+		entry.payload.estimatedGpuCost = undefined as unknown as string;
+		const result = formatGlslPatternDetail(entry);
+		expect(result).not.toContain("GPU Cost");
+	});
 });
