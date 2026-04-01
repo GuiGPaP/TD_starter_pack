@@ -243,8 +243,69 @@ ext_dat.text = old
 
 ---
 
+## MCP `execute_python_script` and the Cook Loop
+
+MCP's `execute_python_script` runs Python inside TD's interpreter but does **not** trigger a cook cycle. This has consequences for async patterns:
+
+### Deferred callbacks don't flush during MCP calls
+
+Extensions that use `_enqueue_task()` with daemon threads + `_run_on_main()` schedule callbacks via a deferred queue that flushes once per frame in the cook loop (via `poll_script`). An MCP call that enqueues work and immediately reads the result will see stale state — the callback hasn't run yet.
+
+```python
+# BAD — result not available in same MCP call
+ext._up()           # enqueues compose_up on daemon thread
+ext.PollStatus()    # enqueues compose_ps on daemon thread
+comp.par.State.val  # still "created" — callbacks haven't flushed
+```
+
+### par.pulse() fires between separate MCP calls
+
+A `par.X.pulse()` triggers the `parameterexecuteDAT` callback, which is frame-delayed. However, it **does fire** between two separate MCP `execute_python_script` calls (TD processes at least one frame between HTTP request/response cycles).
+
+```python
+# Call 1:
+comp.par.Stop.pulse()   # parexecDAT queued for next frame
+
+# Call 2 (separate MCP request):
+comp.par.State.val      # "exited" — parexecDAT fired between calls
+```
+
+### `_sync_mode` for deterministic testing
+
+Extensions that use `_enqueue_task()` can expose a `_sync_mode` flag that forces inline execution (no thread, no deferred queue). This makes the entire async chain deterministic:
+
+```python
+ext._sync_mode = True
+comp.par.Stop.pulse()   # parexecDAT → onParPulse → _stop()
+                        # → _enqueue_task runs inline
+                        # → PollStatus runs inline
+comp.par.State.val      # "exited" — available immediately
+```
+
+Always restore `_sync_mode = False` in a `finally` block. Never set in production.
+
+### Popen.wait() deadlock with PIPE
+
+`Popen.wait()` with `stdout=PIPE` / `stderr=PIPE` deadlocks when output exceeds the pipe buffer (~4KB). Use `communicate()` instead — it reads pipes while waiting:
+
+```python
+# BAD — deadlocks when output > 4KB
+proc = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
+proc.wait(timeout=60)
+stdout = proc.stdout.read()  # never reached
+
+# GOOD — reads pipes concurrently with wait
+proc = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
+stdout, stderr = proc.communicate(timeout=60)
+```
+
+This applies to both threaded (daemon) and inline (`_sync_mode`) contexts.
+
+---
+
 ## subprocess Constraints
 
 - `subprocess.run()` / `Popen()` work normally for launching external tools (ruff, pyright, etc.)
 - `Popen` does **not** support file-like objects for stdin/stdout/stderr — use `capture_output=True` or `PIPE` instead
+- **Always use `communicate()`** over `wait()` + deferred read when capturing output — prevents pipe buffer deadlocks
 - External processes are isolated from TD's Python — no stability risk to TD

@@ -50,6 +50,15 @@ When those tools are too limited, `execute_python_script` runs arbitrary Python 
 
 Use this for complex operations like chaining multiple operators, setting expression modes, or reading data that isn't exposed through other endpoints.
 
+### Project-Agnostic Paths
+
+Not all `.toe` files have a `/project1` — TDDocker projects, custom templates, and multi-container setups may have different root COMPs. When creating sandbox nodes for testing or temporary operations, prefer `/` (root) as the parent path:
+
+```
+parent_path: "/"          # Works on any .toe
+node_name: "_my_sandbox"  # Underscore prefix = clearly temporary
+```
+
 ### `get_td_nodes` — Browsing the Network
 
 ```
