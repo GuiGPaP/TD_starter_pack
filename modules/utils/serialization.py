@@ -41,7 +41,7 @@ def safe_serialize(obj: Any) -> Any:
         return {str(k): safe_serialize(v) for k, v in obj.items()}
 
     # Result dataclass
-    cls_name = getattr(type(obj), "__name__", "")
+    cls_name = getattr(obj.__class__, "__name__", "")
     if cls_name == "Result" and hasattr(obj, "success") and hasattr(obj, "data"):
         return _serialize_result(obj)
 

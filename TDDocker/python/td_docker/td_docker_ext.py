@@ -365,7 +365,7 @@ class TDDockerExt:
 
         def _do_ensure():
             for p in paths:
-                c = op(p)
+                c = self.ownerComp.op(p)
                 if not c:
                     continue
                 ext = getattr(getattr(c, "ext", None), "TDContainerExt", None)
@@ -1270,9 +1270,8 @@ class TDDockerExt:
             "Wsport": 8080 + index,
         }
         for par_name, default_val in defaults.items():
-            if hasattr(comp.par, par_name):
-                if int(comp.par[par_name].eval()) == 0:
-                    comp.par[par_name].val = default_val
+            if hasattr(comp.par, par_name) and int(comp.par[par_name].eval()) == 0:
+                comp.par[par_name].val = default_val
 
     @staticmethod
     def _sync_transport_enables(comp) -> None:
