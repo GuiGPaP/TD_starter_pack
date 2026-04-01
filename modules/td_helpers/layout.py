@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import math
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from td import OP
 
 
 def move_with_docked(target, x: int, y: int) -> None:
@@ -110,7 +114,7 @@ def layout_horizontal(
     spacing: int = 200,
     start_x: int | None = None,
     start_y: int | None = None,
-) -> list[tuple[object, int, int]]:
+) -> list[tuple[OP, int, int]]:
     """Lay out *nodes* in a left-to-right row.
 
     Returns a list of ``(node, x, y)`` tuples **and** applies the positions.
@@ -135,7 +139,7 @@ def layout_vertical(
     spacing: int = 150,
     start_x: int | None = None,
     start_y: int | None = None,
-) -> list[tuple[object, int, int]]:
+) -> list[tuple[OP, int, int]]:
     """Lay out *nodes* in a top-to-bottom column.
 
     Uses :func:`get_bounds` to account for docked operators.
@@ -165,7 +169,7 @@ def layout_grid(
     start_x: int | None = None,
     start_y: int | None = None,
     cols: int | None = None,
-) -> list[tuple[object, int, int]]:
+) -> list[tuple[OP, int, int]]:
     """Lay out *nodes* in a grid, row by row.
 
     *cols* defaults to ``ceil(sqrt(len(nodes)))``.
