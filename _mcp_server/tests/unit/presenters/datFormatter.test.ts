@@ -321,5 +321,114 @@ describe("datFormatter", () => {
 			const result = formatLintDats(undefined);
 			expect(result).toContain("Batch lint returned no data.");
 		});
+
+		it("should show fallback when no summary", () => {
+			const data: LintDats200Data = {
+				parentPath: "/project1",
+			};
+			const result = formatLintDats(data);
+			expect(result).toContain("no summary available");
+			expect(result).toContain("/project1");
+		});
+	});
+
+	describe("formatLintDat — minimal mode", () => {
+		it("should omit diagnostic details in minimal mode", () => {
+			const data: LintDat200Data = {
+				applied: true,
+				diagnosticCount: 2,
+				diagnostics: [
+					{
+						code: "F401",
+						column: 1,
+						fixable: true,
+						line: 1,
+						message: "unused import",
+					},
+					{
+						code: "E711",
+						column: 5,
+						fixable: false,
+						line: 3,
+						message: "comparison to None",
+					},
+				],
+				fixed: true,
+				name: "script1",
+				path: "/project1/script1",
+				remainingDiagnosticCount: 1,
+				remainingDiagnostics: [
+					{
+						code: "E711",
+						column: 5,
+						fixable: false,
+						line: 3,
+						message: "comparison to None",
+					},
+				],
+			};
+
+			const result = formatLintDat(data, { detailLevel: "minimal" });
+
+			expect(result).toContain("2 issue(s)");
+			expect(result).toContain("Auto-fix applied.");
+			expect(result).toContain("Remaining after fix: 1");
+			// Minimal mode should not include inline diagnostic lines
+			expect(result).not.toContain("L1:1");
+			expect(result).not.toContain("L3:5");
+		});
+	});
+
+	describe("formatLintDats — detailed with diagnostics", () => {
+		it("should include per-DAT results in detailed output", () => {
+			const data: LintDats200Data = {
+				parentPath: "/project1",
+				results: [
+					{
+						diagnosticCount: 1,
+						diagnostics: [
+							{
+								code: "F401",
+								column: 1,
+								fixable: true,
+								line: 1,
+								message: "unused import",
+							},
+						],
+						name: "script1",
+						path: "/project1/script1",
+					},
+					{
+						diagnosticCount: 0,
+						diagnostics: [],
+						name: "clean_script",
+						path: "/project1/clean_script",
+					},
+					{
+						diagnosticCount: 0,
+						error: "parse error",
+						name: "broken_script",
+						path: "/project1/broken_script",
+					},
+				],
+				summary: {
+					datsClean: 1,
+					datsWithErrors: 2,
+					fixableCount: 1,
+					manualCount: 0,
+					totalDatsScanned: 3,
+					totalIssues: 1,
+				},
+			};
+
+			const result = formatLintDats(data, { detailLevel: "detailed" });
+
+			// Detailed mode serializes via YAML template — check data is present
+			expect(result).toContain("clean_script");
+			expect(result).toContain("broken_script");
+			expect(result).toContain("parse error");
+			expect(result).toContain("F401");
+			expect(result).toContain("unused import");
+		});
 	});
 });

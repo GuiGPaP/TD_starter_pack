@@ -17,6 +17,119 @@ import {
 
 type FormatterOpts = Pick<FormatterOptions, "detailLevel" | "responseFormat">;
 
+// ── Lint helpers ───────────────────────────────────────────────
+
+interface Diagnostic {
+	line?: number;
+	column?: number;
+	code?: string;
+	message?: string;
+	fixable?: boolean;
+	severity?: string;
+}
+
+function formatDiagnosticLine(d: Diagnostic): string {
+	const loc = `L${d.line ?? "?"}:${d.column ?? "?"}`;
+	const fixable = d.fixable ? " (fixable)" : "";
+	return `  ${loc} ${d.code ?? ""} ${d.message ?? ""}${fixable}`;
+}
+
+function pushDiagnostics(lines: string[], diagnostics: Diagnostic[]): void {
+	for (const d of diagnostics) {
+		lines.push(formatDiagnosticLine(d));
+	}
+}
+
+function pushLintFixOutcome(lines: string[], data: LintDat200Data): void {
+	if (data.applied === false && data.diff) {
+		lines.push("[DRY RUN] Fix preview:");
+		lines.push(data.diff);
+	} else if (data.applied === true || data.fixed) {
+		lines.push("Auto-fix applied.");
+	}
+}
+
+function pushRemainingDiagnostics(
+	lines: string[],
+	data: LintDat200Data,
+	isMinimal: boolean,
+): void {
+	if (data.remainingDiagnosticCount === undefined) return;
+
+	if (data.remainingDiagnosticCount > 0) {
+		lines.push(
+			`Remaining after fix: ${data.remainingDiagnosticCount} issue(s)`,
+		);
+		if (data.remainingDiagnostics && !isMinimal) {
+			pushDiagnostics(lines, data.remainingDiagnostics as Diagnostic[]);
+		}
+	} else if (data.remainingDiagnosticCount === 0 && data.fixed) {
+		lines.push("0 remaining issues after fix.");
+	}
+}
+
+// ── Batch lint helpers ─────────────────────────────────────────
+
+function pushBatchSummary(
+	lines: string[],
+	parentPath: string,
+	summary: NonNullable<LintDats200Data["summary"]>,
+): void {
+	lines.push(
+		`Batch lint: ${parentPath} — ${summary.totalDatsScanned ?? 0} DAT(s) scanned`,
+	);
+	lines.push(
+		`  Issues: ${summary.totalIssues ?? 0} (fixable: ${summary.fixableCount ?? 0}, manual: ${summary.manualCount ?? 0})`,
+	);
+	lines.push(
+		`  DATs with errors: ${summary.datsWithErrors ?? 0}, clean: ${summary.datsClean ?? 0}`,
+	);
+	if (summary.bySeverity) {
+		const sev = summary.bySeverity;
+		lines.push(
+			`  Severity: errors=${sev.error ?? 0}, warnings=${sev.warning ?? 0}, info=${sev.info ?? 0}`,
+		);
+	}
+}
+
+function pushWorstOffenders(
+	lines: string[],
+	offenders: NonNullable<
+		NonNullable<LintDats200Data["summary"]>["worstOffenders"]
+	>,
+): void {
+	lines.push("  Worst offenders:");
+	for (const [i, w] of offenders.entries()) {
+		lines.push(
+			`    ${i + 1}. ${w.path ?? w.name ?? "?"} (${w.diagnosticCount ?? 0} issues)`,
+		);
+	}
+}
+
+function pushBatchDetailedResults(
+	lines: string[],
+	results: NonNullable<LintDats200Data["results"]>,
+): void {
+	lines.push("");
+	for (const r of results) {
+		const count = r.diagnosticCount ?? 0;
+		if (count === 0 && !r.error) {
+			lines.push(`  \u2713 ${r.path ?? r.name ?? "?"}: clean`);
+			continue;
+		}
+		if (r.error) {
+			lines.push(`  \u2717 ${r.path ?? r.name ?? "?"}: ${r.error}`);
+			continue;
+		}
+		lines.push(`  ${r.path ?? r.name ?? "?"}: ${count} issue(s)`);
+		if (r.diagnostics) {
+			pushDiagnostics(lines, r.diagnostics as Diagnostic[]);
+		}
+	}
+}
+
+// ── Exported formatters ────────────────────────────────────────
+
 export function formatDatText(
 	data: GetDatText200Data | undefined,
 	options?: FormatterOpts,
@@ -90,44 +203,14 @@ export function formatLintDat(
 		});
 	}
 
+	const isMinimal = opts.detailLevel === "minimal";
 	const lines = [`${path}: ${count} issue(s)`];
-	if (data.diagnostics && opts.detailLevel !== "minimal") {
-		for (const d of data.diagnostics) {
-			const loc = `L${d.line ?? "?"}:${d.column ?? "?"}`;
-			const fixable = d.fixable ? " (fixable)" : "";
-			lines.push(`  ${loc} ${d.code ?? ""} ${d.message ?? ""}${fixable}`);
-		}
-	}
-	if (data.applied === false && data.diff) {
-		lines.push("[DRY RUN] Fix preview:");
-		lines.push(data.diff);
-	} else if (data.applied === true) {
-		lines.push("Auto-fix applied.");
-	} else if (data.fixed) {
-		lines.push("Auto-fix applied.");
-	}
 
-	if (
-		data.remainingDiagnosticCount !== undefined &&
-		data.remainingDiagnosticCount > 0
-	) {
-		lines.push(
-			`Remaining after fix: ${data.remainingDiagnosticCount} issue(s)`,
-		);
-		if (data.remainingDiagnostics && opts.detailLevel !== "minimal") {
-			for (const d of data.remainingDiagnostics) {
-				const loc = `L${d.line ?? "?"}:${d.column ?? "?"}`;
-				const fixable = d.fixable ? " (fixable)" : "";
-				lines.push(`  ${loc} ${d.code ?? ""} ${d.message ?? ""}${fixable}`);
-			}
-		}
-	} else if (
-		data.remainingDiagnosticCount !== undefined &&
-		data.remainingDiagnosticCount === 0 &&
-		data.fixed
-	) {
-		lines.push("0 remaining issues after fix.");
+	if (data.diagnostics && !isMinimal) {
+		pushDiagnostics(lines, data.diagnostics as Diagnostic[]);
 	}
+	pushLintFixOutcome(lines, data);
+	pushRemainingDiagnostics(lines, data, isMinimal);
 
 	return finalizeFormattedText(lines.join("\n"), opts, {
 		context: { path, title: "DAT Lint" },
@@ -236,57 +319,18 @@ export function formatLintDats(
 	}
 
 	const lines: string[] = [];
-	lines.push(
-		`Batch lint: ${parentPath} — ${summary.totalDatsScanned ?? 0} DAT(s) scanned`,
-	);
-	lines.push(
-		`  Issues: ${summary.totalIssues ?? 0} (fixable: ${summary.fixableCount ?? 0}, manual: ${summary.manualCount ?? 0})`,
-	);
-	lines.push(
-		`  DATs with errors: ${summary.datsWithErrors ?? 0}, clean: ${summary.datsClean ?? 0}`,
-	);
-
-	if (summary.bySeverity) {
-		const sev = summary.bySeverity;
-		lines.push(
-			`  Severity: errors=${sev.error ?? 0}, warnings=${sev.warning ?? 0}, info=${sev.info ?? 0}`,
-		);
-	}
+	pushBatchSummary(lines, parentPath, summary);
 
 	if (
 		summary.worstOffenders &&
 		summary.worstOffenders.length > 0 &&
 		opts.detailLevel !== "minimal"
 	) {
-		lines.push("  Worst offenders:");
-		for (const [i, w] of summary.worstOffenders.entries()) {
-			lines.push(
-				`    ${i + 1}. ${w.path ?? w.name ?? "?"} (${w.diagnosticCount ?? 0} issues)`,
-			);
-		}
+		pushWorstOffenders(lines, summary.worstOffenders);
 	}
 
 	if (data.results && opts.detailLevel === "detailed") {
-		lines.push("");
-		for (const r of data.results) {
-			const count = r.diagnosticCount ?? 0;
-			if (count === 0 && !r.error) {
-				lines.push(`  \u2713 ${r.path ?? r.name ?? "?"}: clean`);
-				continue;
-			}
-			if (r.error) {
-				lines.push(`  \u2717 ${r.path ?? r.name ?? "?"}: ${r.error}`);
-				continue;
-			}
-			lines.push(`  ${r.path ?? r.name ?? "?"}: ${count} issue(s)`);
-			if (r.diagnostics) {
-				for (const d of r.diagnostics) {
-					const loc = `L${d.line ?? "?"}:${d.column ?? "?"}`;
-					const fixable = d.fixable ? " (fixable)" : "";
-					lines.push(`    ${loc} ${d.code ?? ""} ${d.message ?? ""}${fixable}`);
-				}
-			}
-		}
+		pushBatchDetailedResults(lines, data.results);
 	}
 
 	return finalizeFormattedText(lines.join("\n"), opts, {
