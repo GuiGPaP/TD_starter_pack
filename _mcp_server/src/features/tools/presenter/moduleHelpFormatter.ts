@@ -253,6 +253,13 @@ function extractHelpSections(helpText: string): string[] {
 	return sections;
 }
 
+function addUnique(items: string[], seen: Set<string>, name: string): void {
+	if (!seen.has(name)) {
+		seen.add(name);
+		items.push(name);
+	}
+}
+
 function extractModuleMembers(helpText: string): ModuleHelpMembers {
 	const methods: string[] = [];
 	const properties: string[] = [];
@@ -265,33 +272,24 @@ function extractModuleMembers(helpText: string): ModuleHelpMembers {
 		const trimmed = line.trim();
 		if (!trimmed) continue;
 
-		const normalized = trimmed.replace(/^\|/, "").trim();
-		const headerMatch = normalized.match(/^(.*?):$/);
+		const headerMatch = trimmed
+			.replace(/^\|/, "")
+			.trim()
+			.match(/^(.*?):$/);
 		if (headerMatch) {
-			const newCategory = categorizeSection(headerMatch[1]);
-			if (newCategory) {
-				currentCategory = newCategory;
-			}
+			currentCategory = categorizeSection(headerMatch[1]) ?? currentCategory;
 			continue;
 		}
 
 		if (!currentCategory) continue;
 
 		const entryMatch = trimmed.match(/^\|\s{2,4}([A-Za-z_][\w]*)/);
-		if (!entryMatch) continue;
-		const name = entryMatch[1];
-		if (!name) continue;
+		if (!entryMatch?.[1]) continue;
 
 		if (currentCategory === "method") {
-			if (!seenMethods.has(name)) {
-				seenMethods.add(name);
-				methods.push(name);
-			}
-		} else if (currentCategory === "property") {
-			if (!seenProperties.has(name)) {
-				seenProperties.add(name);
-				properties.push(name);
-			}
+			addUnique(methods, seenMethods, entryMatch[1]);
+		} else {
+			addUnique(properties, seenProperties, entryMatch[1]);
 		}
 	}
 
@@ -304,77 +302,72 @@ interface ClassSummary {
 	methodResolutionOrder?: string[];
 }
 
+function findClassDefinition(
+	lines: string[],
+): { definition: string; startIndex: number } | undefined {
+	for (let i = 0; i < lines.length; i++) {
+		const defMatch = lines[i].trim().match(/^class\s+(.+)$/);
+		if (defMatch) return { definition: defMatch[1], startIndex: i + 1 };
+	}
+	return undefined;
+}
+
+function collectDescription(
+	lines: string[],
+	startIndex: number,
+): { lines: string[]; endIndex: number } {
+	const result: string[] = [];
+	for (let i = startIndex; i < lines.length; i++) {
+		const trimmed = lines[i].trim();
+		if (!trimmed || trimmed.startsWith("|  Methods defined here:")) {
+			return { endIndex: i, lines: result };
+		}
+		if (trimmed.startsWith("|")) {
+			const desc = trimmed.replace(/^\|\s*/, "");
+			if (desc) result.push(desc);
+		}
+	}
+	return { endIndex: lines.length, lines: result };
+}
+
+function collectMro(lines: string[], startIndex: number): string[] {
+	const entries: string[] = [];
+	for (let i = startIndex; i < lines.length; i++) {
+		const trimmed = lines[i].trim();
+		if (!trimmed.startsWith("|")) break;
+		const entry = trimmed.replace(/^\|\s*/, "").trim();
+		if (entry) entries.push(entry);
+	}
+	return entries;
+}
+
 function extractClassSummary(helpText: string): ClassSummary | undefined {
 	const lines = helpText.split("\n");
-	let definition: string | undefined;
-	const descriptionLines: string[] = [];
-	const methodResolutionOrder: string[] = [];
-	let inDescription = false;
-	let inMro = false;
 
+	const defResult = findClassDefinition(lines);
+	const definition = defResult?.definition;
+	const descResult = defResult
+		? collectDescription(lines, defResult.startIndex)
+		: undefined;
+	const descriptionLines = descResult?.lines ?? [];
+
+	// Find MRO section
+	let mro: string[] = [];
 	for (let i = 0; i < lines.length; i++) {
-		const raw = lines[i];
-		const trimmed = raw.trim();
-
-		if (!definition) {
-			const defMatch = trimmed.match(/^class\s+(.+)$/);
-			if (defMatch) {
-				definition = defMatch[1];
-				inDescription = true;
-				continue;
-			}
-		}
-
-		if (inDescription) {
-			if (!trimmed || trimmed.startsWith("|  Methods defined here:")) {
-				inDescription = false;
-				continue; // Skip further processing of this line
-			}
-			if (trimmed.startsWith("|")) {
-				const desc = trimmed.replace(/^\|\s*/, "");
-				if (desc) {
-					descriptionLines.push(desc);
-				}
-			}
-		}
-
-		if (trimmed.startsWith("|  Method resolution order:")) {
-			inMro = true;
-			continue;
-		}
-
-		if (inMro) {
-			if (!trimmed.startsWith("|")) {
-				// MRO section ended - fall through to the exit check below
-				inMro = false;
-			} else {
-				const entry = trimmed.replace(/^\|\s*/, "");
-				if (entry) {
-					methodResolutionOrder.push(entry.trim());
-				}
-			}
-		}
-
-		// Exit early once we have collected the MRO and we're done with both sections
-		if (methodResolutionOrder.length > 0 && !inMro && !inDescription) {
+		if (lines[i].trim().startsWith("|  Method resolution order:")) {
+			mro = collectMro(lines, i + 1);
 			break;
 		}
 	}
 
-	if (
-		!definition &&
-		descriptionLines.length === 0 &&
-		methodResolutionOrder.length === 0
-	) {
+	if (!definition && descriptionLines.length === 0 && mro.length === 0) {
 		return undefined;
 	}
 
 	return {
 		definition,
 		description: descriptionLines.slice(0, 3).join(" "),
-		methodResolutionOrder: methodResolutionOrder.length
-			? methodResolutionOrder
-			: undefined,
+		methodResolutionOrder: mro.length ? mro : undefined,
 	};
 }
 

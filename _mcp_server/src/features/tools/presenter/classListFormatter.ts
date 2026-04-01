@@ -179,6 +179,45 @@ function formatClassDetailsMinimal(data: ClassDetailsData) {
 	};
 }
 
+function formatMethodSection(
+	methods: ClassDetailsData["methods"] & unknown[],
+	limited: typeof methods,
+	truncated: boolean,
+): string {
+	if (limited.length === 0) return "";
+	let text = `\nMETHODS (${methods.length}):\n`;
+	for (const method of limited) {
+		const sig = method.signature || `${method.name}()`;
+		const doc = method.description
+			? ` - ${method.description.split("\n")[0]}`
+			: "";
+		text += `  • ${sig}${doc}\n`;
+	}
+	if (truncated) {
+		text += `  💡 ${methods.length - limited.length} more methods omitted.\n`;
+	}
+	return text;
+}
+
+function formatPropertySection(
+	properties: ClassDetailsData["properties"] & unknown[],
+	limited: typeof properties,
+	truncated: boolean,
+): string {
+	if (limited.length === 0) return "";
+	let text = `\nPROPERTIES (${properties.length}):\n`;
+	for (const prop of limited) {
+		const typeInfo = prop.type ? `: ${prop.type}` : "";
+		const valueInfo =
+			prop.value !== undefined ? ` = ${JSON.stringify(prop.value)}` : "";
+		text += `  • ${prop.name}${typeInfo}${valueInfo}\n`;
+	}
+	if (truncated) {
+		text += `  💡 ${properties.length - limited.length} more properties omitted.\n`;
+	}
+	return text;
+}
+
 function formatClassDetailsSummary(data: ClassDetailsData, limit?: number) {
 	const methods = data.methods || [];
 	const properties = data.properties || [];
@@ -197,33 +236,8 @@ function formatClassDetailsSummary(data: ClassDetailsData, limit?: number) {
 	if (data.description) {
 		text += `\n${data.description}\n`;
 	}
-
-	if (limitedMethods.length > 0) {
-		text += `\nMETHODS (${methods.length}):\n`;
-		for (const method of limitedMethods) {
-			const sig = method.signature || `${method.name}()`;
-			const doc = method.description
-				? ` - ${method.description.split("\n")[0]}`
-				: "";
-			text += `  • ${sig}${doc}\n`;
-		}
-		if (methodsTruncated) {
-			text += `  💡 ${methods.length - limitedMethods.length} more methods omitted.\n`;
-		}
-	}
-
-	if (limitedProps.length > 0) {
-		text += `\nPROPERTIES (${properties.length}):\n`;
-		for (const prop of limitedProps) {
-			const typeInfo = prop.type ? `: ${prop.type}` : "";
-			const valueInfo =
-				prop.value !== undefined ? ` = ${JSON.stringify(prop.value)}` : "";
-			text += `  • ${prop.name}${typeInfo}${valueInfo}\n`;
-		}
-		if (propsTruncated) {
-			text += `  💡 ${properties.length - limitedProps.length} more properties omitted.\n`;
-		}
-	}
+	text += formatMethodSection(methods, limitedMethods, methodsTruncated);
+	text += formatPropertySection(properties, limitedProps, propsTruncated);
 
 	return {
 		context: {
