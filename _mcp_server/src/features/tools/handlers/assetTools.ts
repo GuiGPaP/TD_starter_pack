@@ -74,6 +74,140 @@ const deployAssetSchema = detailOnlyFormattingSchema.extend({
 });
 type DeployAssetParams = z.input<typeof deployAssetSchema>;
 
+// --- Deploy helpers ---
+
+type ToolResponse = {
+	content: Array<{ text: string; type: "text" }>;
+	isError?: boolean;
+};
+
+function validateAssetForDeploy(
+	registry: AssetRegistry,
+	id: string,
+	parentPath: string,
+): ToolResponse | undefined {
+	if (parentPath === "/") {
+		return {
+			content: [
+				{
+					text: 'Cannot deploy to root "/". Specify a valid parent path (e.g., /project1).',
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	const asset = registry.getById(id);
+	if (!asset) {
+		return {
+			content: [
+				{
+					text: `Asset not found: "${id}". Use search_td_assets to discover available assets.`,
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	if (asset.manifest.kind !== "tox-asset") {
+		return {
+			content: [
+				{
+					text: `Asset "${id}" is kind "${asset.manifest.kind}" and cannot be deployed. Only tox-asset kind is deployable.`,
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	if (asset.source !== "builtin") {
+		return {
+			content: [
+				{
+					text: `Asset "${id}" is from source "${asset.source}". Custom asset deployment requires explicit trust. See Epic 11.`,
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	if (!asset.toxPath) {
+		return {
+			content: [
+				{
+					text: `Asset "${id}" has no .tox file available.`,
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	return undefined;
+}
+
+async function executeAssetDeploy(
+	tdClient: TouchDesignerClient,
+	registry: AssetRegistry,
+	id: string,
+	containerName: string,
+	parentPath: string,
+	force: boolean,
+): Promise<{
+	assetId: string;
+	message?: string;
+	path?: string;
+	status: string;
+}> {
+	const asset = registry.getById(id)!;
+	// Manifest is narrowed to tox-asset by validateAssetForDeploy
+	const manifest = asset.manifest as Extract<
+		typeof asset.manifest,
+		{ kind: "tox-asset" }
+	>;
+	const scriptOpts = {
+		containerName,
+		manifest,
+		parentPath,
+		toxPath: asset.toxPath!,
+	};
+	const script = force
+		? generateForceDeployScript({ ...scriptOpts, force: true })
+		: generateDeployScript(scriptOpts);
+
+	const scriptResult = await tdClient.execPythonScript<{ result: string }>({
+		script,
+	});
+	if (!scriptResult.success) throw scriptResult.error;
+
+	try {
+		return JSON.parse(scriptResult.data.result as string);
+	} catch {
+		throw new Error(
+			`Failed to parse deploy script result: ${String(scriptResult.data.result)}`,
+		);
+	}
+}
+
+async function appendDeployNodeWarnings(
+	tdClient: TouchDesignerClient,
+	deployResult: { message?: string; path?: string; status: string },
+): Promise<void> {
+	if (deployResult.status !== "deployed" || !deployResult.path) return;
+	try {
+		const errResult = await tdClient.getNodeErrors({
+			nodePath: deployResult.path,
+		});
+		if (errResult.success && errResult.data) {
+			const errors = errResult.data.errors ?? [];
+			if (errors.length > 0) {
+				deployResult.message = `${deployResult.message ?? "Deployed"} — WARNING: ${errors.length} error(s) detected in deployed component`;
+			}
+		}
+	} catch {
+		/* non-critical */
+	}
+}
+
 // --- Registration ---
 
 export function registerAssetTools(
@@ -178,74 +312,20 @@ export function registerAssetTools(
 						responseFormat,
 					} = params;
 
-					// Validate root path
-					if (parentPath === "/") {
-						return {
-							content: [
-								{
-									text: 'Cannot deploy to root "/". Specify a valid parent path (e.g., /project1).',
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
+					const validationError = validateAssetForDeploy(
+						registry,
+						id,
+						parentPath,
+					);
+					if (validationError) return validationError;
 
-					// Look up asset
-					const asset = registry.getById(id);
-					if (!asset) {
-						return {
-							content: [
-								{
-									text: `Asset not found: "${id}". Use search_td_assets to discover available assets.`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
-					if (asset.manifest.kind !== "tox-asset") {
-						return {
-							content: [
-								{
-									text: `Asset "${id}" is kind "${asset.manifest.kind}" and cannot be deployed. Only tox-asset kind is deployable.`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
-					// Trust enforcement: only builtin assets are deployable in Phase 1
-					if (asset.source !== "builtin") {
-						return {
-							content: [
-								{
-									text: `Asset "${id}" is from source "${asset.source}". Custom asset deployment requires explicit trust. See Epic 11.`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
-					if (!asset.toxPath) {
-						return {
-							content: [
-								{
-									text: `Asset "${id}" has no .tox file available.`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
-					const manifest = asset.manifest;
+					const asset = registry.getById(id)!;
+					const manifest = asset.manifest as Extract<
+						typeof asset.manifest,
+						{ kind: "tox-asset" }
+					>;
 					const containerName = customName ?? manifest.deploy.containerName;
 
-					// Dry run
 					if (dryRun) {
 						const text = formatDeployResult(
 							{
@@ -259,57 +339,15 @@ export function registerAssetTools(
 						return { content: [{ text, type: "text" as const }] };
 					}
 
-					// Generate and execute script
-					const scriptOpts = {
+					const deployResult = await executeAssetDeploy(
+						tdClient,
+						registry,
+						id,
 						containerName,
-						manifest,
 						parentPath,
-						toxPath: asset.toxPath,
-					};
-
-					const script = force
-						? generateForceDeployScript({ ...scriptOpts, force: true })
-						: generateDeployScript(scriptOpts);
-
-					const scriptResult = await tdClient.execPythonScript<{
-						result: string;
-					}>({ script });
-
-					if (!scriptResult.success) {
-						throw scriptResult.error;
-					}
-
-					// Parse the result from the Python script
-					let deployResult: {
-						assetId: string;
-						message?: string;
-						path?: string;
-						status: string;
-					};
-					try {
-						deployResult = JSON.parse(scriptResult.data.result as string);
-					} catch {
-						throw new Error(
-							`Failed to parse deploy script result: ${String(scriptResult.data.result)}`,
-						);
-					}
-
-					// Post-check: get node errors if deployed successfully
-					if (deployResult.status === "deployed" && deployResult.path) {
-						try {
-							const errResult = await tdClient.getNodeErrors({
-								nodePath: deployResult.path,
-							});
-							if (errResult.success && errResult.data) {
-								const errors = errResult.data.errors ?? [];
-								if (errors.length > 0) {
-									deployResult.message = `${deployResult.message ?? "Deployed"} — WARNING: ${errors.length} error(s) detected in deployed component`;
-								}
-							}
-						} catch {
-							// Non-critical — skip error check
-						}
-					}
+						force ?? false,
+					);
+					await appendDeployNodeWarnings(tdClient, deployResult);
 
 					const text = formatDeployResult(deployResult, {
 						detailLevel,
