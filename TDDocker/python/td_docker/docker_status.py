@@ -93,10 +93,7 @@ def start_docker_desktop() -> str:
         return _start_windows()
     if system == "Darwin":
         return _start_macos()
-    return (
-        "Auto-launch is not supported on this platform. "
-        "Please start Docker manually."
-    )
+    return "Auto-launch is not supported on this platform. " "Please start Docker manually."
 
 
 def _start_windows() -> str:
@@ -107,16 +104,12 @@ def _start_windows() -> str:
                 # CREATE_NEW_PROCESS_GROUP so it doesn't die with TD
                 subprocess.Popen(
                     [path],
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-                    | subprocess.DETACHED_PROCESS,
+                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS,
                     stdin=subprocess.DEVNULL,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
-                return (
-                    f"Docker Desktop launching from {path}. "
-                    "It may take 15-30s to be ready."
-                )
+                return f"Docker Desktop launching from {path}. " "It may take 15-30s to be ready."
             except OSError as e:
                 return f"Failed to launch Docker Desktop: {e}"
 
@@ -137,10 +130,7 @@ def _start_macos() -> str:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            return (
-                "Docker Desktop launching. "
-                "It may take 15-30s to be ready."
-            )
+            return "Docker Desktop launching. " "It may take 15-30s to be ready."
         except OSError as e:
             return f"Failed to launch Docker Desktop: {e}"
 

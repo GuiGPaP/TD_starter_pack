@@ -116,7 +116,9 @@ def watchdog_loop(
     """
     logger.info(
         "Watchdog started — monitoring PID %d, session %s, dir %s",
-        td_pid, session_id, compose_dir,
+        td_pid,
+        session_id,
+        compose_dir,
     )
     _clear_shutdown_signal(compose_dir)
 
@@ -153,9 +155,12 @@ def spawn_watchdog(
     cmd = [
         sys.executable,
         __file__,
-        "--pid", str(td_pid),
-        "--session", session_id,
-        "--compose-dir", str(compose_dir),
+        "--pid",
+        str(td_pid),
+        "--session",
+        session_id,
+        "--compose-dir",
+        str(compose_dir),
     ]
 
     kwargs: dict = {
@@ -189,9 +194,12 @@ def cleanup_orphans() -> list[str]:
     try:
         result = subprocess.run(
             [
-                "docker", "ps",
-                "--filter", "label=td.managed=true",
-                "--format", "{{json .}}",
+                "docker",
+                "ps",
+                "--filter",
+                "label=td.managed=true",
+                "--format",
+                "{{json .}}",
             ],
             capture_output=True,
             text=True,

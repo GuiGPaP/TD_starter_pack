@@ -42,7 +42,7 @@ class OscBridge:
 # TD Callback Script — injected into a textDAT at runtime
 # ---------------------------------------------------------------------------
 
-CALLBACK_SCRIPT = '''\
+CALLBACK_SCRIPT = """\
 import sys
 import os
 
@@ -70,4 +70,4 @@ def onReceiveOSC(dat, rowIndex, message, bytes, timeStamp, address, args, peer):
     if log:
         args_str = ', '.join(str(a) for a in args)
         log.text += f'[{bridge.service_name}] OSC {address} [{args_str}]\\n'
-'''
+"""

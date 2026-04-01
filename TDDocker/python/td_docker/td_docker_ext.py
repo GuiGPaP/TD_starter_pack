@@ -68,25 +68,25 @@ class ProjectState:
 _STATE_COLORS: dict[str, dict[str, tuple[float, float, float]]] = {
     "running": {"comp": (0.2, 0.6, 0.2), "bg": (0.05, 0.15, 0.05), "fg": (0.3, 0.9, 0.3)},
     "created": {"comp": (0.4, 0.4, 0.4), "bg": (0.15, 0.15, 0.15), "fg": (0.6, 0.6, 0.6)},
-    "paused":  {"comp": (0.7, 0.6, 0.1), "bg": (0.15, 0.12, 0.02), "fg": (0.9, 0.8, 0.2)},
-    "exited":  {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
-    "dead":    {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
+    "paused": {"comp": (0.7, 0.6, 0.1), "bg": (0.15, 0.12, 0.02), "fg": (0.9, 0.8, 0.2)},
+    "exited": {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
+    "dead": {"comp": (0.7, 0.2, 0.2), "bg": (0.15, 0.05, 0.05), "fg": (0.9, 0.3, 0.3)},
 }
 
 # RGB (0-255) for Text COMP inline formatting codes
 _FMT_COLORS: dict[str, str] = {
-    "running":   "100,220,100",
-    "healthy":   "100,220,100",
-    "created":   "160,160,160",
-    "loaded":    "160,160,160",
-    "paused":    "220,200,50",
-    "starting":  "220,200,50",
-    "exited":    "220,80,80",
-    "dead":      "220,80,80",
-    "error":     "220,80,80",
+    "running": "100,220,100",
+    "healthy": "100,220,100",
+    "created": "160,160,160",
+    "loaded": "160,160,160",
+    "paused": "220,200,50",
+    "starting": "220,200,50",
+    "exited": "220,80,80",
+    "dead": "220,80,80",
+    "error": "220,80,80",
     "unhealthy": "220,140,50",
-    "online":    "100,220,100",
-    "offline":   "220,80,80",
+    "online": "100,220,100",
+    "offline": "220,80,80",
 }
 
 
@@ -105,9 +105,13 @@ class TDDockerExt:
     """
 
     _TRANSPORT_PARAMS = (
-        "Oscenable", "Oscinport", "Oscoutport",
-        "Wsenable", "Wsport",
-        "Ndienable", "Ndisource",
+        "Oscenable",
+        "Oscinport",
+        "Oscoutport",
+        "Wsenable",
+        "Wsport",
+        "Ndienable",
+        "Ndisource",
     )
 
     def __init__(self, ownerComp):
@@ -168,9 +172,7 @@ class TDDockerExt:
         if self.ownerComp.op("projects"):
             return
         projects_dat = self.ownerComp.create("tableDAT", "projects")
-        projects_dat.appendRow(
-            ["project_name", "compose_path", "session_id", "status"]
-        )
+        projects_dat.appendRow(["project_name", "compose_path", "session_id", "status"])
         projects_dat.nodeX = 400
         projects_dat.nodeY = 0
         projects_dat.viewer = True
@@ -244,18 +246,11 @@ class TDDockerExt:
         if not containers_comp:
             return
         for i, comp in enumerate(containers_comp.children):
-            if (
-                hasattr(comp.par, "Datatransport")
-                and not hasattr(comp.par, "Oscenable")
-            ):
+            if hasattr(comp.par, "Datatransport") and not hasattr(comp.par, "Oscenable"):
                 project_name = (
-                    comp.par.Projectname.eval()
-                    if hasattr(comp.par, "Projectname") else ""
+                    comp.par.Projectname.eval() if hasattr(comp.par, "Projectname") else ""
                 )
-                svc_name = (
-                    comp.par.Servicename.eval()
-                    if hasattr(comp.par, "Servicename") else ""
-                )
+                svc_name = comp.par.Servicename.eval() if hasattr(comp.par, "Servicename") else ""
                 self._init_container_comp(comp, project_name, svc_name, {}, i)
             elif hasattr(comp.par, "Oscenable"):
                 # Assign default ports if still at zero
@@ -289,10 +284,7 @@ class TDDockerExt:
 
             compose_path = Path(compose_str)
             if not compose_path.exists():
-                self._log(
-                    f"Restore skipped '{project_name}': "
-                    f"{compose_str} not found"
-                )
+                self._log(f"Restore skipped '{project_name}': " f"{compose_str} not found")
                 continue
 
             # Parse services from compose file
@@ -318,7 +310,10 @@ class TDDockerExt:
                     if comp:
                         # Re-run init to migrate old params → new toggles
                         self._init_container_comp(
-                            comp, project_name, svc_name, svc_cfg,
+                            comp,
+                            project_name,
+                            svc_name,
+                            svc_cfg,
                         )
                         if hasattr(comp.par, "Ndienable"):
                             ndi_enabled = bool(comp.par.Ndienable.eval())
@@ -357,7 +352,8 @@ class TDDockerExt:
         if not containers_comp:
             return
         paths = [
-            c.path for c in containers_comp.children
+            c.path
+            for c in containers_comp.children
             if hasattr(c, "par") and hasattr(c.par, "Oscenable")
         ]
         if not paths:
@@ -382,12 +378,14 @@ class TDDockerExt:
         dat.clear()
         dat.appendRow(["project_name", "compose_path", "session_id", "status"])
         for proj in self._projects.values():
-            dat.appendRow([
-                proj.name,
-                str(proj.compose_path),
-                proj.session_id,
-                proj.status,
-            ])
+            dat.appendRow(
+                [
+                    proj.name,
+                    str(proj.compose_path),
+                    proj.session_id,
+                    proj.status,
+                ]
+            )
 
     def _update_active_menu(self) -> None:
         """Update the Activeproject menu with current project names."""
@@ -423,7 +421,7 @@ class TDDockerExt:
         # Test-only: when _sync_mode is True, run inline instead of
         # spawning a thread.  This exists solely for unit tests that
         # need deterministic execution order.  Never set in production.
-        if getattr(self, '_sync_mode', False):
+        if getattr(self, "_sync_mode", False):
             try:
                 target(*args)
                 if success_hook:
@@ -596,10 +594,7 @@ class TDDockerExt:
 
         if getattr(status, "cli_missing", False):
             pop.Open(
-                text=(
-                    "Docker is not installed.\n\n"
-                    "Install Docker Desktop to use TDDocker."
-                ),
+                text=("Docker is not installed.\n\n" "Install Docker Desktop to use TDDocker."),
                 title="TDDocker",
                 buttons=["Download", "Cancel"],
                 callback=self._on_docker_install_popup,
@@ -609,10 +604,7 @@ class TDDockerExt:
             )
         else:
             pop.Open(
-                text=(
-                    "Docker Desktop is not running.\n\n"
-                    "Start Docker Desktop?"
-                ),
+                text=("Docker Desktop is not running.\n\n" "Start Docker Desktop?"),
                 title="TDDocker",
                 buttons=["Start Docker", "Cancel"],
                 callback=self._on_docker_start_popup,
@@ -687,9 +679,7 @@ class TDDockerExt:
 
         # Create project state with service configs
         session_id = uuid.uuid4().hex[:12]
-        service_configs = {
-            svc_name: ServiceOverlay(ndi_enabled=False) for svc_name in services
-        }
+        service_configs = {svc_name: ServiceOverlay(ndi_enabled=False) for svc_name in services}
         project = ProjectState(
             name=project_name,
             compose_path=compose_path,
@@ -718,7 +708,11 @@ class TDDockerExt:
             if containers_comp.op(comp_name):
                 continue
             self._create_container_comp(
-                containers_comp, comp_name, project_name, svc_name, svc_cfg,
+                containers_comp,
+                comp_name,
+                project_name,
+                svc_name,
+                svc_cfg,
                 existing_count + i,
             )
 
@@ -729,7 +723,9 @@ class TDDockerExt:
         )
         try:
             project.overlay_path = write_overlay(
-                compose_path, config, output_dir=project.compose_dir,
+                compose_path,
+                config,
+                output_dir=project.compose_dir,
             )
             self._log(f"Overlay written: {project.overlay_path}")
         except ValueError as e:
@@ -795,14 +791,11 @@ class TDDockerExt:
                     self._update_projects_table()
                 elif result:
                     self._log(
-                        f"ERROR: compose up failed for '{project.name}':\n"
-                        f"{result.stderr}"
+                        f"ERROR: compose up failed for '{project.name}':\n" f"{result.stderr}"
                     )
 
             def _on_except(*args):
-                self._log(
-                    f"ERROR: compose up exception for '{project.name}': {args}"
-                )
+                self._log(f"ERROR: compose up exception for '{project.name}': {args}")
 
             self._enqueue_task(
                 target=_target,
@@ -852,8 +845,7 @@ class TDDockerExt:
                 self._log(f"Project '{project.name}' stopped")
             elif result:
                 self._log(
-                    f"WARNING: compose down issues for '{project.name}':\n"
-                    f"{result.stderr}"
+                    f"WARNING: compose down issues for '{project.name}':\n" f"{result.stderr}"
                 )
 
             project.watchdog_pid = None
@@ -973,9 +965,7 @@ class TDDockerExt:
     # NDI overlay regeneration
     # ------------------------------------------------------------------
 
-    def NotifyNdiChanged(
-        self, project_name: str, svc_name: str, enabled: bool
-    ) -> None:
+    def NotifyNdiChanged(self, project_name: str, svc_name: str, enabled: bool) -> None:
         """Called by container ext when NDI transport is toggled.
 
         Args:
@@ -1000,7 +990,9 @@ class TDDockerExt:
         )
         try:
             project.overlay_path = write_overlay(
-                project.compose_path, config, output_dir=project.compose_dir,
+                project.compose_path,
+                config,
+                output_dir=project.compose_dir,
             )
         except ValueError as e:
             self._log(f"ERROR regenerating overlay for '{project.name}': {e}")
@@ -1018,8 +1010,7 @@ class TDDockerExt:
                 self._log(f"Overlay regenerated for '{project.name}'")
             elif result:
                 self._log(
-                    f"WARNING: overlay reapply failed for '{project.name}': "
-                    f"{result.stderr}"
+                    f"WARNING: overlay reapply failed for '{project.name}': " f"{result.stderr}"
                 )
 
         self._enqueue_task(target=_worker, success_hook=_on_success)
@@ -1031,11 +1022,11 @@ class TDDockerExt:
     def _spawn_watchdog(self, project: ProjectState) -> None:
         td_pid = os.getpid()
         project.watchdog_pid = spawn_watchdog(
-            td_pid, project.session_id, project.compose_dir,
+            td_pid,
+            project.session_id,
+            project.compose_dir,
         )
-        self._log(
-            f"Watchdog spawned for '{project.name}' (PID {project.watchdog_pid})"
-        )
+        self._log(f"Watchdog spawned for '{project.name}' (PID {project.watchdog_pid})")
 
     def _cleanup_orphans(self) -> None:
         removed = cleanup_orphans()
@@ -1069,9 +1060,11 @@ class TDDockerExt:
     ) -> None:
         """Create a container COMP for a service using the template."""
         # Try to load from template TOX, fall back to creating a base COMP
-        template_path = self.ownerComp.par.Containertemplate.eval() if hasattr(
-            self.ownerComp.par, "Containertemplate"
-        ) else ""
+        template_path = (
+            self.ownerComp.par.Containertemplate.eval()
+            if hasattr(self.ownerComp.par, "Containertemplate")
+            else ""
+        )
 
         if template_path and Path(template_path).exists():
             comp = parent_comp.loadTox(template_path)
@@ -1088,7 +1081,11 @@ class TDDockerExt:
         self._init_container_comp(comp, project_name, svc_name, svc_cfg, index)
 
     def _init_container_comp(
-        self, comp, project_name: str, svc_name: str, svc_cfg: dict,
+        self,
+        comp,
+        project_name: str,
+        svc_name: str,
+        svc_cfg: dict,
         index: int = 0,
     ) -> None:
         """Initialize custom parameters on a container COMP."""
@@ -1097,28 +1094,26 @@ class TDDockerExt:
         # Create custom parameter pages if they don't exist
         if not comp.customPages:
             info_page = comp.appendCustomPage("Info")
-            info_page.appendStr("Projectname", label="Project Name")[
-                0
-            ].val = project_name
-            info_page.appendStr("Servicename", label="Service Name")[
-                0
-            ].val = svc_name
+            info_page.appendStr("Projectname", label="Project Name")[0].val = project_name
+            info_page.appendStr("Servicename", label="Service Name")[0].val = svc_name
             info_page.appendStr("Image", label="Image")[0].val = image
             info_page.appendStr("Containerid", label="Container ID")[0].val = ""
-            ports_str = ", ".join(
-                str(p) for p in svc_cfg.get("ports", [])
-            )
+            ports_str = ", ".join(str(p) for p in svc_cfg.get("ports", []))
             p = info_page.appendStr("Ports", label="Ports")[0]
             p.val = ports_str
             p.readOnly = True
             _add_menu(
-                info_page, "State", "State",
+                info_page,
+                "State",
+                "State",
                 ["created", "running", "paused", "exited", "dead"],
                 ["Created", "Running", "Paused", "Exited", "Dead"],
                 "created",
             )
             _add_menu(
-                info_page, "Health", "Health",
+                info_page,
+                "Health",
+                "Health",
                 ["none", "healthy", "unhealthy"],
                 ["None", "Healthy", "Unhealthy"],
                 "none",
@@ -1133,17 +1128,11 @@ class TDDockerExt:
             transport_page = comp.appendCustomPage("Transport")
             # OSC — unique ports per container (base 9000)
             transport_page.appendToggle("Oscenable", label="OSC")[0].val = False
-            transport_page.appendInt("Oscinport", label="OSC In Port")[
-                0
-            ].val = 9000 + index * 2
-            transport_page.appendInt("Oscoutport", label="OSC Out Port")[
-                0
-            ].val = 9001 + index * 2
+            transport_page.appendInt("Oscinport", label="OSC In Port")[0].val = 9000 + index * 2
+            transport_page.appendInt("Oscoutport", label="OSC Out Port")[0].val = 9001 + index * 2
             # WebSocket — unique port per container (base 8080)
             transport_page.appendToggle("Wsenable", label="WebSocket")[0].val = False
-            transport_page.appendInt("Wsport", label="WS Port")[
-                0
-            ].val = 8080 + index
+            transport_page.appendInt("Wsport", label="WS Port")[0].val = 8080 + index
             # NDI
             transport_page.appendToggle("Ndienable", label="NDI")[0].val = False
             transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
@@ -1161,9 +1150,7 @@ class TDDockerExt:
                 comp.par.Image = image
             # Update ports from YAML
             if hasattr(comp.par, "Ports"):
-                comp.par.Ports = ", ".join(
-                    str(p) for p in svc_cfg.get("ports", [])
-                )
+                comp.par.Ports = ", ".join(str(p) for p in svc_cfg.get("ports", []))
 
         # Migrate old Transport page (Datatransport/Videotransport) to toggles
         if hasattr(comp.par, "Datatransport") and not hasattr(comp.par, "Oscenable"):
@@ -1175,23 +1162,23 @@ class TDDockerExt:
             # Recreate with new toggle layout
             transport_page = comp.appendCustomPage("Transport")
             transport_page.appendToggle("Oscenable", label="OSC")[0].val = False
-            transport_page.appendInt("Oscinport", label="OSC In Port")[
-                0
-            ].val = 9000 + index * 2
-            transport_page.appendInt("Oscoutport", label="OSC Out Port")[
-                0
-            ].val = 9001 + index * 2
+            transport_page.appendInt("Oscinport", label="OSC In Port")[0].val = 9000 + index * 2
+            transport_page.appendInt("Oscoutport", label="OSC Out Port")[0].val = 9001 + index * 2
             transport_page.appendToggle("Wsenable", label="WebSocket")[0].val = False
-            transport_page.appendInt("Wsport", label="WS Port")[
-                0
-            ].val = 8080 + index
+            transport_page.appendInt("Wsport", label="WS Port")[0].val = 8080 + index
             transport_page.appendToggle("Ndienable", label="NDI")[0].val = False
             transport_page.appendStr("Ndisource", label="NDI Source")[0].val = ""
             self._sync_transport_enables(comp)
             # Clean up old/stale transport operators
-            for op_name in ("data_in", "osc_data", "ws_data",
-                            "osc_callbacks", "ws_callbacks",
-                            "osc_in_callbacks", "websocket_dat_callbacks"):
+            for op_name in (
+                "data_in",
+                "osc_data",
+                "ws_data",
+                "osc_callbacks",
+                "ws_callbacks",
+                "osc_in_callbacks",
+                "websocket_dat_callbacks",
+            ):
                 old_op = comp.op(op_name)
                 if old_op:
                     old_op.destroy()
@@ -1212,16 +1199,11 @@ class TDDockerExt:
             )
             ext_dat.viewer = True
         comp.par.ext = 1
-        comp.par.ext0object = (
-            f"op('{comp.path}/td_container_ext').module.TDContainerExt(me)"
-        )
+        comp.par.ext0object = f"op('{comp.path}/td_container_ext').module.TDContainerExt(me)"
         comp.par.ext0promote = True
 
         # Parameter execute DAT — routes pulse/value callbacks to extension
-        _pars_str = (
-            "Start Stop Restart Logs "
-            "Oscenable Wsenable Ndienable Ndisource"
-        )
+        _pars_str = "Start Stop Restart Logs " "Oscenable Wsenable Ndienable Ndisource"
         pe = comp.op("parexec1")
         if not pe:
             pe = comp.create("parameterexecuteDAT", "parexec1")
@@ -1282,10 +1264,7 @@ class TDDockerExt:
             "Ndienable": ("Ndisource",),
         }
         for toggle, pars in toggles.items():
-            enabled = bool(
-                hasattr(comp.par, toggle)
-                and comp.par[toggle].eval()
-            )
+            enabled = bool(hasattr(comp.par, toggle) and comp.par[toggle].eval())
             for p in pars:
                 if hasattr(comp.par, p):
                     comp.par[p].enable = enabled
@@ -1294,30 +1273,36 @@ class TDDockerExt:
     def _layout_container_ops(comp) -> None:
         """Position internal operators in a tidy grid."""
         # Remove stale operators from old transport implementations
-        for stale in ("data_in", "osc_data", "ws_data",
-                       "osc_callbacks", "ws_callbacks",
-                       "osc_in_callbacks", "websocket_dat_callbacks"):
+        for stale in (
+            "data_in",
+            "osc_data",
+            "ws_data",
+            "osc_callbacks",
+            "ws_callbacks",
+            "osc_in_callbacks",
+            "websocket_dat_callbacks",
+        ):
             old = comp.op(stale)
             if old:
                 old.destroy()
 
         layout = {
             # Row 1: display + log
-            "status_display":        (0, 0),
-            "log_dat":               (200, 0),
+            "status_display": (0, 0),
+            "log_dat": (200, 0),
             # Row 2: extension + parexec
-            "td_container_ext":      (0, -200),
-            "parexec1":              (200, -200),
+            "td_container_ext": (0, -200),
+            "parexec1": (200, -200),
             # Row 3: transport operators
-            "osc_in":                (0, -400),
-            "osc_out":               (200, -400),
-            "websocket_dat":         (400, -400),
+            "osc_in": (0, -400),
+            "osc_out": (200, -400),
+            "websocket_dat": (400, -400),
             # Row 4: callbacks (under their operator)
-            "oscin_callbacks":       (0, -600),
-            "websocket_callbacks":   (400, -600),
+            "oscin_callbacks": (0, -600),
+            "websocket_callbacks": (400, -600),
             # Row 5: video transports
-            "video_in":              (0, -800),
-            "video_out":             (200, -800),
+            "video_in": (0, -800),
+            "video_out": (200, -800),
         }
         for name, (x, y) in layout.items():
             op_node = comp.op(name)
@@ -1385,21 +1370,9 @@ class TDDockerExt:
             proj_all_running = True
 
             for comp in comps:
-                svc = (
-                    comp.par.Servicename.eval()
-                    if hasattr(comp.par, "Servicename")
-                    else "?"
-                )
-                state = (
-                    comp.par.State.eval()
-                    if hasattr(comp.par, "State")
-                    else "created"
-                )
-                health = (
-                    comp.par.Health.eval()
-                    if hasattr(comp.par, "Health")
-                    else "none"
-                )
+                svc = comp.par.Servicename.eval() if hasattr(comp.par, "Servicename") else "?"
+                state = comp.par.State.eval() if hasattr(comp.par, "State") else "created"
+                health = comp.par.Health.eval() if hasattr(comp.par, "Health") else "none"
                 if state in ("exited", "dead") or health == "unhealthy":
                     proj_has_error = True
                 if state != "running":
@@ -1435,9 +1408,7 @@ class TDDockerExt:
             folder = "\U0001f4c1"
             dash = "\u2014"
             dot = "\u2022"
-            lines.append(
-                _fc(proj_color, f"{folder} {proj_name} {dash} {proj_label}")
-            )
+            lines.append(_fc(proj_color, f"{folder} {proj_name} {dash} {proj_label}"))
             for i, (svc, indicator, color_key) in enumerate(svc_entries):
                 is_last = i == len(svc_entries) - 1
                 svc_text = f"{svc} {dot} {indicator}"
@@ -1452,10 +1423,10 @@ class TDDockerExt:
 
         # Set colors based on worst state
         color_map = {
-            "none":    _STATE_COLORS["created"],
-            "loaded":  _STATE_COLORS["paused"],
+            "none": _STATE_COLORS["created"],
+            "loaded": _STATE_COLORS["paused"],
             "running": _STATE_COLORS["running"],
-            "error":   _STATE_COLORS["exited"],
+            "error": _STATE_COLORS["exited"],
         }
         colors = color_map.get(worst_state, _STATE_COLORS["created"])
         txt.par.fontcolorr, txt.par.fontcolorg, txt.par.fontcolorb = colors["fg"]
@@ -1468,9 +1439,9 @@ class TDDockerExt:
         if not containers_comp:
             return []
         return [
-            child for child in containers_comp.children
-            if hasattr(child.par, "Projectname")
-            and child.par.Projectname.eval() == project_name
+            child
+            for child in containers_comp.children
+            if hasattr(child.par, "Projectname") and child.par.Projectname.eval() == project_name
         ]
 
     def _destroy_project_comps(self, project_name: str) -> None:
@@ -1482,10 +1453,7 @@ class TDDockerExt:
         """Save transport params from all COMPs of a project before destruction."""
         cache: dict[str, dict] = {}
         for comp in self._get_project_comps(project_name):
-            svc = (
-                comp.par.Servicename.eval()
-                if hasattr(comp.par, "Servicename") else ""
-            )
+            svc = comp.par.Servicename.eval() if hasattr(comp.par, "Servicename") else ""
             if not svc:
                 continue
             params = {}
@@ -1497,7 +1465,10 @@ class TDDockerExt:
             self._transport_cache[project_name] = cache
 
     def _restore_transport_cache(
-        self, comp, project_name: str, svc_name: str,
+        self,
+        comp,
+        project_name: str,
+        svc_name: str,
     ) -> None:
         """Restore cached transport params onto a freshly created COMP."""
         cached = self._transport_cache.get(project_name, {}).get(svc_name)
@@ -1565,9 +1536,7 @@ class TDDockerExt:
         """Stop the polling loop."""
         self._polling_active = False
 
-    def _poll_worker(
-        self, project_sessions: list[tuple[str, str]]
-    ) -> None:
+    def _poll_worker(self, project_sessions: list[tuple[str, str]]) -> None:
         """Run ``compose_ps`` in a worker thread for each active project.
 
         Stores the result in ``_poll_result`` — safe because
@@ -1611,9 +1580,7 @@ class TDDockerExt:
         if self._poll_in_flight:
             return
         active = [
-            (name, p.session_id)
-            for name, p in self._projects.items()
-            if p.status == "running"
+            (name, p.session_id) for name, p in self._projects.items() if p.status == "running"
         ]
         if not active:
             return
@@ -1666,9 +1633,7 @@ class TDDockerExt:
         for proj_name, statuses in data.items():
             self._apply_project_poll(proj_name, statuses)
 
-    def _apply_project_poll(
-        self, project_name: str, data: list[dict]
-    ) -> None:
+    def _apply_project_poll(self, project_name: str, data: list[dict]) -> None:
         """Apply parsed compose_ps results to a single project's COMPs."""
         comps = self._get_project_comps(project_name)
         if not comps:
@@ -1677,11 +1642,7 @@ class TDDockerExt:
         status_map = {d["service"]: d for d in data}
 
         for child in comps:
-            svc_name = (
-                child.par.Servicename.eval()
-                if hasattr(child.par, "Servicename")
-                else ""
-            )
+            svc_name = child.par.Servicename.eval() if hasattr(child.par, "Servicename") else ""
             if svc_name in status_map:
                 st = status_map[svc_name]
                 if hasattr(child.par, "Containerid"):
@@ -1712,37 +1673,15 @@ class TDDockerExt:
         if not status_dat:
             return
         status_dat.clear()
-        status_dat.appendRow(
-            ["project", "service", "state", "health", "container_id", "image"]
-        )
+        status_dat.appendRow(["project", "service", "state", "health", "container_id", "image"])
         for proj_name in self._projects:
             comps = self._get_project_comps(proj_name)
             for comp in comps:
-                svc = (
-                    comp.par.Servicename.eval()
-                    if hasattr(comp.par, "Servicename")
-                    else ""
-                )
-                state = (
-                    comp.par.State.eval()
-                    if hasattr(comp.par, "State")
-                    else "loaded"
-                )
-                health = (
-                    comp.par.Health.eval()
-                    if hasattr(comp.par, "Health")
-                    else ""
-                )
-                cid = (
-                    comp.par.Containerid.eval()
-                    if hasattr(comp.par, "Containerid")
-                    else ""
-                )
-                img = (
-                    comp.par.Image.eval()
-                    if hasattr(comp.par, "Image")
-                    else ""
-                )
+                svc = comp.par.Servicename.eval() if hasattr(comp.par, "Servicename") else ""
+                state = comp.par.State.eval() if hasattr(comp.par, "State") else "loaded"
+                health = comp.par.Health.eval() if hasattr(comp.par, "Health") else ""
+                cid = comp.par.Containerid.eval() if hasattr(comp.par, "Containerid") else ""
+                img = comp.par.Image.eval() if hasattr(comp.par, "Image") else ""
                 status_dat.appendRow([proj_name, svc, state, health, cid, img])
 
         self._update_orchestrator_display()
@@ -1848,8 +1787,5 @@ class TDDockerExt:
 
     def destroy(self) -> None:
         """Called when the COMP is destroyed or TD is closing."""
-        if (
-            hasattr(self.ownerComp.par, "Autoshutdown")
-            and self.ownerComp.par.Autoshutdown
-        ):
+        if hasattr(self.ownerComp.par, "Autoshutdown") and self.ownerComp.par.Autoshutdown:
             self._down_all()

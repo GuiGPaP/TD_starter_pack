@@ -179,8 +179,10 @@ def compose_up(
 ) -> ComposeResult:
     """Run `docker compose up` with the user file and TD overlay."""
     args = [
-        "-f", str(user_yaml_path),
-        "-f", str(overlay_path),
+        "-f",
+        str(user_yaml_path),
+        "-f",
+        str(overlay_path),
         "up",
     ]
     if detach:

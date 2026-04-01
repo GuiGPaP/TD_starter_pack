@@ -77,16 +77,15 @@ class TDContainerExt:
             if result and result.ok:
                 self._log(f"Container {action_name}")
             elif result and "No such container" in result.stderr:
-                self._log(
-                    "ERROR: Container no longer exists — press Rebuild on TDDocker"
-                )
+                self._log("ERROR: Container no longer exists — press Rebuild on TDDocker")
             elif result:
                 self._log(f"ERROR {action_name}: {result.stderr}")
             self._refresh_orchestrator()
 
         if orchestrator and hasattr(orchestrator.ext, "TDDockerExt"):
             orchestrator.ext.TDDockerExt._enqueue_task(
-                target=_worker, success_hook=_on_success,
+                target=_worker,
+                success_hook=_on_success,
             )
         else:
             _worker()
@@ -143,7 +142,8 @@ class TDContainerExt:
 
         if orchestrator and hasattr(orchestrator.ext, "TDDockerExt"):
             orchestrator.ext.TDDockerExt._enqueue_task(
-                target=_worker, success_hook=_on_success,
+                target=_worker,
+                success_hook=_on_success,
             )
         else:
             _worker()
@@ -184,8 +184,7 @@ class TDContainerExt:
     def _configure_osc(self) -> None:
         """Create or destroy OSC operators based on Oscenable toggle."""
         enabled = bool(
-            hasattr(self.ownerComp.par, "Oscenable")
-            and self.ownerComp.par.Oscenable.eval()
+            hasattr(self.ownerComp.par, "Oscenable") and self.ownerComp.par.Oscenable.eval()
         )
 
         # Tear down
@@ -214,8 +213,7 @@ class TDContainerExt:
     def _configure_websocket(self) -> None:
         """Create or destroy WebSocket operators based on Wsenable toggle."""
         enabled = bool(
-            hasattr(self.ownerComp.par, "Wsenable")
-            and self.ownerComp.par.Wsenable.eval()
+            hasattr(self.ownerComp.par, "Wsenable") and self.ownerComp.par.Wsenable.eval()
         )
 
         # Tear down
@@ -242,8 +240,7 @@ class TDContainerExt:
     def _configure_ndi(self) -> None:
         """Create or destroy NDI operators based on Ndienable toggle."""
         enabled = bool(
-            hasattr(self.ownerComp.par, "Ndienable")
-            and self.ownerComp.par.Ndienable.eval()
+            hasattr(self.ownerComp.par, "Ndienable") and self.ownerComp.par.Ndienable.eval()
         )
 
         # Notify orchestrator when disabling
@@ -276,9 +273,11 @@ class TDContainerExt:
         """Update NDI In source name when parameter changes."""
         ndi_in = self.ownerComp.op("video_in")
         if ndi_in and hasattr(ndi_in.par, "sourcename"):
-            source = self.ownerComp.par.Ndisource.eval() if hasattr(
-                self.ownerComp.par, "Ndisource"
-            ) else ""
+            source = (
+                self.ownerComp.par.Ndisource.eval()
+                if hasattr(self.ownerComp.par, "Ndisource")
+                else ""
+            )
             ndi_in.par.sourcename = source
 
     def _notify_ndi_enabled(self, enabled: bool) -> None:
@@ -293,9 +292,7 @@ class TDContainerExt:
         if hasattr(self.ownerComp.par, "Projectname"):
             project_name = self.ownerComp.par.Projectname.eval()
         if svc_name and project_name:
-            orchestrator.ext.TDDockerExt.NotifyNdiChanged(
-                project_name, svc_name, enabled
-            )
+            orchestrator.ext.TDDockerExt.NotifyNdiChanged(project_name, svc_name, enabled)
 
     def _sync_enables_and_layout(self) -> None:
         """Grey out sub-params and re-layout operators after toggle change."""

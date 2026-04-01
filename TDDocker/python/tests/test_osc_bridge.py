@@ -58,7 +58,10 @@ class TestHeaderForArgs:
 
     def test_three_args(self) -> None:
         assert OscBridge.header_for_args(3) == [
-            "address", "arg0", "arg1", "arg2",
+            "address",
+            "arg0",
+            "arg1",
+            "arg2",
         ]
 
     def test_one_arg(self) -> None:

@@ -31,14 +31,16 @@ class ValidationIssue:
 # Deny-lists
 # ---------------------------------------------------------------------------
 
-_BLOCKED_CAPS: frozenset[str] = frozenset({
-    "SYS_ADMIN",
-    "SYS_PTRACE",
-    "NET_ADMIN",
-    "NET_RAW",
-    "SYS_RAWIO",
-    "SYS_MODULE",
-})
+_BLOCKED_CAPS: frozenset[str] = frozenset(
+    {
+        "SYS_ADMIN",
+        "SYS_PTRACE",
+        "NET_ADMIN",
+        "NET_RAW",
+        "SYS_RAWIO",
+        "SYS_MODULE",
+    }
+)
 
 _BLOCKED_VOLUME_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"^/var/run/docker\.sock"),
