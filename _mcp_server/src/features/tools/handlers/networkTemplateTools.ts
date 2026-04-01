@@ -91,6 +91,116 @@ function matchesTemplateQuery(
 	return true;
 }
 
+// --- Deploy helpers ---
+
+interface TemplateDeployResult {
+	connections: number;
+	errors: string[];
+	operators: string[];
+	parameters: number;
+	parentPath: string;
+	templateId: string;
+}
+
+function pushCreateOperatorLines(
+	lines: string[],
+	operators: TDTemplateEntry["payload"]["operators"],
+): void {
+	for (const op of operators) {
+		const x = op.x ?? 0;
+		const y = op.y ?? 0;
+		lines.push(
+			"try:",
+			`    n = parent_node.create("${op.opType}", "${op.name}")`,
+			`    n.nodeX = ${x}`,
+			`    n.nodeY = ${y}`,
+			`    created_ops["${op.name}"] = n`,
+			"except Exception as e:",
+			`    errors.append(f"Failed to create ${op.name}: {e}")`,
+			"",
+		);
+	}
+}
+
+function pushConnectionLines(
+	lines: string[],
+	connections: TDTemplateEntry["payload"]["connections"],
+): void {
+	lines.push("# Wire connections", "conn_count = 0");
+	for (const c of connections) {
+		lines.push(
+			"try:",
+			`    from_op = created_ops.get("${c.from}")`,
+			`    to_op = created_ops.get("${c.to}")`,
+			"    if from_op and to_op:",
+			`        to_op.inputConnectors[${c.toInput}].connect(from_op.outputConnectors[${c.fromOutput}])`,
+			"        conn_count += 1",
+			"except Exception as e:",
+			`    errors.append(f"Failed to connect ${c.from} -> ${c.to}: {e}")`,
+			"",
+		);
+	}
+}
+
+function pushParameterLines(
+	lines: string[],
+	parameters: Record<string, unknown> | undefined,
+): void {
+	lines.push("# Set parameters", "param_count = 0");
+	if (!parameters) return;
+	for (const [opName, params] of Object.entries(parameters)) {
+		for (const [parName, parValue] of Object.entries(
+			params as Record<string, unknown>,
+		)) {
+			lines.push(
+				"try:",
+				`    n = created_ops.get("${opName}")`,
+				`    if n and hasattr(n.par, "${parName}"):`,
+				`        n.par.${parName}.val = ${JSON.stringify(parValue)}`,
+				"        param_count += 1",
+				"except Exception as e:",
+				`    errors.append(f"Failed to set ${opName}.${parName}: {e}")`,
+				"",
+			);
+		}
+	}
+}
+
+function buildTemplateDeployScript(
+	template: TDTemplateEntry,
+	parentPath: string,
+	templateId: string,
+): string {
+	const p = template.payload;
+	const lines: string[] = [
+		`parent_path = "${parentPath}"`,
+		"parent_node = op(parent_path)",
+		"if parent_node is None or not parent_node.valid:",
+		`    raise ValueError(f"Parent COMP not found: {parent_path}")`,
+		"if not parent_node.isCOMP:",
+		`    raise ValueError(f"Target must be a COMP: {parent_path}")`,
+		"",
+		"created_ops = {}",
+		"errors = []",
+		"",
+		"# Create operators",
+	];
+	pushCreateOperatorLines(lines, p.operators);
+	pushConnectionLines(lines, p.connections);
+	pushParameterLines(lines, p.parameters);
+	lines.push(
+		"result = {",
+		`    "templateId": "${templateId}",`,
+		`    "parentPath": parent_path,`,
+		`    "operators": [f"{parent_path}/{name}" for name in created_ops],`,
+		`    "connections": conn_count,`,
+		`    "parameters": param_count,`,
+		`    "errors": errors,`,
+		"}",
+	);
+	return lines.join("\n");
+}
+
 // --- Registration ---
 
 export function registerNetworkTemplateTools(
@@ -190,106 +300,18 @@ export function registerNetworkTemplateTools(
 						};
 					}
 
-					const template = entry as TDTemplateEntry;
-					const p = template.payload;
-
-					// Build deploy script
-					const scriptLines: string[] = [
-						`parent_path = "${params.parentPath}"`,
-						"parent_node = op(parent_path)",
-						"if parent_node is None or not parent_node.valid:",
-						`    raise ValueError(f"Parent COMP not found: {parent_path}")`,
-						"if not parent_node.isCOMP:",
-						`    raise ValueError(f"Target must be a COMP: {parent_path}")`,
-						"",
-						"created_ops = {}",
-						"errors = []",
-						"",
-						"# Create operators",
-					];
-
-					for (const op of p.operators) {
-						const x = op.x ?? 0;
-						const y = op.y ?? 0;
-						scriptLines.push(
-							"try:",
-							`    n = parent_node.create("${op.opType}", "${op.name}")`,
-							`    n.nodeX = ${x}`,
-							`    n.nodeY = ${y}`,
-							`    created_ops["${op.name}"] = n`,
-							"except Exception as e:",
-							`    errors.append(f"Failed to create ${op.name}: {e}")`,
-							"",
-						);
-					}
-
-					scriptLines.push("# Wire connections", "conn_count = 0");
-					for (const c of p.connections) {
-						scriptLines.push(
-							"try:",
-							`    from_op = created_ops.get("${c.from}")`,
-							`    to_op = created_ops.get("${c.to}")`,
-							"    if from_op and to_op:",
-							`        to_op.inputConnectors[${c.toInput}].connect(from_op.outputConnectors[${c.fromOutput}])`,
-							"        conn_count += 1",
-							"except Exception as e:",
-							`    errors.append(f"Failed to connect ${c.from} -> ${c.to}: {e}")`,
-							"",
-						);
-					}
-
-					scriptLines.push("# Set parameters", "param_count = 0");
-					if (p.parameters) {
-						for (const [opName, params] of Object.entries(p.parameters)) {
-							for (const [parName, parValue] of Object.entries(
-								params as Record<string, unknown>,
-							)) {
-								scriptLines.push(
-									"try:",
-									`    n = created_ops.get("${opName}")`,
-									`    if n and hasattr(n.par, "${parName}"):`,
-									`        n.par.${parName}.val = ${JSON.stringify(parValue)}`,
-									"        param_count += 1",
-									"except Exception as e:",
-									`    errors.append(f"Failed to set ${opName}.${parName}: {e}")`,
-									"",
-								);
-							}
-						}
-					}
-
-					scriptLines.push(
-						"result = {",
-						`    "templateId": "${params.id}",`,
-						`    "parentPath": parent_path,`,
-						`    "operators": [f"{parent_path}/{name}" for name in created_ops],`,
-						`    "connections": conn_count,`,
-						`    "parameters": param_count,`,
-						`    "errors": errors,`,
-						"}",
+					const script = buildTemplateDeployScript(
+						entry as TDTemplateEntry,
+						params.parentPath,
+						params.id,
 					);
-
-					const script = scriptLines.join("\n");
 					const execResult = await tdClient.execPythonScript({
 						mode: "full-exec",
 						script,
 					});
+					if (!execResult.success) throw execResult.error;
 
-					if (!execResult.success) {
-						throw execResult.error;
-					}
-
-					const data = execResult.data as {
-						result?: {
-							connections: number;
-							errors: string[];
-							operators: string[];
-							parameters: number;
-							parentPath: string;
-							templateId: string;
-						};
-					};
-
+					const data = execResult.data as { result?: TemplateDeployResult };
 					const deployResult = data?.result ?? {
 						connections: 0,
 						errors: ["No result returned from deploy script"],
@@ -303,7 +325,6 @@ export function registerNetworkTemplateTools(
 						detailLevel: params.detailLevel ?? "summary",
 						responseFormat: params.responseFormat,
 					});
-
 					return { content: [{ text, type: "text" as const }] };
 				} catch (error) {
 					return handleToolError(
