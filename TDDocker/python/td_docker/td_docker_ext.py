@@ -145,60 +145,77 @@ class TDDockerExt:
     # Multi-project setup
     # ------------------------------------------------------------------
 
+    def _find_page(self, name: str):
+        """Return the custom page with *name*, or ``None``."""
+        for page in self.ownerComp.customPages:
+            if page.name == name:
+                return page
+        return None
+
     def _setup_multi_project(self) -> None:
         """Create the projects table DAT and new parameters if missing."""
-        # Projects table
-        projects_dat = self.ownerComp.op("projects")
-        if not projects_dat:
-            projects_dat = self.ownerComp.create("tableDAT", "projects")
-            projects_dat.appendRow(
-                ["project_name", "compose_path", "session_id", "status"]
-            )
-            projects_dat.nodeX = 400
-            projects_dat.nodeY = 0
-            projects_dat.viewer = True
+        self._ensure_projects_table()
+        self._ensure_active_project_menu()
+        self._ensure_action_pulses()
+        self._ensure_library_page()
+        self._ensure_status_display()
+        self._ensure_poll_script()
+        self._scan_library()
+        self._update_orchestrator_display()
 
-        # Add Activeproject menu if missing
-        if not hasattr(self.ownerComp.par, "Activeproject"):
-            config_page = None
-            for page in self.ownerComp.customPages:
-                if page.name == "Config":
-                    config_page = page
-                    break
-            if config_page:
-                _add_menu(
-                    config_page, "Activeproject", "Active Project", [], [], ""
-                )
+    def _ensure_projects_table(self) -> None:
+        """Create the ``projects`` tableDAT if it doesn't exist."""
+        if self.ownerComp.op("projects"):
+            return
+        projects_dat = self.ownerComp.create("tableDAT", "projects")
+        projects_dat.appendRow(
+            ["project_name", "compose_path", "session_id", "status"]
+        )
+        projects_dat.nodeX = 400
+        projects_dat.nodeY = 0
+        projects_dat.viewer = True
 
-        # Add new action pulses if missing
-        if not hasattr(self.ownerComp.par, "Removeproject"):
-            actions_page = None
-            for page in self.ownerComp.customPages:
-                if page.name == "Actions":
-                    actions_page = page
-                    break
-            if actions_page:
-                actions_page.appendPulse("Removeproject", label="Remove Project")
-                actions_page.appendPulse("Upall", label="Up All")
-                actions_page.appendPulse("Downall", label="Down All")
+    def _ensure_active_project_menu(self) -> None:
+        """Add the ``Activeproject`` menu parameter to the Config page."""
+        if hasattr(self.ownerComp.par, "Activeproject"):
+            return
+        config_page = self._find_page("Config")
+        if config_page:
+            _add_menu(config_page, "Activeproject", "Active Project", [], [], "")
 
-        # Library page — folder, project menu, load pulse
-        if not hasattr(self.ownerComp.par, "Library"):
-            lib_page = None
-            for page in self.ownerComp.customPages:
-                if page.name == "Library":
-                    lib_page = page
-                    break
-            if not lib_page:
-                lib_page = self.ownerComp.appendCustomPage("Library")
+    def _ensure_action_pulses(self) -> None:
+        """Add ``Removeproject``, ``Upall``, ``Downall`` pulses to the Actions page."""
+        par = self.ownerComp.par
+        pulses = [
+            ("Removeproject", "Remove Project"),
+            ("Upall", "Up All"),
+            ("Downall", "Down All"),
+        ]
+        missing = [(n, lb) for n, lb in pulses if not hasattr(par, n)]
+        if not missing:
+            return
+        actions_page = self._find_page("Actions")
+        if actions_page:
+            for name, label in missing:
+                actions_page.appendPulse(name, label=label)
+
+    def _ensure_library_page(self) -> None:
+        """Set up the Library page with folder, project menu, and pulses."""
+        par = self.ownerComp.par
+        lib_page = self._find_page("Library")
+        if not lib_page:
+            lib_page = self.ownerComp.appendCustomPage("Library")
+        if not hasattr(par, "Library"):
             lib_page.appendFolder("Library", label="Library Folder")
-            _add_menu(
-                lib_page, "Libraryproject", "Project", [], [], ""
-            )
+        if not hasattr(par, "Libraryproject"):
+            _add_menu(lib_page, "Libraryproject", "Project", [], [], "")
+        if not hasattr(par, "Scanlibrary"):
             lib_page.appendPulse("Scanlibrary", label="Scan Library")
+        if not hasattr(par, "Loadfromlibrary"):
             lib_page.appendPulse("Loadfromlibrary", label="Load from Library")
 
-        # Orchestrator status display (textCOMP for rich formatting)
+    def _ensure_status_display(self) -> None:
+        """Create or replace the orchestrator ``status_display`` textCOMP."""
         sd = self.ownerComp.op("status_display")
         if sd and sd.OPType != "textCOMP":
             sd.destroy()
@@ -215,16 +232,6 @@ class TDDockerExt:
             sd.nodeY = 100
             sd.viewer = True
         self.ownerComp.par.opviewer = sd
-
-        # Create the poll_script DAT — it auto-starts a per-frame
-        # flush loop so deferred callbacks always execute.
-        self._ensure_poll_script()
-
-        # Auto-scan library on init
-        self._scan_library()
-
-        # Initial display
-        self._update_orchestrator_display()
 
     def _migrate_container_comps(self) -> None:
         """Migrate existing container COMPs from old params to new toggles.
