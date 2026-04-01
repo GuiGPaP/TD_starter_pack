@@ -32,6 +32,8 @@
 - Framework: Vitest (unit/integration). MSW mocks are available.
 - For compatibility or TD client related issues, please update or add existing test cases.
 - For new tests, name them in `tests/unit/*.test.ts` or `tests/integration/*.test.ts`.
+- **Live tests** (`*.live.test.ts`) require a running TD + MCP web server. They are excluded from `npx vitest run` and run via `npm run test:integration:live` with a dedicated `vitest.live.config.ts` (serialized via `fileParallelism: false`).
+- Live test sandbox is created at `/` (project-agnostic — works on any `.toe` with the MCP web server).
 
 ## Commits and Pull Requests
 

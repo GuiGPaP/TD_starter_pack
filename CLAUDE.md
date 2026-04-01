@@ -32,6 +32,7 @@ When working with TouchDesigner, pick the right skill:
 
 - **Build:** `cd _mcp_server && npm run build`
 - **Test:** `cd _mcp_server && npm test`
+- **Live E2E:** `cd _mcp_server && npm run test:integration:live` (requires TD + Docker running)
 - **Toolkit data** (`_mcp_server/data/td-knowledge/toolkits/`) is gitignored — populated via live TD introspection, not committed.
 - **History:** Previously a submodule of `GuiGPaP/touchdesigner-mcp` (branch `td-starter-pack`). Inlined as of 2026-03-26.
 

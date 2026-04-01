@@ -30,9 +30,9 @@ TDDocker/
     │       ├── __init__.py         # Re-exports WebSocketBridge, OscBridge
     │       ├── websocket.py        # WS bridge (parse, state, reconnect)
     │       └── osc.py              # OSC bridge (parse address+args)
-    └── tests/                      # 85 tests, no Docker required
+    └── tests/                      # 106 tests, no Docker required
         ├── test_validator.py       # 19 tests
-        ├── test_compose.py         # 8 tests
+        ├── test_compose.py         # 10 tests (overlay + _run_compose)
         ├── test_watchdog.py        # 9 tests
         ├── test_docker_status.py   # 12 tests
         ├── test_ndi_regen.py       # 6 tests
@@ -200,8 +200,32 @@ The validator (`validator.py`) enforces a deny-list before any Docker operation:
 
 ## Testing
 
-- **Unit tests** (`python/tests/`): 85 tests, pure Python, no Docker needed
-- **OSC integration test**: `Tests/test-compose.yml` (osc-test service) + `docker/osc-test/` — bidirectional verified
+### Unit tests (no Docker or TD required)
+
+```bash
+cd TDDocker && uv run pytest python/tests/ -v    # 106 tests
+```
+
+Pure Python — covers validator, compose overlay, watchdog, docker_status, NDI regen, WebSocket/OSC bridges, extension setup idempotence, and `_run_compose` subprocess wrapper.
+
+### Live E2E tests (requires TD + Docker)
+
+```bash
+cd _mcp_server && npm run test:integration:live   # 18 TDDocker tests
+```
+
+Runs via `TouchDesignerClient` + MCP against a live TD instance with Docker. Two suites:
+
+- **TDDocker E2E** — extension loading, container COMP structure, docker compose up/down lifecycle, OSC/WebSocket transport operator creation/removal, container stop/start via Docker CLI, log fetching.
+- **TDDocker pulse contract** — tests the full UI pulse chain (`par.X.pulse()` → parexecDAT → `TDContainerExt.onParPulse` → action → `PollStatus`) using `_sync_mode=True` to make `_enqueue_task()` run inline. Covers Stop, Start, Restart, Logs.
+
+**`_sync_mode`**: a test-only flag on `TDDockerExt` (set in `td_docker_ext.py`). When `True`, `_enqueue_task()` runs target + success_hook inline instead of spawning a daemon thread. This makes the entire async chain deterministic — including `PollStatus()` which calls `compose_ps()` synchronously.
+
+**Prerequisites**: TD open with TDDocker project loaded, MCP web server active on port 9981, Docker daemon running.
+
+### Manual tests
+
+- **OSC integration**: `Tests/test-compose.yml` (osc-test service) + `docker/osc-test/` — bidirectional verified
 - **Crash test**: Up → kill TD process → verify watchdog kills containers within ~5s
 - **Orphan test**: Kill both TD and watchdog → restart TD → verify orphan cleanup on init
 
