@@ -4,7 +4,7 @@ import mustache from "mustache";
 import yaml from "yaml";
 
 const openapiPath = path.resolve(
-	"td/modules/td_server/openapi_server/openapi/openapi.yaml",
+	"../modules/td_server/openapi_server/openapi/openapi.yaml",
 );
 const templatePath = path.resolve(
 	"td/templates/mcp/api_controller_handlers.mustache",
