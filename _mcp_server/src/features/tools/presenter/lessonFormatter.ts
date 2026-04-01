@@ -11,18 +11,10 @@ interface LessonSearchOptions extends FormatterOpts {
 	query?: string;
 }
 
-/**
- * Format a single lesson for the get_lesson tool response.
- */
-export function formatLessonDetail(
-	entry: TDLessonEntry,
-	options?: FormatterOpts,
-): string {
-	const opts = mergeFormatterOptions(options);
+// ── Lesson detail helpers ──────────────────────────────────────
+
+function pushLessonMetadata(lines: string[], entry: TDLessonEntry): void {
 	const p = entry.payload;
-
-	const lines: string[] = [`# ${entry.title}`, "", entry.content.summary, ""];
-
 	lines.push(`- **ID:** ${entry.id}`);
 	lines.push(`- **Category:** ${p.category}`);
 	if (p.difficulty) {
@@ -37,51 +29,81 @@ export function formatLessonDetail(
 	if (entry.provenance.discoveredIn) {
 		lines.push(`- **Discovered in:** ${entry.provenance.discoveredIn}`);
 	}
+}
 
-	if (entry.content.warnings && entry.content.warnings.length > 0) {
-		lines.push("", "## Warnings");
-		for (const w of entry.content.warnings) {
-			lines.push(`- ${w}`);
+function pushWarnings(lines: string[], warnings?: string[]): void {
+	if (!warnings || warnings.length === 0) return;
+	lines.push("", "## Warnings");
+	for (const w of warnings) {
+		lines.push(`- ${w}`);
+	}
+}
+
+function pushOperatorChain(
+	lines: string[],
+	chain?: TDLessonEntry["payload"]["operatorChain"],
+): void {
+	if (!chain || chain.length === 0) return;
+	lines.push("", "## Operators Involved");
+	for (const op of chain) {
+		const role = op.role ? ` (${op.role})` : "";
+		lines.push(`- ${op.opType} [${op.family}]${role}`);
+	}
+}
+
+function pushRecipeSection(
+	lines: string[],
+	recipe: NonNullable<TDLessonEntry["payload"]["recipe"]>,
+): void {
+	lines.push("", "## Recipe", "", recipe.description);
+	if (recipe.steps && recipe.steps.length > 0) {
+		lines.push("");
+		for (let i = 0; i < recipe.steps.length; i++) {
+			lines.push(`${i + 1}. ${recipe.steps[i]}`);
 		}
 	}
-
-	if (p.operatorChain && p.operatorChain.length > 0) {
-		lines.push("", "## Operators Involved");
-		for (const op of p.operatorChain) {
-			const role = op.role ? ` (${op.role})` : "";
-			lines.push(`- ${op.opType} [${op.family}]${role}`);
+	if (recipe.example) {
+		lines.push("", `**Example:** ${recipe.example.description}`);
+		if (recipe.example.code) {
+			const lang = recipe.example.language ?? "python";
+			lines.push("", `\`\`\`${lang}`, recipe.example.code, "```");
 		}
 	}
+}
+
+function pushPitfallSections(
+	lines: string[],
+	p: TDLessonEntry["payload"],
+): void {
+	if (p.symptom) lines.push("", "## Symptom", "", p.symptom);
+	if (p.cause) lines.push("", "## Cause", "", p.cause);
+	if (p.fix) lines.push("", "## Fix", "", p.fix);
+}
+
+// ── Exported formatters ────────────────────────────────────────
+
+/**
+ * Format a single lesson for the get_lesson tool response.
+ */
+export function formatLessonDetail(
+	entry: TDLessonEntry,
+	options?: FormatterOpts,
+): string {
+	const opts = mergeFormatterOptions(options);
+	const p = entry.payload;
+
+	const lines: string[] = [`# ${entry.title}`, "", entry.content.summary, ""];
+
+	pushLessonMetadata(lines, entry);
+	pushWarnings(lines, entry.content.warnings);
+	pushOperatorChain(lines, p.operatorChain);
 
 	if (p.category === "pattern" && p.recipe) {
-		lines.push("", "## Recipe", "", p.recipe.description);
-		if (p.recipe.steps && p.recipe.steps.length > 0) {
-			lines.push("");
-			for (let i = 0; i < p.recipe.steps.length; i++) {
-				lines.push(`${i + 1}. ${p.recipe.steps[i]}`);
-			}
-		}
-		if (p.recipe.example) {
-			lines.push("", `**Example:** ${p.recipe.example.description}`);
-			if (p.recipe.example.code) {
-				const lang = p.recipe.example.language ?? "python";
-				lines.push("", `\`\`\`${lang}`, p.recipe.example.code, "```");
-			}
-		}
+		pushRecipeSection(lines, p.recipe);
 	}
-
 	if (p.category === "pitfall") {
-		if (p.symptom) {
-			lines.push("", "## Symptom", "", p.symptom);
-		}
-		if (p.cause) {
-			lines.push("", "## Cause", "", p.cause);
-		}
-		if (p.fix) {
-			lines.push("", "## Fix", "", p.fix);
-		}
+		pushPitfallSections(lines, p);
 	}
-
 	if (p.relatedPatternIds && p.relatedPatternIds.length > 0) {
 		lines.push("", `**Related:** ${p.relatedPatternIds.join(", ")}`);
 	}

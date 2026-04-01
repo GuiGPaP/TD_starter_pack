@@ -13,59 +13,45 @@ type FormatterOpts = Pick<
 	modeInfo?: ModeInfo;
 };
 
-export function formatCapabilities(
-	data: GetCapabilities200ResponseData | undefined,
-	options?: FormatterOpts,
+// ── Helpers ────────────────────────────────────────────────────
+
+function buildModeHeader(modeInfo?: ModeInfo): string {
+	if (!modeInfo) return "";
+	const lines: string[] = [
+		`Mode: ${modeInfo.mode}`,
+		`Online: ${modeInfo.mode !== "docs-only"}`,
+	];
+	if (modeInfo.tdBuild) lines.push(`TD Build: ${modeInfo.tdBuild}`);
+	return `${lines.join("\n")}\n`;
+}
+
+function formatMinimal(
+	modeInfo: ModeInfo | undefined,
+	data: NonNullable<GetCapabilities200ResponseData>,
 ): string {
-	const opts = mergeFormatterOptions(options);
-	const modeInfo = options?.modeInfo;
-
-	// Mode header lines
-	const modeLines: string[] = [];
-	if (modeInfo) {
-		modeLines.push(`Mode: ${modeInfo.mode}`);
-		modeLines.push(`Online: ${modeInfo.mode !== "docs-only"}`);
-		if (modeInfo.tdBuild) modeLines.push(`TD Build: ${modeInfo.tdBuild}`);
-	}
-	const modeHeader = modeLines.length ? `${modeLines.join("\n")}\n` : "";
-
-	if (!data) {
-		const text = `${modeHeader}TD capabilities not available.`;
-		return finalizeFormattedText(text, opts, {
-			context: { title: "Capabilities" },
-			structured: modeInfo
-				? { ...modeInfo, online: modeInfo.mode !== "docs-only" }
-				: undefined,
-		});
-	}
-
-	const lintDat = data.lint_dat ?? false;
-	const formatDat = data.format_dat ?? false;
-	const typecheckDat = data.typecheck_dat ?? false;
+	const parts: string[] = [];
+	if (modeInfo) parts.push(`mode=${modeInfo.mode}`);
+	parts.push(`lint_dat=${data.lint_dat ?? false}`);
 	const ruff = data.tools?.ruff;
 	const pyright = data.tools?.pyright;
+	if (ruff?.installed && ruff.version) parts.push(`ruff=${ruff.version}`);
+	if (pyright?.installed && pyright.version)
+		parts.push(`pyright=${pyright.version}`);
+	return parts.join(", ");
+}
 
-	if (opts.detailLevel === "minimal") {
-		const parts: string[] = [];
-		if (modeInfo) parts.push(`mode=${modeInfo.mode}`);
-		parts.push(`lint_dat=${lintDat}`);
-		if (ruff?.installed && ruff.version) {
-			parts.push(`ruff=${ruff.version}`);
-		}
-		if (pyright?.installed && pyright.version) {
-			parts.push(`pyright=${pyright.version}`);
-		}
-		return finalizeFormattedText(parts.join(", "), opts, {
-			context: { title: "Capabilities" },
-		});
-	}
-
+function formatFull(
+	modeHeader: string,
+	data: NonNullable<GetCapabilities200ResponseData>,
+): string {
+	const ruff = data.tools?.ruff;
+	const pyright = data.tools?.pyright;
 	const lines: string[] = [];
 	if (modeHeader) lines.push(modeHeader);
 	lines.push("Features:");
-	lines.push(`  lint_dat: ${lintDat}`);
-	lines.push(`  format_dat: ${formatDat}`);
-	lines.push(`  typecheck_dat: ${typecheckDat}`);
+	lines.push(`  lint_dat: ${data.lint_dat ?? false}`);
+	lines.push(`  format_dat: ${data.format_dat ?? false}`);
+	lines.push(`  typecheck_dat: ${data.typecheck_dat ?? false}`);
 	lines.push("Tools:");
 	lines.push(
 		`  ruff: ${ruff?.installed ? `installed (${ruff.version ?? "unknown version"})` : "not installed"}`,
@@ -73,8 +59,39 @@ export function formatCapabilities(
 	lines.push(
 		`  pyright: ${pyright?.installed ? `installed (${pyright.version ?? "unknown version"})` : "not installed"}`,
 	);
+	return lines.join("\n");
+}
 
-	return finalizeFormattedText(lines.join("\n"), opts, {
+// ── Export ──────────────────────────────────────────────────────
+
+export function formatCapabilities(
+	data: GetCapabilities200ResponseData | undefined,
+	options?: FormatterOpts,
+): string {
+	const opts = mergeFormatterOptions(options);
+	const modeInfo = options?.modeInfo;
+	const modeHeader = buildModeHeader(modeInfo);
+
+	if (!data) {
+		return finalizeFormattedText(
+			`${modeHeader}TD capabilities not available.`,
+			opts,
+			{
+				context: { title: "Capabilities" },
+				structured: modeInfo
+					? { ...modeInfo, online: modeInfo.mode !== "docs-only" }
+					: undefined,
+			},
+		);
+	}
+
+	if (opts.detailLevel === "minimal") {
+		return finalizeFormattedText(formatMinimal(modeInfo, data), opts, {
+			context: { title: "Capabilities" },
+		});
+	}
+
+	return finalizeFormattedText(formatFull(modeHeader, data), opts, {
 		context: { title: "Capabilities" },
 		structured: { ...(modeInfo ?? {}), ...data },
 		template: opts.detailLevel === "detailed" ? "detailedPayload" : "default",
