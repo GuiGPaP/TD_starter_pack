@@ -85,6 +85,7 @@
 		"http": "npm run build && node dist/cli.js --mcp-http-port=6280 --mcp-http-host=127.0.0.1 --host=http://127.0.0.1 --port=9981",
 		"test": "run-p test:*",
 		"test:integration": "vitest run ./tests/integration",
+		"test:integration:live": "vitest run --config vitest.live.config.ts",
 		"test:unit": "vitest run ./tests/unit",
 		"coverage": "vitest run --coverage",
 		"version": "run-p version:*",

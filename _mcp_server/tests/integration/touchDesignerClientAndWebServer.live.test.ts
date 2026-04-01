@@ -5,9 +5,41 @@ import { TouchDesignerClient } from "../../src/tdClient/touchDesignerClient";
 const PROJECT_PATH = "/project1";
 const SANDBOX_NAME = "test_base_comp";
 const SANDBOX_PATH = `${PROJECT_PATH}/${SANDBOX_NAME}`;
-/**
- * Verify if a node exists
- */
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getLiveTdConfig(): { host: string; port: string } {
+	return {
+		host: process.env.TD_WEB_SERVER_HOST || "http://127.0.0.1",
+		port: process.env.TD_WEB_SERVER_PORT || "9981",
+	};
+}
+
+async function ensureSandbox(client: TouchDesignerClient): Promise<void> {
+	// Idempotent: delete leftover sandbox from a previous interrupted run
+	try {
+		await client.deleteNode({ nodePath: SANDBOX_PATH });
+	} catch {
+		// ignore — sandbox didn't exist
+	}
+
+	await client.createNode({
+		nodeName: SANDBOX_NAME,
+		nodeType: "baseCOMP",
+		parentPath: PROJECT_PATH,
+	});
+}
+
+async function cleanupSandbox(client: TouchDesignerClient): Promise<void> {
+	try {
+		await client.deleteNode({ nodePath: SANDBOX_PATH });
+	} catch {
+		// ignore — sandbox may not have been created
+	}
+}
+
 async function verifyNodeExists(params: {
 	client: TouchDesignerClient;
 	nodeName: string;
@@ -22,26 +54,47 @@ async function verifyNodeExists(params: {
 			nodePath: SANDBOX_PATH,
 		});
 		return response.success ? response.data.result.length > 0 : false;
-	} catch (_err) {
+	} catch {
 		return false;
 	}
 }
 
+// ---------------------------------------------------------------------------
+// Suite
+// ---------------------------------------------------------------------------
+
 const tdClient = new TouchDesignerClient();
+let sandboxCreated = false;
 
 describe("TouchDesigner Client E2E Tests", () => {
 	beforeAll(async () => {
-		process.env.TD_WEB_SERVER_HOST = "http://127.0.0.1";
-		process.env.TD_WEB_SERVER_PORT = "9981";
-		await tdClient.createNode({
-			nodeName: SANDBOX_NAME,
-			nodeType: "baseCOMP",
-			parentPath: PROJECT_PATH,
-		});
+		const config = getLiveTdConfig();
+		process.env.TD_WEB_SERVER_HOST = config.host;
+		process.env.TD_WEB_SERVER_PORT = config.port;
+
+		// Preflight: verify TD is reachable
+		try {
+			const info = await tdClient.getTdInfo();
+			if (!info.success) {
+				throw new Error(info.error?.message ?? "unknown error");
+			}
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : String(err);
+			throw new Error(
+				`TouchDesigner is not reachable at ${config.host}:${config.port}.\n` +
+					"Set TD_WEB_SERVER_HOST / TD_WEB_SERVER_PORT or start TD with the web server enabled.\n" +
+					`Original error: ${msg}`,
+			);
+		}
+
+		await ensureSandbox(tdClient);
+		sandboxCreated = true;
 	});
 
 	afterAll(async () => {
-		await tdClient.deleteNode({ nodePath: SANDBOX_PATH });
+		if (sandboxCreated) {
+			await cleanupSandbox(tdClient);
+		}
 	});
 
 	test("TouchDesigner info endpoint should return server information", async () => {
@@ -330,9 +383,6 @@ describe("TouchDesigner Client E2E Tests", () => {
 	});
 
 	test("Can catch errors", async () => {
-		const nodeName = `exec_test_${Date.now()}`;
-		const nodePath = `${SANDBOX_PATH}/${nodeName}`;
-
 		const execResponse = await tdClient.execPythonScript({
 			script: `op('${SANDBOX_PATH}').error()`,
 		});
@@ -346,8 +396,6 @@ describe("TouchDesigner Client E2E Tests", () => {
 				"Handler for 'exec_python_script' failed: OP attribute error is deprecated has been replaced by errors and addError.",
 			),
 		);
-
-		await tdClient.deleteNode({ nodePath });
 	});
 
 	test("Node error check should return error lists", async () => {
@@ -412,7 +460,6 @@ describe("TouchDesigner Client E2E Tests", () => {
 	});
 
 	test("Module help should return documentation for TouchDesigner classes", async () => {
-		// Test with common TouchDesigner class
 		const response = await tdClient.getModuleHelp({
 			moduleName: "noiseCHOP",
 		});
@@ -485,6 +532,5 @@ describe("TouchDesigner Client E2E Tests", () => {
 		if (response.success) {
 			throw new Error("Expected failure for non-existent module");
 		}
-		// Error is available on ErrorResult type
 	});
 });
