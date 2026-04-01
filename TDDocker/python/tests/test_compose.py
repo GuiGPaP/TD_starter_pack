@@ -117,7 +117,7 @@ class TestValidationIntegration:
     def test_privileged_rejected(self) -> None:
         bad_yaml = "services:\n  evil:\n    image: alpine\n    privileged: true\n"
         cfg = OverlayConfig(session_id="s1")
-        with pytest.raises(ValueError, match="(?i)privileged"):
+        with pytest.raises(ValueError, match=r"(?i)privileged"):
             generate_overlay(bad_yaml, cfg)
 
     def test_valid_passes_through(self) -> None:

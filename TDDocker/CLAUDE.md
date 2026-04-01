@@ -44,9 +44,11 @@ TDDocker/
 
 ```bash
 cd TDDocker
-python -m pytest python/tests/ -v   # Run tests
-ruff check python/                   # Lint
-pyright                              # Type check
+uv sync --extra dev                  # Install dev deps (first time / clean clone)
+uv run pytest python/tests/ -v       # Run tests
+uv run ruff check python/            # Lint
+uv run ruff format --check python/   # Format check
+uv run pyright                       # Type check
 ```
 
 ## Critical TD Extension Patterns
