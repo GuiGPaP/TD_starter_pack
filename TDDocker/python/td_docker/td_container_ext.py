@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from td_docker.container_manager import (
+    CmdResult,
     container_logs,
     restart_container,
     start_container,
@@ -66,7 +67,7 @@ class TDContainerExt:
 
     def _run_container_action(self, action_fn, action_name: str, cid: str) -> None:
         """Run a container action via the orchestrator's thread pool."""
-        result_holder = [None]
+        result_holder: list[CmdResult | None] = [None]
         orchestrator = self._find_orchestrator()
 
         def _worker():
@@ -128,7 +129,7 @@ class TDContainerExt:
         cid = self._get_container_id()
         if not cid:
             return
-        result_holder = [None]
+        result_holder: list[CmdResult | None] = [None]
         orchestrator = self._find_orchestrator()
 
         def _worker():

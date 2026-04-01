@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 # Imports from our package — these files live alongside this script
 # and are added to sys.path by the COMP's module loading
 from td_docker.compose import (
+    ComposeResult,
     OverlayConfig,
     ServiceOverlay,
     compose_down,
@@ -284,7 +285,7 @@ class TDDockerExt:
 
             compose_path = Path(compose_str)
             if not compose_path.exists():
-                self._log(f"Restore skipped '{project_name}': " f"{compose_str} not found")
+                self._log(f"Restore skipped '{project_name}': {compose_str} not found")
                 continue
 
             # Parse services from compose file
@@ -594,7 +595,7 @@ class TDDockerExt:
 
         if getattr(status, "cli_missing", False):
             pop.Open(
-                text=("Docker is not installed.\n\n" "Install Docker Desktop to use TDDocker."),
+                text=("Docker is not installed.\n\nInstall Docker Desktop to use TDDocker."),
                 title="TDDocker",
                 buttons=["Download", "Cancel"],
                 callback=self._on_docker_install_popup,
@@ -604,7 +605,7 @@ class TDDockerExt:
             )
         else:
             pop.Open(
-                text=("Docker Desktop is not running.\n\n" "Start Docker Desktop?"),
+                text=("Docker Desktop is not running.\n\nStart Docker Desktop?"),
                 title="TDDocker",
                 buttons=["Start Docker", "Cancel"],
                 callback=self._on_docker_start_popup,
@@ -648,8 +649,7 @@ class TDDockerExt:
         # Check if project already loaded
         if project_name in self._projects:
             self._log(
-                f"Project '{project_name}' already loaded — "
-                "use Rebuild to reload or Remove first"
+                f"Project '{project_name}' already loaded — use Rebuild to reload or Remove first"
             )
             return
 
@@ -767,7 +767,7 @@ class TDDockerExt:
         def _do_up():
             self._log(f"Starting project '{project.name}'...")
 
-            result_holder = [None]
+            result_holder: list[ComposeResult | None] = [None]
 
             def _target(compose_path, overlay_path, session_id):
                 result_holder[0] = compose_up(compose_path, overlay_path, session_id)
@@ -790,9 +790,7 @@ class TDDockerExt:
                     self._refresh_project_status(project)
                     self._update_projects_table()
                 elif result:
-                    self._log(
-                        f"ERROR: compose up failed for '{project.name}':\n" f"{result.stderr}"
-                    )
+                    self._log(f"ERROR: compose up failed for '{project.name}':\n{result.stderr}")
 
             def _on_except(*args):
                 self._log(f"ERROR: compose up exception for '{project.name}': {args}")
@@ -833,7 +831,7 @@ class TDDockerExt:
         if project.compose_dir:
             send_shutdown_signal(project.compose_dir)
 
-        result_holder = [None]
+        result_holder: list[ComposeResult | None] = [None]
 
         def _target(session_id):
             result_holder[0] = compose_down(session_id)
@@ -844,9 +842,7 @@ class TDDockerExt:
                 project.status = "stopped"
                 self._log(f"Project '{project.name}' stopped")
             elif result:
-                self._log(
-                    f"WARNING: compose down issues for '{project.name}':\n" f"{result.stderr}"
-                )
+                self._log(f"WARNING: compose down issues for '{project.name}':\n{result.stderr}")
 
             project.watchdog_pid = None
             self._update_projects_table()
@@ -997,9 +993,11 @@ class TDDockerExt:
         except ValueError as e:
             self._log(f"ERROR regenerating overlay for '{project.name}': {e}")
             return
-        result_holder: list = [None]
+        result_holder: list[ComposeResult | None] = [None]
 
         def _worker():
+            if project.overlay_path is None:
+                return
             result_holder[0] = compose_up(
                 project.compose_path, project.overlay_path, project.session_id
             )
@@ -1009,9 +1007,7 @@ class TDDockerExt:
             if result and result.ok:
                 self._log(f"Overlay regenerated for '{project.name}'")
             elif result:
-                self._log(
-                    f"WARNING: overlay reapply failed for '{project.name}': " f"{result.stderr}"
-                )
+                self._log(f"WARNING: overlay reapply failed for '{project.name}': {result.stderr}")
 
         self._enqueue_task(target=_worker, success_hook=_on_success)
 
@@ -1203,7 +1199,7 @@ class TDDockerExt:
         comp.par.ext0promote = True
 
         # Parameter execute DAT — routes pulse/value callbacks to extension
-        _pars_str = "Start Stop Restart Logs " "Oscenable Wsenable Ndienable Ndisource"
+        _pars_str = "Start Stop Restart Logs Oscenable Wsenable Ndienable Ndisource"
         pe = comp.op("parexec1")
         if not pe:
             pe = comp.create("parameterexecuteDAT", "parexec1")
