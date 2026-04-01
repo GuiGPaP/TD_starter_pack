@@ -1,0 +1,75 @@
+get:
+  summary: Get DAT text content
+  description: Read the .text content of a DAT operator
+  operationId: get_dat_text
+  parameters:
+    - name: nodePath
+      description: 'Absolute path to the DAT. e.g., "/project1/text1"'
+      in: query
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: DAT text content
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  text:
+                    type: string
+              error:
+                type: string
+                nullable: true
+put:
+  summary: Set DAT text content
+  description: Write .text content to a DAT operator
+  operationId: set_dat_text
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - nodePath
+            - text
+          properties:
+            nodePath:
+              type: string
+              description: Absolute path to the DAT
+            text:
+              type: string
+              description: Text content to write
+  responses:
+    "200":
+      description: DAT text updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  length:
+                    type: integer
+              error:
+                type: string
+                nullable: true

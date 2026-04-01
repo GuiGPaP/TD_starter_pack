@@ -1,0 +1,35 @@
+description: Aggregated summary for a batch lint operation
+type: object
+properties:
+  totalDatsScanned:
+    type: integer
+  datsWithErrors:
+    type: integer
+  datsClean:
+    type: integer
+  totalIssues:
+    type: integer
+  fixableCount:
+    type: integer
+  manualCount:
+    type: integer
+  bySeverity:
+    type: object
+    properties:
+      error:
+        type: integer
+      warning:
+        type: integer
+      info:
+        type: integer
+  worstOffenders:
+    type: array
+    items:
+      type: object
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        diagnosticCount:
+          type: integer

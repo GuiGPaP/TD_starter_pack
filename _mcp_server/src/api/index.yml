@@ -26,6 +26,36 @@ paths:
     $ref: ./paths/api/nodes/layout.yml
   /api/nodes/context:
     $ref: ./paths/api/nodes/context.yml
+  /api/nodes/dat-text:
+    $ref: ./paths/api/nodes/dat-text.yml
+  /api/nodes/dat-lint:
+    $ref: ./paths/api/nodes/dat-lint.yml
+  /api/nodes/dat-lint-batch:
+    $ref: ./paths/api/nodes/dat-lint-batch.yml
+  /api/nodes/dat-format:
+    $ref: ./paths/api/nodes/dat-format.yml
+  /api/nodes/dat-validate-json:
+    $ref: ./paths/api/nodes/dat-validate-json.yml
+  /api/nodes/dat-validate-glsl:
+    $ref: ./paths/api/nodes/dat-validate-glsl.yml
+  /api/nodes/dat-typecheck:
+    $ref: ./paths/api/nodes/dat-typecheck.yml
+  /api/nodes/dat-discover:
+    $ref: ./paths/api/nodes/dat-discover.yml
+  /api/nodes/parameter-schema:
+    $ref: ./paths/api/nodes/parameter-schema.yml
+  /api/nodes/complete-paths:
+    $ref: ./paths/api/nodes/complete-paths.yml
+  /api/nodes/chop-channels:
+    $ref: ./paths/api/nodes/chop-channels.yml
+  /api/nodes/dat-table-info:
+    $ref: ./paths/api/nodes/dat-table-info.yml
+  /api/nodes/comp-extensions:
+    $ref: ./paths/api/nodes/comp-extensions.yml
+  /api/health:
+    $ref: ./paths/api/health.yml
+  /api/capabilities:
+    $ref: ./paths/api/capabilities.yml
   /api/td/classes:
     $ref: ./paths/api/td/classes/list.yml
   /api/td/classes/{className}:
@@ -38,6 +68,12 @@ paths:
     $ref: ./paths/api/td/server/exec.yml
   /api/td/server/td:
     $ref: ./paths/api/td/server/td.yml
+  /api/td/helpers/geometry-comp:
+    $ref: ./paths/api/td/helpers/geometry-comp.yml
+  /api/td/helpers/feedback-loop:
+    $ref: ./paths/api/td/helpers/feedback-loop.yml
+  /api/td/helpers/instancing:
+    $ref: ./paths/api/td/helpers/instancing.yml
 
 components:
   schemas:
@@ -59,3 +95,17 @@ components:
       $ref: ./components/schemas/TdPythonPropertyInfo.yml
     ModuleHelp:
       $ref: ./components/schemas/ModuleHelp.yml
+    LintDiagnostic:
+      $ref: ./components/schemas/LintDiagnostic.yml
+    TypecheckDiagnostic:
+      $ref: ./components/schemas/TypecheckDiagnostic.yml
+    JsonValidationDiagnostic:
+      $ref: ./components/schemas/JsonValidationDiagnostic.yml
+    GlslValidationDiagnostic:
+      $ref: ./components/schemas/GlslValidationDiagnostic.yml
+    BatchLintSummary:
+      $ref: ./components/schemas/BatchLintSummary.yml
+    BatchLintDatResult:
+      $ref: ./components/schemas/BatchLintDatResult.yml
+    ParameterSchema:
+      $ref: ./components/schemas/ParameterSchema.yml

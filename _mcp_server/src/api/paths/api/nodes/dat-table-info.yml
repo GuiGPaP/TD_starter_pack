@@ -1,0 +1,61 @@
+get:
+  summary: Get table DAT dimensions and sample data
+  description: >
+    Return dimensions and a content sample of a table DAT. No type
+    inference -- raw cell values only.
+  operationId: get_dat_table_info
+  parameters:
+    - name: nodePath
+      description: 'Absolute path to the table DAT. e.g., "/project1/table1"'
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: maxPreviewRows
+      description: Maximum number of rows to include in sample data
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 6
+    - name: maxCellChars
+      description: Truncate cell values longer than this
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 200
+  responses:
+    "200":
+      description: Table DAT info
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  nodePath:
+                    type: string
+                  numRows:
+                    type: integer
+                  numCols:
+                    type: integer
+                  sampleData:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
+                  truncatedRows:
+                    type: boolean
+                  truncatedCols:
+                    type: boolean
+                  truncatedCells:
+                    type: boolean
+              error:
+                type: string
+                nullable: true

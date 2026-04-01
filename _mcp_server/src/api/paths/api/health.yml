@@ -1,0 +1,44 @@
+get:
+  summary: Get server health status
+  description: Returns health status of the TouchDesigner server
+  operationId: get_health
+  responses:
+    "200":
+      description: Health check response
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                required:
+                  - status
+                  - pythonVersion
+                  - tdVersion
+                  - tdBuild
+                properties:
+                  status:
+                    type: string
+                    description: Server status
+                  pythonVersion:
+                    type: string
+                    description: Python interpreter version
+                  tdVersion:
+                    type: string
+                    description: "TouchDesigner version (e.g., 2023.30000)"
+                  tdBuild:
+                    type: string
+                    description: TouchDesigner build number
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful

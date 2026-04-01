@@ -1,0 +1,57 @@
+post:
+  summary: Batch lint DATs under a parent path
+  operationId: lint_dats
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - parentPath
+          properties:
+            parentPath:
+              type: string
+              description: 'Absolute path to the parent. e.g., "/project1"'
+            pattern:
+              type: string
+              default: "*"
+              description: Glob pattern to filter DAT names
+            purpose:
+              type: string
+              default: python
+              enum:
+                - python
+                - glsl
+                - text
+                - data
+                - any
+              description: Filter by DAT kind
+            recursive:
+              type: boolean
+              default: false
+              description: Search recursively into descendants
+  responses:
+    "200":
+      description: Batch lint results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  parentPath:
+                    type: string
+                  summary:
+                    $ref: ../../../index.yml#/components/schemas/BatchLintSummary
+                  results:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/BatchLintDatResult
+              error:
+                type: string
+                nullable: true

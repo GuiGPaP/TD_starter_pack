@@ -1,0 +1,15 @@
+description: Per-DAT lint result in a batch operation
+type: object
+properties:
+  path:
+    type: string
+  name:
+    type: string
+  diagnosticCount:
+    type: integer
+  diagnostics:
+    type: array
+    items:
+      $ref: ../../index.yml#/components/schemas/LintDiagnostic
+  error:
+    type: string

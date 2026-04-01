@@ -1,0 +1,63 @@
+post:
+  summary: Lint DAT code with ruff
+  operationId: lint_dat
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - nodePath
+          properties:
+            nodePath:
+              type: string
+              description: 'Absolute path to the DAT node. e.g., "/project1/script1"'
+            fix:
+              type: boolean
+              default: false
+              description: If true, apply auto-fixable corrections to the DAT
+            dryRun:
+              type: boolean
+              default: false
+              description: "Preview fix without applying (returns diff). Only meaningful with fix=true."
+  responses:
+    "200":
+      description: Lint results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  diagnosticCount:
+                    type: integer
+                  diagnostics:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/LintDiagnostic
+                  fixed:
+                    type: boolean
+                  fixedText:
+                    type: string
+                  remainingDiagnosticCount:
+                    type: integer
+                  remainingDiagnostics:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/LintDiagnostic
+                  diff:
+                    type: string
+                  applied:
+                    type: boolean
+              error:
+                type: string
+                nullable: true

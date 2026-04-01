@@ -1,0 +1,49 @@
+post:
+  summary: Format DAT code with ruff
+  operationId: format_dat
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - nodePath
+          properties:
+            nodePath:
+              type: string
+              description: 'Absolute path to the DAT node. e.g., "/project1/script1"'
+            dryRun:
+              type: boolean
+              default: false
+              description: "Preview formatting without applying (returns diff)."
+  responses:
+    "200":
+      description: Format results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  originalText:
+                    type: string
+                  formattedText:
+                    type: string
+                  changed:
+                    type: boolean
+                  diff:
+                    type: string
+                  applied:
+                    type: boolean
+              error:
+                type: string
+                nullable: true

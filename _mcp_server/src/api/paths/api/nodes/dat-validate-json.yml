@@ -1,0 +1,47 @@
+post:
+  summary: Validate JSON/YAML content in a DAT
+  operationId: validate_json_dat
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - nodePath
+          properties:
+            nodePath:
+              type: string
+              description: 'Absolute path to the DAT node. e.g., "/project1/data1"'
+  responses:
+    "200":
+      description: Validation results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  format:
+                    type: string
+                    enum:
+                      - json
+                      - yaml
+                      - unknown
+                  valid:
+                    type: boolean
+                  diagnostics:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/JsonValidationDiagnostic
+              error:
+                type: string
+                nullable: true

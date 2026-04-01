@@ -1,0 +1,9 @@
+description: A single JSON/YAML validation diagnostic
+type: object
+properties:
+  line:
+    type: integer
+  column:
+    type: integer
+  message:
+    type: string

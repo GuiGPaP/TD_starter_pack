@@ -1,0 +1,57 @@
+post:
+  summary: Configure instancing on a Geometry COMP
+  description: |
+    Configure GPU instancing on an existing Geometry COMP.
+    Wraps the td_helpers.network.setup_instancing() helper.
+  operationId: configure_instancing
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - geoPath
+            - instanceOpName
+          properties:
+            geoPath:
+              type: string
+              description: "Path to the Geometry COMP (e.g., /project1/geo1)"
+            instanceOpName:
+              type: string
+              description: Name of the operator providing instance data
+            tx:
+              type: string
+              default: tx
+              description: Column name for translate X
+            ty:
+              type: string
+              default: ty
+              description: Column name for translate Y
+            tz:
+              type: string
+              default: tz
+              description: Column name for translate Z
+  responses:
+    "200":
+      description: Instancing configured successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                description: Instancing configuration details
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful
