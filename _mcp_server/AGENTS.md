@@ -14,7 +14,7 @@
 - Build: `npm run build` (tsc + copy artifacts), `make build` (Docker-based)
 - Development inspector: `npm run dev` (stdio)
 - Start HTTP mode: `npm run http` (Prerequisites: built, TD on 9981 / HTTP on 6280)
-- Test: `npm test` (all), `npm run test:unit`, `npm run test:integration`, `npm run coverage`
+- Test: `npm test` (all), `npm run test:unit`, `npm run test:integration`, `npm run coverage`, `npm run test:integration:live` (requires live TD on `TD_WEB_SERVER_HOST`:`TD_WEB_SERVER_PORT`)
 - Lint/Format: `npm run lint` (biome + tsc + ruff + prettier), `npm run format` (with fix)
 - Synchronize versions: `npm run version` (synchronizes API/Python/MCP)
 - Generate code: `npm run gen:webserver` (requires Docker), `npm run gen:handlers`, `npm run gen:mcp`
