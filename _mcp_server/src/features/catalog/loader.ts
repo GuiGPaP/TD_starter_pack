@@ -93,6 +93,36 @@ export interface ScanResult {
 	notIndexed: string[];
 }
 
+const SKIP_DIRS = new Set(["node_modules", ".git", ".venv", "dist", "Backup"]);
+
+function visitEntry(
+	entry: string,
+	dir: string,
+	indexed: ProjectEntry[],
+	notIndexed: string[],
+	walk: (dir: string, depth: number) => void,
+	depth: number,
+): void {
+	if (SKIP_DIRS.has(entry)) return;
+
+	const fullPath = join(dir, entry);
+	try {
+		const stat = statSync(fullPath);
+		if (stat.isDirectory()) {
+			walk(fullPath, depth + 1);
+		} else if (entry.endsWith(".toe") && !entry.endsWith(".toe.bak")) {
+			const manifest = loadManifest(fullPath);
+			if (manifest) {
+				indexed.push({ manifest, toePath: fullPath });
+			} else {
+				notIndexed.push(fullPath);
+			}
+		}
+	} catch {
+		// Permission denied or broken symlink — skip
+	}
+}
+
 /**
  * Recursively scan a directory for .toe files and check for manifest sidecars.
  */
@@ -102,43 +132,14 @@ export function scanForProjects(rootDir: string, maxDepth = 5): ScanResult {
 
 	function walk(dir: string, depth: number): void {
 		if (depth > maxDepth) return;
-
 		let entries: string[];
 		try {
 			entries = readdirSync(dir);
 		} catch {
 			return;
 		}
-
 		for (const entry of entries) {
-			// Skip common non-project directories
-			if (
-				entry === "node_modules" ||
-				entry === ".git" ||
-				entry === ".venv" ||
-				entry === "dist" ||
-				entry === "Backup"
-			) {
-				continue;
-			}
-
-			const fullPath = join(dir, entry);
-
-			try {
-				const stat = statSync(fullPath);
-				if (stat.isDirectory()) {
-					walk(fullPath, depth + 1);
-				} else if (entry.endsWith(".toe") && !entry.endsWith(".toe.bak")) {
-					const manifest = loadManifest(fullPath);
-					if (manifest) {
-						indexed.push({ manifest, toePath: fullPath });
-					} else {
-						notIndexed.push(fullPath);
-					}
-				}
-			} catch {
-				// Permission denied or broken symlink — skip
-			}
+			visitEntry(entry, dir, indexed, notIndexed, walk, depth);
 		}
 	}
 
