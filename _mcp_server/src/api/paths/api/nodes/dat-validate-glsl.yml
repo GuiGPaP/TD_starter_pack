@@ -1,0 +1,58 @@
+post:
+  summary: Validate GLSL shader code in a DAT
+  operationId: validate_glsl_dat
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - nodePath
+          properties:
+            nodePath:
+              type: string
+              description: 'Absolute path to the DAT node. e.g., "/project1/glsl_pixel"'
+  responses:
+    "200":
+      description: GLSL validation results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  shaderType:
+                    type: string
+                    enum:
+                      - pixel
+                      - vertex
+                      - compute
+                      - unknown
+                  valid:
+                    type: boolean
+                    nullable: true
+                  diagnostics:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/GlslValidationDiagnostic
+                  validationMethod:
+                    type: string
+                    enum:
+                      - td_errors
+                      - glslangValidator
+                      - none
+                  validationAvailable:
+                    type: boolean
+                    description: Whether any validation method was available
+              error:
+                type: string
+                nullable: true

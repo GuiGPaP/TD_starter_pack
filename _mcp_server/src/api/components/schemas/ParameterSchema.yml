@@ -1,0 +1,35 @@
+description: Schema metadata for a single TouchDesigner parameter
+type: object
+properties:
+  name:
+    type: string
+  label:
+    type: string
+  style:
+    type: string
+  default: {}
+  val: {}
+  min:
+    type: number
+    nullable: true
+  max:
+    type: number
+    nullable: true
+  clampMin:
+    type: boolean
+  clampMax:
+    type: boolean
+  menuNames:
+    type: array
+    items:
+      type: string
+  menuLabels:
+    type: array
+    items:
+      type: string
+  isOP:
+    type: boolean
+  readOnly:
+    type: boolean
+  page:
+    type: string

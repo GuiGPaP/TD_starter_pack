@@ -1,0 +1,76 @@
+get:
+  summary: Get server capabilities
+  description: Returns available features and tool versions
+  operationId: get_capabilities
+  responses:
+    "200":
+      description: Capabilities report
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                properties:
+                  lint_dat:
+                    type: boolean
+                    description: Whether lint_dat is available
+                  format_dat:
+                    type: boolean
+                    description: Whether format_dat is available
+                  validate_glsl_dat:
+                    type: boolean
+                    description: Whether validate_glsl_dat is available (always true, may use fallback)
+                  typecheck_dat:
+                    type: boolean
+                    description: Whether typecheck_dat is available
+                  tools:
+                    type: object
+                    nullable: true
+                    properties:
+                      ruff:
+                        type: object
+                        nullable: true
+                        properties:
+                          installed:
+                            type: boolean
+                            description: Whether the tool is installed
+                          version:
+                            type: string
+                            nullable: true
+                            description: Tool version string
+                      pyright:
+                        type: object
+                        nullable: true
+                        properties:
+                          installed:
+                            type: boolean
+                            description: Whether the tool is installed
+                          version:
+                            type: string
+                            nullable: true
+                            description: Tool version string
+                      glslangValidator:
+                        type: object
+                        nullable: true
+                        properties:
+                          installed:
+                            type: boolean
+                            description: Whether the tool is installed
+                          version:
+                            type: string
+                            nullable: true
+                            description: Tool version string
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful

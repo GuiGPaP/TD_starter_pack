@@ -1,0 +1,41 @@
+post:
+  summary: Typecheck DAT code with pyright
+  operationId: typecheck_dat
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - nodePath
+          properties:
+            nodePath:
+              type: string
+              description: 'Absolute path to the DAT node. e.g., "/project1/script1"'
+  responses:
+    "200":
+      description: Typecheck results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  name:
+                    type: string
+                  diagnosticCount:
+                    type: integer
+                  diagnostics:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/TypecheckDiagnostic
+              error:
+                type: string
+                nullable: true

@@ -1,7 +1,7 @@
 import type {
-	ConfigureInstancing200ResponseData,
-	CreateFeedbackLoop200ResponseData,
-	CreateGeometryComp200ResponseData,
+	ConfigureInstancing200Data as ConfigureInstancing200ResponseData,
+	CreateFeedbackLoop200Data as CreateFeedbackLoop200ResponseData,
+	CreateGeometryComp200Data as CreateGeometryComp200ResponseData,
 } from "../../../gen/endpoints/TouchDesignerAPI.js";
 import type { FormatterOptions } from "./responseFormatter.js";
 import {

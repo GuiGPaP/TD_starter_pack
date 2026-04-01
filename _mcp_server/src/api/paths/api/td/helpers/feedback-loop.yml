@@ -1,0 +1,57 @@
+post:
+  summary: Create a Feedback TOP loop
+  description: |
+    Create a Feedback TOP loop with cache, process, and feedback operators.
+    Wraps the td_helpers.network.setup_feedback_loop() helper.
+  operationId: create_feedback_loop
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - parentPath
+          properties:
+            parentPath:
+              type: string
+              description: "Path to the parent node (e.g., /project1)"
+            name:
+              type: string
+              default: sim
+              description: Base name for the feedback loop operators
+            x:
+              type: integer
+              default: 0
+              description: X position in the network
+            "y":
+              type: integer
+              default: 0
+              description: Y position in the network
+            processType:
+              type: string
+              default: glslTOP
+              description: "Operator type for the process step (e.g., glslTOP, compositeTOP)"
+  responses:
+    "200":
+      description: Feedback loop created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+                description: Whether the operation was successful
+              data:
+                type: object
+                nullable: true
+                description: Created feedback loop operator details
+              error:
+                type: string
+                nullable: true
+                description: Error message if the operation was not successful

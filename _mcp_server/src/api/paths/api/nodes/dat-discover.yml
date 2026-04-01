@@ -1,0 +1,78 @@
+get:
+  summary: Discover DAT candidates for agent workflows
+  description: >
+    Discover DAT candidates under a parent, classified by kind (python,
+    glsl, text, data). Agent-friendly endpoint that eliminates N+1 round-trips.
+  operationId: discover_dat_candidates
+  parameters:
+    - name: parentPath
+      description: 'Absolute path to the parent. e.g., "/project1"'
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: recursive
+      description: Search recursively into descendants
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+    - name: purpose
+      description: "Filter by DAT kind: python, glsl, text, data, or any"
+      in: query
+      required: false
+      schema:
+        type: string
+        default: any
+        enum:
+          - python
+          - glsl
+          - text
+          - data
+          - any
+  responses:
+    "200":
+      description: DAT discovery results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  parentPath:
+                    type: string
+                  purpose:
+                    type: string
+                  count:
+                    type: integer
+                  candidates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                        name:
+                          type: string
+                        opType:
+                          type: string
+                        kindGuess:
+                          type: string
+                        confidence:
+                          type: string
+                        why:
+                          type: string
+                        lineCount:
+                          type: integer
+                        parentComp:
+                          type: string
+                        isDocked:
+                          type: boolean
+              error:
+                type: string
+                nullable: true

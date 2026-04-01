@@ -1,13 +1,13 @@
 import { MCP_SERVER_VERSION } from "../../../core/version.js";
 import type {
-	ConnectNodes200ResponseData,
-	CopyNode200ResponseData,
-	CreateNode200ResponseData,
-	DeleteNode200ResponseData,
-	ExecNodeMethod200ResponseData,
-	GetTdInfo200ResponseData,
-	LayoutNodes200ResponseData,
-	UpdateNode200ResponseData,
+	ConnectNodes200Data as ConnectNodes200ResponseData,
+	CopyNode200Data as CopyNode200ResponseData,
+	CreateNode200Data as CreateNode200ResponseData,
+	DeleteNode200Data as DeleteNode200ResponseData,
+	ExecNodeMethod200Data as ExecNodeMethod200ResponseData,
+	GetTdInfo200Data as GetTdInfo200ResponseData,
+	LayoutNodes200Data as LayoutNodes200ResponseData,
+	UpdateNode200Data as UpdateNode200ResponseData,
 } from "../../../gen/endpoints/TouchDesignerAPI.js";
 import type { FormatterOptions } from "./responseFormatter.js";
 import {

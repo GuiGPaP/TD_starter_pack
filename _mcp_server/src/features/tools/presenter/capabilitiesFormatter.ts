@@ -1,4 +1,4 @@
-import type { GetCapabilities200ResponseData } from "../../../gen/endpoints/TouchDesignerAPI.js";
+import type { GetCapabilities200Data as GetCapabilities200ResponseData } from "../../../gen/endpoints/TouchDesignerAPI.js";
 import type { FormatterOptions } from "./responseFormatter.js";
 import {
 	finalizeFormattedText,

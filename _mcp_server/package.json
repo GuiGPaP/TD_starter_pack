@@ -39,8 +39,8 @@
 		"zod": "4.3.6"
 	},
 	"devDependencies": {
+		"@apidevtools/swagger-parser": "^12.1.0",
 		"@biomejs/biome": "2.4.6",
-		"@openapitools/openapi-generator-cli": "^2.30.2",
 		"@types/express": "^5.0.6",
 		"@types/jsdom": "^28.0.0",
 		"@types/mustache": "^4.2.6",
@@ -92,7 +92,7 @@
 		"version:mcp": "node ./scripts/syncMcpServerVersions.ts",
 		"sync:assets": "node scripts/syncTdAssets.ts",
 		"gen": "run-s gen:*",
-		"gen:webserver": "openapi-generator-cli generate -i ./src/api/index.yml -g python-flask -o ./td/modules/td_server -t ./src/templates/python-flask",
+		"gen:webserver": "node scripts/resolveOpenApi.ts",
 		"gen:handlers": "node td/genHandlers.js",
 		"gen:mcp": "orval --config ./orval.config.ts"
 	},

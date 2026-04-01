@@ -1,0 +1,68 @@
+get:
+  summary: Complete op() path references
+  description: >
+    Resolve op('...') style references from a context node. Supports
+    relative (noise1, ./sub, ../foo) and absolute (/project1/geo*) forms.
+  operationId: complete_op_paths
+  parameters:
+    - name: contextNodePath
+      description: 'Absolute path to the context node. e.g., "/project1/base1/script1"'
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: prefix
+      description: 'Prefix to complete. e.g., "noise", "./sub", "../foo", "/project1/geo*"'
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "*"
+    - name: limit
+      description: Maximum number of results to return
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+  responses:
+    "200":
+      description: Path completion results
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  contextNodePath:
+                    type: string
+                  prefix:
+                    type: string
+                  count:
+                    type: integer
+                  truncated:
+                    type: boolean
+                  note:
+                    type: string
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                        name:
+                          type: string
+                        opType:
+                          type: string
+                        family:
+                          type: string
+                        relativeRef:
+                          type: string
+              error:
+                type: string
+                nullable: true

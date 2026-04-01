@@ -1,0 +1,46 @@
+get:
+  summary: Get parameter schema for a node
+  description: >
+    Return parameter schema metadata (type, range, menu, default) for
+    a node. Eliminates guessing parameter names and valid values.
+  operationId: get_node_parameter_schema
+  parameters:
+    - name: nodePath
+      description: 'Absolute path to the node. e.g., "/project1/noise1"'
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: pattern
+      description: 'Glob pattern to filter parameter names. e.g., "instance*"'
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "*"
+  responses:
+    "200":
+      description: Parameter schema list
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  nodePath:
+                    type: string
+                  opType:
+                    type: string
+                  count:
+                    type: integer
+                  parameters:
+                    type: array
+                    items:
+                      $ref: ../../../index.yml#/components/schemas/ParameterSchema
+              error:
+                type: string
+                nullable: true

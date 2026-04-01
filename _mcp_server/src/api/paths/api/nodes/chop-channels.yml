@@ -1,0 +1,73 @@
+get:
+  summary: Get CHOP channel info
+  description: >
+    Return channel information for a CHOP node. Optionally includes
+    per-channel statistics (min, max, avg).
+  operationId: get_chop_channels
+  parameters:
+    - name: nodePath
+      description: 'Absolute path to the CHOP node. e.g., "/project1/noise1"'
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: pattern
+      description: 'Glob pattern to filter channel names. e.g., "chan*"'
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "*"
+    - name: includeStats
+      description: Include per-channel min/max/avg statistics
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+    - name: limit
+      description: Maximum number of channels to return
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 100
+  responses:
+    "200":
+      description: CHOP channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  nodePath:
+                    type: string
+                  numChannels:
+                    type: integer
+                  numSamples:
+                    type: integer
+                  sampleRate:
+                    type: number
+                  channels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        minVal:
+                          type: number
+                        maxVal:
+                          type: number
+                        avgVal:
+                          type: number
+                  truncated:
+                    type: boolean
+              error:
+                type: string
+                nullable: true

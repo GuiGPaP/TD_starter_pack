@@ -1,0 +1,17 @@
+description: A single pyright typecheck diagnostic
+type: object
+properties:
+  severity:
+    type: string
+    enum:
+      - error
+      - warning
+      - information
+  message:
+    type: string
+  line:
+    type: integer
+  column:
+    type: integer
+  rule:
+    type: string

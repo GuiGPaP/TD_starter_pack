@@ -1,0 +1,17 @@
+description: A single ruff lint diagnostic
+type: object
+properties:
+  code:
+    type: string
+  message:
+    type: string
+  line:
+    type: integer
+  column:
+    type: integer
+  endLine:
+    type: integer
+  endColumn:
+    type: integer
+  fixable:
+    type: boolean
