@@ -158,7 +158,9 @@ async function executeAssetDeploy(
 	path?: string;
 	status: string;
 }> {
-	const asset = registry.getById(id)!;
+	const asset = registry.getById(id);
+	if (!asset?.toxPath)
+		throw new Error(`Asset "${id}" not found or has no .tox file`);
 	// Manifest is narrowed to tox-asset by validateAssetForDeploy
 	const manifest = asset.manifest as Extract<
 		typeof asset.manifest,
@@ -168,7 +170,7 @@ async function executeAssetDeploy(
 		containerName,
 		manifest,
 		parentPath,
-		toxPath: asset.toxPath!,
+		toxPath: asset.toxPath,
 	};
 	const script = force
 		? generateForceDeployScript({ ...scriptOpts, force: true })
@@ -319,7 +321,9 @@ export function registerAssetTools(
 					);
 					if (validationError) return validationError;
 
-					const asset = registry.getById(id)!;
+					const asset = registry.getById(id);
+					if (!asset?.toxPath)
+						throw new Error(`Asset "${id}" not found or has no .tox file`);
 					const manifest = asset.manifest as Extract<
 						typeof asset.manifest,
 						{ kind: "tox-asset" }
