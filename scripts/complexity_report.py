@@ -95,7 +95,7 @@ def run_audit() -> dict:
         print("No files found to analyze.", file=sys.stderr)
         sys.exit(1)
 
-    results = lizard.analyze(files, threads=4)
+    results = lizard.analyze(files, threads=1)
 
     functions: list[dict] = []
     for file_info in results:
