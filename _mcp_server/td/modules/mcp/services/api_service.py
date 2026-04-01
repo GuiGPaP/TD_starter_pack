@@ -1972,7 +1972,106 @@ class TouchDesignerApiService(IApiService):
             }
         )
 
-    def complete_op_paths(  # noqa: C901
+    # ── complete_op_paths helpers ──────────────────────────────────
+
+    @staticmethod
+    def _make_match(node, rel_ref: str) -> dict:
+        return {
+            "path": node.path,
+            "name": node.name,
+            "opType": node.OPType,
+            "family": getattr(node, "family", ""),
+            "relativeRef": rel_ref,
+        }
+
+    @staticmethod
+    def _glob_pat(segment: str) -> str:
+        """Turn a segment into a glob pattern, appending '*' if needed."""
+        if not segment:
+            return "*"
+        return segment if "*" in segment else f"{segment}*"
+
+    @staticmethod
+    def _walk_segments(start_node, segments: list[str]):
+        """Walk down named segments from start_node, return final node or None."""
+        node = start_node
+        for seg in segments:
+            if node is None:
+                return None
+            found = None
+            for child in node.findChildren(name=seg, depth=1):
+                if child.name == seg:
+                    found = child
+                    break
+            node = found
+        return node
+
+    @staticmethod
+    def _collect_children(search_node, name_pattern: str, rel_prefix: str = "") -> list[dict]:
+        """Find children matching name_pattern under search_node."""
+        import fnmatch as _fnmatch
+
+        if search_node is None or not search_node.valid:
+            return []
+        make = TouchDesignerApiService._make_match
+        results = []
+        for child in search_node.findChildren(name="*", depth=1):
+            if _fnmatch.fnmatch(child.name, name_pattern):
+                rel_ref = f"{rel_prefix}{child.name}" if rel_prefix else child.name
+                results.append(make(child, rel_ref))
+        return results
+
+    def _complete_absolute(self, prefix: str) -> tuple[list[dict], str | None]:
+        parts = prefix.rstrip("/").rsplit("/", 1)
+        if len(parts) == 2:
+            parent_path, last_seg = parts
+            parent_path = parent_path or "/"
+            parent_node = td.op(parent_path)
+            if parent_node is None or not parent_node.valid:
+                return [], f"Parent not found: {parent_path}"
+            return self._collect_children(
+                parent_node, self._glob_pat(last_seg), f"{parent_path}/"
+            ), None
+        exact = td.op(prefix)
+        if exact is not None and exact.valid:
+            return [self._make_match(exact, prefix)], None
+        return [], None
+
+    def _complete_child(self, context, prefix: str) -> tuple[list[dict], str | None]:
+        remainder = prefix[2:]
+        is_comp = hasattr(context, "children")
+        search_node = context if is_comp else context.parent()
+        note = None if is_comp else "context is not a COMP, searched siblings instead"
+        if "/" in remainder:
+            segments = remainder.split("/")
+            search_node = self._walk_segments(search_node, segments[:-1])
+            last_seg = segments[-1]
+        else:
+            last_seg = remainder
+        return self._collect_children(search_node, self._glob_pat(last_seg), "./"), note
+
+    def _complete_parent(self, context, prefix: str) -> list[dict]:
+        remainder = prefix[3:]
+        parent = context.parent()
+        search_node = parent.parent() if parent is not None else None
+        return self._collect_children(search_node, self._glob_pat(remainder), "../")
+
+    def _complete_relative_multi(self, context, prefix: str) -> list[dict]:
+        segments = prefix.split("/")
+        search_node = self._walk_segments(context.parent(), segments[:-1])
+        rel_prefix = "/".join(segments[:-1]) + "/"
+        return self._collect_children(search_node, self._glob_pat(segments[-1]), rel_prefix)
+
+    def _complete_simple(self, context, prefix: str) -> list[dict]:
+        name_pat = self._glob_pat(prefix if prefix != "*" else "")
+        if prefix == "*":
+            name_pat = "*"
+        parent = context.parent()
+        return self._collect_children(parent, name_pat) if parent is not None else []
+
+    # ── main entry point ────────────────────────────────────────
+
+    def complete_op_paths(
         self, context_node_path: str, prefix: str = "*", limit: int = 50
     ) -> Result:
         """Resolve op('...') style paths from a context node."""
@@ -1980,111 +2079,19 @@ class TouchDesignerApiService(IApiService):
         if context is None or not context.valid:
             return error_result(f"Context node not found: {context_node_path}")
 
-        import fnmatch as _fnmatch
-
-        matches = []
         note = None
-
-        def _collect(search_node, name_pattern, rel_prefix=""):
-            """Find children matching name_pattern under search_node."""
-            if search_node is None or not search_node.valid:
-                return
-            children = search_node.findChildren(name="*", depth=1)
-            for child in children:
-                if _fnmatch.fnmatch(child.name, name_pattern):
-                    rel_ref = f"{rel_prefix}{child.name}" if rel_prefix else child.name
-                    matches.append(
-                        {
-                            "path": child.path,
-                            "name": child.name,
-                            "opType": child.OPType,
-                            "family": getattr(child, "family", ""),
-                            "relativeRef": rel_ref,
-                        }
-                    )
-
         if prefix.startswith("/"):
-            # Absolute path
-            parts = prefix.rstrip("/").rsplit("/", 1)
-            if len(parts) == 2:
-                parent_path, last_seg = parts
-                parent_path = parent_path or "/"
-                parent_node = td.op(parent_path)
-                if parent_node is None or not parent_node.valid:
-                    return error_result(f"Parent not found: {parent_path}")
-                name_pat = f"{last_seg}*" if "*" not in last_seg else last_seg
-                _collect(parent_node, name_pat, f"{parent_path}/")
-            else:
-                # Single segment like "/project1"
-                exact = td.op(prefix)
-                if exact is not None and exact.valid:
-                    matches.append(
-                        {
-                            "path": exact.path,
-                            "name": exact.name,
-                            "opType": exact.OPType,
-                            "family": getattr(exact, "family", ""),
-                            "relativeRef": prefix,
-                        }
-                    )
+            matches, err = self._complete_absolute(prefix)
+            if err:
+                return error_result(err)
         elif prefix.startswith("./"):
-            # Child of context
-            remainder = prefix[2:]
-            is_comp = hasattr(context, "children")
-            search_node = context if is_comp else context.parent()
-            if not is_comp:
-                note = "context is not a COMP, searched siblings instead"
-            if "/" in remainder:
-                # Multi-level: ./sub/foo
-                segments = remainder.split("/")
-                for seg in segments[:-1]:
-                    if search_node is None:
-                        break
-                    found = None
-                    for child in search_node.findChildren(name=seg, depth=1):
-                        if child.name == seg:
-                            found = child
-                            break
-                    search_node = found
-                last_seg = segments[-1]
-            else:
-                last_seg = remainder
-            name_pat = f"{last_seg}*" if last_seg and "*" not in last_seg else (last_seg or "*")
-            _collect(search_node, name_pat, "./")
+            matches, note = self._complete_child(context, prefix)
         elif prefix.startswith("../"):
-            # Sibling of parent
-            remainder = prefix[3:]
-            parent = context.parent()
-            if parent is not None:
-                grandparent = parent.parent()
-                search_node = grandparent
-            else:
-                search_node = None
-            name_pat = f"{remainder}*" if remainder and "*" not in remainder else (remainder or "*")
-            _collect(search_node, name_pat, "../")
+            matches = self._complete_parent(context, prefix)
         elif "/" in prefix:
-            # Relative multi-level: sub/foo
-            segments = prefix.split("/")
-            search_node = context.parent()
-            for seg in segments[:-1]:
-                if search_node is None:
-                    break
-                found = None
-                for child in search_node.findChildren(name=seg, depth=1):
-                    if child.name == seg:
-                        found = child
-                        break
-                search_node = found
-            last_seg = segments[-1]
-            name_pat = f"{last_seg}*" if "*" not in last_seg else last_seg
-            rel_prefix = "/".join(segments[:-1]) + "/"
-            _collect(search_node, name_pat, rel_prefix)
+            matches = self._complete_relative_multi(context, prefix)
         else:
-            # Simple name — search siblings and children
-            name_pat = f"{prefix}*" if prefix != "*" and "*" not in prefix else prefix
-            parent = context.parent()
-            if parent is not None:
-                _collect(parent, name_pat)
+            matches = self._complete_simple(context, prefix)
 
         truncated = len(matches) > limit
         matches = matches[:limit]
