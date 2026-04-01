@@ -7,6 +7,27 @@ import {
 
 type FormatterOpts = Pick<FormatterOptions, "detailLevel" | "responseFormat">;
 
+function pushVersionLine(
+	lines: string[],
+	v: TDVersionInfo,
+	detailLevel: string,
+): void {
+	if (detailLevel === "minimal") {
+		lines.push(`${v.id} — Python ${v.pythonVersion} [${v.supportStatus}]`);
+		return;
+	}
+	lines.push(
+		`**${v.label ?? v.id}** — Python ${v.pythonVersion} [${v.supportStatus}]`,
+	);
+	if (detailLevel !== "detailed") return;
+	if (v.highlights?.length)
+		lines.push(`  Highlights: ${v.highlights.join(", ")}`);
+	if (v.newOperators?.length)
+		lines.push(`  New operators: ${v.newOperators.join(", ")}`);
+	if (v.breakingChanges?.length)
+		lines.push(`  Breaking changes: ${v.breakingChanges.join("; ")}`);
+}
+
 /**
  * Format a list of TD versions for the list_versions tool.
  */
@@ -21,26 +42,8 @@ export function formatVersionList(
 	}
 
 	const lines: string[] = [`TouchDesigner Versions (${versions.length}):`, ""];
-
 	for (const v of versions) {
-		if (opts.detailLevel === "minimal") {
-			lines.push(`${v.id} — Python ${v.pythonVersion} [${v.supportStatus}]`);
-		} else {
-			lines.push(
-				`**${v.label ?? v.id}** — Python ${v.pythonVersion} [${v.supportStatus}]`,
-			);
-			if (opts.detailLevel === "detailed") {
-				if (v.highlights?.length) {
-					lines.push(`  Highlights: ${v.highlights.join(", ")}`);
-				}
-				if (v.newOperators?.length) {
-					lines.push(`  New operators: ${v.newOperators.join(", ")}`);
-				}
-				if (v.breakingChanges?.length) {
-					lines.push(`  Breaking changes: ${v.breakingChanges.join("; ")}`);
-				}
-			}
-		}
+		pushVersionLine(lines, v, opts.detailLevel);
 	}
 
 	return finalizeFormattedText(lines.join("\n"), opts, {
