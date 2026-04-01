@@ -83,7 +83,7 @@ import {
 } from "../presenter/index.js";
 import type { ExecAuditLog } from "../security/index.js";
 import { analyzeScript } from "../security/index.js";
-import type { ExecMode } from "../security/types.js";
+import type { AnalysisResult, ExecMode } from "../security/types.js";
 import { withLiveGuard } from "../toolGuards.js";
 import {
 	detailOnlyFormattingSchema,
@@ -290,6 +290,84 @@ const describeToolsSchema = detailOnlyFormattingSchema.extend({
 });
 type DescribeToolsParams = z.input<typeof describeToolsSchema>;
 
+// --- exec_python_script helpers ---
+
+function buildPreviewResponse(
+	analysis: AnalysisResult,
+	mode: ExecMode,
+	script: string,
+	startMs: number,
+	auditLog?: ExecAuditLog,
+) {
+	auditLog?.append({
+		allowed: analysis.allowed,
+		durationMs: Date.now() - startMs,
+		mode,
+		outcome: "previewed",
+		preview: true,
+		script,
+		violations: analysis.violations,
+	});
+
+	const lines = [
+		`Script preview (mode: ${mode})`,
+		"",
+		`Status: ${analysis.allowed ? "ALLOWED" : `BLOCKED (requires ${analysis.requiredMode})`}`,
+		`Confidence: ${analysis.confidence}`,
+	];
+	if (analysis.violations.length > 0) {
+		lines.push("", "Detected patterns:");
+		for (const v of analysis.violations) {
+			lines.push(
+				`  L${v.line}: ${v.snippet} [${v.category}] — ${v.description}`,
+			);
+		}
+	}
+	if (!analysis.allowed) {
+		lines.push(
+			"",
+			`Use mode="${analysis.requiredMode}" or mode="full-exec" to allow this script.`,
+		);
+	}
+	return { content: [{ text: lines.join("\n"), type: "text" as const }] };
+}
+
+function buildBlockedResponse(
+	analysis: AnalysisResult,
+	mode: ExecMode,
+	script: string,
+	startMs: number,
+	auditLog?: ExecAuditLog,
+) {
+	auditLog?.append({
+		allowed: false,
+		durationMs: Date.now() - startMs,
+		mode,
+		outcome: "blocked",
+		preview: false,
+		script,
+		violations: analysis.violations,
+	});
+
+	const lines = [
+		`execute_python_script: Script blocked by ${mode} mode.`,
+		"",
+		`Required mode: ${analysis.requiredMode}`,
+		"Violations:",
+	];
+	for (const v of analysis.violations) {
+		lines.push(`  L${v.line}: ${v.snippet} — ${v.description}`);
+	}
+	lines.push(
+		"",
+		`Use mode="${analysis.requiredMode}" or mode="full-exec" to allow this script.`,
+	);
+	return {
+		content: [{ text: lines.join("\n"), type: "text" as const }],
+		isError: true,
+	};
+}
+
 export function registerTdTools(
 	server: McpServer,
 	logger: ILogger,
@@ -465,92 +543,38 @@ export function registerTdTools(
 				} = params;
 				const mode: ExecMode = rawMode ?? "safe-write";
 				const startMs = Date.now();
-
-				// Analyze script against requested mode
 				const analysis = analyzeScript(scriptParams.script, mode);
 
-				// Preview mode: return analysis without executing
 				if (preview) {
-					auditLog?.append({
-						allowed: analysis.allowed,
-						durationMs: Date.now() - startMs,
+					return buildPreviewResponse(
+						analysis,
 						mode,
-						outcome: "previewed",
-						preview: true,
-						script: scriptParams.script,
-						violations: analysis.violations,
-					});
-
-					const lines = [
-						`Script preview (mode: ${mode})`,
-						"",
-						`Status: ${analysis.allowed ? "ALLOWED" : `BLOCKED (requires ${analysis.requiredMode})`}`,
-						`Confidence: ${analysis.confidence}`,
-					];
-					if (analysis.violations.length > 0) {
-						lines.push("", "Detected patterns:");
-						for (const v of analysis.violations) {
-							lines.push(
-								`  L${v.line}: ${v.snippet} [${v.category}] — ${v.description}`,
-							);
-						}
-					}
-					if (!analysis.allowed) {
-						lines.push(
-							"",
-							`Use mode="${analysis.requiredMode}" or mode="full-exec" to allow this script.`,
-						);
-					}
-					return {
-						content: [{ text: lines.join("\n"), type: "text" as const }],
-					};
-				}
-
-				// Mode guard: block if analysis says not allowed
-				if (!analysis.allowed) {
-					auditLog?.append({
-						allowed: false,
-						durationMs: Date.now() - startMs,
-						mode,
-						outcome: "blocked",
-						preview: false,
-						script: scriptParams.script,
-						violations: analysis.violations,
-					});
-
-					const lines = [
-						`execute_python_script: Script blocked by ${mode} mode.`,
-						"",
-						`Required mode: ${analysis.requiredMode}`,
-						"Violations:",
-					];
-					for (const v of analysis.violations) {
-						lines.push(`  L${v.line}: ${v.snippet} — ${v.description}`);
-					}
-					lines.push(
-						"",
-						`Use mode="${analysis.requiredMode}" or mode="full-exec" to allow this script.`,
+						scriptParams.script,
+						startMs,
+						auditLog,
 					);
-					return {
-						content: [{ text: lines.join("\n"), type: "text" as const }],
-						isError: true,
-					};
 				}
 
-				// Execute
+				if (!analysis.allowed) {
+					return buildBlockedResponse(
+						analysis,
+						mode,
+						scriptParams.script,
+						startMs,
+						auditLog,
+					);
+				}
+
 				try {
 					logger.sendLog({
 						data: `Executing script (mode=${mode}): ${scriptParams.script}`,
 						level: "debug",
 					});
-
 					const result = await tdClient.execPythonScript({
 						...scriptParams,
 						mode,
 					});
-					if (!result.success) {
-						throw result.error;
-					}
+					if (!result.success) throw result.error;
 
 					auditLog?.append({
 						allowed: true,
@@ -569,7 +593,6 @@ export function registerTdTools(
 							responseFormat,
 						},
 					);
-
 					return createToolResult(tdClient, formattedText);
 				} catch (error) {
 					auditLog?.append({
@@ -581,7 +604,6 @@ export function registerTdTools(
 						preview: false,
 						script: scriptParams.script,
 					});
-
 					return handleToolError(
 						error,
 						logger,
