@@ -95,6 +95,177 @@ function matchesQuery(entry: TDGlslPatternEntry, query: string): boolean {
 	return haystacks.some((h) => h.toLowerCase().includes(q));
 }
 
+// --- Deploy helpers ---
+
+type ToolResponse = {
+	content: Array<{ text: string; type: "text" }>;
+	isError?: boolean;
+};
+
+function validateDeployParams(
+	id: string,
+	parentPath: string,
+	registry: KnowledgeRegistry,
+): ToolResponse | undefined {
+	if (parentPath === "/") {
+		return {
+			content: [
+				{
+					text: 'Cannot deploy to root "/". Specify a valid parent path (e.g., /project1).',
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	const entry = registry.getById(id);
+	if (!entry || entry.kind !== "glsl-pattern") {
+		return {
+			content: [
+				{
+					text: `GLSL pattern not found: "${id}". Use search_glsl_patterns to discover available patterns.`,
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	const pattern = entry as TDGlslPatternEntry;
+	if (pattern.payload.type === "utility") {
+		return {
+			content: [
+				{
+					text: `Pattern "${id}" is a utility library (no main shader). Utility patterns provide reusable functions — they cannot be deployed as standalone operators.`,
+					type: "text" as const,
+				},
+			],
+			isError: true,
+		};
+	}
+	return undefined;
+}
+
+function buildGlslDryRunPlan(
+	pattern: TDGlslPatternEntry,
+	containerName: string,
+	parentPath: string,
+	id: string,
+): Record<string, unknown> {
+	return {
+		connections: pattern.payload.setup.connections ?? [],
+		containerName,
+		createdNodes: pattern.payload.setup.operators.map((op) => ({
+			family: op.family,
+			name: op.name,
+			type: op.type,
+		})),
+		parentPath,
+		patternId: id,
+		status: "dry_run" as const,
+		uniforms: pattern.payload.setup.uniforms ?? [],
+	};
+}
+
+async function executeGlslDeploy(
+	tdClient: TouchDesignerClient,
+	pattern: TDGlslPatternEntry,
+	containerName: string,
+	parentPath: string,
+): Promise<Record<string, unknown>> {
+	const script = generateGlslDeployScript({
+		containerName,
+		parentPath,
+		pattern,
+	});
+	const scriptResult = await tdClient.execPythonScript<{ result: string }>({
+		script,
+	});
+	if (!scriptResult.success) throw scriptResult.error;
+	try {
+		return JSON.parse(scriptResult.data.result as string);
+	} catch {
+		throw new Error(
+			`Failed to parse deploy script result: ${String(scriptResult.data.result)}`,
+		);
+	}
+}
+
+async function runGlslPostChecks(
+	tdClient: TouchDesignerClient,
+	deployResult: Record<string, unknown>,
+): Promise<void> {
+	if (
+		deployResult.status !== "deployed" ||
+		typeof deployResult.path !== "string"
+	)
+		return;
+
+	let postCheckStatus: string | undefined;
+
+	try {
+		const errResult = await tdClient.getNodeErrors({
+			nodePath: deployResult.path as string,
+		});
+		if (errResult.success && errResult.data) {
+			const errors = (errResult.data as { errors?: unknown[] }).errors ?? [];
+			if (errors.length > 0) {
+				deployResult.nodeErrorCount = errors.length;
+				postCheckStatus = "warnings";
+			}
+		}
+	} catch {
+		/* non-critical */
+	}
+
+	const shaderDatPaths = deployResult.shaderDatPaths as string[] | undefined;
+	if (shaderDatPaths && shaderDatPaths.length > 0) {
+		const glslValidation = await collectGlslValidation(
+			tdClient,
+			shaderDatPaths,
+		);
+		deployResult.glslValidation = glslValidation;
+		if (glslValidation.some((v) => v.valid === false)) {
+			postCheckStatus = "warnings";
+		}
+	}
+
+	if (postCheckStatus) deployResult.postCheckStatus = postCheckStatus;
+}
+
+async function collectGlslValidation(
+	tdClient: TouchDesignerClient,
+	datPaths: string[],
+): Promise<Array<Record<string, unknown>>> {
+	const results: Array<Record<string, unknown>> = [];
+	for (const datPath of datPaths) {
+		try {
+			const valResult = await tdClient.validateGlslDat({ nodePath: datPath });
+			if (valResult.success && valResult.data) {
+				const data = valResult.data as Record<string, unknown>;
+				const valid = data.valid ?? data.status === "valid";
+				results.push({
+					errors: valid ? [] : (data.errors ?? []),
+					path: datPath,
+					valid,
+				});
+			} else {
+				results.push({
+					path: datPath,
+					reason: "validation call failed",
+					status: "skipped",
+				});
+			}
+		} catch {
+			results.push({
+				path: datPath,
+				reason: "validation unavailable",
+				status: "skipped",
+			});
+		}
+	}
+	return results;
+}
+
 // --- Registration ---
 
 export function registerGlslPatternTools(
@@ -217,65 +388,23 @@ export function registerGlslPatternTools(
 					const { detailLevel, dryRun, id, name, parentPath, responseFormat } =
 						params;
 
-					// Block root path
-					if (parentPath === "/") {
-						return {
-							content: [
-								{
-									text: 'Cannot deploy to root "/". Specify a valid parent path (e.g., /project1).',
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
+					const validationError = validateDeployParams(
+						id,
+						parentPath,
+						registry,
+					);
+					if (validationError) return validationError;
 
-					// Resolve pattern
-					const entry = registry.getById(id);
-					if (!entry || entry.kind !== "glsl-pattern") {
-						return {
-							content: [
-								{
-									text: `GLSL pattern not found: "${id}". Use search_glsl_patterns to discover available patterns.`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
-					const pattern = entry as TDGlslPatternEntry;
-
-					// Reject utility patterns
-					if (pattern.payload.type === "utility") {
-						return {
-							content: [
-								{
-									text: `Pattern "${id}" is a utility library (no main shader). Utility patterns provide reusable functions — they cannot be deployed as standalone operators.`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
+					const pattern = registry.getById(id) as TDGlslPatternEntry;
 					const containerName = name ?? id;
 
-					// Dry-run: return plan without executing
 					if (dryRun) {
-						const plan = {
-							connections: pattern.payload.setup.connections ?? [],
+						const plan = buildGlslDryRunPlan(
+							pattern,
 							containerName,
-							createdNodes: pattern.payload.setup.operators.map((op) => ({
-								family: op.family,
-								name: op.name,
-								type: op.type,
-							})),
 							parentPath,
-							patternId: id,
-							status: "dry_run" as const,
-							uniforms: pattern.payload.setup.uniforms ?? [],
-						};
+							id,
+						);
 						const text = formatGlslDeployResult(plan, {
 							detailLevel,
 							responseFormat,
@@ -283,98 +412,13 @@ export function registerGlslPatternTools(
 						return { content: [{ text, type: "text" as const }] };
 					}
 
-					// Generate and execute Python script
-					const script = generateGlslDeployScript({
+					const deployResult = await executeGlslDeploy(
+						tdClient,
+						pattern,
 						containerName,
 						parentPath,
-						pattern,
-					});
-
-					const scriptResult = await tdClient.execPythonScript<{
-						result: string;
-					}>({ script });
-
-					if (!scriptResult.success) {
-						throw scriptResult.error;
-					}
-
-					let deployResult: Record<string, unknown>;
-					try {
-						deployResult = JSON.parse(scriptResult.data.result as string);
-					} catch {
-						throw new Error(
-							`Failed to parse deploy script result: ${String(scriptResult.data.result)}`,
-						);
-					}
-
-					// Post-checks (fail-soft — never block a successful deploy)
-					if (
-						deployResult.status === "deployed" &&
-						typeof deployResult.path === "string"
-					) {
-						let postCheckStatus: string | undefined;
-
-						// Post-check 1: node errors on container
-						try {
-							const errResult = await tdClient.getNodeErrors({
-								nodePath: deployResult.path as string,
-							});
-							if (errResult.success && errResult.data) {
-								const errors =
-									(errResult.data as { errors?: unknown[] }).errors ?? [];
-								if (errors.length > 0) {
-									deployResult.nodeErrorCount = errors.length;
-									postCheckStatus = "warnings";
-								}
-							}
-						} catch {
-							// Non-critical — skip
-						}
-
-						// Post-check 2: validate GLSL DATs (pixel + vertex only)
-						const shaderDatPaths = deployResult.shaderDatPaths as
-							| string[]
-							| undefined;
-						if (shaderDatPaths && shaderDatPaths.length > 0) {
-							const glslValidation: Array<Record<string, unknown>> = [];
-							for (const datPath of shaderDatPaths) {
-								try {
-									const valResult = await tdClient.validateGlslDat({
-										nodePath: datPath,
-									});
-									if (valResult.success && valResult.data) {
-										const data = valResult.data as Record<string, unknown>;
-										const valid = data.valid ?? data.status === "valid";
-										glslValidation.push({
-											errors: valid ? [] : (data.errors ?? []),
-											path: datPath,
-											valid,
-										});
-										if (!valid) {
-											postCheckStatus = "warnings";
-										}
-									} else {
-										glslValidation.push({
-											path: datPath,
-											reason: "validation call failed",
-											status: "skipped",
-										});
-									}
-								} catch {
-									glslValidation.push({
-										path: datPath,
-										reason: "validation unavailable",
-										status: "skipped",
-									});
-								}
-							}
-							deployResult.glslValidation = glslValidation;
-						}
-
-						if (postCheckStatus) {
-							deployResult.postCheckStatus = postCheckStatus;
-						}
-					}
+					);
+					await runGlslPostChecks(tdClient, deployResult);
 
 					const text = formatGlslDeployResult(deployResult, {
 						detailLevel,
