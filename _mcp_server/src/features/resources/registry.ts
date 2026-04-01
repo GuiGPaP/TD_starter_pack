@@ -115,6 +115,90 @@ export class KnowledgeRegistry {
 	}
 }
 
+function collectKindTerms(entry: TDKnowledgeEntry): string[] {
+	switch (entry.kind) {
+		case "python-module":
+			return [
+				entry.payload.canonicalName,
+				...entry.payload.members.map((m) => m.name),
+			];
+		case "operator":
+			return [
+				entry.payload.opType,
+				entry.payload.opFamily,
+				...entry.payload.parameters.map((par) => par.name),
+			];
+		case "glsl-pattern":
+			return [
+				entry.payload.type,
+				entry.payload.difficulty,
+				...(entry.payload.tags ?? []),
+			];
+		case "toolkit":
+			return [
+				entry.payload.name,
+				entry.payload.vendor,
+				entry.payload.opFamilyPrefix,
+				...(entry.payload.version ? [entry.payload.version] : []),
+			];
+		case "template":
+			return [
+				entry.payload.category,
+				...(entry.payload.difficulty ? [entry.payload.difficulty] : []),
+				...(entry.payload.tags ?? []),
+				...entry.payload.operators.flatMap((op) => [
+					op.opType,
+					op.family,
+					op.name,
+					...(op.role ? [op.role] : []),
+				]),
+			];
+		case "workflow":
+			return [
+				entry.payload.category,
+				...(entry.payload.difficulty ? [entry.payload.difficulty] : []),
+				...(entry.payload.tags ?? []),
+				...entry.payload.operators.flatMap((op) => [
+					op.opType,
+					op.family,
+					...(op.role ? [op.role] : []),
+				]),
+			];
+		case "tutorial":
+			return [
+				entry.payload.difficulty,
+				...entry.payload.tags,
+				...entry.payload.relatedOperators,
+				...entry.payload.sections.map((s) => s.title),
+			];
+		case "technique":
+			return [
+				entry.payload.category,
+				entry.payload.difficulty,
+				...entry.payload.tags,
+				...(entry.payload.operatorChain?.flatMap((op) => [
+					op.opType,
+					op.family,
+				]) ?? []),
+			];
+		case "lesson":
+			return [
+				entry.payload.category,
+				...entry.payload.tags,
+				...(entry.payload.symptom ? [entry.payload.symptom] : []),
+				...(entry.payload.cause ? [entry.payload.cause] : []),
+				...(entry.payload.fix ? [entry.payload.fix] : []),
+				...(entry.payload.recipe ? [entry.payload.recipe.description] : []),
+				...(entry.payload.operatorChain?.flatMap((op) => [
+					op.opType,
+					op.family,
+				]) ?? []),
+			];
+		default:
+			return [];
+	}
+}
+
 function matchesQuery(entry: TDKnowledgeEntry, query: string): boolean {
 	const haystacks = [
 		entry.id,
@@ -122,75 +206,7 @@ function matchesQuery(entry: TDKnowledgeEntry, query: string): boolean {
 		entry.content.summary,
 		...(entry.aliases ?? []),
 		...entry.searchKeywords,
+		...collectKindTerms(entry),
 	];
-
-	if (entry.kind === "python-module") {
-		haystacks.push(entry.payload.canonicalName);
-		for (const m of entry.payload.members) {
-			haystacks.push(m.name);
-		}
-	} else if (entry.kind === "operator") {
-		haystacks.push(entry.payload.opType);
-		haystacks.push(entry.payload.opFamily);
-		for (const p of entry.payload.parameters) {
-			haystacks.push(p.name);
-		}
-	} else if (entry.kind === "glsl-pattern") {
-		haystacks.push(entry.payload.type);
-		haystacks.push(entry.payload.difficulty);
-		if (entry.payload.tags) {
-			haystacks.push(...entry.payload.tags);
-		}
-	} else if (entry.kind === "toolkit") {
-		haystacks.push(entry.payload.name);
-		haystacks.push(entry.payload.vendor);
-		haystacks.push(entry.payload.opFamilyPrefix);
-		if (entry.payload.version) haystacks.push(entry.payload.version);
-	} else if (entry.kind === "template") {
-		haystacks.push(entry.payload.category);
-		if (entry.payload.difficulty) haystacks.push(entry.payload.difficulty);
-		if (entry.payload.tags) haystacks.push(...entry.payload.tags);
-		for (const op of entry.payload.operators) {
-			haystacks.push(op.opType, op.family, op.name);
-			if (op.role) haystacks.push(op.role);
-		}
-	} else if (entry.kind === "workflow") {
-		haystacks.push(entry.payload.category);
-		if (entry.payload.difficulty) haystacks.push(entry.payload.difficulty);
-		if (entry.payload.tags) haystacks.push(...entry.payload.tags);
-		for (const op of entry.payload.operators) {
-			haystacks.push(op.opType, op.family);
-			if (op.role) haystacks.push(op.role);
-		}
-	} else if (entry.kind === "tutorial") {
-		haystacks.push(entry.payload.difficulty);
-		haystacks.push(...entry.payload.tags);
-		haystacks.push(...entry.payload.relatedOperators);
-		for (const s of entry.payload.sections) {
-			haystacks.push(s.title);
-		}
-	} else if (entry.kind === "technique") {
-		haystacks.push(entry.payload.category);
-		haystacks.push(entry.payload.difficulty);
-		haystacks.push(...entry.payload.tags);
-		if (entry.payload.operatorChain) {
-			for (const op of entry.payload.operatorChain) {
-				haystacks.push(op.opType, op.family);
-			}
-		}
-	} else if (entry.kind === "lesson") {
-		haystacks.push(entry.payload.category);
-		haystacks.push(...entry.payload.tags);
-		if (entry.payload.symptom) haystacks.push(entry.payload.symptom);
-		if (entry.payload.cause) haystacks.push(entry.payload.cause);
-		if (entry.payload.fix) haystacks.push(entry.payload.fix);
-		if (entry.payload.recipe) haystacks.push(entry.payload.recipe.description);
-		if (entry.payload.operatorChain) {
-			for (const op of entry.payload.operatorChain) {
-				haystacks.push(op.opType, op.family);
-			}
-		}
-	}
-
 	return haystacks.some((h) => h.toLowerCase().includes(query));
 }
