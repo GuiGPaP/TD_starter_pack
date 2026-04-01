@@ -20,16 +20,11 @@ export function formatVersionList(
 		return finalizeFormattedText("No versions found.", opts);
 	}
 
-	const lines: string[] = [
-		`TouchDesigner Versions (${versions.length}):`,
-		"",
-	];
+	const lines: string[] = [`TouchDesigner Versions (${versions.length}):`, ""];
 
 	for (const v of versions) {
 		if (opts.detailLevel === "minimal") {
-			lines.push(
-				`${v.id} — Python ${v.pythonVersion} [${v.supportStatus}]`,
-			);
+			lines.push(`${v.id} — Python ${v.pythonVersion} [${v.supportStatus}]`);
 		} else {
 			lines.push(
 				`**${v.label ?? v.id}** — Python ${v.pythonVersion} [${v.supportStatus}]`,
@@ -39,14 +34,10 @@ export function formatVersionList(
 					lines.push(`  Highlights: ${v.highlights.join(", ")}`);
 				}
 				if (v.newOperators?.length) {
-					lines.push(
-						`  New operators: ${v.newOperators.join(", ")}`,
-					);
+					lines.push(`  New operators: ${v.newOperators.join(", ")}`);
 				}
 				if (v.breakingChanges?.length) {
-					lines.push(
-						`  Breaking changes: ${v.breakingChanges.join("; ")}`,
-					);
+					lines.push(`  Breaking changes: ${v.breakingChanges.join("; ")}`);
 				}
 			}
 		}

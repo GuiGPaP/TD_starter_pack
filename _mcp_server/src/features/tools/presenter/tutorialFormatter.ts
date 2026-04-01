@@ -5,7 +5,10 @@ import {
 	mergeFormatterOptions,
 } from "./responseFormatter.js";
 
-type FormatterOpts = Pick<FormatterOptions, "detailLevel" | "responseFormat"> & {
+type FormatterOpts = Pick<
+	FormatterOptions,
+	"detailLevel" | "responseFormat"
+> & {
 	query?: string;
 };
 
@@ -19,40 +22,26 @@ export function formatTutorialSearchResults(
 	const opts = mergeFormatterOptions(options);
 
 	if (results.length === 0) {
-		const hint = options?.query
-			? ` matching "${options.query}"`
-			: "";
-		return finalizeFormattedText(
-			`No tutorials found${hint}.`,
-			opts,
-		);
+		const hint = options?.query ? ` matching "${options.query}"` : "";
+		return finalizeFormattedText(`No tutorials found${hint}.`, opts);
 	}
 
-	const lines: string[] = [
-		`Tutorials (${results.length} results):`,
-		"",
-	];
+	const lines: string[] = [`Tutorials (${results.length} results):`, ""];
 
 	for (const entry of results) {
 		const p = entry.payload;
 
 		if (opts.detailLevel === "minimal") {
-			lines.push(
-				`${entry.title} (${p.difficulty}, ${p.estimatedTime})`,
-			);
+			lines.push(`${entry.title} (${p.difficulty}, ${p.estimatedTime})`);
 		} else {
-			lines.push(
-				`**${entry.title}** (${p.difficulty}, ${p.estimatedTime})`,
-			);
+			lines.push(`**${entry.title}** (${p.difficulty}, ${p.estimatedTime})`);
 			lines.push(`  ID: ${entry.id}`);
 			if (opts.detailLevel === "detailed") {
 				lines.push(`  ${entry.content.summary}`);
 				if (p.tags.length > 0) {
 					lines.push(`  Tags: ${p.tags.join(", ")}`);
 				}
-				lines.push(
-					`  Sections: ${p.sections.map((s) => s.title).join(" → ")}`,
-				);
+				lines.push(`  Sections: ${p.sections.map((s) => s.title).join(" → ")}`);
 			}
 		}
 	}
@@ -91,9 +80,7 @@ export function formatTutorialDetail(
 		lines.push(`- **Prerequisites:** ${p.prerequisites.join(", ")}`);
 	}
 	if (p.relatedOperators.length > 0) {
-		lines.push(
-			`- **Related operators:** ${p.relatedOperators.join(", ")}`,
-		);
+		lines.push(`- **Related operators:** ${p.relatedOperators.join(", ")}`);
 	}
 
 	for (const section of p.sections) {

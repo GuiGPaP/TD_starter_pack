@@ -89,7 +89,12 @@ function loadTransitions(
 ): TransitionsData {
 	if (cachedTransitions) return cachedTransitions;
 
-	const filePath = join(knowledgePath, "..", "workflow-transitions", "transitions.json");
+	const filePath = join(
+		knowledgePath,
+		"..",
+		"workflow-transitions",
+		"transitions.json",
+	);
 	if (!existsSync(filePath)) {
 		logger.sendLog({
 			data: `Transitions file not found: ${filePath}`,

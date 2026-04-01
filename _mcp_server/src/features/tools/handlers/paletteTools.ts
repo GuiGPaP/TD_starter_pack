@@ -130,7 +130,7 @@ export function registerPaletteTools(
 
 					const scriptResult = await tdClient.execPythonScript<{
 						result: string;
-					}>({ script, mode: "full-exec" });
+					}>({ mode: "full-exec", script });
 
 					auditLog?.append({
 						allowed: true,

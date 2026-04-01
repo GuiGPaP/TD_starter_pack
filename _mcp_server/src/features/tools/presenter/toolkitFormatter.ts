@@ -63,10 +63,7 @@ export function formatToolkitDetail(
 	}
 
 	if (p.detectionPaths && p.detectionPaths.length > 0) {
-		lines.push(
-			"",
-			`**Detection paths:** ${p.detectionPaths.join(", ")}`,
-		);
+		lines.push("", `**Detection paths:** ${p.detectionPaths.join(", ")}`);
 	}
 
 	return finalizeFormattedText(lines.join("\n"), opts, {
@@ -122,15 +119,13 @@ export function formatToolkitSearchResults(
 /**
  * Format detect_toolkits results.
  */
-export function formatDetectResult(
-	detected: DetectedToolkit[],
-): string {
+export function formatDetectResult(detected: DetectedToolkit[]): string {
 	if (detected.length === 0) {
 		return "No toolkits detected in the current project.";
 	}
 
 	const lines: string[] = [
-		`## Toolkit Detection Results`,
+		"## Toolkit Detection Results",
 		"",
 		`Checked ${detected.length} toolkit(s):`,
 		"",

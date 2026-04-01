@@ -40,9 +40,7 @@ const searchTechniquesSchema = detailOnlyFormattingSchema.extend({
 	query: z
 		.string()
 		.min(1)
-		.describe(
-			"Search query — matches against title, tags, operators, category",
-		)
+		.describe("Search query — matches against title, tags, operators, category")
 		.optional(),
 	tags: z.array(z.string()).describe("Filter by tags (OR logic)").optional(),
 });
@@ -105,9 +103,7 @@ export function registerTechniqueTools(
 			try {
 				const allTechniques = registry
 					.getByKind("technique")
-					.filter(
-						(e): e is TDTechniqueEntry => e.kind === "technique",
-					);
+					.filter((e): e is TDTechniqueEntry => e.kind === "technique");
 
 				const matches = allTechniques.filter((e) =>
 					matchesTechniqueQuery(e, params),
@@ -123,11 +119,7 @@ export function registerTechniqueTools(
 				});
 				return { content: [{ text, type: "text" as const }] };
 			} catch (error) {
-				return handleToolError(
-					error,
-					logger,
-					TOOL_NAMES.SEARCH_TECHNIQUES,
-				);
+				return handleToolError(error, logger, TOOL_NAMES.SEARCH_TECHNIQUES);
 			}
 		},
 	);
@@ -157,20 +149,13 @@ export function registerTechniqueTools(
 					};
 				}
 
-				const text = formatTechniqueDetail(
-					entry as TDTechniqueEntry,
-					{
-						detailLevel: params.detailLevel ?? "summary",
-						responseFormat: params.responseFormat,
-					},
-				);
+				const text = formatTechniqueDetail(entry as TDTechniqueEntry, {
+					detailLevel: params.detailLevel ?? "summary",
+					responseFormat: params.responseFormat,
+				});
 				return { content: [{ text, type: "text" as const }] };
 			} catch (error) {
-				return handleToolError(
-					error,
-					logger,
-					TOOL_NAMES.GET_TECHNIQUE,
-				);
+				return handleToolError(error, logger, TOOL_NAMES.GET_TECHNIQUE);
 			}
 		},
 	);

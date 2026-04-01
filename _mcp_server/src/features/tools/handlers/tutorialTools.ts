@@ -29,9 +29,7 @@ const searchTutorialsSchema = detailOnlyFormattingSchema.extend({
 	query: z
 		.string()
 		.min(1)
-		.describe(
-			"Search query — matches against title, tags, sections, operators",
-		)
+		.describe("Search query — matches against title, tags, sections, operators")
 		.optional(),
 	tags: z.array(z.string()).describe("Filter by tags (OR logic)").optional(),
 });
@@ -92,9 +90,7 @@ export function registerTutorialTools(
 			try {
 				const allTutorials = registry
 					.getByKind("tutorial")
-					.filter(
-						(e): e is TDTutorialEntry => e.kind === "tutorial",
-					);
+					.filter((e): e is TDTutorialEntry => e.kind === "tutorial");
 
 				const matches = allTutorials.filter((e) =>
 					matchesTutorialQuery(e, params),
@@ -110,11 +106,7 @@ export function registerTutorialTools(
 				});
 				return { content: [{ text, type: "text" as const }] };
 			} catch (error) {
-				return handleToolError(
-					error,
-					logger,
-					TOOL_NAMES.SEARCH_TUTORIALS,
-				);
+				return handleToolError(error, logger, TOOL_NAMES.SEARCH_TUTORIALS);
 			}
 		},
 	);
@@ -144,20 +136,13 @@ export function registerTutorialTools(
 					};
 				}
 
-				const text = formatTutorialDetail(
-					entry as TDTutorialEntry,
-					{
-						detailLevel: params.detailLevel ?? "summary",
-						responseFormat: params.responseFormat,
-					},
-				);
+				const text = formatTutorialDetail(entry as TDTutorialEntry, {
+					detailLevel: params.detailLevel ?? "summary",
+					responseFormat: params.responseFormat,
+				});
 				return { content: [{ text, type: "text" as const }] };
 			} catch (error) {
-				return handleToolError(
-					error,
-					logger,
-					TOOL_NAMES.GET_TUTORIAL,
-				);
+				return handleToolError(error, logger, TOOL_NAMES.GET_TUTORIAL);
 			}
 		},
 	);

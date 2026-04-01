@@ -5,7 +5,10 @@ import {
 	mergeFormatterOptions,
 } from "./responseFormatter.js";
 
-type FormatterOpts = Pick<FormatterOptions, "detailLevel" | "responseFormat"> & {
+type FormatterOpts = Pick<
+	FormatterOptions,
+	"detailLevel" | "responseFormat"
+> & {
 	query?: string;
 };
 
@@ -19,31 +22,19 @@ export function formatTechniqueSearchResults(
 	const opts = mergeFormatterOptions(options);
 
 	if (results.length === 0) {
-		const hint = options?.query
-			? ` matching "${options.query}"`
-			: "";
-		return finalizeFormattedText(
-			`No techniques found${hint}.`,
-			opts,
-		);
+		const hint = options?.query ? ` matching "${options.query}"` : "";
+		return finalizeFormattedText(`No techniques found${hint}.`, opts);
 	}
 
-	const lines: string[] = [
-		`Techniques (${results.length} results):`,
-		"",
-	];
+	const lines: string[] = [`Techniques (${results.length} results):`, ""];
 
 	for (const entry of results) {
 		const p = entry.payload;
 
 		if (opts.detailLevel === "minimal") {
-			lines.push(
-				`${entry.title} [${p.category}] (${p.difficulty})`,
-			);
+			lines.push(`${entry.title} [${p.category}] (${p.difficulty})`);
 		} else {
-			lines.push(
-				`**${entry.title}** [${p.category}] (${p.difficulty})`,
-			);
+			lines.push(`**${entry.title}** [${p.category}] (${p.difficulty})`);
 			lines.push(`  ID: ${entry.id}`);
 			if (opts.detailLevel === "detailed") {
 				lines.push(`  ${entry.content.summary}`);
