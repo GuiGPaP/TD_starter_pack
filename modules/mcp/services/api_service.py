@@ -932,17 +932,59 @@ class TouchDesignerApiService(IApiService):
 
         return success_result({"result": processed_result})
 
+    # ── exec_python_script helpers ─────────────────────────────────
+
+    @staticmethod
+    def _build_exec_namespace(mode: str) -> dict:
+        """Build the execution namespace with TD bindings and builtins."""
+        local_vars = {
+            "op": td.op,
+            "ops": td.ops,
+            "me": td.op.me if hasattr(td, "op") and hasattr(td.op, "me") else None,
+            "parent": (_p.path if hasattr(td, "op") and (_p := td.op("..")) else None),
+            "project": td.project if hasattr(td, "project") else None,
+            "td": td,
+            "helpers": _build_helpers_namespace(),
+        }
+        if mode == "full-exec":
+            namespace = {"__builtins__": _builtins_mod.__dict__}
+        else:
+            namespace = {"__builtins__": _SAFE_BUILTINS}
+        namespace.update(local_vars)
+        return namespace
+
+    @staticmethod
+    def _try_extract_last_result(script: str, namespace: dict) -> None:
+        """Try to eval the last line of a multi-line script as an implicit result."""
+        _NON_EXPR_PREFIXES = ("import", "from", "#", "if", "def", "class", "for", "while")
+        lines = script.strip().split("\n")
+        if not lines:
+            return
+        last_expr = lines[-1].strip()
+        if not last_expr or last_expr.startswith(_NON_EXPR_PREFIXES):
+            return
+        try:
+            namespace["result"] = eval(last_expr, namespace, namespace)
+            log_message(f"Extracted result from last line: {last_expr}", LogLevel.DEBUG)
+        except Exception:
+            pass
+
+    @staticmethod
+    def _format_exec_error(script: str, exec_error: Exception) -> str:
+        """Format a script execution error with traceback and numbered source."""
+        tb = traceback.format_exc()
+        script_lines = script.split("\n")
+        numbered = "\n".join(f"  {i + 1}: {line}" for i, line in enumerate(script_lines[:30]))
+        if len(script_lines) > 30:
+            numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
+        return (
+            f"Script execution failed: {exec_error!s}\n\n"
+            f"Traceback:\n{tb}\n"
+            f"Script ({len(script_lines)} lines):\n{numbered}"
+        )
+
     def exec_python_script(self, script: str, mode: str = "safe-write") -> Result:
-        """Execute a Python script directly in TouchDesigner
-
-        Args:
-            script (str): The Python script to execute
-            mode (str): Execution mode — "read-only", "safe-write", or "full-exec"
-
-        Returns:
-            Result: Success result with execution output or error result with message
-        """
-        # Validate and enforce mode
+        """Execute a Python script directly in TouchDesigner."""
         if mode not in _VALID_MODES:
             return error_result(
                 f"Invalid mode {mode!r}. Must be one of: {', '.join(sorted(_VALID_MODES))}"
@@ -962,22 +1004,8 @@ class TouchDesignerApiService(IApiService):
             )
 
         no_result_sentinel = object()
-        local_vars = {
-            "op": td.op,
-            "ops": td.ops,
-            "me": td.op.me if hasattr(td, "op") and hasattr(td.op, "me") else None,
-            "parent": (_p.path if hasattr(td, "op") and (_p := td.op("..")) else None),
-            "project": td.project if hasattr(td, "project") else None,
-            "td": td,
-            "result": no_result_sentinel,
-            "helpers": _build_helpers_namespace(),
-        }
-        # Build namespace with restricted builtins for non-full-exec modes
-        if mode == "full-exec":
-            namespace = {"__builtins__": _builtins_mod.__dict__}
-        else:
-            namespace = {"__builtins__": _SAFE_BUILTINS}
-        namespace.update(local_vars)
+        namespace = self._build_exec_namespace(mode)
+        namespace["result"] = no_result_sentinel
 
         stdout_capture = io.StringIO()
         stderr_capture = io.StringIO()
@@ -992,54 +1020,17 @@ class TouchDesignerApiService(IApiService):
                     result = eval(script, namespace, namespace)
                     namespace["result"] = result
                     evaluated = True
-                    log_message(
-                        f"Script evaluated. Raw result: {result!r}",
-                        LogLevel.DEBUG,
-                    )
+                    log_message(f"Script evaluated. Raw result: {result!r}", LogLevel.DEBUG)
                 except SyntaxError:
                     pass
 
             if not evaluated:
                 try:
                     exec(script, namespace, namespace)
-
                     if namespace.get("result") is no_result_sentinel:
-                        lines = script.strip().split("\n")
-                        if lines:
-                            last_expr = lines[-1].strip()
-                            if last_expr and not last_expr.startswith(
-                                (
-                                    "import",
-                                    "from",
-                                    "#",
-                                    "if",
-                                    "def",
-                                    "class",
-                                    "for",
-                                    "while",
-                                )
-                            ):
-                                try:
-                                    namespace["result"] = eval(last_expr, namespace, namespace)
-                                    log_message(
-                                        f"Extracted result from last line: {last_expr}",
-                                        LogLevel.DEBUG,
-                                    )
-                                except Exception:
-                                    pass
+                        self._try_extract_last_result(script, namespace)
                 except Exception as exec_error:
-                    tb = traceback.format_exc()
-                    script_lines = script.split("\n")
-                    numbered = "\n".join(
-                        f"  {i + 1}: {line}" for i, line in enumerate(script_lines[:30])
-                    )
-                    if len(script_lines) > 30:
-                        numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
-                    return error_result(
-                        f"Script execution failed: {exec_error!s}\n\n"
-                        f"Traceback:\n{tb}\n"
-                        f"Script ({len(script_lines)} lines):\n{numbered}"
-                    )
+                    return error_result(self._format_exec_error(script, exec_error))
 
         result = namespace.get("result")
         if result is no_result_sentinel:
@@ -1253,49 +1244,7 @@ class TouchDesignerApiService(IApiService):
             }
 
             if fix:
-                with open(tmp_path, encoding="utf-8") as f:
-                    fixed_code = f.read()
-                if fixed_code != code:
-                    # Re-lint the fixed code to find remaining issues
-                    relint_cmd = [ruff, "check", "--output-format", "json", tmp_path]
-                    try:
-                        relint_proc = subprocess.run(
-                            relint_cmd,
-                            capture_output=True,
-                            text=True,
-                            cwd=str(project_root),
-                            timeout=30,
-                        )
-                        relint_raw = (
-                            json.loads(relint_proc.stdout) if relint_proc.stdout.strip() else []
-                        )
-                    except (subprocess.TimeoutExpired, json.JSONDecodeError):
-                        relint_raw = []
-                    remaining = self._parse_ruff_diagnostics(relint_raw)
-                    result_data["remainingDiagnostics"] = remaining
-                    result_data["remainingDiagnosticCount"] = len(remaining)
-
-                    if dry_run:
-                        diff_lines = list(
-                            difflib.unified_diff(
-                                code.splitlines(keepends=True),
-                                fixed_code.splitlines(keepends=True),
-                                fromfile=f"{node.path} (original)",
-                                tofile=f"{node.path} (fixed)",
-                            )
-                        )
-                        result_data["diff"] = "".join(diff_lines)
-                        result_data["applied"] = False
-                    else:
-                        node.text = fixed_code
-                        result_data["applied"] = True
-                    result_data["fixed"] = True
-                    result_data["fixedText"] = fixed_code
-                else:
-                    result_data["fixed"] = False
-                    result_data["remainingDiagnostics"] = []
-                    result_data["remainingDiagnosticCount"] = 0
-                    result_data["applied"] = False
+                self._apply_lint_fix(result_data, tmp_path, code, node, ruff, project_root, dry_run)
 
             return success_result(result_data)
 
@@ -1304,6 +1253,60 @@ class TouchDesignerApiService(IApiService):
                 os.close(fd)
             with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
+
+    def _apply_lint_fix(
+        self,
+        result_data: dict[str, Any],
+        tmp_path: str,
+        original_code: str,
+        node: Any,
+        ruff: str,
+        project_root: Path,
+        dry_run: bool,
+    ) -> None:
+        """Apply ruff fix results to result_data (mutates in place)."""
+        with open(tmp_path, encoding="utf-8") as f:
+            fixed_code = f.read()
+        if fixed_code == original_code:
+            result_data["fixed"] = False
+            result_data["remainingDiagnostics"] = []
+            result_data["remainingDiagnosticCount"] = 0
+            result_data["applied"] = False
+            return
+
+        # Re-lint the fixed code to find remaining issues
+        relint_cmd = [ruff, "check", "--output-format", "json", tmp_path]
+        try:
+            relint_proc = subprocess.run(
+                relint_cmd,
+                capture_output=True,
+                text=True,
+                cwd=str(project_root),
+                timeout=30,
+            )
+            relint_raw = json.loads(relint_proc.stdout) if relint_proc.stdout.strip() else []
+        except (subprocess.TimeoutExpired, json.JSONDecodeError):
+            relint_raw = []
+        remaining = self._parse_ruff_diagnostics(relint_raw)
+        result_data["remainingDiagnostics"] = remaining
+        result_data["remainingDiagnosticCount"] = len(remaining)
+
+        if dry_run:
+            diff_lines = list(
+                difflib.unified_diff(
+                    original_code.splitlines(keepends=True),
+                    fixed_code.splitlines(keepends=True),
+                    fromfile=f"{node.path} (original)",
+                    tofile=f"{node.path} (fixed)",
+                )
+            )
+            result_data["diff"] = "".join(diff_lines)
+            result_data["applied"] = False
+        else:
+            node.text = fixed_code
+            result_data["applied"] = True
+        result_data["fixed"] = True
+        result_data["fixedText"] = fixed_code
 
     def format_dat(self, node_path: str, dry_run: bool = False) -> Result:
         """Format the .text content of a DAT operator using ruff format"""
@@ -1562,11 +1565,9 @@ class TouchDesignerApiService(IApiService):
             }
         )
 
-    def _check_glsl_td_errors(self, dat_node: Any) -> tuple[list[dict[str, object]], bool] | None:
-        """Check for GLSL errors via connected GLSL TOP/MAT in the same parent.
-
-        Returns (diagnostics, valid) or None if no GLSL operator found.
-        """
+    @staticmethod
+    def _find_connected_glsl_op(dat_node: Any) -> Any | None:
+        """Find the GLSL TOP/MAT that references dat_node in the same parent."""
         parent_attr = getattr(dat_node, "parent", None)
         parent = parent_attr() if parent_attr is not None and callable(parent_attr) else None
         if parent is None:
@@ -1576,38 +1577,37 @@ class TouchDesignerApiService(IApiService):
         if children is None:
             return None
 
+        dat_path = getattr(dat_node, "path", "")
         dat_name = getattr(dat_node, "name", "")
         glsl_op_types = ("glslTOP", "glslmultiTOP", "glslMAT")
-        glsl_op = None
+        dat_par_names = ("dat", "glsldat", "pixeldat", "vertexdat", "computedat")
 
         for child in children:
-            op_type = getattr(child, "OPType", "")
-            if op_type not in glsl_op_types:
+            if getattr(child, "OPType", "") not in glsl_op_types:
                 continue
-            # Check if this GLSL operator references our DAT
-            # by looking at its parameters (dat, glsldat, pixeldat, vertexdat, etc.)
-            for par_name in ("dat", "glsldat", "pixeldat", "vertexdat", "computedat"):
-                par = getattr(child.par, par_name, None) if hasattr(child, "par") else None
-                if par is not None:
-                    par_val = getattr(par, "eval", lambda: None)()
-                    if par_val is not None:
-                        ref_path = getattr(par_val, "path", str(par_val))
-                        if ref_path == getattr(dat_node, "path", ""):
-                            glsl_op = child
-                            break
-                        # Also check by name reference
-                        ref_name = getattr(par_val, "name", str(par_val))
-                        if ref_name == dat_name:
-                            glsl_op = child
-                            break
-            if glsl_op is not None:
-                break
+            if not hasattr(child, "par"):
+                continue
+            for par_name in dat_par_names:
+                par = getattr(child.par, par_name, None)
+                if par is None:
+                    continue
+                par_val = getattr(par, "eval", lambda: None)()
+                if par_val is None:
+                    continue
+                ref = getattr(par_val, "path", str(par_val))
+                if ref == dat_path or getattr(par_val, "name", str(par_val)) == dat_name:
+                    return child
+        return None
 
+    def _check_glsl_td_errors(self, dat_node: Any) -> tuple[list[dict[str, object]], bool] | None:
+        """Check for GLSL errors via connected GLSL TOP/MAT in the same parent.
+
+        Returns (diagnostics, valid) or None if no GLSL operator found.
+        """
+        glsl_op = self._find_connected_glsl_op(dat_node)
         if glsl_op is None:
             return None
 
-        # Get errors from the GLSL operator
-        diagnostics: list[dict[str, object]] = []
         error_output: str = ""
         errors_fn = getattr(glsl_op, "errors", None)
         if errors_fn is not None and callable(errors_fn):
@@ -1617,13 +1617,12 @@ class TouchDesignerApiService(IApiService):
         if not error_output:
             return ([], True)
 
-        # Parse error lines into diagnostics
+        diagnostics: list[dict[str, object]] = []
         for line in error_output.strip().split("\n"):
             line = line.strip()
             if not line:
                 continue
-            diag: dict[str, object] = self._parse_glsl_error_line(line)
-            diagnostics.append(diag)
+            diagnostics.append(self._parse_glsl_error_line(line))
 
         return (diagnostics, len(diagnostics) == 0)
 
