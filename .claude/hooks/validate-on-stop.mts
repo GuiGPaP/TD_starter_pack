@@ -72,7 +72,7 @@ function checkPython(repoRoot: string): CheckResult[] {
 	return [
 		runCheck("ruff check modules/", "uv run ruff check modules/", repoRoot),
 		runCheck("ruff format modules/", "uv run ruff format --check modules/", repoRoot),
-		runCheck("pyright modules/", "uv run pyright", repoRoot),
+		runCheck("pyright modules/", "uv run python -m pyright", repoRoot),
 	];
 }
 
@@ -91,7 +91,7 @@ function checkTDDocker(repoRoot: string): CheckResult[] {
 	return [
 		runCheck("ruff check TDDocker/python/", "uv run ruff check python/", dockerDir),
 		runCheck("ruff format TDDocker/python/", "uv run ruff format --check python/", dockerDir),
-		runCheck("pyright TDDocker/", "uv run pyright", dockerDir),
+		runCheck("pyright TDDocker/", "uv run python -m pyright", dockerDir),
 	];
 }
 

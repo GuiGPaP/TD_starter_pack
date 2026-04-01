@@ -15,7 +15,7 @@ fmt:
 
 # Type check
 typecheck:
-    uv run pyright
+    uv run python -m pyright
 
 # Run tests
 test:
