@@ -92,7 +92,7 @@ exclude = [
 ]
 
 [tool.ruff.lint.mccabe]
-max-complexity = 18
+max-complexity = 15
 
 [tool.ruff.lint.isort]
 known-first-party = ["mcp", "utils"]
