@@ -6,12 +6,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/run-hook.js .claude/hooks/guard-destructive.mts",
+            "command": "bash -lc 'cd \"$(git rev-parse --show-toplevel)\" && node .claude/hooks/run-hook.js .claude/hooks/guard-destructive.mts'",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash .claude/hooks/pre-commit-lint.sh",
+            "command": "bash -lc 'cd \"$(git rev-parse --show-toplevel)\" && bash .claude/hooks/pre-commit-lint.sh'",
             "timeout": 30
           }
         ]
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/post-edit-lint.sh",
+            "command": "bash -lc 'cd \"$(git rev-parse --show-toplevel)\" && bash .claude/hooks/post-edit-lint.sh'",
             "timeout": 10
           }
         ]
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/run-hook.js .claude/hooks/validate-on-stop.mts",
+            "command": "bash -lc 'cd \"$(git rev-parse --show-toplevel)\" && node .claude/hooks/run-hook.js .claude/hooks/validate-on-stop.mts'",
             "timeout": 60
           }
         ]
