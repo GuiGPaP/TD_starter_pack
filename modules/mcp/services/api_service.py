@@ -1972,7 +1972,7 @@ class TouchDesignerApiService(IApiService):
             }
         )
 
-    def complete_op_paths(
+    def complete_op_paths(  # noqa: C901
         self, context_node_path: str, prefix: str = "*", limit: int = 50
     ) -> Result:
         """Resolve op('...') style paths from a context node."""

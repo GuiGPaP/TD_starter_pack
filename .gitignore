@@ -27,5 +27,8 @@ TDImportCache/
 _mcp_server/data/td-knowledge/toolkits/
 _mcp_server/data/introspection/
 
+# Complexity audit reports (ephemeral)
+reports/complexity/
+
 # TDDocker generated files
 TDDocker/td-overlay.yml

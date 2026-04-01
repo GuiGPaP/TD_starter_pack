@@ -25,7 +25,10 @@ line-length = 100
 src = ["python"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 18
 
 [tool.pyright]
 pythonVersion = "3.11"

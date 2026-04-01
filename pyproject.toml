@@ -11,6 +11,7 @@ dev = [
   "pytest>=8",
   "pytest-cov>=5",
   "pytest-randomly>=1.2",
+  "lizard>=1.17",
 ]
 # deps td_server nécessaires pour collecter ses tests
 td-server = [
@@ -56,6 +57,7 @@ select = [
   "ARG",    # unused arguments
   "ISC",    # implicit string concat
   "TC",     # type-checking imports
+  "C901",   # mccabe complexity
 ]
 ignore = [
   "E101",   # mixed spaces and tabs (TD uses tabs)
@@ -88,6 +90,9 @@ exclude = [
   "modules/td_server/openapi_server/*",
   "modules/mcp/controllers/generated_handlers.py",
 ]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 18
 
 [tool.ruff.lint.isort]
 known-first-party = ["mcp", "utils"]

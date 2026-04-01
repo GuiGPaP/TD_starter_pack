@@ -29,6 +29,10 @@ sync-check:
 sync:
     uv run python scripts/sync_modules.py --sync
 
+# Cyclomatic complexity audit (full repo)
+complexity:
+    uv run python scripts/complexity_report.py
+
 # All checks
 check: lint typecheck sync-check
 
