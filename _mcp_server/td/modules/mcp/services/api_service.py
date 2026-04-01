@@ -81,10 +81,14 @@ _FULL_EXEC_PATTERNS: list[tuple[_re.Pattern[str], str]] = [
     (_re.compile(r"\burllib\b"), "urllib usage requires full-exec"),
     (_re.compile(r"\brequests\."), "requests usage requires full-exec"),
     (_re.compile(r"\b(sys\.exit|quit|exit)\s*\("), "sys.exit/quit/exit requires full-exec"),
-    (_re.compile(r"\bimport\s+(os|subprocess|shutil|pathlib|tempfile)\b"),
-     "import os/subprocess/shutil requires full-exec"),
-    (_re.compile(r"\bfrom\s+(os|subprocess|shutil|pathlib|tempfile)\b"),
-     "from os/subprocess/shutil requires full-exec"),
+    (
+        _re.compile(r"\bimport\s+(os|subprocess|shutil|pathlib|tempfile)\b"),
+        "import os/subprocess/shutil requires full-exec",
+    ),
+    (
+        _re.compile(r"\bfrom\s+(os|subprocess|shutil|pathlib|tempfile)\b"),
+        "from os/subprocess/shutil requires full-exec",
+    ),
 ]
 
 _MODE_RANK = {"read-only": 0, "safe-write": 1, "full-exec": 2}
@@ -104,9 +108,7 @@ def _check_script_mode(script: str, requested_mode: str) -> tuple[bool, list[str
 
     # Strip Python comments before scanning
     lines = script.split("\n")
-    stripped = "\n".join(
-        line.split("#")[0] if "#" in line else line for line in lines
-    )
+    stripped = "\n".join(line.split("#")[0] if "#" in line else line for line in lines)
 
     if rank < _MODE_RANK["safe-write"]:
         for pat, desc in _SAFE_WRITE_PATTERNS:
@@ -122,24 +124,75 @@ def _check_script_mode(script: str, requested_mode: str) -> tuple[bool, list[str
 
 # Builtins allowlist — excludes __import__, open, eval, exec, compile
 _SAFE_BUILTINS_NAMES = [
-    "True", "False", "None",
-    "abs", "all", "any", "bin", "bool", "bytearray", "bytes",
-    "callable", "chr", "classmethod", "complex",
-    "delattr", "dict", "dir", "divmod",
-    "enumerate", "filter", "float", "format", "frozenset",
-    "getattr", "globals", "hasattr", "hash", "hex",
-    "id", "int", "isinstance", "issubclass", "iter",
-    "len", "list", "map", "max", "memoryview", "min",
-    "next", "object", "oct", "ord", "pow", "print",
-    "property", "range", "repr", "reversed", "round",
-    "set", "setattr", "slice", "sorted", "staticmethod",
-    "str", "sum", "super", "tuple", "type", "vars", "zip",
+    "True",
+    "False",
+    "None",
+    "abs",
+    "all",
+    "any",
+    "bin",
+    "bool",
+    "bytearray",
+    "bytes",
+    "callable",
+    "chr",
+    "classmethod",
+    "complex",
+    "delattr",
+    "dict",
+    "dir",
+    "divmod",
+    "enumerate",
+    "filter",
+    "float",
+    "format",
+    "frozenset",
+    "getattr",
+    "globals",
+    "hasattr",
+    "hash",
+    "hex",
+    "id",
+    "int",
+    "isinstance",
+    "issubclass",
+    "iter",
+    "len",
+    "list",
+    "map",
+    "max",
+    "memoryview",
+    "min",
+    "next",
+    "object",
+    "oct",
+    "ord",
+    "pow",
+    "print",
+    "property",
+    "range",
+    "repr",
+    "reversed",
+    "round",
+    "set",
+    "setattr",
+    "slice",
+    "sorted",
+    "staticmethod",
+    "str",
+    "sum",
+    "super",
+    "tuple",
+    "type",
+    "vars",
+    "zip",
     # __import__ and open are needed for import statements and file reading.
     # Dangerous usage is blocked by pattern enforcement:
     #   - __import__() direct call → full-exec pattern
     #   - import os/subprocess/shutil → full-exec pattern
     #   - open() with write mode → full-exec pattern
-    "__import__", "open",
+    "__import__",
+    "open",
 ]
 _SAFE_BUILTINS = {
     name: getattr(_builtins_mod, name)
@@ -148,7 +201,7 @@ _SAFE_BUILTINS = {
 }
 
 
-def _build_helpers_namespace():  # noqa: ANN202
+def _build_helpers_namespace():
     """Build a SimpleNamespace of helper functions for script execution."""
     from td_helpers.mcp_helpers import (
         connect,
@@ -699,20 +752,14 @@ class TouchDesignerApiService(IApiService):
             return error_result(f"Target parent not found: {target_parent_path}")
 
         if not target.isCOMP:
-            return error_result(
-                f"Target must be a COMP, got {target.OPType}: {target_parent_path}"
-            )
+            return error_result(f"Target must be a COMP, got {target.OPType}: {target_parent_path}")
 
         if name and td.op(f"{target_parent_path}/{name}"):
-            return error_result(
-                f"Name already taken in {target_parent_path}: {name}"
-            )
+            return error_result(f"Name already taken in {target_parent_path}: {name}")
 
         copied = target.copy(source, name=name)
         if copied is None or not copied.valid:
-            return error_result(
-                f"Failed to copy {source_path} into {target_parent_path}"
-            )
+            return error_result(f"Failed to copy {source_path} into {target_parent_path}")
 
         if x is not None and y is not None:
             copied.nodeX = int(x)
@@ -762,28 +809,26 @@ class TouchDesignerApiService(IApiService):
         out_connectors = from_node.outputConnectors
         if from_output < 0 or from_output >= len(out_connectors):
             return error_result(
-                f"Output index {from_output} out of range "
-                f"(node has {len(out_connectors)} outputs)"
+                f"Output index {from_output} out of range (node has {len(out_connectors)} outputs)"
             )
 
         in_connectors = to_node.inputConnectors
         if to_input < 0 or to_input >= len(in_connectors):
             return error_result(
-                f"Input index {to_input} out of range "
-                f"(node has {len(in_connectors)} inputs)"
+                f"Input index {to_input} out of range (node has {len(in_connectors)} inputs)"
             )
 
-        to_node.inputConnectors[to_input].connect(
-            from_node.outputConnectors[from_output]
-        )
+        to_node.inputConnectors[to_input].connect(from_node.outputConnectors[from_output])
 
-        return success_result({
-            "from": from_path,
-            "to": to_path,
-            "fromOutput": from_output,
-            "toInput": to_input,
-            "family": from_node.family,
-        })
+        return success_result(
+            {
+                "from": from_path,
+                "to": to_path,
+                "fromOutput": from_output,
+                "toInput": to_input,
+                "family": from_node.family,
+            }
+        )
 
     def layout_nodes(
         self,
@@ -841,20 +886,22 @@ class TouchDesignerApiService(IApiService):
         else:
             sp = spacing if spacing is not None else 200
             result = layout_grid(
-                nodes, spacing_x=sp, spacing_y=150,
-                start_x=start_x, start_y=start_y,
+                nodes,
+                spacing_x=sp,
+                spacing_y=150,
+                start_x=start_x,
+                start_y=start_y,
             )
 
-        positioned = [
-            {"path": n.path, "nodeX": x, "nodeY": y}
-            for n, x, y in result
-        ]
+        positioned = [{"path": n.path, "nodeX": x, "nodeY": y} for n, x, y in result]
 
-        return success_result({
-            "nodes": positioned,
-            "mode": mode,
-            "spacing": sp,
-        })
+        return success_result(
+            {
+                "nodes": positioned,
+                "mode": mode,
+                "spacing": sp,
+            }
+        )
 
     def exec_node_method(self, node_path: str, method: str, args: list, kwargs: dict) -> Result:
         """Call method on the specified node"""
@@ -903,9 +950,11 @@ class TouchDesignerApiService(IApiService):
 
         allowed, violations = _check_script_mode(script, mode)
         if not allowed:
-            needed = "full-exec" if any(
-                pat.search(script) for pat, _ in _FULL_EXEC_PATTERNS
-            ) else "safe-write"
+            needed = (
+                "full-exec"
+                if any(pat.search(script) for pat, _ in _FULL_EXEC_PATTERNS)
+                else "safe-write"
+            )
             return error_result(
                 f"Script blocked by mode={mode!r}. Violations:\n"
                 + "\n".join(f"  - {v}" for v in violations)
@@ -937,87 +986,73 @@ class TouchDesignerApiService(IApiService):
             contextlib.redirect_stdout(stdout_capture),
             contextlib.redirect_stderr(stderr_capture),
         ):
+            evaluated = False
             if "\n" not in script and ";" not in script:
                 try:
                     result = eval(script, namespace, namespace)
                     namespace["result"] = result
-                    processed_result = self._process_method_result(result)
-
+                    evaluated = True
                     log_message(
                         f"Script evaluated. Raw result: {result!r}",
                         LogLevel.DEBUG,
                     )
-
-                    stdout_val = stdout_capture.getvalue()
-                    stderr_val = stderr_capture.getvalue()
-
-                    return success_result(
-                        {
-                            "result": processed_result,
-                            "stdout": stdout_val,
-                            "stderr": stderr_val,
-                        }
-                    )
                 except SyntaxError:
                     pass
 
-            try:
-                exec(script, namespace, namespace)
+            if not evaluated:
+                try:
+                    exec(script, namespace, namespace)
 
-                if namespace.get("result") is no_result_sentinel:
-                    lines = script.strip().split("\n")
-                    if lines:
-                        last_expr = lines[-1].strip()
-                        if last_expr and not last_expr.startswith(
-                            (
-                                "import",
-                                "from",
-                                "#",
-                                "if",
-                                "def",
-                                "class",
-                                "for",
-                                "while",
-                            )
-                        ):
-                            try:
-                                namespace["result"] = eval(last_expr, namespace, namespace)
-                                log_message(
-                                    f"Extracted result from last line: {last_expr}",
-                                    LogLevel.DEBUG,
+                    if namespace.get("result") is no_result_sentinel:
+                        lines = script.strip().split("\n")
+                        if lines:
+                            last_expr = lines[-1].strip()
+                            if last_expr and not last_expr.startswith(
+                                (
+                                    "import",
+                                    "from",
+                                    "#",
+                                    "if",
+                                    "def",
+                                    "class",
+                                    "for",
+                                    "while",
                                 )
-                            except Exception:
-                                pass
+                            ):
+                                try:
+                                    namespace["result"] = eval(last_expr, namespace, namespace)
+                                    log_message(
+                                        f"Extracted result from last line: {last_expr}",
+                                        LogLevel.DEBUG,
+                                    )
+                                except Exception:
+                                    pass
+                except Exception as exec_error:
+                    tb = traceback.format_exc()
+                    script_lines = script.split("\n")
+                    numbered = "\n".join(
+                        f"  {i + 1}: {line}" for i, line in enumerate(script_lines[:30])
+                    )
+                    if len(script_lines) > 30:
+                        numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
+                    return error_result(
+                        f"Script execution failed: {exec_error!s}\n\n"
+                        f"Traceback:\n{tb}\n"
+                        f"Script ({len(script_lines)} lines):\n{numbered}"
+                    )
 
-                result = namespace.get("result")
-                if result is no_result_sentinel:
-                    result = None
-                processed_result = self._process_method_result(result)
+        result = namespace.get("result")
+        if result is no_result_sentinel:
+            result = None
+        processed_result = self._process_method_result(result)
 
-                stdout_val = stdout_capture.getvalue()
-                stderr_val = stderr_capture.getvalue()
-
-                return success_result(
-                    {
-                        "result": processed_result,
-                        "stdout": stdout_val,
-                        "stderr": stderr_val,
-                    }
-                )
-            except Exception as exec_error:
-                tb = traceback.format_exc()
-                script_lines = script.split("\n")
-                numbered = "\n".join(
-                    f"  {i + 1}: {line}"
-                    for i, line in enumerate(script_lines[:30])
-                )
-                if len(script_lines) > 30:
-                    numbered += f"\n  ... ({len(script_lines) - 30} more lines)"
-                return error_result(
-                    f"Script execution failed: {exec_error!s}\n\n"
-                    f"Traceback:\n{tb}\n"
-                    f"Script ({len(script_lines)} lines):\n{numbered}"
-                )
+        return success_result(
+            {
+                "result": processed_result,
+                "stdout": stdout_capture.getvalue(),
+                "stderr": stderr_capture.getvalue(),
+            }
+        )
 
     def update_node(self, node_path: str, properties: dict[str, Any]) -> Result:
         """Update properties of the node at the specified path"""

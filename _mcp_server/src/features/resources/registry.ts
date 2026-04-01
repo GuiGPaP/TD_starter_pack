@@ -90,8 +90,14 @@ export class KnowledgeRegistry {
 	/**
 	 * Return a lightweight index filtered to entries of a given kind.
 	 */
-	getIndexByKind(kind: string): Array<{ id: string; title: string; kind: string }> {
-		return this.getByKind(kind).map((e) => ({ id: e.id, kind: e.kind, title: e.title }));
+	getIndexByKind(
+		kind: string,
+	): Array<{ id: string; title: string; kind: string }> {
+		return this.getByKind(kind).map((e) => ({
+			id: e.id,
+			kind: e.kind,
+			title: e.title,
+		}));
 	}
 
 	/**
