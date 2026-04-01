@@ -2,9 +2,9 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import type { TdNode } from "../../src/gen/endpoints/TouchDesignerAPI";
 import { TouchDesignerClient } from "../../src/tdClient/touchDesignerClient";
 
-const PROJECT_PATH = "/project1";
-const SANDBOX_NAME = "test_base_comp";
-const SANDBOX_PATH = `${PROJECT_PATH}/${SANDBOX_NAME}`;
+const SANDBOX_PARENT = "/";
+const SANDBOX_NAME = "_mcp_test_sandbox";
+const SANDBOX_PATH = `/${SANDBOX_NAME}`;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -28,7 +28,7 @@ async function ensureSandbox(client: TouchDesignerClient): Promise<void> {
 	await client.createNode({
 		nodeName: SANDBOX_NAME,
 		nodeType: "baseCOMP",
-		parentPath: PROJECT_PATH,
+		parentPath: SANDBOX_PARENT,
 	});
 }
 
