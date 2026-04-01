@@ -95,60 +95,55 @@ def extract_routes(schema: dict[str, Any] | None = None) -> list[RouteDefinition
     return routes
 
 
+def _match_parametric(route: RouteDefinition, path: str) -> dict[str, str] | None:
+    """Try to match a parametric route pattern against a path.
+
+    Returns extracted path_params on success, None on failure.
+    """
+    pattern_parts = route.path_pattern.split("/")
+    path_parts = path.split("/")
+
+    if len(pattern_parts) > len(path_parts) and all(
+        "{" not in p for p in pattern_parts[len(path_parts) :]
+    ):
+        return None
+
+    path_params: dict[str, str] = {}
+
+    for i, (pattern_part, path_part) in enumerate(zip(pattern_parts, path_parts, strict=False)):
+        if not pattern_part and not path_part:
+            continue
+
+        if "{" in pattern_part and "}" in pattern_part:
+            param_name = pattern_part[1:-1]
+            if i == len(pattern_parts) - 1 and i < len(path_parts) - 1:
+                path_params[param_name] = "/".join([path_part, *path_parts[i + 1 :]])
+                return path_params
+            path_params[param_name] = path_part
+        elif pattern_part != path_part:
+            return None
+
+    if len(pattern_parts) <= len(path_parts):
+        return path_params
+    return None
+
+
 def match_route(method: str, path: str, routes: list[RouteDefinition]) -> RouteMatch | None:
-    """
-    Match request method and path to a route definition
+    """Match request method and path to a route definition."""
+    upper_method = method.upper()
 
-    Args:
-        method: HTTP method of the request (GET, POST, etc.)
-        path: URL path of the request
-        routes: List of route definitions to match against
-
-    Returns:
-        RouteMatch if a matching route is found, None otherwise
-    """
+    # Exact match first
     for route in routes:
-        if route.method == method.upper() and route.path_pattern == path:
+        if route.method == upper_method and route.path_pattern == path:
             return RouteMatch(route=route, path_params={})
 
+    # Parametric match
     for route in routes:
-        if route.method != method.upper():
+        if route.method != upper_method or "{" not in route.path_pattern:
             continue
-
-        if "{" not in route.path_pattern:
-            continue
-
-        path_params = {}
-
-        pattern_parts = route.path_pattern.split("/")
-        path_parts = path.split("/")
-
-        if len(pattern_parts) > len(path_parts) and all(
-            "{" not in p for p in pattern_parts[len(path_parts) :]
-        ):
-            continue
-
-        match = True
-
-        for i, (pattern_part, path_part) in enumerate(zip(pattern_parts, path_parts, strict=False)):
-            if not pattern_part and not path_part:
-                continue
-
-            if "{" in pattern_part and "}" in pattern_part:
-                param_name = pattern_part[1:-1]
-
-                if i == len(pattern_parts) - 1 and i < len(path_parts) - 1:
-                    param_value = "/".join([path_part, *path_parts[i + 1 :]])
-                    path_params[param_name] = param_value
-                    match = True
-                    break
-                path_params[param_name] = path_part
-            elif pattern_part != path_part:
-                match = False
-                break
-
-        if match and len(pattern_parts) <= len(path_parts):
-            return RouteMatch(route=route, path_params=path_params)
+        params = _match_parametric(route, path)
+        if params is not None:
+            return RouteMatch(route=route, path_params=params)
 
     return None
 
