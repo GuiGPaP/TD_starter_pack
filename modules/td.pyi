@@ -91,16 +91,26 @@ class OP:
     numRows: int
     numCols: int
     # COMP attributes
+    isCOMP: bool
+    isSOP: bool
+    isTOP: bool
+    isCHOP: bool
+    isDAT: bool
+    isMAT: bool
     extensions: list[Any]
 
     def parent(self, *args: Any) -> OP | None: ...
     def pars(self, pattern: str = ...) -> list[Par]: ...
     def create(self, node_type: str, node_name: str | None = None) -> OP | None: ...
+    def copy(self, op: OP, name: str | None = None, includeDocked: bool = True) -> OP | None: ...
     def destroy(self) -> None: ...
     def findChildren(
         self,
         name: str | None = None,
         depth: int | None = None,
+        tags: list[str] | None = None,
+        type: type | None = None,
+        maxDepth: int | None = None,
     ) -> list[OP]: ...
     def errors(self, recurse: bool = False) -> str: ...
     def chan(self, index: int | str) -> Channel | None: ...
