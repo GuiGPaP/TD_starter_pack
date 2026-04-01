@@ -190,6 +190,79 @@ export function registerPerfTools(
 	);
 }
 
+function pushGlobalSection(
+	lines: string[],
+	global: Record<string, unknown>,
+): void {
+	lines.push(`**Cook Rate:** ${global.cookRate} FPS`);
+	lines.push(`**Real Time:** ${global.realTime}`);
+
+	const perfChop = global.performCHOP as
+		| { path: string; channels: Record<string, number> }
+		| undefined;
+	if (perfChop) {
+		pushPerformChopSection(lines, perfChop);
+	}
+	lines.push("");
+}
+
+function pushPerformChopSection(
+	lines: string[],
+	perfChop: { path: string; channels: Record<string, number> },
+): void {
+	const ch = perfChop.channels;
+	lines.push(`\n**Perform CHOP** (${perfChop.path}):`);
+	if (ch.fps !== undefined) lines.push(`  FPS: ${ch.fps}`);
+	if (ch.msec !== undefined) lines.push(`  Frame time: ${ch.msec}ms`);
+	if (ch.cpumsec !== undefined) lines.push(`  CPU time: ${ch.cpumsec}ms`);
+	if (ch.dropped_frames !== undefined)
+		lines.push(`  Dropped frames: ${ch.dropped_frames}`);
+	if (ch.gpu_mem_used !== undefined)
+		lines.push(`  GPU memory: ${ch.gpu_mem_used}MB`);
+	if (ch.cpu_mem_used !== undefined)
+		lines.push(`  CPU memory: ${ch.cpu_mem_used}MB`);
+}
+
+function formatMemorySize(cpuMem: number, gpuMem: number): string {
+	const mem = cpuMem + gpuMem;
+	if (mem > 1048576) return `${(mem / 1048576).toFixed(1)}MB`;
+	if (mem > 1024) return `${(mem / 1024).toFixed(0)}KB`;
+	return `${mem}B`;
+}
+
+function pushOperatorsTable(
+	lines: string[],
+	operators: Array<Record<string, unknown>>,
+	scope: string,
+	topN: number,
+	totalScanned: number | undefined,
+): void {
+	if (operators.length === 0) {
+		lines.push(`No operators found in \`${scope}\``);
+		return;
+	}
+	lines.push(
+		`**Operators in \`${scope}\`** (${operators.length}/${totalScanned ?? "?"} shown, top ${topN}):\n`,
+	);
+	lines.push(
+		"| Operator | Type | Frame Cost | CPU Cook | GPU Cook | Memory | Cooks |",
+	);
+	lines.push(
+		"|----------|------|-----------|----------|----------|--------|-------|",
+	);
+
+	for (const op of operators) {
+		const memStr = formatMemorySize(
+			(op.cpuMemory as number) || 0,
+			(op.gpuMemory as number) || 0,
+		);
+		lines.push(
+			`| ${op.name} | ${op.type} | ${op.frameCostMs}ms | ${op.cpuCookTime}ms | ${op.gpuCookTime}ms | ${memStr} | ${op.totalCooks} |`,
+		);
+	}
+	lines.push("");
+}
+
 function formatPerformanceResult(
 	data: Record<string, unknown>,
 	scope: string,
@@ -197,64 +270,20 @@ function formatPerformanceResult(
 ): string {
 	const lines: string[] = ["## Performance Report\n"];
 
-	// Global metrics
 	const global = data.global as Record<string, unknown> | undefined;
-	if (global) {
-		lines.push(`**Cook Rate:** ${global.cookRate} FPS`);
-		lines.push(`**Real Time:** ${global.realTime}`);
+	if (global) pushGlobalSection(lines, global);
 
-		const perfChop = global.performCHOP as
-			| { path: string; channels: Record<string, number> }
-			| undefined;
-		if (perfChop) {
-			const ch = perfChop.channels;
-			lines.push(`\n**Perform CHOP** (${perfChop.path}):`);
-			if (ch.fps !== undefined) lines.push(`  FPS: ${ch.fps}`);
-			if (ch.msec !== undefined) lines.push(`  Frame time: ${ch.msec}ms`);
-			if (ch.cpumsec !== undefined) lines.push(`  CPU time: ${ch.cpumsec}ms`);
-			if (ch.dropped_frames !== undefined)
-				lines.push(`  Dropped frames: ${ch.dropped_frames}`);
-			if (ch.gpu_mem_used !== undefined)
-				lines.push(`  GPU memory: ${ch.gpu_mem_used}MB`);
-			if (ch.cpu_mem_used !== undefined)
-				lines.push(`  CPU memory: ${ch.cpu_mem_used}MB`);
-		}
-		lines.push("");
-	}
-
-	// Per-operator table
 	const operators = data.operators as
 		| Array<Record<string, unknown>>
 		| undefined;
-	const totalScanned = data.totalScanned as number | undefined;
-	if (operators && operators.length > 0) {
-		lines.push(
-			`**Operators in \`${scope}\`** (${operators.length}/${totalScanned ?? "?"} shown, top ${topN}):\n`,
+	if (operators) {
+		pushOperatorsTable(
+			lines,
+			operators,
+			scope,
+			topN,
+			data.totalScanned as number | undefined,
 		);
-		lines.push(
-			"| Operator | Type | Frame Cost | CPU Cook | GPU Cook | Memory | Cooks |",
-		);
-		lines.push(
-			"|----------|------|-----------|----------|----------|--------|-------|",
-		);
-
-		for (const op of operators) {
-			const mem =
-				((op.cpuMemory as number) || 0) + ((op.gpuMemory as number) || 0);
-			const memStr =
-				mem > 1048576
-					? `${(mem / 1048576).toFixed(1)}MB`
-					: mem > 1024
-						? `${(mem / 1024).toFixed(0)}KB`
-						: `${mem}B`;
-
-			lines.push(
-				`| ${op.name} | ${op.type} | ${op.frameCostMs}ms | ${op.cpuCookTime}ms | ${op.gpuCookTime}ms | ${memStr} | ${op.totalCooks} |`,
-			);
-		}
-		lines.push("");
-	} else if (operators) {
-		lines.push(`No operators found in \`${scope}\``);
 	}
 
 	return lines.join("\n");
