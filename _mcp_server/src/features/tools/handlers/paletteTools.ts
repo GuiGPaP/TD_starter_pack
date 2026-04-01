@@ -94,92 +94,27 @@ export function registerPaletteTools(
 			async (params: IndexPaletteParams) => {
 				const { detailLevel, force = false, responseFormat } = params;
 				try {
-					// Get TD version for cache key
 					const infoResult = await tdClient.getTdInfo();
-					if (!infoResult.success) {
-						throw infoResult.error;
-					}
+					if (!infoResult.success) throw infoResult.error;
 					const tdVersion = String(infoResult.data.version ?? "unknown");
 
-					// Check cache
-					const cacheDir = resolveIndexCacheDir();
-					const cachePath = cacheDir
-						? join(cacheDir, indexFileName(tdVersion))
-						: null;
-
-					if (!force && cachePath) {
-						const cached = readIndex(cachePath);
-						if (cached) {
-							logger.sendLog({
-								data: `Palette index cache hit for TD ${tdVersion} (${cached.entryCount} entries)`,
-								level: "info",
-							});
-							const text = formatIndexResult(cached, {
-								detailLevel: detailLevel ?? "summary",
-								responseFormat,
-							});
-							return {
-								content: [{ text, type: "text" as const }],
-							};
-						}
-					}
-
-					// Execute indexing script in TD
-					const script = buildIndexPaletteScript();
-					const startMs = Date.now();
-
-					const scriptResult = await tdClient.execPythonScript<{
-						result: string;
-					}>({ mode: "full-exec", script });
-
-					auditLog?.append({
-						allowed: true,
-						durationMs: Date.now() - startMs,
-						mode: "full-exec",
-						outcome: scriptResult.success ? "executed" : "error",
-						preview: false,
-						script: "index_palette()",
-					});
-
-					if (!scriptResult.success) {
-						throw scriptResult.error;
-					}
-
-					// Parse the result (TD returns result as string)
-					const rawResult = scriptResult.data.result;
-					const parsed =
-						typeof rawResult === "string" ? JSON.parse(rawResult) : rawResult;
-
-					if (parsed.error) {
-						return {
-							content: [
-								{
-									text: `Palette indexing failed: ${parsed.error}`,
-									type: "text" as const,
-								},
-							],
-							isError: true,
-						};
-					}
-
-					const validated = paletteIndexSchema.parse(parsed);
-
-					// Persist
-					if (cachePath) {
-						writeIndex(cachePath, validated);
-						logger.sendLog({
-							data: `Palette index saved: ${validated.entryCount} entries → ${cachePath}`,
-							level: "info",
+					const cached = checkPaletteCache(tdVersion, force, logger);
+					if (cached) {
+						const text = formatIndexResult(cached, {
+							detailLevel: detailLevel ?? "summary",
+							responseFormat,
 						});
+						return { content: [{ text, type: "text" as const }] };
 					}
+
+					const validated = await runPaletteIndex(tdClient, auditLog);
+					persistPaletteIndex(validated, tdVersion, logger);
 
 					const text = formatIndexResult(validated, {
 						detailLevel: detailLevel ?? "summary",
 						responseFormat,
 					});
-					return {
-						content: [{ text, type: "text" as const }],
-					};
+					return { content: [{ text, type: "text" as const }] };
 				} catch (error) {
 					return handleToolError(
 						error,
@@ -272,22 +207,7 @@ export function registerPaletteTools(
 				const componentName = params.componentName ?? name;
 
 				try {
-					// Try to find the .tox path from the index
-					let toxPath: string | undefined;
-
-					const cacheDir = resolveIndexCacheDir();
-					if (cacheDir) {
-						const index = findLatestIndex(cacheDir);
-						if (index) {
-							const registry = new PaletteRegistry();
-							registry.loadFromIndex(index);
-							const entry = registry.getByName(name);
-							if (entry) {
-								toxPath = entry.toxPath;
-							}
-						}
-					}
-
+					const toxPath = resolvePaletteComponentPath(name);
 					if (!toxPath) {
 						return {
 							content: [
@@ -306,7 +226,6 @@ export function registerPaletteTools(
 						componentName,
 					);
 					const startMs = Date.now();
-
 					const scriptResult = await tdClient.execPythonScript<{
 						result: string;
 					}>({ script });
@@ -320,14 +239,11 @@ export function registerPaletteTools(
 						script: `load_palette_component(${name})`,
 					});
 
-					if (!scriptResult.success) {
-						throw scriptResult.error;
-					}
+					if (!scriptResult.success) throw scriptResult.error;
 
 					const rawResult = scriptResult.data.result;
 					const parsed =
 						typeof rawResult === "string" ? JSON.parse(rawResult) : rawResult;
-
 					const text = formatLoadResult(parsed, {
 						detailLevel: detailLevel ?? "summary",
 						responseFormat,
@@ -349,6 +265,82 @@ export function registerPaletteTools(
 			},
 		),
 	);
+}
+
+// ── Index helpers ───────────────────────────────────────────
+
+function checkPaletteCache(
+	tdVersion: string,
+	force: boolean,
+	logger: ILogger,
+): PaletteIndex | null {
+	if (force) return null;
+	const cacheDir = resolveIndexCacheDir();
+	if (!cacheDir) return null;
+	const cachePath = join(cacheDir, indexFileName(tdVersion));
+	const cached = readIndex(cachePath);
+	if (cached) {
+		logger.sendLog({
+			data: `Palette index cache hit for TD ${tdVersion} (${cached.entryCount} entries)`,
+			level: "info",
+		});
+	}
+	return cached;
+}
+
+async function runPaletteIndex(
+	tdClient: TouchDesignerClient,
+	auditLog?: ExecAuditLog,
+): Promise<PaletteIndex> {
+	const script = buildIndexPaletteScript();
+	const startMs = Date.now();
+	const scriptResult = await tdClient.execPythonScript<{ result: string }>({
+		mode: "full-exec",
+		script,
+	});
+
+	auditLog?.append({
+		allowed: true,
+		durationMs: Date.now() - startMs,
+		mode: "full-exec",
+		outcome: scriptResult.success ? "executed" : "error",
+		preview: false,
+		script: "index_palette()",
+	});
+
+	if (!scriptResult.success) throw scriptResult.error;
+
+	const rawResult = scriptResult.data.result;
+	const parsed =
+		typeof rawResult === "string" ? JSON.parse(rawResult) : rawResult;
+	if (parsed.error) throw new Error(`Palette indexing failed: ${parsed.error}`);
+
+	return paletteIndexSchema.parse(parsed);
+}
+
+function persistPaletteIndex(
+	validated: PaletteIndex,
+	tdVersion: string,
+	logger: ILogger,
+): void {
+	const cacheDir = resolveIndexCacheDir();
+	if (!cacheDir) return;
+	const cachePath = join(cacheDir, indexFileName(tdVersion));
+	writeIndex(cachePath, validated);
+	logger.sendLog({
+		data: `Palette index saved: ${validated.entryCount} entries → ${cachePath}`,
+		level: "info",
+	});
+}
+
+function resolvePaletteComponentPath(name: string): string | undefined {
+	const cacheDir = resolveIndexCacheDir();
+	if (!cacheDir) return undefined;
+	const index = findLatestIndex(cacheDir);
+	if (!index) return undefined;
+	const registry = new PaletteRegistry();
+	registry.loadFromIndex(index);
+	return registry.getByName(name)?.toxPath;
 }
 
 // ── Helpers ──────────────────────────────────────────────────
