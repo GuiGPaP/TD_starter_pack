@@ -60,6 +60,72 @@ function lookupOperator(
 	return registry.getById(idOrOpType) ?? registry.getByOpType(idOrOpType);
 }
 
+function filterCandidates(
+	operators: TDKnowledgeEntry[],
+	family: string | undefined,
+	version: string | undefined,
+	versionManifest: VersionManifest,
+): TDKnowledgeEntry[] {
+	let candidates = family
+		? operators.filter(
+				(e) =>
+					e.kind === "operator" &&
+					e.payload.opFamily.toUpperCase() === family.toUpperCase(),
+			)
+		: operators;
+
+	if (version) {
+		candidates = candidates.filter((e) => {
+			if (e.kind !== "operator") return true;
+			return (
+				versionManifest.checkCompatibility(e.payload.versions, version)
+					.level !== "unavailable"
+			);
+		});
+	}
+	return candidates;
+}
+
+function scoreCandidates(
+	candidates: TDKnowledgeEntry[],
+	query: string,
+): Array<{ entry: TDKnowledgeEntry; score: number }> {
+	const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+	let scored = candidates
+		.map((entry) => ({ entry, score: scoreOperator(entry, terms) }))
+		.filter((r) => r.score > 0);
+
+	// Soft fallback: if AND produced 0 results, try OR
+	if (scored.length === 0 && terms.length > 1) {
+		scored = candidates
+			.map((entry) => {
+				let bestScore = 0;
+				for (const term of terms) {
+					const s = scoreOperator(entry, [term]);
+					if (s > bestScore) bestScore = s;
+				}
+				return { entry, score: bestScore };
+			})
+			.filter((r) => r.score > 0);
+	}
+	return scored;
+}
+
+function applyDeprecationPenalty(
+	scored: Array<{ entry: TDKnowledgeEntry; score: number }>,
+	versionManifest: VersionManifest,
+	tdVersion: string,
+): void {
+	for (const r of scored) {
+		if (r.entry.kind !== "operator") continue;
+		const compat = versionManifest.checkCompatibility(
+			r.entry.payload.versions,
+			tdVersion,
+		);
+		if (compat.level === "deprecated") r.score -= 30;
+	}
+}
+
 export function registerSearchTools(
 	server: McpServer,
 	logger: ILogger,
@@ -85,65 +151,15 @@ export function registerSearchTools(
 					version,
 				} = params;
 
-				const operators = registry.getByKind("operator");
-
-				// Filter by family
-				let candidates = family
-					? operators.filter(
-							(e) =>
-								e.kind === "operator" &&
-								e.payload.opFamily.toUpperCase() === family.toUpperCase(),
-						)
-					: operators;
-
-				// Filter by version compatibility
-				if (version) {
-					candidates = candidates.filter((e) => {
-						if (e.kind !== "operator") return true;
-						const compat = versionManifest.checkCompatibility(
-							e.payload.versions,
-							version,
-						);
-						return compat.level !== "unavailable";
-					});
-				}
-
-				// Score
-				const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-				let scored = candidates
-					.map((entry) => ({
-						entry,
-						score: scoreOperator(entry, terms),
-					}))
-					.filter((r) => r.score > 0);
-
-				// Soft fallback: if AND produced 0 results, try OR
-				if (scored.length === 0 && terms.length > 1) {
-					scored = candidates
-						.map((entry) => {
-							let bestScore = 0;
-							for (const term of terms) {
-								const s = scoreOperator(entry, [term]);
-								if (s > bestScore) bestScore = s;
-							}
-							return { entry, score: bestScore };
-						})
-						.filter((r) => r.score > 0);
-				}
-
-				// Deprecation penalty
-				const tdVersion = normalizeTdVersion(serverMode.tdBuild ?? "");
-				for (const r of scored) {
-					if (r.entry.kind === "operator") {
-						const compat = versionManifest.checkCompatibility(
-							r.entry.payload.versions,
-							tdVersion,
-						);
-						if (compat.level === "deprecated") {
-							r.score -= 30;
-						}
-					}
-				}
+				const candidates = filterCandidates(
+					registry.getByKind("operator"),
+					family,
+					version,
+					versionManifest,
+				);
+				const scored = scoreCandidates(candidates, query);
+				const tdVersion = normalizeTdVersion(serverMode.tdBuild ?? "") ?? "";
+				applyDeprecationPenalty(scored, versionManifest, tdVersion);
 
 				scored.sort((a, b) => b.score - a.score);
 				const results = scored.slice(0, maxResults);
@@ -167,9 +183,7 @@ export function registerSearchTools(
 					},
 				);
 
-				return {
-					content: [{ text, type: "text" as const }],
-				};
+				return { content: [{ text, type: "text" as const }] };
 			} catch (error) {
 				return handleToolError(error, logger, TOOL_NAMES.SEARCH_OPERATORS);
 			}
