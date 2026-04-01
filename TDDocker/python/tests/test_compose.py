@@ -1,11 +1,20 @@
-"""Tests for compose overlay generation."""
+"""Tests for compose overlay generation and subprocess wrapper."""
 
 from __future__ import annotations
+
+import subprocess
+from unittest.mock import MagicMock, patch
 
 import pytest
 import yaml
 
-from td_docker.compose import OverlayConfig, ServiceOverlay, generate_overlay
+from td_docker.compose import (
+    ComposeResult,
+    OverlayConfig,
+    ServiceOverlay,
+    _run_compose,
+    generate_overlay,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -125,3 +134,43 @@ class TestValidationIntegration:
         # Should not raise
         result = generate_overlay(_SIMPLE_COMPOSE, cfg)
         assert "td.managed" in result
+
+
+# ---------------------------------------------------------------------------
+# _run_compose subprocess wrapper
+# ---------------------------------------------------------------------------
+
+
+class TestRunCompose:
+    @patch("td_docker.compose.subprocess.Popen")
+    def test_success(self, mock_popen_cls: MagicMock) -> None:
+        proc = MagicMock()
+        proc.communicate.return_value = ('{"ok":true}\n', "")
+        proc.returncode = 0
+        mock_popen_cls.return_value = proc
+
+        result = _run_compose(["ps", "--format", "json"], "myproject")
+
+        assert isinstance(result, ComposeResult)
+        assert result.ok
+        assert result.returncode == 0
+        assert result.stdout == '{"ok":true}\n'
+        assert result.stderr == ""
+        proc.communicate.assert_called_once_with(timeout=60)
+
+    @patch("td_docker.compose.subprocess.Popen")
+    def test_timeout_kills_process(self, mock_popen_cls: MagicMock) -> None:
+        proc = MagicMock()
+        proc.communicate.side_effect = [
+            subprocess.TimeoutExpired(cmd="docker", timeout=10),
+            ("partial", "err"),
+        ]
+        mock_popen_cls.return_value = proc
+
+        result = _run_compose(["up", "-d"], "myproject", timeout=10)
+
+        assert not result.ok
+        assert result.returncode == -1
+        assert "timeout" in result.stderr
+        assert result.stdout == "partial"
+        proc.kill.assert_called_once()
