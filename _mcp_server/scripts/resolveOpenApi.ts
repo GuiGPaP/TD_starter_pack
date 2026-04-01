@@ -2,7 +2,7 @@
  * Resolve all $ref in the OpenAPI spec into a single bundled YAML file.
  * Replaces the Java-based openapi-generator-cli gen:webserver step.
  */
-import { writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { stringify } from "yaml";

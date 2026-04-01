@@ -54,17 +54,19 @@ class ModuleFactory:
             self._load_module(module_name)
         return self._import_status.get(module_name, False)
 
-    _ALLOWED_MODULES = frozenset({
-        "mcp.controllers.api_controller",
-        "mcp.services.api_service",
-        "utils.logging",
-        "utils.types",
-        "utils.result",
-        "utils.serialization",
-        "utils.config",
-        "utils.error_handling",
-        "utils.utils_logging",
-    })
+    _ALLOWED_MODULES = frozenset(
+        {
+            "mcp.controllers.api_controller",
+            "mcp.services.api_service",
+            "utils.logging",
+            "utils.types",
+            "utils.result",
+            "utils.serialization",
+            "utils.config",
+            "utils.error_handling",
+            "utils.utils_logging",
+        }
+    )
 
     def _load_module(self, module_name: str) -> None:
         """Load a module and track its import status"""

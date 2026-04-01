@@ -1,17 +1,24 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-commit-lint.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'f=$(grep -oP '\"'\"'\"file_path\"\\s*:\\s*\"\\K[^\"]*'\"'\"'); [[ \"$f\" == *.py && \"$f\" == */modules/* ]] && uv run ruff check --fix \"$f\" && uv run ruff format \"$f\" || true'",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "bash -c 'f=$(grep -oP '\"'\"'\"file_path\"\\s*:\\s*\"\\K[^\"]*'\"'\"'); [[ \"$f\" == *.ts && \"$f\" == */_mcp_server/* ]] && cd \"$(git rev-parse --show-toplevel)/_mcp_server\" && npx biome check --write \"$f\" || true'",
+            "command": "bash .claude/hooks/post-edit-lint.sh",
             "timeout": 10
           }
         ]
@@ -22,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'cd \"$(git rev-parse --show-toplevel)\" || exit 0; changed=$(git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null); py=$(echo \"$changed\" | grep \"^modules/.*\\.py$\" || true); ts=$(echo \"$changed\" | grep \"^_mcp_server/src/.*\\.ts$\" || true); ok=true; if [ -n \"$py\" ]; then echo \"=== Python checks ===\"; uv run ruff check modules/ || ok=false; uv run ruff format --check modules/ || ok=false; uv run pyright 2>&1 | tail -5 || ok=false; uv run python scripts/sync_modules.py --check || ok=false; fi; if [ -n \"$ts\" ]; then echo \"=== TypeScript checks ===\"; cd _mcp_server && npx tsc --noEmit || ok=false; npx biome check $(echo \"$ts\" | sed \"s|^_mcp_server/||g\") || ok=false; fi; $ok'",
+            "command": "bash -c 'cd \"$(git rev-parse --show-toplevel)\" || exit 0; changed=$(git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null); py=$(echo \"$changed\" | grep \"^modules/.*\\.py$\" || true); ts=$(echo \"$changed\" | grep \"^_mcp_server/src/.*\\.ts$\" || true); ok=true; if [ -n \"$py\" ]; then echo \"=== Python checks ===\"; uv run ruff check modules/ || ok=false; uv run ruff format --check modules/ || ok=false; fi; if [ -n \"$ts\" ]; then echo \"=== TypeScript checks ===\"; cd _mcp_server && npx tsc --noEmit || ok=false; npx biome check $(echo \"$ts\" | sed \"s|^_mcp_server/||g\") || ok=false; fi; $ok'",
             "timeout": 30
           }
         ]

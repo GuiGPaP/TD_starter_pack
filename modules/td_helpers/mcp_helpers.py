@@ -36,9 +36,7 @@ def safe_copy(
         raise ValueError(f"Target parent not found: {target_parent_path}")
 
     if not target.isCOMP:
-        raise ValueError(
-            f"Target must be a COMP, got {target.OPType}: {target_parent_path}"
-        )
+        raise ValueError(f"Target must be a COMP, got {target.OPType}: {target_parent_path}")
 
     copied = target.copy(source, name=name)
     if copied is None or not copied.valid:
@@ -63,13 +61,9 @@ def connect(
         raise ValueError(f"Destination node not found: {to_path}")
 
     if from_node.family != to_node.family:
-        raise ValueError(
-            f"Incompatible families: {from_node.family} -> {to_node.family}"
-        )
+        raise ValueError(f"Incompatible families: {from_node.family} -> {to_node.family}")
 
-    to_node.inputConnectors[to_input].connect(
-        from_node.outputConnectors[from_output]
-    )
+    to_node.inputConnectors[to_input].connect(from_node.outputConnectors[from_output])
 
 
 def find_by_tag(tag: str, parent_path: str = "/") -> list:
