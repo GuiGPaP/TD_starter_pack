@@ -142,6 +142,100 @@ const CONFIDENCE_RANK: Record<string, number> = {
 	medium: 1,
 };
 
+// --- Scan helpers ---
+
+type LessonCandidate = ReturnType<typeof detectLessons>[number];
+
+async function runLessonScan(
+	tdClient: TouchDesignerClient,
+	rootPath: string,
+	maxDepth: number,
+): Promise<ScanData> {
+	const script = generateScanLessonScript(rootPath, maxDepth);
+	const scriptResult = await tdClient.execPythonScript<{ result: ScanData }>({
+		mode: "read-only",
+		script,
+	});
+	if (!scriptResult.success) {
+		throw new Error(`Scan failed: ${scriptResult.error}`);
+	}
+	const scanData = scriptResult.data?.result;
+	if (!scanData) {
+		throw new Error("Scan returned no data.");
+	}
+	return scanData;
+}
+
+function autoCaptureLessons(
+	candidates: LessonCandidate[],
+	rootPath: string,
+	knowledgePath: string | undefined,
+	registry: KnowledgeRegistry,
+): string[] {
+	if (!knowledgePath) return [];
+	const captured: string[] = [];
+	for (const c of candidates) {
+		if (c.matchesExisting) continue;
+		const id = deduplicateId(titleToId(c.title), registry);
+		const lesson: TDLessonEntry = {
+			aliases: [],
+			content: { summary: c.summary },
+			id,
+			kind: "lesson",
+			payload: {
+				category: c.category,
+				operatorChain: c.operatorChain,
+				tags: c.tags,
+			},
+			provenance: {
+				confidence: c.confidence,
+				discoveredAt: new Date().toISOString().slice(0, 10),
+				discoveredIn: rootPath,
+				license: "MIT",
+				source: "auto-scan",
+				validationCount: 0,
+			},
+			searchKeywords: [...c.tags],
+			title: c.title,
+		};
+		writeLessonToBuiltin(lesson, knowledgePath);
+		registry.addEntry(lesson);
+		captured.push(id);
+	}
+	return captured;
+}
+
+function formatScanResults(
+	rootPath: string,
+	scanData: ScanData,
+	candidates: LessonCandidate[],
+	captured: string[],
+	autoCapture: boolean,
+): string {
+	const lines: string[] = [
+		`## Scan Results for ${rootPath}`,
+		"",
+		`Scanned ${scanData.operators.length} operators, ${scanData.connections.length} connections.`,
+		"",
+		`**${candidates.length} candidate(s) found:**`,
+		"",
+	];
+	for (const c of candidates) {
+		const badge = c.category === "pitfall" ? "[PITFALL]" : "[PATTERN]";
+		const match = c.matchesExisting ? ` (matches: ${c.matchesExisting})` : "";
+		lines.push(`- **${c.title}** ${badge} (${c.confidence})${match}`);
+		lines.push(`  ${c.summary}`);
+		lines.push(`  Tags: ${c.tags.join(", ")}`);
+	}
+	if (autoCapture && captured.length > 0) {
+		lines.push(
+			"",
+			`**Auto-captured ${captured.length} lesson(s):** ${captured.join(", ")}`,
+		);
+	}
+	return lines.join("\n");
+}
+
 // --- Registration ---
 
 export function registerLessonTools(
@@ -386,104 +480,23 @@ export function registerLessonTools(
 						const maxDepth = params.maxDepth ?? 5;
 						const autoCapture = params.autoCapture ?? false;
 
-						// Generate and execute scan script in TD
-						const script = generateScanLessonScript(rootPath, maxDepth);
-						const scriptResult = await tdClient.execPythonScript<{
-							result: ScanData;
-						}>({ mode: "read-only", script });
-
-						if (!scriptResult.success) {
-							return {
-								content: [
-									{
-										text: `Scan failed: ${scriptResult.error}`,
-										type: "text" as const,
-									},
-								],
-								isError: true,
-							};
-						}
-
-						const scanData = scriptResult.data?.result;
-						if (!scanData) {
-							return {
-								content: [
-									{
-										text: "Scan returned no data.",
-										type: "text" as const,
-									},
-								],
-								isError: true,
-							};
-						}
-
-						// Run detector heuristics
+						const scanData = await runLessonScan(tdClient, rootPath, maxDepth);
 						const candidates = detectLessons(scanData, registry);
+						const captured = autoCaptureLessons(
+							candidates,
+							rootPath,
+							knowledgePath,
+							registry,
+						);
+						const text = formatScanResults(
+							rootPath,
+							scanData,
+							candidates,
+							captured,
+							autoCapture,
+						);
 
-						// Auto-capture new candidates if requested
-						const captured: string[] = [];
-						if (autoCapture && knowledgePath) {
-							for (const c of candidates) {
-								if (c.matchesExisting) continue;
-								const id = deduplicateId(titleToId(c.title), registry);
-								const lesson: TDLessonEntry = {
-									aliases: [],
-									content: { summary: c.summary },
-									id,
-									kind: "lesson",
-									payload: {
-										category: c.category,
-										operatorChain: c.operatorChain,
-										tags: c.tags,
-									},
-									provenance: {
-										confidence: c.confidence,
-										discoveredAt: new Date().toISOString().slice(0, 10),
-										discoveredIn: rootPath,
-										license: "MIT",
-										source: "auto-scan",
-										validationCount: 0,
-									},
-									searchKeywords: [...c.tags],
-									title: c.title,
-								};
-								writeLessonToBuiltin(lesson, knowledgePath);
-								registry.addEntry(lesson);
-								captured.push(id);
-							}
-						}
-
-						// Format results
-						const lines: string[] = [
-							`## Scan Results for ${rootPath}`,
-							"",
-							`Scanned ${scanData.operators.length} operators, ${scanData.connections.length} connections.`,
-							"",
-							`**${candidates.length} candidate(s) found:**`,
-							"",
-						];
-
-						for (const c of candidates) {
-							const badge =
-								c.category === "pitfall" ? "[PITFALL]" : "[PATTERN]";
-							const match = c.matchesExisting
-								? ` (matches: ${c.matchesExisting})`
-								: "";
-							lines.push(`- **${c.title}** ${badge} (${c.confidence})${match}`);
-							lines.push(`  ${c.summary}`);
-							lines.push(`  Tags: ${c.tags.join(", ")}`);
-						}
-
-						if (captured.length > 0) {
-							lines.push(
-								"",
-								`**Auto-captured ${captured.length} lesson(s):** ${captured.join(", ")}`,
-							);
-						}
-
-						return {
-							content: [{ text: lines.join("\n"), type: "text" as const }],
-						};
+						return { content: [{ text, type: "text" as const }] };
 					} catch (error) {
 						return handleToolError(
 							error,
