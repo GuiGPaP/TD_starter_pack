@@ -143,7 +143,7 @@ function handleNodeConnectionPrompt() {
 	return [
 		{
 			content: {
-				text: `Use the "${TOOL_NAMES.EXECUTE_PYTHON_SCRIPT}" tool e.g. op('/project1/text_over_image').outputConnectors[0].connect(op('/project1/out1'))`,
+				text: `Use the "${TOOL_NAMES.EXECUTE_PYTHON_SCRIPT}" tool e.g. op('/text_over_image').outputConnectors[0].connect(op('/out1'))`,
 				type: "text",
 			},
 			role: "user",

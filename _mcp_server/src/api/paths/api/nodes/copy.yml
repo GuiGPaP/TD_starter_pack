@@ -13,10 +13,10 @@ post:
           properties:
             sourcePath:
               type: string
-              description: Path to the source operator (e.g., "/project1/geo1")
+              description: Path to the source operator (e.g., "/geo1")
             targetParentPath:
               type: string
-              description: Path to the target parent COMP (e.g., "/project1/container1")
+              description: Path to the target parent COMP (e.g., "/container1")
             name:
               type: string
               description: Optional name for the copy (auto-generated if omitted)

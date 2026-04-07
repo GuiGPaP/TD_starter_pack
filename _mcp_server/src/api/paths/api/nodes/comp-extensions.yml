@@ -6,7 +6,7 @@ get:
   operationId: get_comp_extensions
   parameters:
     - name: compPath
-      description: 'Absolute path to the COMP. e.g., "/project1/base1"'
+      description: 'Absolute path to the COMP. e.g., "/base1"'
       in: query
       required: true
       schema:

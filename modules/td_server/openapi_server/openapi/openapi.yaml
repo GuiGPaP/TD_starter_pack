@@ -11,12 +11,12 @@ paths:
     delete:
       operationId: delete_node
       parameters:
-      - description: "Path to the node to delete. e.g., \"/project1/geo1\""
+      - description: "Path to the node to delete. e.g., \"/geo1\""
         in: query
         name: nodePath
         required: true
         schema:
-          description: "e.g., \"/project1/geo1\""
+          description: "e.g., \"/geo1\""
           type: string
       responses:
         "200":
@@ -86,12 +86,12 @@ paths:
         \ its properties, parameters and connections"
       operationId: get_node_detail
       parameters:
-      - description: "Node path. e.g., \"/project1/textTOP\""
+      - description: "Node path. e.g., \"/textTOP\""
         in: query
         name: nodePath
         required: true
         schema:
-          description: "e.g., \"/project1/textTOP\""
+          description: "e.g., \"/textTOP\""
           type: string
       responses:
         "200":
@@ -123,7 +123,7 @@ paths:
       description: Collects TouchDesigner error messages for a node and its children
       operationId: get_node_errors
       parameters:
-      - description: "Absolute path to the node to inspect. e.g., \"/project1/text1\""
+      - description: "Absolute path to the node to inspect. e.g., \"/text1\""
         in: query
         name: nodePath
         required: true
@@ -143,7 +143,7 @@ paths:
       description: Read the .text content of a DAT operator
       operationId: get_dat_text
       parameters:
-      - description: "Absolute path to the DAT. e.g., \"/project1/text1\""
+      - description: "Absolute path to the DAT. e.g., \"/text1\""
         in: query
         name: nodePath
         required: true
@@ -223,7 +223,7 @@ paths:
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+                  description: "Absolute path to the DAT node. e.g., \"/script1\""
                 fix:
                   type: boolean
                   default: false
@@ -285,7 +285,7 @@ paths:
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+                  description: "Absolute path to the DAT node. e.g., \"/script1\""
                 dryRun:
                   type: boolean
                   default: false
@@ -333,7 +333,7 @@ paths:
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/project1/data1\""
+                  description: "Absolute path to the DAT node. e.g., \"/data1\""
         required: true
       responses:
         "200":
@@ -379,7 +379,7 @@ paths:
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/project1/glsl_pixel\""
+                  description: "Absolute path to the DAT node. e.g., \"/glsl_pixel\""
         required: true
       responses:
         "200":
@@ -492,7 +492,7 @@ paths:
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/project1/script1\""
+                  description: "Absolute path to the DAT node. e.g., \"/script1\""
         required: true
       responses:
         "200":
@@ -601,7 +601,7 @@ paths:
         a node. Eliminates guessing parameter names and valid values.
       operationId: get_node_parameter_schema
       parameters:
-      - description: "Absolute path to the node. e.g., \"/project1/noise1\""
+      - description: "Absolute path to the node. e.g., \"/noise1\""
         in: query
         name: nodePath
         required: true
@@ -642,17 +642,17 @@ paths:
   /api/nodes/complete-paths:
     get:
       description: "Resolve op('...') style references from a context node. Supports\
-        \ relative (noise1, ./sub, ../foo) and absolute (/project1/geo*) forms."
+        \ relative (noise1, ./sub, ../foo) and absolute (/geo*) forms."
       operationId: complete_op_paths
       parameters:
-      - description: "Absolute path to the context node. e.g., \"/project1/base1/script1\""
+      - description: "Absolute path to the context node. e.g., \"/base1/script1\""
         in: query
         name: contextNodePath
         required: true
         schema:
           type: string
       - description: "Prefix to complete. e.g., \"noise\", \"./sub\", \"../foo\",\
-          \ \"/project1/geo*\""
+          \ \"/geo*\""
         in: query
         name: prefix
         required: false
@@ -712,7 +712,7 @@ paths:
         per-channel statistics (min, max, avg).
       operationId: get_chop_channels
       parameters:
-      - description: "Absolute path to the CHOP node. e.g., \"/project1/noise1\""
+      - description: "Absolute path to the CHOP node. e.g., \"/noise1\""
         in: query
         name: nodePath
         required: true
@@ -783,7 +783,7 @@ paths:
         inference — raw cell values only.
       operationId: get_dat_table_info
       parameters:
-      - description: "Absolute path to the table DAT. e.g., \"/project1/table1\""
+      - description: "Absolute path to the table DAT. e.g., \"/table1\""
         in: query
         name: nodePath
         required: true
@@ -842,7 +842,7 @@ paths:
         for discovering custom Python extensions on components.
       operationId: get_comp_extensions
       parameters:
-      - description: "Absolute path to the COMP. e.g., \"/project1/base1\""
+      - description: "Absolute path to the COMP. e.g., \"/base1\""
         in: query
         name: compPath
         required: true
@@ -1252,7 +1252,7 @@ paths:
         Use include to select specific facets; omit for all.
       operationId: get_td_context
       parameters:
-      - description: "Absolute path to the target node, e.g. \"/project1/geo1\""
+      - description: "Absolute path to the target node, e.g. \"/geo1\""
         in: query
         name: nodePath
         required: true
@@ -1878,11 +1878,11 @@ components:
     copy_node_request:
       properties:
         sourcePath:
-          description: "Path to the source operator (e.g., /project1/geo1)"
+          description: "Path to the source operator (e.g., /geo1)"
           title: sourcePath
           type: string
         targetParentPath:
-          description: "Path to the target parent COMP (e.g., /project1/container1)"
+          description: "Path to the target parent COMP (e.g., /container1)"
           title: targetParentPath
           type: string
         name:
@@ -2144,7 +2144,7 @@ components:
     update_node_request:
       properties:
         nodePath:
-          description: "Path to the node (e.g., /project1/null1)"
+          description: "Path to the node (e.g., /null1)"
           title: nodePath
           type: string
         properties:
@@ -2399,7 +2399,7 @@ components:
     exec_node_method_request:
       properties:
         nodePath:
-          description: "Path to the node (e.g., /project1/null1)"
+          description: "Path to the node (e.g., /null1)"
           title: nodePath
           type: string
         method:
@@ -2463,7 +2463,7 @@ components:
     exec_python_script_request:
       properties:
         script:
-          description: "e.g., \"op('/project1/text_over_image').outputConnectors[0].connect(op('/project1/out1'))\""
+          description: "e.g., \"op('/text_over_image').outputConnectors[0].connect(op('/out1'))\""
           title: script
           type: string
       required:
@@ -2691,7 +2691,7 @@ components:
     configure_instancing_request:
       properties:
         geoPath:
-          description: "Path to the Geometry COMP (e.g., /project1/geo1)"
+          description: "Path to the Geometry COMP (e.g., /geo1)"
           title: geoPath
           type: string
         instanceOpName:

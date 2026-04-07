@@ -6,7 +6,7 @@ get:
   operationId: get_dat_table_info
   parameters:
     - name: nodePath
-      description: 'Absolute path to the table DAT. e.g., "/project1/table1"'
+      description: 'Absolute path to the table DAT. e.g., "/table1"'
       in: query
       required: true
       schema:

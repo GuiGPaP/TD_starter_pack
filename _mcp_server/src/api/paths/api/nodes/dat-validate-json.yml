@@ -12,7 +12,7 @@ post:
           properties:
             nodePath:
               type: string
-              description: 'Absolute path to the DAT node. e.g., "/project1/data1"'
+              description: 'Absolute path to the DAT node. e.g., "/data1"'
   responses:
     "200":
       description: Validation results

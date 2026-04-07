@@ -65,6 +65,7 @@ export const TOOL_NAMES = {
 	PACKAGE_PROJECT: "package_project",
 	SCAN_FOR_LESSONS: "scan_for_lessons",
 	SCAN_PROJECTS: "scan_projects",
+	SCREENSHOT_OPERATOR: "screenshot_operator",
 	SEARCH_GLSL_PATTERNS: "search_glsl_patterns",
 	SEARCH_LESSONS: "search_lessons",
 	SEARCH_NETWORK_TEMPLATES: "search_network_templates",

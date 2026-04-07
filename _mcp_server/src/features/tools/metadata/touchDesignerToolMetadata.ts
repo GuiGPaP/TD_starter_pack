@@ -124,7 +124,7 @@ console.log(result.online, result.ready, result.timedOut);`,
 		example: `import { executePythonScript } from './servers/touchdesigner/executePythonScript';
 
 await executePythonScript({
-  script: "op('/project1/text1').par.text = 'Hello MCP'",
+  script: "op('/text1').par.text = 'Hello MCP'",
 });`,
 		functionName: "executePythonScript",
 		modulePath: `${MODULE_ROOT}/executePythonScript.ts`,
@@ -216,13 +216,13 @@ console.log(nodes.nodes?.map(node => node.path));`,
 		description: "Inspect an individual node with formatter-aware output",
 		example: `import { getTdNodeParameters } from './servers/touchdesigner/getTdNodeParameters';
 
-const node = await getTdNodeParameters({ nodePath: '/project1/text1' });
+const node = await getTdNodeParameters({ nodePath: '/text1' });
 console.log(node.properties?.Text);`,
 		functionName: "getTdNodeParameters",
 		modulePath: `${MODULE_ROOT}/getTdNodeParameters.ts`,
 		parameters: [
 			{
-				description: "Absolute path to the operator (e.g. /project1/text1).",
+				description: "Absolute path to the operator (e.g. /text1).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -255,7 +255,7 @@ console.log(node.properties?.Text);`,
 		example: `import { getTdNodeErrors } from './servers/touchdesigner/getTdNodeErrors';
 
 const report = await getTdNodeErrors({
-  nodePath: '/project1/text1',
+  nodePath: '/text1',
 });
 if (report.hasErrors) {
   console.log(report.errors?.map(err => err.message));
@@ -264,7 +264,7 @@ if (report.hasErrors) {
 		modulePath: `${MODULE_ROOT}/getTdNodeErrors.ts`,
 		parameters: [
 			{
-				description: "Absolute path to inspect (e.g. /project1/text1).",
+				description: "Absolute path to inspect (e.g. /text1).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -346,7 +346,7 @@ console.log(created.result?.path);`,
 		example: `import { updateTdNodeParameters } from './servers/touchdesigner/updateTdNodeParameters';
 
 await updateTdNodeParameters({
-  nodePath: '/project1/text1',
+  nodePath: '/text1',
   properties: { text: 'Hello TouchDesigner' },
 });`,
 		functionName: "updateTdNodeParameters",
@@ -386,7 +386,7 @@ await updateTdNodeParameters({
 		description: "Remove an operator safely",
 		example: `import { deleteTdNode } from './servers/touchdesigner/deleteTdNode';
 
-const result = await deleteTdNode({ nodePath: '/project1/tmp1' });
+const result = await deleteTdNode({ nodePath: '/tmp1' });
 console.log(result.deleted);`,
 		functionName: "deleteTdNode",
 		modulePath: `${MODULE_ROOT}/deleteTdNode.ts`,
@@ -419,7 +419,7 @@ console.log(result.deleted);`,
 		example: `import { execNodeMethod } from './servers/touchdesigner/execNodeMethod';
 
 const renderStatus = await execNodeMethod({
-  nodePath: '/project1/render1',
+  nodePath: '/render1',
   method: 'par',
   kwargs: { enable: true },
 });
@@ -577,13 +577,13 @@ console.log(docs.helpText?.slice(0, 200));`,
 	{
 		category: "dat",
 		description: "Read the .text content of a DAT operator",
-		example: `const text = await getDatText({ nodePath: '/project1/text1' });
+		example: `const text = await getDatText({ nodePath: '/text1' });
 console.log(text.data?.text);`,
 		functionName: "getDatText",
 		modulePath: `${MODULE_ROOT}/getDatText.ts`,
 		parameters: [
 			{
-				description: "Absolute path to the DAT (e.g., /project1/text1).",
+				description: "Absolute path to the DAT (e.g., /text1).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -608,7 +608,7 @@ console.log(text.data?.text);`,
 		category: "dat",
 		description: "Write .text content to a DAT operator",
 		example: `await setDatText({
-  nodePath: '/project1/text1',
+  nodePath: '/text1',
   text: 'print("hello")',
 });`,
 		functionName: "setDatText",
@@ -648,7 +648,7 @@ console.log(text.data?.text);`,
 			"Lint DAT code with ruff and optionally auto-fix. Supports dry-run mode and reports remaining diagnostics after fix.",
 		example: `// Dry-run: preview fix without applying
 const preview = await lintDat({
-  nodePath: '/project1/script1',
+  nodePath: '/script1',
   fix: true,
   dryRun: true,
 });
@@ -658,7 +658,7 @@ console.log(preview.data?.remainingDiagnostics);`,
 		modulePath: `${MODULE_ROOT}/lintDat.ts`,
 		parameters: [
 			{
-				description: "Absolute path to the DAT node (e.g., /project1/script1).",
+				description: "Absolute path to the DAT node (e.g., /script1).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -696,7 +696,7 @@ console.log(preview.data?.remainingDiagnostics);`,
 	{
 		category: "dat",
 		description: "Typecheck DAT code with pyright using td.pyi stubs",
-		example: `const result = await typecheckDat({ nodePath: '/project1/script1' });\nconsole.log(result.data?.diagnostics);`,
+		example: `const result = await typecheckDat({ nodePath: '/script1' });\nconsole.log(result.data?.diagnostics);`,
 		functionName: "typecheckDat",
 		modulePath: `${MODULE_ROOT}/typecheckDat.ts`,
 		parameters: [
@@ -729,7 +729,7 @@ console.log(preview.data?.remainingDiagnostics);`,
 			"Format DAT code with ruff format. Supports dry-run mode to preview changes without applying.",
 		example: `// Dry-run: preview formatting without applying
 const preview = await formatDat({
-  nodePath: '/project1/script1',
+  nodePath: '/script1',
   dryRun: true,
 });
 console.log(preview.data?.diff);`,
@@ -737,7 +737,7 @@ console.log(preview.data?.diff);`,
 		modulePath: `${MODULE_ROOT}/formatDat.ts`,
 		parameters: [
 			{
-				description: "Absolute path to the DAT node (e.g., /project1/script1).",
+				description: "Absolute path to the DAT node (e.g., /script1).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -770,14 +770,14 @@ console.log(preview.data?.diff);`,
 		description:
 			"Validate JSON or YAML content in a DAT operator. Auto-detects format and returns structured diagnostics with line/column positions.",
 		example: `const result = await validateJsonDat({
-  nodePath: '/project1/data1',
+  nodePath: '/data1',
 });
 console.log(result.data?.valid, result.data?.format);`,
 		functionName: "validateJsonDat",
 		modulePath: `${MODULE_ROOT}/validateJsonDat.ts`,
 		parameters: [
 			{
-				description: "Absolute path to the DAT node (e.g., /project1/data1).",
+				description: "Absolute path to the DAT node (e.g., /data1).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -804,7 +804,7 @@ console.log(result.data?.valid, result.data?.format);`,
 		description:
 			"Validate GLSL shader code in a DAT operator. Checks connected GLSL TOP/MAT errors or falls back to glslangValidator.",
 		example: `const result = await validateGlslDat({
-  nodePath: '/project1/shader_pixel',
+  nodePath: '/shader_pixel',
 });
 console.log(result.data?.valid, result.data?.shaderType);`,
 		functionName: "validateGlslDat",
@@ -812,7 +812,7 @@ console.log(result.data?.valid, result.data?.shaderType);`,
 		parameters: [
 			{
 				description:
-					"Absolute path to the GLSL DAT node (e.g., /project1/shader_pixel).",
+					"Absolute path to the GLSL DAT node (e.g., /shader_pixel).",
 				name: "nodePath",
 				required: true,
 				type: "string",
@@ -1060,7 +1060,7 @@ console.log(candidates.data?.candidates);`,
 		category: "helpers",
 		description: "Configure GPU instancing on an existing Geometry COMP",
 		example: `await configureInstancing({
-  geoPath: '/project1/geo1',
+  geoPath: '/geo1',
   instanceOpName: 'noise1',
   tx: 'tx', ty: 'ty', tz: 'tz',
 });`,
@@ -1068,7 +1068,7 @@ console.log(candidates.data?.candidates);`,
 		modulePath: `${MODULE_ROOT}/configureInstancing.ts`,
 		parameters: [
 			{
-				description: "Path to the Geometry COMP (e.g., /project1/geo1).",
+				description: "Path to the Geometry COMP (e.g., /geo1).",
 				name: "geoPath",
 				required: true,
 				type: "string",
@@ -1117,7 +1117,7 @@ console.log(candidates.data?.candidates);`,
 		category: "state",
 		description:
 			"Get parameter schema metadata (type, range, menu, default) for a node. Eliminates guessing parameter names.",
-		example: `await getNodeParameterSchema({ nodePath: "/project1/noise1", pattern: "instance*" });`,
+		example: `await getNodeParameterSchema({ nodePath: "/noise1", pattern: "instance*" });`,
 		functionName: "getNodeParameterSchema",
 		modulePath: `${MODULE_ROOT}/getNodeParameterSchema.ts`,
 		parameters: [
@@ -1141,7 +1141,7 @@ console.log(candidates.data?.candidates);`,
 		category: "nodes",
 		description:
 			"Complete op() path references from a context node. Supports relative and absolute forms.",
-		example: `await completeOpPaths({ contextNodePath: "/project1/base1/script1", prefix: "noise" });`,
+		example: `await completeOpPaths({ contextNodePath: "/base1/script1", prefix: "noise" });`,
 		functionName: "completeOpPaths",
 		modulePath: `${MODULE_ROOT}/completeOpPaths.ts`,
 		parameters: [
@@ -1171,7 +1171,7 @@ console.log(candidates.data?.candidates);`,
 		category: "state",
 		description:
 			"Get channel info for a CHOP node. Optionally includes per-channel statistics.",
-		example: `await getChopChannels({ nodePath: "/project1/noise1", includeStats: true });`,
+		example: `await getChopChannels({ nodePath: "/noise1", includeStats: true });`,
 		functionName: "getChopChannels",
 		modulePath: `${MODULE_ROOT}/getChopChannels.ts`,
 		parameters: [
@@ -1207,7 +1207,7 @@ console.log(candidates.data?.candidates);`,
 		category: "state",
 		description:
 			"Get dimensions and a content sample of a table DAT. Raw cell values only.",
-		example: `await getDatTableInfo({ nodePath: "/project1/table1" });`,
+		example: `await getDatTableInfo({ nodePath: "/table1" });`,
 		functionName: "getDatTableInfo",
 		modulePath: `${MODULE_ROOT}/getDatTableInfo.ts`,
 		parameters: [
@@ -1236,7 +1236,7 @@ console.log(candidates.data?.candidates);`,
 	{
 		category: "state",
 		description: "Get extension classes, methods, and properties for a COMP.",
-		example: `await getCompExtensions({ compPath: "/project1/base1", includeDocs: true });`,
+		example: `await getCompExtensions({ compPath: "/base1", includeDocs: true });`,
 		functionName: "getCompExtensions",
 		modulePath: `${MODULE_ROOT}/getCompExtensions.ts`,
 		parameters: [
@@ -1302,7 +1302,7 @@ console.log(candidates.data?.candidates);`,
 		category: "state",
 		description:
 			"Aggregate contextual info for a single node: parameters, channels, extensions, errors, and more.",
-		example: `await getTdContext({ nodePath: "/project1/geo1", include: ["parameters", "errors"] });`,
+		example: `await getTdContext({ nodePath: "/geo1", include: ["parameters", "errors"] });`,
 		functionName: "getTdContext",
 		modulePath: `${MODULE_ROOT}/getTdContext.ts`,
 		parameters: [
@@ -1545,6 +1545,31 @@ console.log(result.status, result.createdNodes);`,
 		returns:
 			"Deploy result with status (deployed, dry_run, rolled_back, error), created node paths, and any warnings.",
 		tool: TOOL_NAMES.DEPLOY_GLSL_PATTERN,
+	},
+	{
+		category: "state",
+		description:
+			"Capture a screenshot of a TOP operator's visual output and return it as an inline image",
+		example: `const screenshot = await screenshotOperator({ path: "/render1" });\n// Returns inline base64 image visible in conversation`,
+		functionName: "screenshotOperator",
+		modulePath: `${MODULE_ROOT}/screenshotOperator.ts`,
+		parameters: [
+			{
+				description: "Absolute path to the TOP operator (e.g., /render1).",
+				name: "path",
+				required: true,
+				type: "string",
+			},
+			{
+				description: "Image format: png or jpg (default: png).",
+				name: "format",
+				required: false,
+				type: "'png' | 'jpg'",
+			},
+		],
+		returns:
+			"Inline image content block with base64-encoded screenshot and resolution info.",
+		tool: TOOL_NAMES.SCREENSHOT_OPERATOR,
 	},
 ];
 

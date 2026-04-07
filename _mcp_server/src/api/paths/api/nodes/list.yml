@@ -106,12 +106,12 @@ delete:
   operationId: delete_node
   parameters:
     - name: nodePath
-      description: Path to the node to delete. e.g., "/project1/geo1"
+      description: Path to the node to delete. e.g., "/geo1"
       in: query
       required: true
       schema:
         type: string
-        description: e.g., "/project1/geo1"
+        description: e.g., "/geo1"
   responses:
     "200":
       description: Node deleted successfully

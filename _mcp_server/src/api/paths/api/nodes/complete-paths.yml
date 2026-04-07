@@ -2,17 +2,17 @@ get:
   summary: Complete op() path references
   description: >
     Resolve op('...') style references from a context node. Supports
-    relative (noise1, ./sub, ../foo) and absolute (/project1/geo*) forms.
+    relative (noise1, ./sub, ../foo) and absolute (/geo*) forms.
   operationId: complete_op_paths
   parameters:
     - name: contextNodePath
-      description: 'Absolute path to the context node. e.g., "/project1/base1/script1"'
+      description: 'Absolute path to the context node. e.g., "/base1/script1"'
       in: query
       required: true
       schema:
         type: string
     - name: prefix
-      description: 'Prefix to complete. e.g., "noise", "./sub", "../foo", "/project1/geo*"'
+      description: 'Prefix to complete. e.g., "noise", "./sub", "../foo", "/geo*"'
       in: query
       required: false
       schema:

@@ -7,7 +7,7 @@ get:
   operationId: get_td_context
   parameters:
     - name: nodePath
-      description: 'Absolute path to the target node, e.g. "/project1/geo1"'
+      description: 'Absolute path to the target node, e.g. "/geo1"'
       in: query
       required: true
       schema:

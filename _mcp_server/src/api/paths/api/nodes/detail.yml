@@ -3,13 +3,13 @@ get:
   description: Retrieves detailed information about a specific node including its properties, parameters and connections
   operationId: get_node_detail
   parameters:
-    - description: Node path. e.g., "/project1/textTOP"
+    - description: Node path. e.g., "/textTOP"
       in: query
       name: nodePath
       required: true
       schema:
         type: string
-        description: e.g., "/project1/textTOP"
+        description: e.g., "/textTOP"
   responses:
     "200":
       description: Node properties
@@ -47,7 +47,7 @@ patch:
           properties:
             nodePath:
               type: string
-              description: Path to the node (e.g., /project1/null1)
+              description: Path to the node (e.g., /null1)
             properties:
               additionalProperties: true
               type: object

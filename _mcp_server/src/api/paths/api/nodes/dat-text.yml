@@ -4,7 +4,7 @@ get:
   operationId: get_dat_text
   parameters:
     - name: nodePath
-      description: 'Absolute path to the DAT. e.g., "/project1/text1"'
+      description: 'Absolute path to the DAT. e.g., "/text1"'
       in: query
       required: true
       schema:

@@ -6,7 +6,7 @@ get:
   operationId: get_node_parameter_schema
   parameters:
     - name: nodePath
-      description: 'Absolute path to the node. e.g., "/project1/noise1"'
+      description: 'Absolute path to the node. e.g., "/noise1"'
       in: query
       required: true
       schema:

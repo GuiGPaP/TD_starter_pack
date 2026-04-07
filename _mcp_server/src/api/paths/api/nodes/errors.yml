@@ -3,7 +3,7 @@ get:
   description: Collects TouchDesigner error messages for a node and its children
   operationId: get_node_errors
   parameters:
-    - description: Absolute path to the node to inspect. e.g., "/project1/text1"
+    - description: Absolute path to the node to inspect. e.g., "/text1"
       in: query
       name: nodePath
       required: true

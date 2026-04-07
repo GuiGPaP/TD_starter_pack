@@ -23,6 +23,7 @@ import { registerNetworkTemplateTools } from "./handlers/networkTemplateTools.js
 import { registerPaletteTools } from "./handlers/paletteTools.js";
 import { registerPerfTools } from "./handlers/perfTools.js";
 import { registerProjectCatalogTools } from "./handlers/projectCatalogTools.js";
+import { registerScreenshotTools } from "./handlers/screenshotTools.js";
 import { registerSearchTools } from "./handlers/searchTools.js";
 import { registerTdTools } from "./handlers/tdTools.js";
 import { registerTechniqueTools } from "./handlers/techniqueTools.js";
@@ -53,6 +54,7 @@ export function registerTools(
 	registerHealthTools(server, logger, tdClient, serverMode);
 	registerPerfTools(server, logger, tdClient, serverMode);
 	registerExecLogTools(server, logger, auditLog);
+	registerScreenshotTools(server, logger, tdClient, serverMode);
 
 	// Initialize asset registry with discovered paths
 	const assetRegistry = new AssetRegistry(logger);
