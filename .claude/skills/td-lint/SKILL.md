@@ -7,6 +7,8 @@ description: "Python DAT linting, code quality, and ruff-based correction loops 
 
 > **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
 
+> **Post-write rule**: After ANY `set_dat_text` on a Python DAT, call `lint_dat` immediately. Fix and re-write if linting fails. Skip validation for data DATs (JSON, CSV, plain text).
+
 ## Mental Model
 
 - DAT operators are text containers inside a live TouchDesigner session — they hold Python, GLSL, data, or plain text

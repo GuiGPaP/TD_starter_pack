@@ -7,6 +7,8 @@ description: "Project-aware context for TD code completion. Use this skill to bu
 
 > **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
 
+> **Execution mode rule**: Context tools are read-only by nature. Always use `read-only` mode for `execute_python_script` when building context or inspecting the project.
+
 ## When to Use
 
 Use this skill's tools to build context **before** writing TD code:

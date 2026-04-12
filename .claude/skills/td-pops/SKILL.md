@@ -7,6 +7,8 @@ description: Write GLSL compute shaders for TouchDesigner's POP (Point Operator)
 
 > **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
 
+> **Post-write rule**: After ANY `set_dat_text` on a compute shader DAT, call `validate_glsl_dat` immediately. Fix and re-write if validation fails. Never consider shader code done without validation. Skip validation for data DATs (JSON, CSV, plain text).
+
 ## Mental Model
 
 - GLSL POPs are **compute shaders**, not fragment shaders. There is no `fragColor`, no `vUV`, no `sTD2DInputs` — you work with attribute arrays indexed by `TDIndex()`

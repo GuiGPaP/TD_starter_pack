@@ -48,6 +48,10 @@ const getTemplateSchema = detailOnlyFormattingSchema.extend({
 type GetTemplateParams = z.input<typeof getTemplateSchema>;
 
 const deployTemplateSchema = detailOnlyFormattingSchema.extend({
+	dryRun: z
+		.boolean()
+		.describe("Preview deploy plan without executing")
+		.optional(),
 	id: z.string().min(1).describe("Template ID to deploy"),
 	parentPath: z
 		.string()
@@ -300,11 +304,43 @@ export function registerNetworkTemplateTools(
 						};
 					}
 
+					const tpl = entry as TDTemplateEntry;
 					const script = buildTemplateDeployScript(
-						entry as TDTemplateEntry,
+						tpl,
 						params.parentPath,
 						params.id,
 					);
+
+					if (params.dryRun) {
+						const plan = {
+							connections: tpl.payload.connections?.length ?? 0,
+							operators: tpl.payload.operators.map((o) => ({
+								name: o.name,
+								opType: o.opType,
+								path: `${params.parentPath}/${o.name}`,
+							})),
+							parameters: tpl.payload.parameters?.length ?? 0,
+							parentPath: params.parentPath,
+							script,
+							status: "dry_run" as const,
+							templateId: params.id,
+						};
+						const text = [
+							`## Dry-run: ${params.id} → ${params.parentPath}`,
+							"",
+							`Would create ${plan.operators.length} operator(s), ${plan.connections} connection(s), ${plan.parameters} parameter(s).`,
+							"",
+							"### Operators",
+							...plan.operators.map((o) => `- \`${o.path}\` (${o.opType})`),
+							"",
+							"### Script preview",
+							"```python",
+							script,
+							"```",
+						].join("\n");
+						return { content: [{ text, type: "text" as const }] };
+					}
+
 					const execResult = await tdClient.execPythonScript({
 						mode: "full-exec",
 						script,
