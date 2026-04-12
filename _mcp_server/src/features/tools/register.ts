@@ -15,6 +15,7 @@ import { AssetRegistry } from "../templates/registry.js";
 import type { AssetSource } from "../templates/types.js";
 import { registerAssetTools } from "./handlers/assetTools.js";
 import { registerBuildTools } from "./handlers/buildTools.js";
+import { registerErrorScanTools } from "./handlers/errorScanTools.js";
 import { registerExecLogTools } from "./handlers/execLogTools.js";
 import { registerGlslPatternTools } from "./handlers/glslPatternTools.js";
 import { registerHealthTools } from "./handlers/healthTools.js";
@@ -52,6 +53,7 @@ export function registerTools(
 	const auditLog = new ExecAuditLog();
 	registerTdTools(server, logger, tdClient, serverMode, auditLog);
 	registerHealthTools(server, logger, tdClient, serverMode);
+	registerErrorScanTools(server, logger, tdClient, serverMode);
 	registerPerfTools(server, logger, tdClient, serverMode);
 	registerExecLogTools(server, logger, auditLog);
 	registerScreenshotTools(server, logger, tdClient, serverMode);

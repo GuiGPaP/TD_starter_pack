@@ -2,6 +2,20 @@
 
 Check errors, inspect layout, and diagnose operator issues.
 
+## Network-Wide Error Scan
+
+Use `scan_network_errors` to find all errors and warnings across a network subtree in one call:
+
+```
+scan_network_errors(scope="/project1", maxDepth=5, includeWarnings=true)
+```
+
+Returns a structured report with every operator that has errors or warnings. Use this first when diagnosing a broken network.
+
+## Single-Node Error Check
+
+For a specific node and its children:
+
 ```python
 err = op('/project1/base1').errors(recurse=True)
 print(err)

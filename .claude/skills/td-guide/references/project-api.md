@@ -10,6 +10,7 @@ This project exposes TouchDesigner functionality through an MCP web server. The 
 | Browse operators in a container | `get_td_nodes` | Lists children of a parent path, optional name pattern filter |
 | Inspect a single operator | `get_td_node_parameters` | Returns full parameter dict for a node |
 | Check operator errors | `get_td_node_errors` | Collects error messages for node + children (recurse) |
+| Scan network for all errors/warnings | `scan_network_errors` | Walks operator tree, returns structured report of every error and warning |
 | Create a new operator | `create_td_node` | Creates node under parent path with type, name, initial parameters |
 | Delete an operator | `delete_td_node` | Destroys a node at path |
 | Set parameters on an operator | `update_td_node_parameters` | Batch-updates parameters by name/value dict |
@@ -96,6 +97,16 @@ node_path: "/project1/base1"
 ```
 
 Uses TD's `errors(recurse=True)` internally. Remember: error cache updates on frame boundaries — always check errors in a **separate call** after making fixes.
+
+### `scan_network_errors` — Network-Wide Error Scan
+
+```
+scope: "/project1"       # root path to scan (default: "/project1")
+maxDepth: 5              # recursion depth (1–20, default: 5)
+includeWarnings: true    # also collect .warnings() if available (default: true)
+```
+
+Walks the operator tree via `findChildren(maxDepth=N)`, calls `.errors()` and `.warnings()` on each operator (capped at 500 ops). Returns a markdown report with error/warning counts and a table per severity. Use this to diagnose a broken network or verify it's clean after changes.
 
 ### `exec_node_method` — Calling Node Methods
 

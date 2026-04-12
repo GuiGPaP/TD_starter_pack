@@ -62,6 +62,7 @@ export const TOOL_NAMES = {
 	LIST_EXPERIMENTAL_BUILDS: "list_experimental_builds",
 	LIST_VERSIONS: "list_versions",
 	LOAD_PALETTE_COMPONENT: "load_palette_component",
+	SCAN_NETWORK_ERRORS: "scan_network_errors",
 	PACKAGE_PROJECT: "package_project",
 	SCAN_FOR_LESSONS: "scan_for_lessons",
 	SCAN_PROJECTS: "scan_projects",
