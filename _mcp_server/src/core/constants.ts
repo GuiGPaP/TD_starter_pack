@@ -8,6 +8,7 @@ export const TD_PYTHON_CLASS_REFERENCE_INDEX_URL = `${TD_PYTHON_CLASS_REFERENCE_
  * Reference Tool Names for TouchDesigner MCP
  */
 export const TOOL_NAMES = {
+	BULK_PACKAGE_PROJECTS: "bulk_package_projects",
 	CAPTURE_LESSON: "capture_lesson",
 	COMPARE_OPERATORS: "compare_operators",
 	COMPLETE_OP_PATHS: "complete_op_paths",

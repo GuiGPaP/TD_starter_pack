@@ -6,6 +6,44 @@ import {
 	mergeFormatterOptions,
 } from "./responseFormatter.js";
 
+export type BulkPackageProjectStatus =
+	| "failed"
+	| "packaged"
+	| "planned"
+	| "skipped";
+
+export interface BulkPackageProjectResult {
+	toePath: string;
+	status: BulkPackageProjectStatus;
+	warnings: string[];
+	error?: string;
+	jsonPath?: string;
+	mdPath?: string;
+	name?: string;
+	operatorCount?: number;
+	pngPath?: string | null;
+	reason?: string;
+}
+
+export interface BulkPackageResult {
+	aborted: boolean;
+	dryRun: boolean;
+	failureCount: number;
+	originalProjectPath: string | null;
+	projects: BulkPackageProjectResult[];
+	restoredOriginalProject: boolean;
+	rootDir: string;
+	scanned: {
+		indexed: number;
+		notIndexed: number;
+		total: number;
+	};
+	skippedCount: number;
+	successCount: number;
+	targetCount: number;
+	warnings: string[];
+}
+
 export function formatPackageResult(
 	result: {
 		jsonPath: string;
@@ -37,6 +75,106 @@ export function formatPackageResult(
 		lines.push("");
 		for (const w of result.warnings) {
 			lines.push(`  ! ${w}`);
+		}
+	}
+
+	return finalizeFormattedText(lines.join("\n"), opts, {
+		structured: result,
+	});
+}
+
+function pushProjectSection(
+	lines: string[],
+	heading: string,
+	projects: BulkPackageProjectResult[],
+	detailLevel: FormatterOptions["detailLevel"],
+): void {
+	if (projects.length === 0) return;
+
+	lines.push("", `${heading} (${projects.length}):`);
+
+	for (const project of projects) {
+		lines.push(`  - ${project.toePath}`);
+
+		if (project.reason && detailLevel !== "minimal") {
+			lines.push(`    reason: ${project.reason}`);
+		}
+
+		if (detailLevel === "detailed") {
+			if (project.jsonPath) lines.push(`    json: ${project.jsonPath}`);
+			if (project.mdPath) lines.push(`    markdown: ${project.mdPath}`);
+			if (project.pngPath) lines.push(`    thumbnail: ${project.pngPath}`);
+		}
+
+		if (project.operatorCount !== undefined && detailLevel !== "minimal") {
+			lines.push(`    operators: ${project.operatorCount}`);
+		}
+
+		if (project.error) {
+			lines.push(`    error: ${project.error}`);
+		}
+
+		if (project.warnings.length > 0 && detailLevel !== "minimal") {
+			for (const warning of project.warnings) {
+				lines.push(`    ! ${warning}`);
+			}
+		}
+	}
+}
+
+export function formatBulkPackageResult(
+	result: BulkPackageResult,
+	options?: FormatterOptions,
+): string {
+	const opts = mergeFormatterOptions(options);
+	const lines = [
+		`Bulk package projects in ${result.rootDir}`,
+		"",
+		`Scanned: ${result.scanned.total} total | Indexed: ${result.scanned.indexed} | Not indexed: ${result.scanned.notIndexed}`,
+		`Targets: ${result.targetCount}`,
+	];
+
+	if (result.dryRun) {
+		lines.push("Mode: dry run");
+	} else {
+		lines.push(
+			`Packaged: ${result.successCount} | Failed: ${result.failureCount} | Skipped: ${result.skippedCount}`,
+		);
+		lines.push(
+			`Original project restored: ${result.restoredOriginalProject ? "yes" : "no"}`,
+		);
+	}
+
+	if (result.aborted) {
+		lines.push("Batch aborted after repeated load timeouts.");
+	}
+
+	if (result.targetCount === 0) {
+		lines.push("", "No projects need packaging.");
+	}
+
+	if (result.warnings.length > 0) {
+		lines.push("", "Warnings:");
+		for (const warning of result.warnings) {
+			lines.push(`  ! ${warning}`);
+		}
+	}
+
+	if (opts.detailLevel !== "minimal") {
+		const planned = result.projects.filter((project) => project.status === "planned");
+		const packaged = result.projects.filter(
+			(project) => project.status === "packaged",
+		);
+		const failed = result.projects.filter((project) => project.status === "failed");
+		const skipped = result.projects.filter((project) => project.status === "skipped");
+
+		if (result.dryRun) {
+			pushProjectSection(lines, "Would package", planned, opts.detailLevel);
+			pushProjectSection(lines, "Skipped", skipped, opts.detailLevel);
+		} else {
+			pushProjectSection(lines, "Packaged", packaged, opts.detailLevel);
+			pushProjectSection(lines, "Failed", failed, opts.detailLevel);
+			pushProjectSection(lines, "Skipped", skipped, opts.detailLevel);
 		}
 	}
 
