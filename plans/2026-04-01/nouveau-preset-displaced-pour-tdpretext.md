@@ -3,40 +3,54 @@
 
 ## Context
 
-Le réseau TDPretext a **deux chaînes parallèles non connectées** :
+Le réseau TDPretext a **deux chaînes parallèles** :
 
-1. **Chaîne texte** : `webrender_flow` (HTML pretext) → `null_flow`
-2. **Chaîne vidéo** : `videodevin1` (webcam) → `nvbackground1` (bg removal NVIDIA) → `thresh1` (seuil alpha) → `multiply1` (silhouette × vidéo) → `null1` (sortie = silhouette découpée)
+1. **Chaîne texte** : `webrender_flow` (HTML Pretext) → `null_flow`
+2. **Chaîne vidéo** : `videodevin1` (webcam) → `nvbackground1` (bg removal NVIDIA) → `thresh1` → `multiply1` → `null_mask` (silhouette)
 
-L'objectif est de **connecter null1 comme source de displacement pour décaler le texte** rendu par webrender_flow, et d'encapsuler ça dans un nouveau preset.
+L'objectif est d'utiliser la silhouette vidéo comme **obstacle bitmap** envoyé à Pretext côté JS, pour que le texte coule autour de la forme captée par la webcam — **entièrement dans le canvas HTML**, sans opérateur de displacement TD.
 
 ## Approche
 
-Ajouter un `displaceTOP` qui prend le texte en entrée 0 et la silhouette vidéo (null1) en entrée 1, puis créer un nouveau null de sortie. Enregistrer un preset "displaced" qui active ce mode.
+Le preset "displaced" active le mode **bitmap obstacle** : `obstacle_bridge` lit `null_mask` frame par frame, extrait les spans opaques par ligne, et les envoie au canvas via `window.updateObstacleSpans()`. Côté JS, Pretext utilise ces spans pour exclure des zones du layout texte — le texte coule autour de la silhouette.
 
-## Étapes
+## Architecture du flux
 
-### 1. Créer un Displace TOP (`displace1`)
-- **Input 0** : `null_flow` (texte rendu)
-- **Input 1** : `null1` (silhouette vidéo = displacement map)
-- Paramètres initiaux :
-  - `weightx` : 0.05, `weighty` : 0.05
-  - `midpointx` : 0.5, `midpointy` : 0.5
-  - `method` : horizontal and vertical
+```
+videodevin1 (webcam)
+    → nvbackground1 (NVIDIA BG removal)
+    → thresh1 (seuil alpha)
+    → multiply1
+    → null_mask ─── obstacle_bridge (Execute DAT, onFrameEnd) ──→ executeJavaScript
+                         │                                           │
+                         │  numpyArray() → scan rows → spans         │
+                         │  normalisés [startX, endX] par ligne      │
+                         │                                           ▼
+                         │                              window.updateObstacleSpans(rows)
+                         │                                           │
+text_source ─→ inject_text ──→ webrender_flow ◄──────────────────────┘
+                                    │             Pretext layout exclut les spans
+                                    ▼
+                                null_flow (sortie)
+```
 
-### 2. Créer un Null TOP de sortie (`null_displaced`)
-- Input : `displace1`
-- Sert de sortie propre pour la chaîne combinée
+## Mécanisme détaillé
 
-### 3. Ajouter des custom parameters sur `/TDPretext`
-- `Displaceweightx` (float, default 0.05, range 0-0.5)
-- `Displaceweighty` (float, default 0.05, range 0-0.5)
+### obstacle_bridge (Execute DAT)
+- **Actif uniquement** quand `Preset == 'displaced'` (guard en début de `_send_obstacle_spans`)
+- Lit `null_mask.numpyArray()` — matrice RGBA du masque silhouette
+- Pour chaque ligne (Y flippé car numpyArray row 0 = haut, TD texture Y=0 = bas) :
+  - Scanne le canal alpha, détecte les runs contigus où `alpha > 0.25`
+  - Produit des spans normalisés `[startX/w, endX/w]`
+- Envoie le tableau JSON de spans via `wr.executeJavaScript('window.updateObstacleSpans(...)')`
+- Gère aussi la détection de reload page (re-push config + texte après 90 frames)
 
-### 4. Ajouter le preset "displaced" dans `par_to_webrender`
+### par_to_webrender (Parameter Execute DAT)
+- `BITMAP_PRESETS = {'displaced'}` — identifie les presets en mode bitmap
+- Quand preset = displaced, `_push_config()` envoie `bitmapObstacle: true` et `bitmapMargin: 12` au JS
+- Désactive les obstacles circulaires (`Pointerradius: 0`, `Numobstacles: 0`, `Orbopacity: 0`)
 
-**PAGE_MAP** : `'displaced': 'flow_page'`
-
-**PRESETS['displaced']** :
+### Preset "displaced" — valeurs
 ```python
 'displaced': {
     'Fontfamily': 'Segoe UI',
@@ -52,36 +66,31 @@ Ajouter un `displaceTOP` qui prend le texte en entrée 0 et la silhouette vidéo
     'Obstacleradius': 0,
     'Shadowblur': 8,
     'Orbopacity': 0,
-    'Displaceweightx': 0.05,
-    'Displaceweighty': 0.05,
 },
 ```
+Fond noir, texte blanc quasi-opaque, aucun obstacle circulaire/orb — la silhouette bitmap fait le travail.
 
-Style : fond noir, texte blanc quasi-opaque, pas d'obstacles/orbs (la silhouette vidéo fait le travail de déformation), léger shadow blur.
+## Opérateurs impliqués (vérifiés via MCP)
 
-### 5. Mettre à jour `_push_config` pour envoyer les poids displace
-- Ajouter `Displaceweightx` / `Displaceweighty` dans le dict config
-- Mettre à jour le displace1 TOP via expression ou script python
-
-### 6. Ajouter "displaced" au menu du paramètre Preset
-- Ajouter `'displaced'` / `'Displaced'` aux menuNames/menuLabels
-
-### 7. Layout des nodes
-- Positionner `displace1` et `null_displaced` proprement dans le réseau
-
-## Fichiers / Opérateurs modifiés
-
-| Opérateur | Action |
-|-----------|--------|
-| `/TDPretext` (containerCOMP) | Ajouter custom pars `Displaceweightx`, `Displaceweighty`, menu entry |
-| `/TDPretext/displace1` (displaceTOP) | **Créer** — inputs: null_flow + null1 |
-| `/TDPretext/null_displaced` (nullTOP) | **Créer** — output de la chaîne combinée |
-| `/TDPretext/par_to_webrender` (parexecDAT) | Ajouter preset "displaced" + push des poids displace |
+| Opérateur | Type | Rôle |
+|-----------|------|------|
+| `/TDPretext` | containerCOMP | Custom pars (Preset, Font*, Textcolor*, etc.) |
+| `/TDPretext/webrender_flow` | webrenderTOP | Rendu HTML Pretext |
+| `/TDPretext/null_flow` | nullTOP | Sortie texte rendu |
+| `/TDPretext/null_mask` | nullTOP | Sortie silhouette vidéo |
+| `/TDPretext/obstacle_bridge` | executeDAT | Envoie spans bitmap de null_mask au JS |
+| `/TDPretext/par_to_webrender` | parameterexecuteDAT | Push config/presets au JS |
+| `/TDPretext/inject_text` | datexecuteDAT | Injecte texte dans le canvas |
+| `/TDPretext/mouse_to_webrender` | chopexecuteDAT | Envoie position souris au JS |
+| `/TDPretext/videodevin1` | videodeviceinTOP | Webcam |
+| `/TDPretext/nvbackground1` | nvidiabackgroundTOP | BG removal |
+| `/TDPretext/thresh1` | thresholdTOP | Seuil alpha |
+| `/TDPretext/multiply1` | multiplyTOP | Silhouette × vidéo |
 
 ## Vérification
 
-1. Sélectionner le preset "Displaced" → les custom pars se mettent à jour
-2. `displace1` reçoit bien null_flow (input 0) et null1 (input 1)
-3. Le texte affiché dans `null_displaced` est déformé par la silhouette vidéo
-4. Les autres presets continuent de fonctionner normalement (pas de régression)
-5. Modifier `Displaceweightx`/`Displaceweighty` change l'intensité du displacement en temps réel
+1. Preset "Displaced" sélectionné → style texte (fond noir, pas d'orbs, shadow blur 8)
+2. `obstacle_bridge` envoie les spans de `null_mask` au canvas chaque frame
+3. Le texte coule autour de la silhouette webcam — visible dans `null_flow`
+4. Les autres presets (editorial, poster, kinetic, textstring) ne sont pas affectés
+5. **Aucun Displace TOP** — tout le displacement est côté JS/Pretext via `buildSegments()`
