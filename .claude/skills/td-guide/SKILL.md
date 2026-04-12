@@ -5,6 +5,8 @@ description: "TouchDesigner network creation, operator layout, rendering, data c
 
 # TouchDesigner Guide
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 ## Mental Model
 
 - TD is a visual dataflow environment: operators process data, connections define the graph, families (SOP/TOP/CHOP/DAT/COMP/POP) define data types

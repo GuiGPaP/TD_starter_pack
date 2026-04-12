@@ -9,10 +9,11 @@ import {
 	ProjectCatalogRegistry,
 	scanForProjects,
 } from "../../catalog/index.js";
+import type { ScanResult } from "../../catalog/loader.js";
 import {
 	type BulkPackageProjectResult,
-	formatPackageResult,
 	formatBulkPackageResult,
+	formatPackageResult,
 	formatScanResult,
 	formatSearchResults,
 } from "../presenter/projectCatalogFormatter.js";
@@ -48,7 +49,9 @@ const bulkPackageSchema = z.object({
 	dryRun: z
 		.boolean()
 		.optional()
-		.describe("Scan and report what would be packaged without loading projects"),
+		.describe(
+			"Scan and report what would be packaged without loading projects",
+		),
 	loadTimeoutSeconds: z
 		.number()
 		.int()
@@ -126,33 +129,287 @@ function buildPackageScript(opts: {
 }): string {
 	const tagsJson = JSON.stringify(opts.tags);
 	return `
-import json, os, datetime
+import json, datetime
+
+# Parameters excluded from .md summary (UI/internal state, not semantically useful).
+# Still captured in the .json for completeness.
+_MD_SKIP_PARAMS = {
+    'pageindex', 'opviewer', 'enableexternaltox', 'syncfile',
+    'language', 'alignorder', 'reloadtoxinit', 'reloadcustom',
+    'reloadbuiltin', 'savebackup', 'savebuild',
+}
 
 proj_file = str(project.name)
 proj_name = proj_file[:-4] if proj_file.lower().endswith('.toe') else proj_file
 proj_file = proj_file if proj_file.lower().endswith('.toe') else (proj_name + '.toe')
 proj_folder = project.folder.replace('\\\\', '/')
-
-# Count operators by family
-op_counts = {}
-def count_ops(parent, depth=0):
-    if depth > 10: return
-    for c in parent.children:
-        family = c.family
-        if family:
-            op_counts[family] = op_counts.get(family, 0) + 1
-        if hasattr(c, 'children'):
-            count_ops(c, depth + 1)
-
 root = op('/project1')
-if root:
-    count_ops(root)
 
-# List top-level components
+def _serialize_value(_value):
+    try:
+        if hasattr(td, 'OP') and isinstance(_value, td.OP):
+            return _value.path
+    except:
+        pass
+    if _value is None or isinstance(_value, (bool, int, float, str)):
+        return _value
+    if isinstance(_value, (list, tuple)):
+        return [_serialize_value(_item) for _item in _value]
+    if isinstance(_value, dict):
+        _out = {}
+        for _k, _v in _value.items():
+            _out[str(_k)] = _serialize_value(_v)
+        return _out
+    try:
+        return str(_value)
+    except:
+        return None
+
+def _clean_text(_value):
+    if _value is None:
+        return ''
+    _text = str(_value)
+    return '' if _text == 'None' else _text
+
+def _normalized_compare_value(_value):
+    _json = _serialize_value(_value)
+    if _json is None or _json == '':
+        return None
+    if isinstance(_json, str):
+        _lower = _json.lower()
+        if _lower == 'true':
+            return True
+        if _lower == 'false':
+            return False
+        try:
+            if '.' in _json:
+                return float(_json)
+            return int(_json)
+        except:
+            return _json
+    return _json
+
+def _parameter_entry(_par):
+    _mode = _clean_text(getattr(_par, 'mode', ''))
+    _expr = _clean_text(getattr(_par, 'expr', ''))
+    _style = _clean_text(getattr(_par, 'style', ''))
+
+    try:
+        _value = _par.eval()
+    except:
+        try:
+            _value = getattr(_par, 'val', None)
+        except:
+            _value = None
+
+    try:
+        _default = getattr(_par, 'default', None)
+    except:
+        _default = None
+
+    _value_json = _serialize_value(_value)
+    _value_compare = _normalized_compare_value(_value)
+    _default_compare = _normalized_compare_value(_default)
+
+    _changed = False
+    if _expr:
+        _changed = True
+    elif _mode and _mode != 'ParMode.CONSTANT':
+        _changed = True
+    else:
+        try:
+            _changed = _value_compare != _default_compare
+        except:
+            _changed = str(_value_compare) != str(_default_compare)
+
+    if not _changed:
+        return None
+
+    _entry = {"value": _value_json}
+    if _style:
+        _entry["style"] = _style
+    if _mode and _mode != 'ParMode.CONSTANT':
+        _entry["mode"] = _mode.replace('ParMode.', '')
+    if _expr:
+        _entry["expr"] = _expr
+    return _entry
+
+def _custom_parameter_entry(_page, _par):
+    _entry = {
+        "name": _par.name,
+        "label": _clean_text(getattr(_par, 'label', '')),
+        "page": _clean_text(getattr(_page, 'name', '')),
+        "style": _clean_text(getattr(_par, 'style', '')),
+    }
+    try:
+        _entry["value"] = _serialize_value(_par.eval())
+    except:
+        try:
+            _entry["value"] = _serialize_value(getattr(_par, 'val', None))
+        except:
+            pass
+    return _entry
+
+def _detect_patterns(_components, _nodes, _connections, _op_counts):
+    _patterns = []
+    _component_names = [str(_name).lower() for _name in _components]
+    _op_types = [str(_node.get("opType", "")).lower() for _node in _nodes]
+
+    if any(('webserver' in _name) or (_name.startswith('mcp')) for _name in _component_names):
+        _patterns.append({
+            "kind": "api-bridge",
+            "summary": "Appears to expose a webserver or MCP-facing control network.",
+        })
+
+    if any(_op_type == 'feedbacktop' for _op_type in _op_types):
+        _patterns.append({
+            "kind": "feedback-loop",
+            "summary": "Contains a feedback TOP-based processing loop.",
+        })
+
+    if any(
+        _node.get("opType") == 'geometryCOMP'
+        and any(str(_name).lower().startswith('instance') for _name in (_node.get("parameters", {}) or {}).keys())
+        for _node in _nodes
+    ):
+        _patterns.append({
+            "kind": "instancing",
+            "summary": "Contains geometry operators with non-default instancing configuration.",
+        })
+
+    if _op_counts.get('TOP', 0) > 0 and len(_connections) > 0:
+        _patterns.append({
+            "kind": "connected-network",
+            "summary": "Contains an explicit operator graph with wired connections.",
+        })
+
+    return _patterns
+
+def _infer_description(_provided, _components, _op_counts, _patterns):
+    if _provided:
+        return _provided
+
+    _pattern_kinds = [p.get("kind", "") for p in _patterns]
+    if 'api-bridge' in _pattern_kinds:
+        _center = _components[0] if _components else 'the project root'
+        return f"TouchDesigner project centered on a webserver/API bridge network via {_center}."
+    if 'feedback-loop' in _pattern_kinds:
+        return "TouchDesigner project built around a TOP feedback loop."
+    if 'instancing' in _pattern_kinds:
+        return "TouchDesigner project for geometry rendering with instancing-oriented configuration."
+
+    _top = _op_counts.get('TOP', 0)
+    _chop = _op_counts.get('CHOP', 0)
+    _dat = _op_counts.get('DAT', 0)
+
+    if _top >= max(_chop, _dat) and _top > 0:
+        return "TouchDesigner project focused on TOP-based visual or render processing."
+    if _chop >= max(_top, _dat) and _chop > 0:
+        return "TouchDesigner project focused on CHOP-driven control and signal flow."
+    if _dat > 0:
+        return "TouchDesigner project focused on DAT scripting, control logic, or API glue."
+    if _components:
+        return f"TouchDesigner project organized around {_components[0]}."
+    return f"TouchDesigner project: {proj_name}"
+
+def _value_preview(_value):
+    if isinstance(_value, list):
+        return '[' + ', '.join(str(_item) for _item in _value[:4]) + (', ...' if len(_value) > 4 else '') + ']'
+    return str(_value)
+
+op_counts = {}
+op_type_counts = {}
+nodes = []
+connections = []
+connection_keys = set()
 components = []
+warnings = []
+
 if root:
     for c in root.children:
         components.append(c.name)
+else:
+    warnings.append("Could not resolve /project1 while packaging the project.")
+
+if root:
+    for c in root.findChildren(maxDepth=10):
+        path = c.path
+        family = c.family
+        op_type = c.OPType
+
+        if family:
+            op_counts[family] = op_counts.get(family, 0) + 1
+        if op_type:
+            op_type_counts[op_type] = op_type_counts.get(op_type, 0) + 1
+
+        node = {
+            "path": path,
+            "name": c.name,
+            "opType": op_type,
+            "family": family,
+        }
+
+        try:
+            parent = c.parent()
+            if parent and hasattr(parent, 'path'):
+                node["parentPath"] = parent.path
+        except:
+            pass
+
+        try:
+            tags = [str(tag) for tag in c.tags]
+            if tags:
+                node["tags"] = tags
+        except:
+            pass
+
+        parameters = {}
+        try:
+            for par in c.pars('*'):
+                entry = _parameter_entry(par)
+                if entry is not None:
+                    parameters[par.name] = entry
+        except:
+            pass
+        if parameters:
+            node["parameters"] = parameters
+
+        try:
+            if hasattr(c, 'customPages') and c.family == 'COMP':
+                custom_parameters = []
+                for page in c.customPages:
+                    for par in page.pars:
+                        custom_parameters.append(_custom_parameter_entry(page, par))
+                if custom_parameters:
+                    node["customParameters"] = custom_parameters
+        except:
+            pass
+
+        try:
+            errs = c.errors()
+            if errs:
+                node["errors"] = str(errs)
+        except:
+            pass
+
+        nodes.append(node)
+
+        try:
+            for input_index, connector in enumerate(c.inputConnectors):
+                for con in connector.connections:
+                    src = con.owner
+                    if src and hasattr(src, 'path'):
+                        key = (src.path, 0, path, input_index)
+                        if key not in connection_keys:
+                            connection_keys.add(key)
+                            connections.append({
+                                "from": src.path,
+                                "fromOutput": 0,
+                                "to": path,
+                                "toInput": input_index,
+                            })
+        except:
+            pass
 
 # Find a TOP for screenshot (best-effort)
 thumbnail_path = None
@@ -183,9 +440,20 @@ if root:
                 except:
                     pass
 
+if not thumbnail_path:
+    warnings.append("No suitable TOP found for thumbnail")
+
+patterns = _detect_patterns(components, nodes, connections, op_counts)
+description = _infer_description(
+    ${JSON.stringify(opts.description)} or "",
+    components,
+    op_counts,
+    patterns,
+)
+
 # Build manifest
 manifest = {
-    "schemaVersion": "1.0",
+    "schemaVersion": "1.1",
     "name": proj_name,
     "file": proj_file,
     "tdVersion": str(td.app.version),
@@ -193,9 +461,15 @@ manifest = {
     "modified": datetime.datetime.now().isoformat()[:10],
     "author": ${JSON.stringify(opts.author)} or "",
     "tags": ${tagsJson},
-    "description": ${JSON.stringify(opts.description)} or f"TouchDesigner project: {proj_name}",
+    "description": description,
     "operators": op_counts,
     "components": components,
+    "nodeCount": len(nodes),
+    "connectionCount": len(connections),
+    "nodes": nodes,
+    "connections": connections,
+    "patterns": patterns,
+    "warnings": warnings,
     "thumbnail": thumbnail_name,
 }
 
@@ -208,38 +482,80 @@ with open(json_path, 'w', encoding='utf-8') as f:
 # Write markdown
 md_name = proj_name + '.td-catalog.md'
 md_path = proj_folder + '/' + md_name
-total_ops = sum(op_counts.values())
+total_ops = len(nodes)
 ops_line = ', '.join(f"{v} {k}" for k, v in sorted(op_counts.items()))
-tags_line = ', '.join(manifest['tags']) if manifest['tags'] else 'none'
+top_types = sorted(op_type_counts.items(), key=lambda item: (-item[1], item[0]))
+top_types_line = ', '.join(f"{count} {name}" for name, count in top_types[:8])
+md_lines = [
+    f"# {proj_name}",
+    "",
+    "## Purpose",
+    "",
+    manifest['description'],
+    "",
+    "## Network Shape",
+    "",
+    f"- Operators scanned: {total_ops}",
+    f"- Connections discovered: {len(connections)}",
+    f"- Families: {ops_line if ops_line else 'none'}",
+]
 
-md = f"""# {proj_name}
+if top_types_line:
+    md_lines.append(f"- Top operator types: {top_types_line}")
 
-{manifest['description']}
+if components:
+    md_lines.extend(["", "## Top-Level Structure", ""])
+    for component in components:
+        md_lines.append(f"- \`{component}\`")
 
-## Operators ({total_ops} total)
+if patterns:
+    md_lines.extend(["", "## Notable Patterns", ""])
+    for pattern in patterns:
+        md_lines.append(f"- {pattern['summary']}")
 
-{ops_line}
+key_nodes = []
+for node in nodes:
+    _has_semantic_params = any(k not in _MD_SKIP_PARAMS for k in (node.get("parameters") or {}))
+    if node.get("parentPath") == '/project1' or _has_semantic_params or node.get("customParameters"):
+        key_nodes.append(node)
 
-## Components
+if key_nodes:
+    md_lines.extend(["", "## Key Operators", ""])
+    for node in key_nodes[:12]:
+        line = f"- \`{node['path']}\` ({node['opType']})"
+        param_summaries = []
+        for param_name, param_entry in (node.get("parameters") or {}).items():
+            if param_name in _MD_SKIP_PARAMS:
+                continue
+            param_summaries.append(f"{param_name}={_value_preview(param_entry.get('value'))}")
+            if len(param_summaries) >= 6:
+                break
+        if param_summaries:
+            line += " - " + ', '.join(param_summaries)
+        elif node.get("customParameters"):
+            custom_names = [item.get("name", "?") for item in node.get("customParameters", [])[:6]]
+            line += " - custom parameters: " + ', '.join(custom_names)
+        md_lines.append(line)
 
-{chr(10).join('- ' + c for c in components)}
+if connections:
+    md_lines.extend(["", "## Representative Connections", ""])
+    for connection in connections[:12]:
+        md_lines.append(f"- \`{connection['from']}\` -> \`{connection['to']}\`")
 
-## Tags
+if warnings:
+    md_lines.extend(["", "## Packaging Notes", ""])
+    for warning in warnings:
+        md_lines.append(f"- {warning}")
 
-{tags_line}
+md_lines.extend([
+    "",
+    f"See \`{json_name}\` for the machine-readable graph export (nodes, non-default parameters, and connections).",
+])
 
-## Info
-
-- TD Version: {manifest['tdVersion']}
-- Created: {manifest['created']}
-"""
+md = '\\n'.join(md_lines)
 
 with open(md_path, 'w', encoding='utf-8') as f:
     f.write(md)
-
-warnings = []
-if not thumbnail_path:
-    warnings.append("No suitable TOP found for thumbnail")
 
 result = {
     "name": proj_name,
@@ -274,20 +590,24 @@ function normalizeTdPath(filePath: string): string {
 }
 
 function sameTdPath(left: string, right: string): boolean {
-	return normalizeTdPath(left).toLowerCase() === normalizeTdPath(right).toLowerCase();
+	return (
+		normalizeTdPath(left).toLowerCase() === normalizeTdPath(right).toLowerCase()
+	);
 }
 
 function toErrorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
 }
 
-function normalizePackageResult(result: PackageScriptResult | string): PackageScriptResult {
+function normalizePackageResult(
+	result: PackageScriptResult | string,
+): PackageScriptResult {
 	return typeof result === "string"
 		? (JSON.parse(result) as PackageScriptResult)
 		: result;
 }
 
-async function waitForTdOnline(
+async function _waitForTdOnline(
 	tdClient: TouchDesignerClient,
 	timeoutSeconds: number,
 ): Promise<boolean> {
@@ -348,7 +668,9 @@ async function getCurrentProjectInfo(
 	tdClient: TouchDesignerClient,
 ): Promise<{ info: CurrentProjectInfo | null; warning: string | null }> {
 	try {
-		const result = await tdClient.execPythonScript<{ result: CurrentProjectInfo }>({
+		const result = await tdClient.execPythonScript<{
+			result: CurrentProjectInfo;
+		}>({
 			mode: "read-only",
 			script: buildCurrentProjectInfoScript(),
 		});
@@ -465,6 +787,232 @@ async function runPackageScript(
 	}
 }
 
+// ── Bulk-package helpers ─────────────────────────────────────
+
+function buildTargetList(
+	scan: ScanResult,
+	skipAlreadyPackaged: boolean,
+): { skippedProjects: BulkPackageProjectResult[]; targets: string[] } {
+	const targets: string[] = [];
+	const skippedProjects: BulkPackageProjectResult[] = [];
+
+	if (skipAlreadyPackaged) {
+		for (const entry of scan.indexed) {
+			skippedProjects.push({
+				reason: "already-packaged",
+				status: "skipped",
+				toePath: entry.toePath,
+				warnings: [],
+			});
+		}
+	} else {
+		for (const entry of scan.indexed) {
+			targets.push(entry.toePath);
+		}
+	}
+
+	for (const toePath of scan.notIndexed) {
+		targets.push(toePath);
+	}
+
+	return { skippedProjects, targets };
+}
+
+async function reorderTargetsCurrentFirst(
+	tdClient: TouchDesignerClient,
+	targets: string[],
+	warnings: string[],
+): Promise<{
+	originalProjectModified: boolean;
+	originalProjectPath: string | null;
+}> {
+	if (targets.length === 0) {
+		return { originalProjectModified: false, originalProjectPath: null };
+	}
+
+	const currentProject = await getCurrentProjectInfo(tdClient);
+	const originalProjectPath = currentProject.info?.toePath ?? null;
+	const originalProjectModified = currentProject.info?.modified ?? false;
+
+	if (currentProject.warning) {
+		warnings.push(currentProject.warning);
+	}
+
+	if (originalProjectPath) {
+		const currentPath = originalProjectPath;
+		const currentTargets = targets.filter((c) => sameTdPath(c, currentPath));
+		const otherTargets = targets.filter((c) => !sameTdPath(c, currentPath));
+		targets.splice(0, targets.length, ...currentTargets, ...otherTargets);
+	}
+
+	return { originalProjectModified, originalProjectPath };
+}
+
+interface ProcessTargetsOpts {
+	auditLog: ExecAuditLog | undefined;
+	author: string;
+	loadTimeoutSeconds: number;
+	originalProjectModified: boolean;
+	originalProjectPath: string | null;
+	tags: string[];
+	targets: string[];
+	tdClient: TouchDesignerClient;
+	warnings: string[];
+}
+
+async function processTargets(opts: ProcessTargetsOpts): Promise<{
+	aborted: boolean;
+	projects: BulkPackageProjectResult[];
+	switchedAwayFromOriginalProject: boolean;
+}> {
+	const {
+		auditLog,
+		author,
+		loadTimeoutSeconds,
+		originalProjectModified,
+		originalProjectPath,
+		tags,
+		targets,
+		tdClient,
+		warnings,
+	} = opts;
+
+	const projects: BulkPackageProjectResult[] = [];
+	let consecutiveLoadTimeouts = 0;
+	let aborted = false;
+	let switchedAwayFromOriginalProject = false;
+
+	for (let index = 0; index < targets.length; index += 1) {
+		const toePath = targets[index];
+		const isCurrentProject =
+			originalProjectPath !== null && sameTdPath(toePath, originalProjectPath);
+
+		if (!isCurrentProject) {
+			if (originalProjectModified && !switchedAwayFromOriginalProject) {
+				warnings.push(
+					"Cannot load another project because the currently open TouchDesigner project has unsaved changes. Save or revert it, then rerun bulk_package_projects.",
+				);
+				appendSkippedTail(projects, targets, index, "current-project-modified");
+				break;
+			}
+
+			switchedAwayFromOriginalProject = true;
+			const loadResult = await loadProjectAndWait(
+				tdClient,
+				toePath,
+				Math.max(1, loadTimeoutSeconds),
+			);
+
+			if (!loadResult.success) {
+				consecutiveLoadTimeouts += 1;
+				projects.push({
+					error: loadResult.error ?? "Failed to load project.",
+					status: "failed",
+					toePath,
+					warnings: [],
+				});
+
+				if (consecutiveLoadTimeouts >= MAX_CONSECUTIVE_LOAD_TIMEOUTS) {
+					aborted = true;
+					warnings.push(
+						`Aborted after ${MAX_CONSECUTIVE_LOAD_TIMEOUTS} consecutive project load timeouts.`,
+					);
+					appendSkippedTail(projects, targets, index + 1, "batch-aborted");
+					break;
+				}
+
+				continue;
+			}
+		}
+
+		consecutiveLoadTimeouts = 0;
+
+		try {
+			const packageResult = await runPackageScript(tdClient, auditLog, {
+				author,
+				description: "",
+				tags,
+			});
+
+			projects.push({
+				...packageResult,
+				status: "packaged",
+				toePath,
+				warnings: packageResult.warnings,
+			});
+		} catch (error) {
+			projects.push({
+				error: toErrorMessage(error),
+				status: "failed",
+				toePath,
+				warnings: [],
+			});
+		}
+	}
+
+	return { aborted, projects, switchedAwayFromOriginalProject };
+}
+
+function appendSkippedTail(
+	projects: BulkPackageProjectResult[],
+	targets: string[],
+	fromIndex: number,
+	reason: string,
+): void {
+	for (const pending of targets.slice(fromIndex)) {
+		projects.push({
+			reason,
+			status: "skipped",
+			toePath: pending,
+			warnings: [],
+		});
+	}
+}
+
+async function restoreOriginalProject(
+	tdClient: TouchDesignerClient,
+	originalProjectPath: string | null,
+	switchedAwayFromOriginalProject: boolean,
+	loadTimeoutSeconds: number,
+	warnings: string[],
+): Promise<boolean> {
+	if (!switchedAwayFromOriginalProject) {
+		return true;
+	}
+
+	if (originalProjectPath) {
+		const restoreResult = await loadProjectAndWait(
+			tdClient,
+			originalProjectPath,
+			Math.max(1, loadTimeoutSeconds),
+		);
+		if (!restoreResult.success) {
+			warnings.push(
+				restoreResult.error ??
+					"Failed to restore the original TouchDesigner project.",
+			);
+		}
+		return restoreResult.success;
+	}
+
+	return false;
+}
+
+function buildScannedSummary(scan: ScanResult) {
+	return {
+		indexed: scan.indexed.length,
+		notIndexed: scan.notIndexed.length,
+		total: scan.indexed.length + scan.notIndexed.length,
+	};
+}
+
+function countByStatus(
+	projects: BulkPackageProjectResult[],
+	status: BulkPackageProjectResult["status"],
+): number {
+	return projects.filter((p) => p.status === status).length;
+}
+
 // ── Registration ─────────────────────────────────────────────
 
 export function registerProjectCatalogTools(
@@ -498,10 +1046,10 @@ export function registerProjectCatalogTools(
 						description,
 						tags,
 					});
-					const text = formatPackageResult(
-						data,
-						{ detailLevel: detailLevel ?? "summary", responseFormat },
-					);
+					const text = formatPackageResult(data, {
+						detailLevel: detailLevel ?? "summary",
+						responseFormat,
+					});
 
 					return {
 						content: [{ text, type: "text" as const }],
@@ -543,235 +1091,87 @@ export function registerProjectCatalogTools(
 
 				try {
 					const scan = scanForProjects(rootDir, maxDepth);
-					const projects: BulkPackageProjectResult[] = [];
-					const targets: string[] = [];
 					const warnings: string[] = [];
-
-					if (skipAlreadyPackaged) {
-						for (const entry of scan.indexed) {
-							projects.push({
-								reason: "already-packaged",
-								status: "skipped",
-								toePath: entry.toePath,
-								warnings: [],
-							});
-						}
-					} else {
-						for (const entry of scan.indexed) {
-							targets.push(entry.toePath);
-						}
-					}
-
-					for (const toePath of scan.notIndexed) {
-						targets.push(toePath);
-					}
+					const { skippedProjects, targets } = buildTargetList(
+						scan,
+						skipAlreadyPackaged,
+					);
 
 					if (dryRun) {
-						for (const toePath of targets) {
-							projects.push({
+						const planned = targets.map<BulkPackageProjectResult>(
+							(toePath) => ({
 								reason: "dry-run",
 								status: "planned",
 								toePath,
 								warnings: [],
-							});
-						}
-
-						const dryRunResult = {
-							aborted: false,
-							dryRun: true,
-							failureCount: 0,
-							originalProjectPath: null,
-							projects,
-							restoredOriginalProject: true,
-							rootDir,
-							scanned: {
-								indexed: scan.indexed.length,
-								notIndexed: scan.notIndexed.length,
-								total: scan.indexed.length + scan.notIndexed.length,
+							}),
+						);
+						const projects = [...skippedProjects, ...planned];
+						const text = formatBulkPackageResult(
+							{
+								aborted: false,
+								dryRun: true,
+								failureCount: 0,
+								originalProjectPath: null,
+								projects,
+								restoredOriginalProject: true,
+								rootDir,
+								scanned: buildScannedSummary(scan),
+								skippedCount: countByStatus(projects, "skipped"),
+								successCount: 0,
+								targetCount: targets.length,
+								warnings,
 							},
-							skippedCount: projects.filter((project) => project.status === "skipped")
-								.length,
-							successCount: 0,
-							targetCount: targets.length,
-							warnings,
-						};
-
-						const text = formatBulkPackageResult(dryRunResult, {
-							detailLevel: detailLevel ?? "summary",
-							responseFormat,
-						});
-
-						return {
-							content: [{ text, type: "text" as const }],
-						};
+							{ detailLevel: detailLevel ?? "summary", responseFormat },
+						);
+						return { content: [{ text, type: "text" as const }] };
 					}
 
-					let originalProjectPath: string | null = null;
-					let originalProjectModified = false;
-					let restoredOriginalProject = targets.length === 0;
-					let consecutiveLoadTimeouts = 0;
-					let aborted = false;
-					let switchedAwayFromOriginalProject = false;
+					const { originalProjectModified, originalProjectPath } =
+						await reorderTargetsCurrentFirst(tdClient, targets, warnings);
 
-					if (targets.length > 0) {
-						const currentProject = await getCurrentProjectInfo(tdClient);
-						originalProjectPath = currentProject.info?.toePath ?? null;
-						originalProjectModified = currentProject.info?.modified ?? false;
-						if (currentProject.warning) {
-							warnings.push(currentProject.warning);
-						}
-
-						if (originalProjectPath) {
-							const currentPath = originalProjectPath;
-							const currentTargets = targets.filter((candidate) =>
-								sameTdPath(candidate, currentPath),
-							);
-							const otherTargets = targets.filter(
-								(candidate) => !sameTdPath(candidate, currentPath),
-							);
-							targets.splice(0, targets.length, ...currentTargets, ...otherTargets);
-						}
-					}
-
-					for (let index = 0; index < targets.length; index += 1) {
-						const toePath = targets[index];
-						const isCurrentProject =
-							originalProjectPath !== null && sameTdPath(toePath, originalProjectPath);
-
-						if (!isCurrentProject) {
-							if (originalProjectModified && !switchedAwayFromOriginalProject) {
-								warnings.push(
-									"Cannot load another project because the currently open TouchDesigner project has unsaved changes. Save or revert it, then rerun bulk_package_projects.",
-								);
-								for (const pending of targets.slice(index)) {
-									projects.push({
-										reason: "current-project-modified",
-										status: "skipped",
-										toePath: pending,
-										warnings: [],
-									});
-								}
-								break;
-							}
-
-							switchedAwayFromOriginalProject = true;
-							const loadResult = await loadProjectAndWait(
-								tdClient,
-								toePath,
-								Math.max(1, loadTimeoutSeconds),
-							);
-
-							if (!loadResult.success) {
-								consecutiveLoadTimeouts += 1;
-								projects.push({
-									error: loadResult.error ?? "Failed to load project.",
-									status: "failed",
-									toePath,
-									warnings: [],
-								});
-
-								if (consecutiveLoadTimeouts >= MAX_CONSECUTIVE_LOAD_TIMEOUTS) {
-									aborted = true;
-									warnings.push(
-										`Aborted after ${MAX_CONSECUTIVE_LOAD_TIMEOUTS} consecutive project load timeouts.`,
-									);
-
-									for (const pending of targets.slice(index + 1)) {
-										projects.push({
-											reason: "batch-aborted",
-											status: "skipped",
-											toePath: pending,
-											warnings: [],
-										});
-									}
-									break;
-								}
-
-								continue;
-							}
-						}
-
-						consecutiveLoadTimeouts = 0;
-
-						try {
-							const packageResult = await runPackageScript(
-								tdClient,
-								auditLog,
-								{
-									author,
-									description: "",
-									tags,
-								},
-							);
-
-							projects.push({
-								...packageResult,
-								status: "packaged",
-								toePath,
-								warnings: packageResult.warnings,
-							});
-						} catch (error) {
-							projects.push({
-								error: toErrorMessage(error),
-								status: "failed",
-								toePath,
-								warnings: [],
-							});
-						}
-					}
-
-					if (targets.length > 0) {
-						if (!switchedAwayFromOriginalProject) {
-							restoredOriginalProject = true;
-						} else if (originalProjectPath) {
-							const restoreResult = await loadProjectAndWait(
-								tdClient,
-								originalProjectPath,
-								Math.max(1, loadTimeoutSeconds),
-							);
-							restoredOriginalProject = restoreResult.success;
-							if (!restoreResult.success) {
-								warnings.push(
-									restoreResult.error ??
-										"Failed to restore the original TouchDesigner project.",
-								);
-							}
-						} else {
-							restoredOriginalProject = false;
-						}
-					}
-
-					const result = {
-						aborted,
-						dryRun: false,
-						failureCount: projects.filter((project) => project.status === "failed")
-							.length,
+					const processed = await processTargets({
+						auditLog,
+						author,
+						loadTimeoutSeconds,
+						originalProjectModified,
 						originalProjectPath,
-						projects,
-						restoredOriginalProject,
-						rootDir,
-						scanned: {
-							indexed: scan.indexed.length,
-							notIndexed: scan.notIndexed.length,
-							total: scan.indexed.length + scan.notIndexed.length,
-						},
-						skippedCount: projects.filter((project) => project.status === "skipped")
-							.length,
-						successCount: projects.filter(
-							(project) => project.status === "packaged",
-						).length,
-						targetCount: targets.length,
+						tags,
+						targets,
+						tdClient,
 						warnings,
-					};
-
-					const text = formatBulkPackageResult(result, {
-						detailLevel: detailLevel ?? "summary",
-						responseFormat,
 					});
 
-					return {
-						content: [{ text, type: "text" as const }],
-					};
+					const restoredOriginalProject =
+						targets.length === 0
+							? true
+							: await restoreOriginalProject(
+									tdClient,
+									originalProjectPath,
+									processed.switchedAwayFromOriginalProject,
+									loadTimeoutSeconds,
+									warnings,
+								);
+
+					const projects = [...skippedProjects, ...processed.projects];
+					const text = formatBulkPackageResult(
+						{
+							aborted: processed.aborted,
+							dryRun: false,
+							failureCount: countByStatus(projects, "failed"),
+							originalProjectPath,
+							projects,
+							restoredOriginalProject,
+							rootDir,
+							scanned: buildScannedSummary(scan),
+							skippedCount: countByStatus(projects, "skipped"),
+							successCount: countByStatus(projects, "packaged"),
+							targetCount: targets.length,
+							warnings,
+						},
+						{ detailLevel: detailLevel ?? "summary", responseFormat },
+					);
+					return { content: [{ text, type: "text" as const }] };
 				} catch (error) {
 					return handleToolError(
 						error,

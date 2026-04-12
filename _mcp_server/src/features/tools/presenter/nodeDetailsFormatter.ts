@@ -102,8 +102,10 @@ function buildFilterContext(
 		options?.fields?.map((field) => field.trim()).filter(Boolean) ?? [];
 
 	return {
-		filterFields: normalizedFields.length > 0 ? normalizedFields.join(", ") : undefined,
-		filterFieldsList: normalizedFields.length > 0 ? normalizedFields : undefined,
+		filterFields:
+			normalizedFields.length > 0 ? normalizedFields.join(", ") : undefined,
+		filterFieldsList:
+			normalizedFields.length > 0 ? normalizedFields : undefined,
 		hasFieldsFilter: normalizedFields.length > 0,
 		hasNonDefaultFilter: options?.nonDefault === true,
 		nonDefaultSummary:

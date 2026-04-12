@@ -83,6 +83,39 @@ export function formatPackageResult(
 	});
 }
 
+function formatProjectLines(
+	project: BulkPackageProjectResult,
+	detailLevel: FormatterOptions["detailLevel"],
+): string[] {
+	const out: string[] = [`  - ${project.toePath}`];
+
+	if (project.reason && detailLevel !== "minimal") {
+		out.push(`    reason: ${project.reason}`);
+	}
+
+	if (detailLevel === "detailed") {
+		if (project.jsonPath) out.push(`    json: ${project.jsonPath}`);
+		if (project.mdPath) out.push(`    markdown: ${project.mdPath}`);
+		if (project.pngPath) out.push(`    thumbnail: ${project.pngPath}`);
+	}
+
+	if (project.operatorCount !== undefined && detailLevel !== "minimal") {
+		out.push(`    operators: ${project.operatorCount}`);
+	}
+
+	if (project.error) {
+		out.push(`    error: ${project.error}`);
+	}
+
+	if (project.warnings.length > 0 && detailLevel !== "minimal") {
+		for (const warning of project.warnings) {
+			out.push(`    ! ${warning}`);
+		}
+	}
+
+	return out;
+}
+
 function pushProjectSection(
 	lines: string[],
 	heading: string,
@@ -94,31 +127,7 @@ function pushProjectSection(
 	lines.push("", `${heading} (${projects.length}):`);
 
 	for (const project of projects) {
-		lines.push(`  - ${project.toePath}`);
-
-		if (project.reason && detailLevel !== "minimal") {
-			lines.push(`    reason: ${project.reason}`);
-		}
-
-		if (detailLevel === "detailed") {
-			if (project.jsonPath) lines.push(`    json: ${project.jsonPath}`);
-			if (project.mdPath) lines.push(`    markdown: ${project.mdPath}`);
-			if (project.pngPath) lines.push(`    thumbnail: ${project.pngPath}`);
-		}
-
-		if (project.operatorCount !== undefined && detailLevel !== "minimal") {
-			lines.push(`    operators: ${project.operatorCount}`);
-		}
-
-		if (project.error) {
-			lines.push(`    error: ${project.error}`);
-		}
-
-		if (project.warnings.length > 0 && detailLevel !== "minimal") {
-			for (const warning of project.warnings) {
-				lines.push(`    ! ${warning}`);
-			}
-		}
+		lines.push(...formatProjectLines(project, detailLevel));
 	}
 }
 
@@ -161,12 +170,18 @@ export function formatBulkPackageResult(
 	}
 
 	if (opts.detailLevel !== "minimal") {
-		const planned = result.projects.filter((project) => project.status === "planned");
+		const planned = result.projects.filter(
+			(project) => project.status === "planned",
+		);
 		const packaged = result.projects.filter(
 			(project) => project.status === "packaged",
 		);
-		const failed = result.projects.filter((project) => project.status === "failed");
-		const skipped = result.projects.filter((project) => project.status === "skipped");
+		const failed = result.projects.filter(
+			(project) => project.status === "failed",
+		);
+		const skipped = result.projects.filter(
+			(project) => project.status === "skipped",
+		);
 
 		if (result.dryRun) {
 			pushProjectSection(lines, "Would package", planned, opts.detailLevel);

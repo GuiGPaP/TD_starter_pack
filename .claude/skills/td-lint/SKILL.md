@@ -5,6 +5,8 @@ description: "Python DAT linting, code quality, and ruff-based correction loops 
 
 # TouchDesigner DAT Linting
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 ## Mental Model
 
 - DAT operators are text containers inside a live TouchDesigner session — they hold Python, GLSL, data, or plain text

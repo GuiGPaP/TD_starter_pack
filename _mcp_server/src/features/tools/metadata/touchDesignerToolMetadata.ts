@@ -234,7 +234,8 @@ console.log(node.properties?.Text);`,
 				type: "'minimal' | 'summary' | 'detailed'",
 			},
 			{
-				description: "Only include parameters whose current value differs from the default.",
+				description:
+					"Only include parameters whose current value differs from the default.",
 				name: "nonDefault",
 				required: false,
 				type: "boolean",

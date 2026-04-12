@@ -5,7 +5,7 @@
  */
 
 import { execSync, type SpawnSyncReturns } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 // ---------------------------------------------------------------------------
@@ -104,6 +104,51 @@ function checkSyncModules(repoRoot: string): CheckResult[] {
 }
 
 // ---------------------------------------------------------------------------
+// Error log persistence
+// ---------------------------------------------------------------------------
+
+function persistErrors(repoRoot: string, failures: CheckResult[]): void {
+	const logPath = resolve(repoRoot, "tasks/errors-log.md");
+	const tasksDir = resolve(repoRoot, "tasks");
+	if (!existsSync(tasksDir)) mkdirSync(tasksDir, { recursive: true });
+
+	const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+	const newEntries = failures.map((f) => {
+		const excerpt = f.output.split("\n").filter(Boolean).slice(0, 3).join(" | ").slice(0, 200);
+		return `- **${now}** [${f.name}] ${excerpt}`;
+	});
+
+	let content: string;
+	if (existsSync(logPath)) {
+		const existing = readFileSync(logPath, "utf-8");
+		// Insert new entries after the Unresolved heading
+		const marker = "## Unresolved\n";
+		if (existing.includes(marker)) {
+			const idx = existing.indexOf(marker) + marker.length;
+			content = existing.slice(0, idx) + "\n" + newEntries.join("\n") + "\n" + existing.slice(idx);
+		} else {
+			content = existing + "\n" + newEntries.join("\n") + "\n";
+		}
+	} else {
+		content = [
+			"# Error Log",
+			"",
+			"Automatically captured by the stop hook. Review at session start.",
+			"Move resolved entries to the Resolved section.",
+			"",
+			"## Unresolved",
+			"",
+			...newEntries,
+			"",
+			"## Resolved",
+			"",
+		].join("\n");
+	}
+
+	writeFileSync(logPath, content, "utf-8");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -144,6 +189,7 @@ if (scopes.has("tddocker")) {
 const failures = results.filter((r) => !r.ok);
 
 if (failures.length > 0) {
+	persistErrors(repoRoot, failures);
 	process.stderr.write(
 		`\n=== Stop hook: ${failures.length} check(s) failed ===\n`,
 	);

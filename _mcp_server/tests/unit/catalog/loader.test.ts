@@ -34,6 +34,61 @@ beforeAll(() => {
 	mkdirSync(proj2Dir, { recursive: true });
 	writeFileSync(join(proj2Dir, "proj2.toe"), "fake-toe");
 
+	// Project with enriched graph manifest
+	const proj3Dir = join(TMP, "proj3");
+	mkdirSync(proj3Dir, { recursive: true });
+	writeFileSync(join(proj3Dir, "proj3.toe"), "fake-toe");
+	writeFileSync(
+		join(proj3Dir, "proj3.td-catalog.json"),
+		JSON.stringify({
+			components: ["graphRoot"],
+			connectionCount: 1,
+			connections: [
+				{
+					from: "/project1/constant1",
+					fromOutput: 0,
+					to: "/project1/null1",
+					toInput: 0,
+				},
+			],
+			description: "Graph-backed project",
+			file: "proj3.toe",
+			name: "Project 3",
+			nodeCount: 2,
+			nodes: [
+				{
+					family: "CHOP",
+					name: "constant1",
+					opType: "constantCHOP",
+					parameters: {
+						value0: {
+							style: "Float",
+							value: 1,
+						},
+					},
+					path: "/project1/constant1",
+				},
+				{
+					family: "CHOP",
+					name: "null1",
+					opType: "nullCHOP",
+					path: "/project1/null1",
+				},
+			],
+			operators: { CHOP: 2 },
+			patterns: [
+				{
+					kind: "connected-network",
+					summary:
+						"Contains an explicit operator graph with wired connections.",
+				},
+			],
+			schemaVersion: "1.1",
+			tags: ["graph"],
+			warnings: [],
+		}),
+	);
+
 	// Nested project
 	const nestedDir = join(TMP, "deep", "nested");
 	mkdirSync(nestedDir, { recursive: true });
@@ -72,6 +127,16 @@ describe("loadManifest", () => {
 
 	it("returns null for non-existent toe", () => {
 		expect(loadManifest(join(TMP, "nonexistent.toe"))).toBeNull();
+	});
+
+	it("loads enriched 1.1 manifest fields", () => {
+		const m = loadManifest(join(TMP, "proj3", "proj3.toe"));
+		expect(m).not.toBeNull();
+		expect(m?.schemaVersion).toBe("1.1");
+		expect(m?.nodeCount).toBe(2);
+		expect(m?.connectionCount).toBe(1);
+		expect(m?.nodes?.[0]?.parameters?.value0?.value).toBe(1);
+		expect(m?.connections?.[0]?.to).toBe("/project1/null1");
 	});
 });
 

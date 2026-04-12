@@ -5,6 +5,8 @@ description: "TouchDesigner Python utility modules: TDFunctions, TDJSON, TDStore
 
 # TD Python Utilities
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 ## Mental Model
 
 - **TDJSON > json** for TD data — it handles Par, Cell, Channel, OP references that `json.dumps` cannot

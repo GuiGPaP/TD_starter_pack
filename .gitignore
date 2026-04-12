@@ -30,6 +30,9 @@ _mcp_server/data/introspection/
 # Complexity audit reports (ephemeral)
 reports/complexity/
 
+# Stop hook error log (local session state)
+tasks/errors-log.md
+
 # TDDocker generated files
 TDDocker/td-overlay.yml
 

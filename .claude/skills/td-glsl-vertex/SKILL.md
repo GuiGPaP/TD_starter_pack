@@ -5,6 +5,8 @@ description: Write GLSL vertex shaders for TouchDesigner's GLSL MAT operator. Us
 
 # TouchDesigner GLSL MAT — Vertex Shader Writing
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 ## Mental Model
 
 - GLSL MAT applies to 3D geometry and requires **two DATs**: a vertex shader and a pixel shader. Both are mandatory.

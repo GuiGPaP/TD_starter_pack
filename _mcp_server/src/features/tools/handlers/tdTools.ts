@@ -786,8 +786,14 @@ export function registerTdTools(
 			wrap(
 				TOOL_NAMES.GET_TD_NODE_PARAMETERS,
 				async (params: GetNodeDetailToolParams) => {
-					const { detailLevel, fields, limit, nonDefault, responseFormat, ...queryParams } =
-						params;
+					const {
+						detailLevel,
+						fields,
+						limit,
+						nonDefault,
+						responseFormat,
+						...queryParams
+					} = params;
 					const result = await tdClient.getNodeDetail({
 						...queryParams,
 						fields: fields?.join(","),

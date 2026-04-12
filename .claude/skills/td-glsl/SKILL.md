@@ -5,6 +5,8 @@ description: Write GLSL pixel/fragment shaders for TouchDesigner's GLSL TOP oper
 
 # TouchDesigner GLSL TOP — Pixel Shader Writing
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 ## Mental Model
 
 - A GLSL TOP runs a **fragment shader** once per pixel. You write `main()`, TouchDesigner provides the pipeline (vertex stage, uniforms injection, output routing).

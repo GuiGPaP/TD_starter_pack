@@ -5,6 +5,8 @@ description: Write GLSL compute shaders for TouchDesigner's POP (Point Operator)
 
 # TouchDesigner GLSL POPs — Compute Shader Writing
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 ## Mental Model
 
 - GLSL POPs are **compute shaders**, not fragment shaders. There is no `fragColor`, no `vUV`, no `sTD2DInputs` — you work with attribute arrays indexed by `TDIndex()`

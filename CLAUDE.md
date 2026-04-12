@@ -17,6 +17,10 @@ When working with TouchDesigner, pick the right skill:
 
 **When in doubt:** Start with `td-guide` — it routes to the GLSL skills when needed.
 
+## Session Start
+
+If `tasks/errors-log.md` exists, read the **Unresolved** section — these are errors captured by the stop hook in previous sessions. Check if they're still relevant before starting new work.
+
 ## Global Rule
 
 **Pre-trained TD knowledge is unreliable** — always read skill reference files before writing TouchDesigner code. Do not guess parameter names, operator types, or API patterns from memory.

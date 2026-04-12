@@ -15,6 +15,8 @@ metadata:
 
 # Pretext Integration Guide
 
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
+
 You are helping a developer use **@chenglou/pretext** — a 15KB TypeScript library by Cheng Lou that computes exact text metrics using pure math (no DOM reflows). It uses `CanvasRenderingContext2D.measureText` internally, segments text, measures once, caches, then does arithmetic for all subsequent layouts.
 
 ## When Pretext Is the Right Tool
