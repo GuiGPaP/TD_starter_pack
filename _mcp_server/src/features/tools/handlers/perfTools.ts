@@ -26,27 +26,55 @@ result_data = {}
 
 # --- Global performance (from project + Perform CHOP if available) ---
 if include_global:
+    # Read REAL fps from the built-in Perform CHOP in the MCP tox
+    real_fps = project.cookRate  # fallback
+    perf_chop_data = None
+    perf = op('/mcp_webserver_base/_perf_monitor')
+    if not perf:
+        # Fallback: scan for any Perform CHOP
+        for comp_path in [scope, '/']:
+            c = op(comp_path)
+            if not c or not c.isCOMP:
+                continue
+            for child in c.findChildren(depth=5):
+                if child.OPType == 'performCHOP' and child.isCHOP:
+                    perf = child
+                    break
+            if perf:
+                break
+    if perf:
+        chans = {}
+        for ch in perf.chans():
+            chans[ch.name] = round(ch[0], 3)
+        perf_chop_data = {'path': perf.path, 'channels': chans}
+        if 'fps' in chans:
+            real_fps = chans['fps']
+
     result_data['global'] = {
-        'cookRate': project.cookRate,
+        'cookRate': real_fps,
+        'targetRate': project.cookRate,
         'realTime': project.realTime,
     }
-    # Find any Perform CHOP in the project for real-time metrics
-    for comp_path in [scope, '/']:
-        c = op(comp_path)
-        if not c or not c.isCOMP:
-            continue
-        for child in c.findChildren(depth=2):
-            if child.OPType == 'perform' and child.isCHOP:
-                chans = {}
-                for ch in child.chans():
-                    chans[ch.name] = round(ch[0], 3)
-                result_data['global']['performCHOP'] = {
-                    'path': child.path,
-                    'channels': chans,
-                }
-                break
-        if 'performCHOP' in result_data.get('global', {}):
-            break
+    if perf_chop_data:
+        result_data['global']['performCHOP'] = perf_chop_data
+
+    # --- Trail stats (statistical analysis over 5s window) ---
+    trail = op('/mcp_webserver_base/_perf_trail')
+    if trail and trail.numSamples > 1:
+        import numpy as np
+        trail_stats = {}
+        for ch in trail.chans():
+            arr = np.array(ch.vals)
+            if len(arr) == 0:
+                continue
+            trail_stats[ch.name] = {
+                'avg': round(float(np.mean(arr)), 2),
+                'min': round(float(np.min(arr)), 2),
+                'max': round(float(np.max(arr)), 2),
+                'p95': round(float(np.percentile(arr, 95)), 2),
+                'stddev': round(float(np.std(arr)), 2),
+            }
+        result_data['global']['trailStats'] = trail_stats
 
 # --- Per-operator profiling ---
 scan_root = op(scope)
@@ -194,7 +222,9 @@ function pushGlobalSection(
 	lines: string[],
 	global: Record<string, unknown>,
 ): void {
-	lines.push(`**Cook Rate:** ${global.cookRate} FPS`);
+	lines.push(
+		`**FPS:** ${global.cookRate} (target: ${global.targetRate ?? global.cookRate})`,
+	);
 	lines.push(`**Real Time:** ${global.realTime}`);
 
 	const perfChop = global.performCHOP as
@@ -202,6 +232,16 @@ function pushGlobalSection(
 		| undefined;
 	if (perfChop) {
 		pushPerformChopSection(lines, perfChop);
+	}
+
+	const trailStats = global.trailStats as
+		| Record<
+				string,
+				{ avg: number; min: number; max: number; p95: number; stddev: number }
+		  >
+		| undefined;
+	if (trailStats) {
+		pushTrailStatsSection(lines, trailStats);
 	}
 	lines.push("");
 }
@@ -211,16 +251,44 @@ function pushPerformChopSection(
 	perfChop: { path: string; channels: Record<string, number> },
 ): void {
 	const ch = perfChop.channels;
-	lines.push(`\n**Perform CHOP** (${perfChop.path}):`);
-	if (ch.fps !== undefined) lines.push(`  FPS: ${ch.fps}`);
-	if (ch.msec !== undefined) lines.push(`  Frame time: ${ch.msec}ms`);
-	if (ch.cpumsec !== undefined) lines.push(`  CPU time: ${ch.cpumsec}ms`);
-	if (ch.dropped_frames !== undefined)
-		lines.push(`  Dropped frames: ${ch.dropped_frames}`);
+	if (ch.msec !== undefined) lines.push(`**Frame time:** ${ch.msec}ms`);
+	if (ch.dropped_frames !== undefined && ch.dropped_frames > 0)
+		lines.push(`**⚠ Dropped frames:** ${ch.dropped_frames}`);
+	if (ch.gpumsec !== undefined) lines.push(`**GPU time:** ${ch.gpumsec}ms`);
+	if (ch.cpumsec !== undefined) lines.push(`**CPU time:** ${ch.cpumsec}ms`);
 	if (ch.gpu_mem_used !== undefined)
-		lines.push(`  GPU memory: ${ch.gpu_mem_used}MB`);
-	if (ch.cpu_mem_used !== undefined)
-		lines.push(`  CPU memory: ${ch.cpu_mem_used}MB`);
+		lines.push(`**GPU memory:** ${ch.gpu_mem_used}MB`);
+}
+
+type TrailStat = {
+	avg: number;
+	min: number;
+	max: number;
+	p95: number;
+	stddev: number;
+};
+
+function pushTrailStatsSection(
+	lines: string[],
+	stats: Record<string, TrailStat>,
+): void {
+	lines.push("\n**Performance (5s window):**\n");
+	lines.push("| Metric | Avg | Min | Max | P95 | StdDev |");
+	lines.push("|--------|-----|-----|-----|-----|--------|");
+	const order: [string, string][] = [
+		["fps", "FPS"],
+		["msec", "Frame (ms)"],
+		["cpumsec", "CPU (ms)"],
+		["dropped_frames", "Drops"],
+		["gpu_mem_used", "GPU Mem (MB)"],
+	];
+	for (const [key, label] of order) {
+		const s = stats[key];
+		if (!s) continue;
+		lines.push(
+			`| ${label} | ${s.avg} | ${s.min} | ${s.max} | ${s.p95} | ${s.stddev} |`,
+		);
+	}
 }
 
 function formatMemorySize(cpuMem: number, gpuMem: number): string {
