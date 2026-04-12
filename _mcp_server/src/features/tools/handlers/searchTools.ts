@@ -23,9 +23,7 @@ const searchOperatorsSchema = z.object({
 	family: z
 		.string()
 		.toUpperCase()
-		.describe(
-			"Filter by operator family (TOP, CHOP, SOP, COMP, DAT, MAT, or third-party prefixes like T3D, LOP, POPx)",
-		)
+		.describe("Filter by operator family (TOP, CHOP, SOP, COMP, DAT, MAT)")
 		.optional(),
 	includeExamples: z
 		.boolean()

@@ -79,12 +79,6 @@ export {
 	formatAssetSearchResults,
 	formatDeployResult,
 } from "./templateFormatter.js";
-export type { DetectedToolkit } from "./toolkitFormatter.js";
-export {
-	formatDetectResult,
-	formatToolkitDetail,
-	formatToolkitSearchResults,
-} from "./toolkitFormatter.js";
 export { formatToolMetadata } from "./toolMetadataFormatter.js";
 export {
 	formatTutorialDetail,

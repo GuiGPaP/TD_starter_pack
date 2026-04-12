@@ -253,24 +253,6 @@ export const enrichmentMetaSchema = z.object({
 	tdBuild: z.string().nullable().optional(),
 });
 
-// ── Toolkit schemas ───────────────────────────────────────────────
-
-const toolkitPayloadSchema = z.object({
-	dependencies: z.array(z.string()).optional(),
-	detectionPaths: z.array(z.string()).optional(),
-	installHint: z.string().optional(),
-	name: z.string(),
-	opFamilyPrefix: z.string(),
-	url: z.string().url().optional(),
-	vendor: z.string(),
-	version: z.string().optional(),
-});
-
-const toolkitEntrySchema = knowledgeEntryBaseSchema.extend({
-	kind: z.literal("toolkit"),
-	payload: toolkitPayloadSchema,
-});
-
 // ── Workflow pattern schemas ────────────────────────────────────────
 
 const workflowOperatorSchema = z.object({
@@ -399,7 +381,6 @@ export const knowledgeEntrySchema = z.discriminatedUnion("kind", [
 	operatorEntrySchema,
 	glslPatternEntrySchema,
 	lessonEntrySchema,
-	toolkitEntrySchema,
 	workflowPatternEntrySchema,
 	templateEntrySchema,
 	techniqueEntrySchema,
@@ -413,7 +394,6 @@ export type TDPythonModuleEntry = z.infer<typeof pythonModuleEntrySchema>;
 export type TDOperatorEntry = z.infer<typeof operatorEntrySchema>;
 export type TDGlslPatternEntry = z.infer<typeof glslPatternEntrySchema>;
 export type TDLessonEntry = z.infer<typeof lessonEntrySchema>;
-export type TDToolkitEntry = z.infer<typeof toolkitEntrySchema>;
 export type TDWorkflowPatternEntry = z.infer<typeof workflowPatternEntrySchema>;
 export type TDTemplateEntry = z.infer<typeof templateEntrySchema>;
 export type TDTechniqueEntry = z.infer<typeof techniqueEntrySchema>;

@@ -134,13 +134,6 @@ function collectKindTerms(entry: TDKnowledgeEntry): string[] {
 				entry.payload.difficulty,
 				...(entry.payload.tags ?? []),
 			];
-		case "toolkit":
-			return [
-				entry.payload.name,
-				entry.payload.vendor,
-				entry.payload.opFamilyPrefix,
-				...(entry.payload.version ? [entry.payload.version] : []),
-			];
 		case "template":
 			return [
 				entry.payload.category,
