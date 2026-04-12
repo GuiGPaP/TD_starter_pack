@@ -7,3 +7,4 @@ Pick the ONE file that matches your task. If unsure, start with @FUNCTIONS.md.
 | Looking up a specific POP function, attribute access pattern, or API signature | @FUNCTIONS.md |
 | Code organization, performance optimization, debugging strategies, naming conventions | @BEST-PRACTICES.md |
 | Fixing a compile error, crash, GPU hang, or unexpected behavior | @TROUBLESHOOTING.md |
+| Text particle systems using POP nodes, UVW character mapping, field interaction, shape mixing | @POP-TEXT-INSTANCING.md |

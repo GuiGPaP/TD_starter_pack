@@ -96,6 +96,7 @@ If you discover mid-task that you need a second reference, load it then.
 | API functions, best practices, troubleshooting | @references/index.md |
 | Shader examples and patterns | @examples/index.md |
 | Starting from a template | @templates/ (basic-pop.glsl, advanced-pop.glsl, copy-pop.glsl, particle-sim.glsl) |
+| Text particle systems, UVW instancing, POP node workflow (no GLSL) | @references/POP-TEXT-INSTANCING.md |
 
 ## Input / Output Attribute Access
 

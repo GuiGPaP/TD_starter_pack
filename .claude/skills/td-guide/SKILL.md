@@ -69,6 +69,14 @@ def onPulse(par):
         ext.onParPulse(par)
 ```
 
+20. **Camera projection = `'ortho'` pas `'orthographic'`.** `cam.par.projection = 'orthographic'` échoue silencieusement — la valeur valide est `'ortho'`. Toujours vérifier `par.menuNames` pour les paramètres enum.
+
+21. **Script CHOP : jamais `cook(force=True)` depuis `onFrameEnd`.** Appeler `scriptCHOP.cook(force=True)` depuis un Execute DAT `onFrameEnd` crée une boucle de cook infinie qui freeze TD. Utiliser `comp.store()` pour passer les données, laisser le Script CHOP cook passivement.
+
+22. **Script CHOP : `chan.numpyArray()[:] = data` non fiable.** Le bulk write numpy sur les channels CHOP produit des résultats invisibles/zéro. Utiliser `chan[i] = value` sample par sample.
+
+23. **Font atlas natif : RENDER_SCALE = 3.** Pour du texte sharp dans un atlas texture, rendre les glyphes à 3x dans le Script TOP. 2x est flou, 4x n'apporte pas grand-chose. Voir skill **td-pretext** pour le pattern complet.
+
 ## Python Utilities Routing
 
 | Task | Skill |
@@ -88,7 +96,6 @@ def onPulse(par):
 | Workflow patterns and connections | `search_workflow_patterns` | query + optional `category`/`tags` |
 | Network templates (deployable) | `search_network_templates` | query + optional `category` |
 | TD version features, breaking changes | `list_versions` / `get_version_info` | version ID (e.g. "2025") |
-| Third-party toolkit info (POPx, T3D, LOPs) | `search_toolkits` | query toolkit name |
 | Lessons learned (pitfalls, patterns) | `search_lessons` | query + optional `category` |
 | Parameter names, types, ranges for a live node | `get_node_parameter_schema` | Pass `nodePath` + optional `pattern` filter |
 | Operator paths and references | `complete_op_paths` | Pass `contextNodePath` + `prefix` |

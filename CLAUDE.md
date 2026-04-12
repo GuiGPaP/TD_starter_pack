@@ -12,6 +12,7 @@ When working with TouchDesigner, pick the right skill:
 | Compute shader / particles / GLSL POP / SSBO / point cloud | **td-pops** |
 | TDFunctions / TDJSON / TDStoreTools / TDResources / StorageManager / PopMenu | **td-python** |
 | Python DAT linting / code quality / ruff | **td-lint** |
+| Native text layout / font atlas / obstacle avoidance / char instancing | **td-pretext** |
 | Project context / code completion / `index_td_project` / `get_td_context` | **td-context** |
 
 **When in doubt:** Start with `td-guide` — it routes to the GLSL skills when needed.
@@ -33,8 +34,8 @@ When working with TouchDesigner, pick the right skill:
 - **Build:** `cd _mcp_server && npm run build`
 - **Test:** `cd _mcp_server && npm test`
 - **Live E2E:** `cd _mcp_server && npm run test:integration:live` (requires TD + Docker running)
-- **Toolkit data** (`_mcp_server/data/td-knowledge/toolkits/`) is gitignored — populated via live TD introspection, not committed.
 - **History:** Previously a submodule of `GuiGPaP/touchdesigner-mcp` (branch `td-starter-pack`). Inlined as of 2026-03-26.
+- **Perf monitoring:** MCP tox includes `_perf_monitor` (performCHOP) + `_perf_trail` (trailCHOP, 5s). `get_performance` reports real FPS (not target cook rate) + trail stats (avg/min/max/p95/stddev).
 
 ## glslangValidator Auto-Provisioning
 
@@ -66,12 +67,34 @@ When working with TouchDesigner, pick the right skill:
 - For complex problems, throw more compute at it via subagents
 - One task per subagent for focused execution
 
-### 3. Self-Improvement Loop
-- After ANY correction from the user: update `tasks/lessons.md` with the pattern
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
-- **Skills improvement:** when a correction relates to TD patterns, operator behavior, or GLSL usage, also propose an update to the relevant skill's `.md` files (show diff, apply after user approval)
+### 3. Self-Improvement Loop (Positive Feedback System)
+
+The skills and lessons in this repo ARE the knowledge base. They must grow automatically — the user should never have to ask for docs updates.
+
+#### When to update (automatic triggers)
+- **Correction from user**: something went wrong → update `tasks/lessons.md` AND the relevant skill
+- **Discovery during work**: found a gotcha, a fast path, a TD quirk → update the relevant skill reference
+- **New pattern validated**: a technique worked well (confirmed by user or by successful result) → add it to the skill
+- **Architecture change**: new operator, new parameter, new data flow → update skill references + SKILL.md
+
+#### What to update
+- **`tasks/lessons.md`**: short actionable rules ("do X, not Y"). For quick recall at session start.
+- **Skill `SKILL.md`**: architecture overview, critical patterns, performance budgets. The "what and why".
+- **Skill `references/*.md`**: detailed how-to, code patterns, parameter values. The "how exactly".
+
+#### How to update
+1. Identify which skill owns the knowledge (use Skill Decision Tree above)
+2. Read the current state of the file before editing — don't duplicate, extend
+3. Update in-place: add the new pattern where it fits structurally, don't append a changelog
+4. Keep lessons terse (1-2 lines), keep skill references detailed (code examples)
+5. Do this at the END of the task, after the fix is verified — never document unproven patterns
+
+#### What NOT to put in skills
+- Temporary workarounds or investigation notes
+- User-specific preferences (those go in memory)
+- Anything that can be derived by reading the current code
+
+**Goal**: Any future session should be able to read the skills and produce correct TD code on the first try, without repeating mistakes from past sessions.
 
 ### 4. Verification Before Done
 - Never mark a task complete without proving it works
