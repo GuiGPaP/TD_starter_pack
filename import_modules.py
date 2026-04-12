@@ -9,6 +9,10 @@ def setup():
 	tox_dir_path = os.path.dirname(externaltox)
 	modules_path = os.path.join(tox_dir_path, "modules")
 
+	# Fallback: if modules/ not found relative to externaltox, try project root
+	if not os.path.isdir(modules_path):
+		modules_path = os.path.join(project.folder, "modules")
+
 	if modules_path not in sys.path:
 		sys.path.append(modules_path)
 
