@@ -1,6 +1,6 @@
 ---
 name: td-guide
-description: "TouchDesigner network creation, operator layout, rendering, data conversion, and MCP API usage. Use this skill whenever creating TD networks, operators, components, cameras, lights, materials, feedback loops, instancing, data conversion between families, Python scripting via MCP, or debugging operator errors. Also use when the user mentions TOPs, SOPs, CHOPs, DATs, COMPs, POPs, Geometry COMP, Render TOP, or any TD operator type. Routes to td-glsl, td-glsl-vertex, and td-pops for shader work."
+description: "TouchDesigner network creation, operator layout, rendering, data conversion, project context tools, and MCP API usage. Use this skill whenever creating TD networks, operators, components, cameras, lights, materials, feedback loops, instancing, data conversion between families, Python scripting via MCP, debugging operator errors, building a project index (index_td_project), or getting per-node context (get_td_context). Also use when the user mentions TOPs, SOPs, CHOPs, DATs, COMPs, POPs, Geometry COMP, Render TOP, or any TD operator type. Routes to td-glsl for shader work and td-python for Python utilities and linting."
 ---
 
 # TouchDesigner Guide
@@ -17,19 +17,34 @@ description: "TouchDesigner network creation, operator layout, rendering, data c
 - The MCP API exposes TD's Python runtime — prefer high-level MCP tools (`create_geometry_comp`, `create_feedback_loop`, `configure_instancing`) over raw `execute_python_script`
 - Your pre-trained TD knowledge is unreliable. Always verify against this skill, reference files, and runtime introspection before writing code
 
-## GLSL Skill Routing
+## Skill Routing
 
-For shader work, use the specialized skill — do not attempt GLSL in td-guide:
+For specialized work, use the appropriate skill — do not attempt these in td-guide:
 
 | Task | Skill |
 |------|-------|
-| Pixel shader / GLSL TOP / 2D image effects / generative textures / feedback | **td-glsl** |
-| Vertex shader / GLSL MAT / 3D materials / displacement / instancing | **td-glsl-vertex** |
-| Compute shader / particles / GLSL POP / SSBOs / point clouds | **td-pops** |
+| Any GLSL shader (pixel, vertex, compute, particles) | **td-glsl** |
+| Python utilities (TDFunctions, TDJSON, TDStoreTools, TDResources), DAT linting | **td-python** |
+| Native text layout, font atlas, obstacle avoidance | **td-pretext** |
+
+## Project Context Tools
+
+Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, run `index_td_project` first.
+
+| Tool | Scope | Cost | When |
+|------|-------|------|------|
+| `index_td_project` | Global project scan | Cheap (~2k tokens) | Session start, after big changes |
+| `get_td_context` | Single node deep dive | Expensive (per-facet API calls) | Before editing a specific operator |
+
+**Quick decision:** Need project overview → `index_td_project`. Need one node's params/channels/errors → `get_td_context`. Need just one specific thing → use the individual tool directly (`get_node_parameter_schema`, `get_chop_channels`, etc.).
+
+For detailed parameter docs, load @references/context-tools.md.
+
+**Anti-Pattern:** Do NOT skip context and guess parameter names (`resolutionw` not `width`), operator types (`noiseTOP` not `noise`), class methods (`findChildren()` not `getChildren()`), or API patterns (`op('/path')` not `td.op('/path')`).
 
 ## Critical Guardrails
 
-1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, consider running `index_td_project` first. Use `@td-context` for the full workflow.
+1. **Project context first.** Before writing TD code, check if `td_project_context.md` exists at repo root and read it. If not, run `index_td_project` first (see Project Context Tools above).
 
 2. **Pre-trained knowledge is wrong.** TD parameter names, operator types, and API patterns in your training data are frequently incorrect. Always read references and verify parameters with `get_node_parameter_schema` or `[p.name for p in op('/path').pars()]` before writing code.
 
@@ -80,12 +95,6 @@ def onPulse(par):
 22. **Script CHOP : `chan.numpyArray()[:] = data` non fiable.** Le bulk write numpy sur les channels CHOP produit des résultats invisibles/zéro. Utiliser `chan[i] = value` sample par sample.
 
 23. **Font atlas natif : RENDER_SCALE = 3.** Pour du texte sharp dans un atlas texture, rendre les glyphes à 3x dans le Script TOP. 2x est flou, 4x n'apporte pas grand-chose. Voir skill **td-pretext** pour le pattern complet.
-
-## Python Utilities Routing
-
-| Task | Skill |
-|------|-------|
-| TDFunctions, TDJSON, TDStoreTools, TDResources usage | **td-python** |
 
 ## Fetching Documentation
 

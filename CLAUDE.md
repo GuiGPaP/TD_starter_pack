@@ -6,16 +6,12 @@ When working with TouchDesigner, pick the right skill:
 
 | Need | Skill |
 |------|-------|
-| TD network / operators / layout / components / data conversion / rendering | **td-guide** |
-| Pixel shader / GLSL TOP / 2D image effect / generative texture / feedback | **td-glsl** |
-| Vertex shader / GLSL MAT / 3D material / displacement / instancing | **td-glsl-vertex** |
-| Compute shader / particles / GLSL POP / SSBO / point cloud | **td-pops** |
-| TDFunctions / TDJSON / TDStoreTools / TDResources / StorageManager / PopMenu | **td-python** |
-| Python DAT linting / code quality / ruff | **td-lint** |
+| TD network / operators / layout / rendering / project context (`index_td_project`, `get_td_context`) | **td-guide** |
+| GLSL shaders (pixel, vertex, compute, particles) | **td-glsl** |
+| Python utilities (TDFunctions, TDJSON, TDStoreTools, TDResources) / DAT linting / ruff | **td-python** |
 | Native text layout / font atlas / obstacle avoidance / char instancing | **td-pretext** |
-| Project context / code completion / `index_td_project` / `get_td_context` | **td-context** |
 
-**When in doubt:** Start with `td-guide` — it routes to the GLSL skills when needed.
+**When in doubt:** Start with `td-guide` — it routes to td-glsl for shaders and td-python for Python work.
 
 ## Session Start
 

@@ -6,9 +6,9 @@ This is a routing page. For detailed GLSL shader writing, use the specialized sk
 
 | Task | Skill | Operator |
 |------|-------|----------|
-| Pixel/fragment shaders, 2D image effects, generative textures, feedback loops | **td-glsl** | GLSL TOP |
-| Vertex shaders, 3D materials, displacement, instancing | **td-glsl-vertex** | GLSL MAT |
-| Compute shaders, particles, point clouds, SSBOs | **td-pops** | GLSL POP / GLSL Advanced POP / GLSL Copy POP |
+| Pixel/fragment shaders, 2D image effects, generative textures, feedback loops | **td-glsl** → @domains/pixel.md | GLSL TOP |
+| Vertex shaders, 3D materials, displacement, instancing | **td-glsl** → @domains/vertex.md | GLSL MAT |
+| Compute shaders, particles, point clouds, SSBOs | **td-glsl** → @domains/compute.md | GLSL POP / GLSL Advanced POP / GLSL Copy POP |
 
 ---
 

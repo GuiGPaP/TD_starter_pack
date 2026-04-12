@@ -13,4 +13,5 @@ Pick the ONE file that matches your task. If unsure, start with @basics/index.md
 | Python environment, bundled packages, threading, subprocess | @python-environment.md |
 | Performance profiling, cook time, FPS monitoring, Perform CHOP, non-blocking subprocess | @python-environment.md |
 | MCP API endpoints, tool usage, semantic introspection | @project-api.md |
-| TDFunctions, TDJSON, TDStoreTools, TDResources detailed usage | Use **td-python** skill |
+| Project context tools: index_td_project, get_td_context parameters | @context-tools.md |
+| TDFunctions, TDJSON, TDStoreTools, TDResources, DAT linting | Use **td-python** skill |
