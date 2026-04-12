@@ -6,6 +6,7 @@
 
 import { execSync, type SpawnSyncReturns } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { request } from "node:http";
 import { resolve } from "node:path";
 
 // ---------------------------------------------------------------------------
@@ -149,6 +150,72 @@ function persistErrors(repoRoot: string, failures: CheckResult[]): void {
 }
 
 // ---------------------------------------------------------------------------
+// Lesson auto-scan (best-effort, requires TD online)
+// ---------------------------------------------------------------------------
+
+const TD_PORT = 9981;
+const TD_TIMEOUT_MS = 2000;
+
+function httpGet(path: string, timeoutMs: number): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const req = request(
+			{ hostname: "localhost", port: TD_PORT, path, method: "GET", timeout: timeoutMs },
+			(res) => {
+				let data = "";
+				res.on("data", (chunk: Buffer) => { data += chunk.toString(); });
+				res.on("end", () => resolve(data));
+			},
+		);
+		req.on("error", reject);
+		req.on("timeout", () => { req.destroy(); reject(new Error("timeout")); });
+		req.end();
+	});
+}
+
+async function scanLessonCandidates(repoRoot: string): Promise<void> {
+	try {
+		// 1. Health check — bail if TD is offline
+		await httpGet("/api/v1/health", TD_TIMEOUT_MS);
+
+		// 2. Call scan_for_lessons (read-only preview)
+		const body = await httpGet("/api/v1/td/lessons?autoCapture=false", TD_TIMEOUT_MS * 2);
+		const parsed = JSON.parse(body);
+		const candidates: string[] = parsed?.result?.candidates ?? parsed?.candidates ?? [];
+		if (candidates.length === 0) return;
+
+		// 3. Append to errors-log.md under Lesson Candidates
+		const logPath = resolve(repoRoot, "tasks/errors-log.md");
+		const tasksDir = resolve(repoRoot, "tasks");
+		if (!existsSync(tasksDir)) mkdirSync(tasksDir, { recursive: true });
+
+		const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+		const entries = candidates.map((c: string) => `- **${now}** ${c}`);
+		const section = `\n## Lesson Candidates\n\n${entries.join("\n")}\n`;
+
+		if (existsSync(logPath)) {
+			const existing = readFileSync(logPath, "utf-8");
+			const marker = "## Lesson Candidates\n";
+			if (existing.includes(marker)) {
+				// Replace existing section
+				const idx = existing.indexOf(marker);
+				const nextSection = existing.indexOf("\n## ", idx + marker.length);
+				const before = existing.slice(0, idx);
+				const after = nextSection >= 0 ? existing.slice(nextSection) : "";
+				writeFileSync(logPath, before + marker + "\n" + entries.join("\n") + "\n" + after, "utf-8");
+			} else {
+				writeFileSync(logPath, existing + section, "utf-8");
+			}
+		} else {
+			writeFileSync(logPath, `# Error Log\n\nAutomatically captured by the stop hook.\n${section}`, "utf-8");
+		}
+
+		process.stderr.write(`Stop hook: found ${candidates.length} lesson candidate(s)\n`);
+	} catch {
+		// TD offline or endpoint unavailable — skip silently
+	}
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -187,6 +254,9 @@ if (scopes.has("tddocker")) {
 }
 
 const failures = results.filter((r) => !r.ok);
+
+// Best-effort lesson scan (async, must await before exit)
+await scanLessonCandidates(repoRoot);
 
 if (failures.length > 0) {
 	persistErrors(repoRoot, failures);

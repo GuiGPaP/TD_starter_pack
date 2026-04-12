@@ -19,7 +19,7 @@ When working with TouchDesigner, pick the right skill:
 
 ## Session Start
 
-If `tasks/errors-log.md` exists, read the **Unresolved** section — these are errors captured by the stop hook in previous sessions. Check if they're still relevant before starting new work.
+If `tasks/errors-log.md` exists, read the **Unresolved** section and **Lesson Candidates** — these are errors and lesson candidates captured by the stop hook in previous sessions. Check if they're still relevant before starting new work.
 
 ## Global Rule
 
@@ -126,6 +126,12 @@ The skills and lessons in this repo ARE the knowledge base. They must grow autom
 4. **Explain Changes**: High-level summary at each step
 5. **Document Results**: Add review section to `tasks/todo.md`
 6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
+
+## Lesson Frequency & Escalation
+
+- When a lesson in `tasks/lessons.md` triggers again, append or increment `[xN]` (e.g., `[x2]`, `[x3]`).
+- At `[x3]` or higher, **escalate to skill guardrail**: add the rule to the owning skill's `SKILL.md` and mark the lesson `→ promoted to {skill-name} guardrail`.
+- The stop hook auto-scans for lesson candidates when TD is online — review them in `tasks/errors-log.md` under "Lesson Candidates".
 
 ## Core Principles
 
