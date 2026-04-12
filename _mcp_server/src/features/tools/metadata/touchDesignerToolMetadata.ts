@@ -234,6 +234,18 @@ console.log(node.properties?.Text);`,
 				type: "'minimal' | 'summary' | 'detailed'",
 			},
 			{
+				description: "Only include parameters whose current value differs from the default.",
+				name: "nonDefault",
+				required: false,
+				type: "boolean",
+			},
+			{
+				description: "Only include the named parameters, such as tx, ty, tz.",
+				name: "fields",
+				required: false,
+				type: "string[]",
+			},
+			{
 				description: "Trim parameter listings to the first N entries.",
 				name: "limit",
 				required: false,

@@ -121,7 +121,18 @@ type GetNodesToolParams = z.input<typeof getNodesToolSchema>;
 
 const getNodeDetailToolSchema = GetNodeDetailQueryParams.extend(
 	formattingOptionsSchema.shape,
-);
+).extend({
+	fields: z
+		.array(z.string().min(1))
+		.describe("If provided, only return these parameter names")
+		.optional(),
+	nonDefault: z
+		.boolean()
+		.describe(
+			"If true, only return parameters that differ from their default value",
+		)
+		.optional(),
+});
 type GetNodeDetailToolParams = z.input<typeof getNodeDetailToolSchema>;
 
 const getNodeErrorsToolSchema = GetNodeErrorsQueryParams.extend(
@@ -775,12 +786,19 @@ export function registerTdTools(
 			wrap(
 				TOOL_NAMES.GET_TD_NODE_PARAMETERS,
 				async (params: GetNodeDetailToolParams) => {
-					const { detailLevel, limit, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getNodeDetail(queryParams);
+					const { detailLevel, fields, limit, nonDefault, responseFormat, ...queryParams } =
+						params;
+					const result = await tdClient.getNodeDetail({
+						...queryParams,
+						fields: fields?.join(","),
+						nonDefault,
+					});
 					if (!result.success) throw result.error;
 					return formatNodeDetails(result.data, {
 						detailLevel: detailLevel ?? "summary",
+						fields,
 						limit,
+						nonDefault,
 						responseFormat,
 					});
 				},

@@ -227,7 +227,12 @@ class IApiService(Protocol):
     def get_td_python_classes(self) -> Result: ...
     def get_td_python_class_details(self, class_name: str) -> Result: ...
     def get_module_help(self, module_name: str) -> Result: ...
-    def get_node_detail(self, node_path: str) -> Result: ...
+    def get_node_detail(
+        self,
+        node_path: str,
+        non_default: bool = ...,
+        fields: str | list[str] | None = ...,
+    ) -> Result: ...
     def get_node_errors(self, node_path: str) -> Result: ...
     def update_node(self, node_path: str, properties: dict[str, Any]) -> Result: ...
     def exec_node_method(self, node_path: str, method: str, args: list, kwargs: dict) -> Result: ...
@@ -534,7 +539,12 @@ class TouchDesignerApiService(IApiService):
         """Alias for get_node_detail for backwards compatibility"""
         return self.get_node_detail(node_path)
 
-    def get_node_detail(self, node_path: str) -> Result:
+    def get_node_detail(
+        self,
+        node_path: str,
+        non_default: bool = False,
+        fields: str | list[str] | None = None,
+    ) -> Result:
         """Get node at the specified path"""
 
         node = td.op(node_path)
@@ -542,7 +552,12 @@ class TouchDesignerApiService(IApiService):
         if node is None or not node.valid:
             return error_result(f"Node not found at path: {node_path}")
 
-        node_info = self._get_node_summary(node)
+        requested_fields = self._normalize_fields_filter(fields)
+        node_info = self._get_node_summary(
+            node,
+            non_default=self._coerce_bool(non_default),
+            fields=requested_fields,
+        )
         return success_result(node_info)
 
     def get_node_errors(self, node_path: str) -> Result:
@@ -2643,11 +2658,49 @@ class TouchDesignerApiService(IApiService):
             }
         )
 
-    def _get_node_properties(self, node):
+    def _normalize_fields_filter(
+        self,
+        fields: str | list[str] | tuple[str, ...] | None,
+    ) -> set[str] | None:
+        if fields is None:
+            return None
+
+        if isinstance(fields, str):
+            candidates = fields.split(",")
+        elif isinstance(fields, (list, tuple)):
+            candidates = fields
+        else:
+            candidates = [str(fields)]
+
+        normalized = {str(item).strip() for item in candidates if str(item).strip()}
+        return normalized or None
+
+    def _coerce_bool(self, value: bool | str | int | None) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.strip().lower() in {"1", "true", "yes", "on"}
+        if isinstance(value, int):
+            return value != 0
+        return False
+
+    def _get_node_properties(
+        self,
+        node,
+        *,
+        non_default: bool = False,
+        fields: set[str] | None = None,
+    ):
         params_dict = {}
         for par in node.pars("*"):
+            if fields is not None and par.name not in fields:
+                continue
             try:
                 value = par.eval()
+                if non_default:
+                    default_value = getattr(par, "default", None)
+                    if value == default_value:
+                        continue
                 if isinstance(value, td.OP):
                     value = value.path
                 params_dict[par.name] = value
@@ -2673,7 +2726,13 @@ class TouchDesignerApiService(IApiService):
             log_message(f"Error collecting node information: {e!s}", LogLevel.WARNING)
             return {"name": node.name if hasattr(node, "name") else "unknown"}
 
-    def _get_node_summary(self, node) -> dict:
+    def _get_node_summary(
+        self,
+        node,
+        *,
+        non_default: bool = False,
+        fields: set[str] | None = None,
+    ) -> dict:
         """Get detailed information about a node"""
         try:
             node_info = {
@@ -2681,7 +2740,11 @@ class TouchDesignerApiService(IApiService):
                 "name": node.name,
                 "path": node.path,
                 "opType": node.OPType,
-                "properties": self._get_node_properties(node),
+                "properties": self._get_node_properties(
+                    node,
+                    non_default=non_default,
+                    fields=fields,
+                ),
             }
 
             return node_info

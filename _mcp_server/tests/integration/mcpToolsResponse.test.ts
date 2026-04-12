@@ -30,6 +30,8 @@ const logger: ILogger = {
 	sendLog: () => {},
 };
 
+let lastGetNodeDetailParams: unknown;
+
 function createMockTdClient(): TouchDesignerClient {
 	const execNodeMethod: TouchDesignerClient["execNodeMethod"] = async <
 		DATA extends NonNullable<{ result: unknown }>,
@@ -98,16 +100,19 @@ DATA DESCRIPTORS
 			},
 			success: true,
 		})) as TouchDesignerClient["getModuleHelp"],
-		getNodeDetail: async (_params: unknown) => ({
-			data: {
-				id: 10,
-				name: "webserverDAT",
-				opType: "webServerDAT",
-				path: "/project1/webserverDAT",
-				properties: { active: true, port: 9981 },
-			},
-			success: true,
-		}),
+		getNodeDetail: async (params: unknown) => {
+			lastGetNodeDetailParams = params;
+			return {
+				data: {
+					id: 10,
+					name: "webserverDAT",
+					opType: "webServerDAT",
+					path: "/project1/webserverDAT",
+					properties: { active: true, port: 9981 },
+				},
+				success: true,
+			};
+		},
 		getNodeErrors: async (_params: unknown) => ({
 			data: {
 				errorCount: 1,
@@ -205,6 +210,27 @@ describe("MCP tool responses", () => {
 		const text = result.content?.find((c) => c.type === "text")?.text ?? "";
 		expect(text).toContain("webserverDAT");
 		expect(text).toContain("Properties shown");
+	});
+
+	it("passes nonDefault and fields filters through GET_TD_NODE_PARAMETERS", async () => {
+		const handler = server.getTool(TOOL_NAMES.GET_TD_NODE_PARAMETERS);
+		const result = (await handler({
+			detailLevel: "summary",
+			fields: ["tx", "ty", "tz"],
+			nodePath: "/project1/webserverDAT",
+			nonDefault: true,
+			responseFormat: "markdown",
+		})) as {
+			content?: Array<{ type: string; text?: string }>;
+		};
+		const text = result.content?.find((c) => c.type === "text")?.text ?? "";
+		expect(lastGetNodeDetailParams).toMatchObject({
+			fields: "tx,ty,tz",
+			nodePath: "/project1/webserverDAT",
+			nonDefault: true,
+		});
+		expect(text).toContain("Showing 2 non-default parameters");
+		expect(text).toContain("Filtered to:");
 	});
 
 	it("returns formatted error details for GET_TD_NODE_ERRORS", async () => {

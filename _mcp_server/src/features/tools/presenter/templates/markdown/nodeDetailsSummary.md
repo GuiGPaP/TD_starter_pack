@@ -1,6 +1,12 @@
 ## Node {{nodePath}}
 - Type: `{{type}}` (ID: {{id}})
 - Properties shown: {{displayed}} / {{total}}
+{{#hasNonDefaultFilter}}
+- {{nonDefaultSummary}}
+{{/hasNonDefaultFilter}}
+{{#hasFieldsFilter}}
+- Filtered to: `{{filterFields}}`
+{{/hasFieldsFilter}}
 
 | Property | Value |
 | --- | --- |

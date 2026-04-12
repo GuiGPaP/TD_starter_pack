@@ -10,6 +10,19 @@ get:
       schema:
         type: string
         description: e.g., "/textTOP"
+    - description: If true, only return parameters that differ from their default value
+      in: query
+      name: nonDefault
+      required: false
+      schema:
+        type: boolean
+        default: false
+    - description: Comma-separated parameter names to include (e.g. "tx,ty,tz")
+      in: query
+      name: fields
+      required: false
+      schema:
+        type: string
   responses:
     "200":
       description: Node properties

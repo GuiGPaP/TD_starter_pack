@@ -1,156 +1,640 @@
-openapi: 3.0.0
 info:
   description: OpenAPI schema for generating TouchDesigner API client code
   title: TouchDesigner API
-  version: 1.7.0
+  version: 1.7.0-td.1
+openapi: 3.0.0
 servers:
-- description: TouchDesigner Web Server
-  url: "${process.env.TD_WEB_SERVER_HOST}:${process.env.TD_WEB_SERVER_PORT}"
+  - url: ${process.env.TD_WEB_SERVER_HOST}:${process.env.TD_WEB_SERVER_PORT}
+    description: TouchDesigner Web Server
 paths:
   /api/nodes:
-    delete:
-      operationId: delete_node
-      parameters:
-      - description: "Path to the node to delete. e.g., \"/geo1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          description: "e.g., \"/geo1\""
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/delete_node_200_response'
-          description: Node deleted successfully
-      summary: Delete an existing node
-      x-openapi-router-controller: openapi_server.controllers.default_controller
     get:
+      summary: Get nodes in the path
       operationId: get_nodes
       parameters:
-      - description: "Parent path  e.g., \"/project1\""
-        in: query
-        name: parentPath
-        required: true
-        schema:
-          description: "e.g., \"/project1\""
-          type: string
-      - description: "Pattern to match against node names e.g., \"null*\""
-        in: query
-        name: pattern
-        required: false
-        schema:
-          default: '*'
-          description: "e.g., \"null*\""
-          type: string
-      - description: Whether to include full node properties in the response (default
-          false for better performance)
-        in: query
-        name: includeProperties
-        required: false
-        schema:
-          default: false
-          description: Include node properties in response
-          type: boolean
+        - name: parentPath
+          description: Parent path  e.g., "/project1"
+          in: query
+          required: true
+          schema:
+            type: string
+            description: e.g., "/project1"
+        - name: pattern
+          description: Pattern to match against node names e.g., "null*"
+          in: query
+          required: false
+          schema:
+            type: string
+            description: e.g., "null*"
+            default: "*"
+        - name: includeProperties
+          description: Whether to include full node properties in the response (default false for better performance)
+          in: query
+          required: false
+          schema:
+            type: boolean
+            description: Include node properties in response
+            default: false
       responses:
         "200":
+          description: List of nodes matching the specified criteria
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_nodes_200_response'
-          description: List of nodes matching the specified criteria
-      summary: Get nodes in the path
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      nodes:
+                        description: Result of the execution
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/TdNode"
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
     post:
+      summary: Create a new node
       operationId: create_node
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_node_request'
-        required: true
+              type: object
+              required:
+                - parentPath
+                - nodeType
+              properties:
+                parentPath:
+                  type: string
+                  description: Path to the parent node (e.g., /project1)
+                nodeType:
+                  type: string
+                  description: Type of the node to create (e.g., textTop)
+                nodeName:
+                  type: string
+                  description: Name of the new node (optional)
       responses:
         "200":
+          description: Node created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/create_node_200_response'
-          description: Node created successfully
-      summary: Create a new node
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      result:
+                        description: Result of the execution
+                        $ref: "#/components/schemas/TdNode"
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
+    delete:
+      summary: Delete an existing node
+      operationId: delete_node
+      parameters:
+        - name: nodePath
+          description: Path to the node to delete. e.g., "/geo1"
+          in: query
+          required: true
+          schema:
+            type: string
+            description: e.g., "/geo1"
+      responses:
+        "200":
+          description: Node deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      deleted:
+                        type: boolean
+                        description: Whether the node was successfully deleted
+                      node:
+                        description: Information about the deleted node
+                        $ref: "#/components/schemas/TdNode"
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
   /api/nodes/detail:
     get:
-      description: "Retrieves detailed information about a specific node including\
-        \ its properties, parameters and connections"
+      summary: Get node detail
+      description: Retrieves detailed information about a specific node including its properties, parameters and connections
       operationId: get_node_detail
       parameters:
-      - description: "Node path. e.g., \"/textTOP\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          description: "e.g., \"/textTOP\""
-          type: string
+        - description: Node path. e.g., "/textTOP"
+          in: query
+          name: nodePath
+          required: true
+          schema:
+            type: string
+            description: e.g., "/textTOP"
+        - description: If true, only return parameters that differ from their default value
+          in: query
+          name: nonDefault
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - description: Comma-separated parameter names to include (e.g. "tx,ty,tz")
+          in: query
+          name: fields
+          required: false
+          schema:
+            type: string
       responses:
         "200":
+          description: Node properties
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_node_detail_200_response'
-          description: Node properties
-      summary: Get node detail
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    nullable: true
+                    $ref: "#/components/schemas/TdNode"
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
     patch:
+      summary: Update node properties
       operationId: update_node
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_node_request'
+              type: object
+              required:
+                - nodePath
+                - properties
+              properties:
+                nodePath:
+                  type: string
+                  description: Path to the node (e.g., /null1)
+                properties:
+                  additionalProperties: true
+                  type: object
       responses:
         "200":
+          description: Information about the updated node
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/update_node_200_response'
-          description: Information about the updated node
-      summary: Update node properties
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the update operation was successful
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                        description: Path of the node that was updated
+                      updated:
+                        type: array
+                        description: List of property names that were successfully updated
+                        items:
+                          type: string
+                      failed:
+                        type: array
+                        description: List of properties that failed to update
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: Name of the property that failed to update
+                            reason:
+                              type: string
+                              description: Reason for the failure
+                      message:
+                        type: string
+                        description: Summary message about the update operation
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
   /api/nodes/errors:
     get:
+      summary: Get node errors
       description: Collects TouchDesigner error messages for a node and its children
       operationId: get_node_errors
       parameters:
-      - description: "Absolute path to the node to inspect. e.g., \"/text1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          type: string
+        - description: Absolute path to the node to inspect. e.g., "/text1"
+          in: query
+          name: nodePath
+          required: true
+          schema:
+            type: string
       responses:
         "200":
+          description: Node error report
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_node_errors_200_response'
-          description: Node error report
-      summary: Get node errors
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    $ref: "#/components/schemas/TdNodeErrorReport"
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
+  /api/nodes/project-index:
+    get:
+      summary: Build project index for code completion
+      description: |
+        Scan the operator tree starting at rootPath and build a Markdown index
+        for code-completion context. Cheap global scan — use get_td_context for
+        per-node deep inspection.
+      operationId: index_td_project
+      parameters:
+        - name: rootPath
+          description: Root operator path to start scanning from
+          in: query
+          required: false
+          schema:
+            type: string
+            default: /project1
+        - name: maxDepth
+          description: Maximum depth for findChildren
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: opLimit
+          description: Hard cap on operators scanned
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 500
+        - name: mode
+          description: "Index detail level: compact (~2k tokens) or full"
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - compact
+              - full
+            default: compact
+      responses:
+        "200":
+          description: Project index built successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      markdown:
+                        type: string
+                      stats:
+                        type: object
+                        properties:
+                          opCount:
+                            type: integer
+                          compCount:
+                            type: integer
+                          extensionCount:
+                            type: integer
+                          warningCount:
+                            type: integer
+                      truncated:
+                        type: boolean
+                      warnings:
+                        type: array
+                        items:
+                          type: string
+                  error:
+                    type: string
+                    nullable: true
+  /api/nodes/copy:
+    post:
+      summary: Copy a node to a new location
+      operationId: copy_node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sourcePath
+                - targetParentPath
+              properties:
+                sourcePath:
+                  type: string
+                  description: Path to the source operator (e.g., "/geo1")
+                targetParentPath:
+                  type: string
+                  description: Path to the target parent COMP (e.g., "/container1")
+                name:
+                  type: string
+                  description: Optional name for the copy (auto-generated if omitted)
+                nodeX:
+                  type: number
+                  description: Optional X position for the copied node
+                nodeY:
+                  type: number
+                  description: Optional Y position for the copied node
+      responses:
+        "200":
+          description: Node copied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      result:
+                        description: Information about the copied node
+                        $ref: "#/components/schemas/TdNode"
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
+  /api/nodes/connect:
+    post:
+      summary: Connect two nodes
+      operationId: connect_nodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fromPath
+                - toPath
+              properties:
+                fromPath:
+                  type: string
+                  description: Path to the source operator
+                toPath:
+                  type: string
+                  description: Path to the destination operator
+                fromOutput:
+                  type: integer
+                  default: 0
+                  description: Output connector index (default 0)
+                toInput:
+                  type: integer
+                  default: 0
+                  description: Input connector index (default 0)
+      responses:
+        "200":
+          description: Nodes connected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      from:
+                        type: string
+                        description: Path of the source node
+                      to:
+                        type: string
+                        description: Path of the destination node
+                      fromOutput:
+                        type: integer
+                        description: Output connector index used
+                      toInput:
+                        type: integer
+                        description: Input connector index used
+                      family:
+                        type: string
+                        description: Operator family of the connected nodes
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
+  /api/nodes/layout:
+    post:
+      summary: Reorganize nodes using a layout algorithm
+      operationId: layout_nodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - paths
+              properties:
+                paths:
+                  type: array
+                  items:
+                    type: string
+                  description: Node paths to lay out (minimum 2)
+                mode:
+                  type: string
+                  enum:
+                    - horizontal
+                    - vertical
+                    - grid
+                  default: horizontal
+                  description: "Layout mode: horizontal (left-to-right), vertical (top-to-bottom), or grid"
+                spacing:
+                  type: integer
+                  description: Override spacing in pixels (default depends on mode)
+                startX:
+                  type: integer
+                  description: Anchor X position (default uses leftmost node)
+                startY:
+                  type: integer
+                  description: Anchor Y position (default uses topmost node)
+      responses:
+        "200":
+          description: Nodes repositioned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      nodes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            path:
+                              type: string
+                            nodeX:
+                              type: integer
+                            nodeY:
+                              type: integer
+                      mode:
+                        type: string
+                      spacing:
+                        type: integer
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
+  /api/nodes/context:
+    get:
+      summary: Get contextual info for a node (aggregated)
+      description: |
+        Aggregate contextual information for a single node. Fetches multiple
+        facets (parameters, channels, extensions, errors, etc.) in one call.
+        Use include to select specific facets; omit for all.
+      operationId: get_td_context
+      parameters:
+        - name: nodePath
+          description: Absolute path to the target node, e.g. "/geo1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: include
+          description: Facets to include (omit for all)
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - parameters
+                - channels
+                - tableInfo
+                - extensions
+                - children
+                - errors
+                - datText
+      responses:
+        "200":
+          description: Node context retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      nodePath:
+                        type: string
+                      facets:
+                        type: object
+                      warnings:
+                        type: array
+                        items:
+                          type: string
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-text:
     get:
+      summary: Get DAT text content
       description: Read the .text content of a DAT operator
       operationId: get_dat_text
       parameters:
-      - description: "Absolute path to the DAT. e.g., \"/text1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          type: string
+        - name: nodePath
+          description: Absolute path to the DAT. e.g., "/text1"
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         "200":
+          description: DAT text content
           content:
             application/json:
               schema:
@@ -167,20 +651,22 @@ paths:
                         type: string
                       text:
                         type: string
-          description: DAT text content
-      summary: Get DAT text content
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
     put:
+      summary: Set DAT text content
       description: Write .text content to a DAT operator
       operationId: set_dat_text
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-              - nodePath
-              - text
+                - nodePath
+                - text
               properties:
                 nodePath:
                   type: string
@@ -188,9 +674,9 @@ paths:
                 text:
                   type: string
                   description: Text content to write
-        required: true
       responses:
         "200":
+          description: DAT text updated
           content:
             application/json:
               schema:
@@ -207,23 +693,25 @@ paths:
                         type: string
                       length:
                         type: integer
-          description: DAT text updated
-      summary: Set DAT text content
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-lint:
     post:
+      summary: Lint DAT code with ruff
       operationId: lint_dat
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-              - nodePath
+                - nodePath
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/script1\""
+                  description: Absolute path to the DAT node. e.g., "/script1"
                 fix:
                   type: boolean
                   default: false
@@ -231,10 +719,10 @@ paths:
                 dryRun:
                   type: boolean
                   default: false
-                  description: "Preview fix without applying (returns diff). Only meaningful with fix=true."
-        required: true
+                  description: Preview fix without applying (returns diff). Only meaningful with fix=true.
       responses:
         "200":
+          description: Lint results
           content:
             application/json:
               schema:
@@ -254,7 +742,7 @@ paths:
                       diagnostics:
                         type: array
                         items:
-                          $ref: '#/components/schemas/LintDiagnostic'
+                          $ref: "#/components/schemas/LintDiagnostic"
                       fixed:
                         type: boolean
                       fixedText:
@@ -264,35 +752,95 @@ paths:
                       remainingDiagnostics:
                         type: array
                         items:
-                          $ref: '#/components/schemas/LintDiagnostic'
+                          $ref: "#/components/schemas/LintDiagnostic"
                       diff:
                         type: string
                       applied:
                         type: boolean
-          description: Lint results
-      summary: Lint DAT code with ruff
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/dat-format:
+                  error:
+                    type: string
+                    nullable: true
+  /api/nodes/dat-lint-batch:
     post:
-      operationId: format_dat
+      summary: Batch lint DATs under a parent path
+      operationId: lint_dats
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-              - nodePath
+                - parentPath
+              properties:
+                parentPath:
+                  type: string
+                  description: Absolute path to the parent. e.g., "/project1"
+                pattern:
+                  type: string
+                  default: "*"
+                  description: Glob pattern to filter DAT names
+                purpose:
+                  type: string
+                  default: python
+                  enum:
+                    - python
+                    - glsl
+                    - text
+                    - data
+                    - any
+                  description: Filter by DAT kind
+                recursive:
+                  type: boolean
+                  default: false
+                  description: Search recursively into descendants
+      responses:
+        "200":
+          description: Batch lint results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      parentPath:
+                        type: string
+                      summary:
+                        $ref: "#/components/schemas/BatchLintSummary"
+                      results:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BatchLintDatResult"
+                  error:
+                    type: string
+                    nullable: true
+  /api/nodes/dat-format:
+    post:
+      summary: Format DAT code with ruff
+      operationId: format_dat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nodePath
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/script1\""
+                  description: Absolute path to the DAT node. e.g., "/script1"
                 dryRun:
                   type: boolean
                   default: false
-                  description: "Preview formatting without applying (returns diff)."
-        required: true
+                  description: Preview formatting without applying (returns diff).
       responses:
         "200":
+          description: Format results
           content:
             application/json:
               schema:
@@ -317,26 +865,28 @@ paths:
                         type: string
                       applied:
                         type: boolean
-          description: Format results
-      summary: Format DAT code with ruff
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-validate-json:
     post:
+      summary: Validate JSON/YAML content in a DAT
       operationId: validate_json_dat
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-              - nodePath
+                - nodePath
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/data1\""
-        required: true
+                  description: Absolute path to the DAT node. e.g., "/data1"
       responses:
         "200":
+          description: Validation results
           content:
             application/json:
               schema:
@@ -354,35 +904,37 @@ paths:
                       format:
                         type: string
                         enum:
-                        - json
-                        - yaml
-                        - unknown
+                          - json
+                          - yaml
+                          - unknown
                       valid:
                         type: boolean
                       diagnostics:
                         type: array
                         items:
-                          $ref: '#/components/schemas/JsonValidationDiagnostic'
-          description: Validation results
-      summary: Validate JSON/YAML content in a DAT
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                          $ref: "#/components/schemas/JsonValidationDiagnostic"
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-validate-glsl:
     post:
+      summary: Validate GLSL shader code in a DAT
       operationId: validate_glsl_dat
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-              - nodePath
+                - nodePath
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/glsl_pixel\""
-        required: true
+                  description: Absolute path to the DAT node. e.g., "/glsl_pixel"
       responses:
         "200":
+          description: GLSL validation results
           content:
             application/json:
               schema:
@@ -400,102 +952,48 @@ paths:
                       shaderType:
                         type: string
                         enum:
-                        - pixel
-                        - vertex
-                        - compute
-                        - unknown
+                          - pixel
+                          - vertex
+                          - compute
+                          - unknown
                       valid:
                         type: boolean
                         nullable: true
                       diagnostics:
                         type: array
                         items:
-                          $ref: '#/components/schemas/GlslValidationDiagnostic'
+                          $ref: "#/components/schemas/GlslValidationDiagnostic"
                       validationMethod:
                         type: string
                         enum:
-                        - td_errors
-                        - glslangValidator
-                        - none
+                          - td_errors
+                          - glslangValidator
+                          - none
                       validationAvailable:
                         type: boolean
                         description: Whether any validation method was available
-          description: GLSL validation results
-      summary: Validate GLSL shader code in a DAT
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/dat-lint-batch:
-    post:
-      operationId: lint_dats
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - parentPath
-              properties:
-                parentPath:
-                  type: string
-                  description: "Absolute path to the parent. e.g., \"/project1\""
-                pattern:
-                  type: string
-                  default: '*'
-                  description: "Glob pattern to filter DAT names"
-                purpose:
-                  type: string
-                  default: python
-                  enum:
-                  - python
-                  - glsl
-                  - text
-                  - data
-                  - any
-                  description: "Filter by DAT kind"
-                recursive:
-                  type: boolean
-                  default: false
-                  description: Search recursively into descendants
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                    properties:
-                      parentPath:
-                        type: string
-                      summary:
-                        $ref: '#/components/schemas/BatchLintSummary'
-                      results:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/BatchLintDatResult'
-          description: Batch lint results
-      summary: Batch lint DATs under a parent path
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-typecheck:
     post:
+      summary: Typecheck DAT code with pyright
       operationId: typecheck_dat
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-              - nodePath
+                - nodePath
               properties:
                 nodePath:
                   type: string
-                  description: "Absolute path to the DAT node. e.g., \"/script1\""
-        required: true
+                  description: Absolute path to the DAT node. e.g., "/script1"
       responses:
         "200":
+          description: Typecheck results
           content:
             application/json:
               schema:
@@ -515,44 +1013,46 @@ paths:
                       diagnostics:
                         type: array
                         items:
-                          $ref: '#/components/schemas/TypecheckDiagnostic'
-          description: Typecheck results
-      summary: Typecheck DAT code with pyright
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                          $ref: "#/components/schemas/TypecheckDiagnostic"
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-discover:
     get:
-      description: Discover DAT candidates under a parent, classified by kind (python,
-        glsl, text, data). Agent-friendly endpoint that eliminates N+1 round-trips.
+      summary: Discover DAT candidates for agent workflows
+      description: |
+        Discover DAT candidates under a parent, classified by kind (python, glsl, text, data). Agent-friendly endpoint that eliminates N+1 round-trips.
       operationId: discover_dat_candidates
       parameters:
-      - description: "Absolute path to the parent. e.g., \"/project1\""
-        in: query
-        name: parentPath
-        required: true
-        schema:
-          type: string
-      - description: Search recursively into descendants
-        in: query
-        name: recursive
-        required: false
-        schema:
-          default: false
-          type: boolean
-      - description: "Filter by DAT kind: python, glsl, text, data, or any"
-        in: query
-        name: purpose
-        required: false
-        schema:
-          default: any
-          enum:
-          - python
-          - glsl
-          - text
-          - data
-          - any
-          type: string
+        - name: parentPath
+          description: Absolute path to the parent. e.g., "/project1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: recursive
+          description: Search recursively into descendants
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: purpose
+          description: "Filter by DAT kind: python, glsl, text, data, or any"
+          in: query
+          required: false
+          schema:
+            type: string
+            default: any
+            enum:
+              - python
+              - glsl
+              - text
+              - data
+              - any
       responses:
         "200":
+          description: DAT discovery results
           content:
             application/json:
               schema:
@@ -592,30 +1092,32 @@ paths:
                               type: string
                             isDocked:
                               type: boolean
-          description: DAT discovery results
-      summary: Discover DAT candidates for agent workflows
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/parameter-schema:
     get:
-      description: Return parameter schema metadata (type, range, menu, default) for
-        a node. Eliminates guessing parameter names and valid values.
+      summary: Get parameter schema for a node
+      description: |
+        Return parameter schema metadata (type, range, menu, default) for a node. Eliminates guessing parameter names and valid values.
       operationId: get_node_parameter_schema
       parameters:
-      - description: "Absolute path to the node. e.g., \"/noise1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          type: string
-      - description: "Glob pattern to filter parameter names. e.g., \"instance*\""
-        in: query
-        name: pattern
-        required: false
-        schema:
-          default: '*'
-          type: string
+        - name: nodePath
+          description: Absolute path to the node. e.g., "/noise1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pattern
+          description: Glob pattern to filter parameter names. e.g., "instance*"
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "*"
       responses:
         "200":
+          description: Parameter schema list
           content:
             application/json:
               schema:
@@ -635,39 +1137,40 @@ paths:
                       parameters:
                         type: array
                         items:
-                          $ref: '#/components/schemas/ParameterSchema'
-          description: Parameter schema list
-      summary: Get parameter schema for a node
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                          $ref: "#/components/schemas/ParameterSchema"
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/complete-paths:
     get:
-      description: "Resolve op('...') style references from a context node. Supports\
-        \ relative (noise1, ./sub, ../foo) and absolute (/geo*) forms."
+      summary: Complete op() path references
+      description: |
+        Resolve op('...') style references from a context node. Supports relative (noise1, ./sub, ../foo) and absolute (/geo*) forms.
       operationId: complete_op_paths
       parameters:
-      - description: "Absolute path to the context node. e.g., \"/base1/script1\""
-        in: query
-        name: contextNodePath
-        required: true
-        schema:
-          type: string
-      - description: "Prefix to complete. e.g., \"noise\", \"./sub\", \"../foo\",\
-          \ \"/geo*\""
-        in: query
-        name: prefix
-        required: false
-        schema:
-          default: '*'
-          type: string
-      - description: Maximum number of results to return
-        in: query
-        name: limit
-        required: false
-        schema:
-          default: 50
-          type: integer
+        - name: contextNodePath
+          description: Absolute path to the context node. e.g., "/base1/script1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: prefix
+          description: Prefix to complete. e.g., "noise", "./sub", "../foo", "/geo*"
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "*"
+        - name: limit
+          description: Maximum number of results to return
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
       responses:
         "200":
+          description: Path completion results
           content:
             application/json:
               schema:
@@ -703,44 +1206,46 @@ paths:
                               type: string
                             relativeRef:
                               type: string
-          description: Path completion results
-      summary: Complete op() path references
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/chop-channels:
     get:
-      description: Return channel information for a CHOP node. Optionally includes
-        per-channel statistics (min, max, avg).
+      summary: Get CHOP channel info
+      description: |
+        Return channel information for a CHOP node. Optionally includes per-channel statistics (min, max, avg).
       operationId: get_chop_channels
       parameters:
-      - description: "Absolute path to the CHOP node. e.g., \"/noise1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          type: string
-      - description: "Glob pattern to filter channel names. e.g., \"chan*\""
-        in: query
-        name: pattern
-        required: false
-        schema:
-          default: '*'
-          type: string
-      - description: Include per-channel min/max/avg statistics
-        in: query
-        name: includeStats
-        required: false
-        schema:
-          default: false
-          type: boolean
-      - description: Maximum number of channels to return
-        in: query
-        name: limit
-        required: false
-        schema:
-          default: 100
-          type: integer
+        - name: nodePath
+          description: Absolute path to the CHOP node. e.g., "/noise1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pattern
+          description: Glob pattern to filter channel names. e.g., "chan*"
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "*"
+        - name: includeStats
+          description: Include per-channel min/max/avg statistics
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: limit
+          description: Maximum number of channels to return
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
       responses:
         "200":
+          description: CHOP channel information
           content:
             application/json:
               schema:
@@ -774,37 +1279,39 @@ paths:
                               type: number
                       truncated:
                         type: boolean
-          description: CHOP channel information
-      summary: Get CHOP channel info
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/dat-table-info:
     get:
-      description: Return dimensions and a content sample of a table DAT. No type
-        inference — raw cell values only.
+      summary: Get table DAT dimensions and sample data
+      description: |
+        Return dimensions and a content sample of a table DAT. No type inference -- raw cell values only.
       operationId: get_dat_table_info
       parameters:
-      - description: "Absolute path to the table DAT. e.g., \"/table1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          type: string
-      - description: Maximum number of rows to include in sample data
-        in: query
-        name: maxPreviewRows
-        required: false
-        schema:
-          default: 6
-          type: integer
-      - description: Truncate cell values longer than this
-        in: query
-        name: maxCellChars
-        required: false
-        schema:
-          default: 200
-          type: integer
+        - name: nodePath
+          description: Absolute path to the table DAT. e.g., "/table1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: maxPreviewRows
+          description: Maximum number of rows to include in sample data
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 6
+        - name: maxCellChars
+          description: Truncate cell values longer than this
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 200
       responses:
         "200":
+          description: Table DAT info
           content:
             application/json:
               schema:
@@ -833,37 +1340,39 @@ paths:
                         type: boolean
                       truncatedCells:
                         type: boolean
-          description: Table DAT info
-      summary: Get table DAT dimensions and sample data
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
   /api/nodes/comp-extensions:
     get:
-      description: Return extension classes, methods, and properties for a COMP. Useful
-        for discovering custom Python extensions on components.
+      summary: Get COMP extension methods and properties
+      description: |
+        Return extension classes, methods, and properties for a COMP. Useful for discovering custom Python extensions on components.
       operationId: get_comp_extensions
       parameters:
-      - description: "Absolute path to the COMP. e.g., \"/base1\""
-        in: query
-        name: compPath
-        required: true
-        schema:
-          type: string
-      - description: Include method docstrings (truncated to 500 chars)
-        in: query
-        name: includeDocs
-        required: false
-        schema:
-          default: false
-          type: boolean
-      - description: Maximum methods per extension
-        in: query
-        name: maxMethods
-        required: false
-        schema:
-          default: 50
-          type: integer
+        - name: compPath
+          description: Absolute path to the COMP. e.g., "/base1"
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: includeDocs
+          description: Include method docstrings (truncated to 500 chars)
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: maxMethods
+          description: Maximum methods per extension
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
       responses:
         "200":
+          description: COMP extension info
           content:
             application/json:
               schema:
@@ -907,90 +1416,297 @@ paths:
                                     type: string
                                   type:
                                     type: string
-          description: COMP extension info
-      summary: Get COMP extension methods and properties
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                  error:
+                    type: string
+                    nullable: true
+  /api/health:
+    get:
+      summary: Get server health status
+      description: Returns health status of the TouchDesigner server
+      operationId: get_health
+      responses:
+        "200":
+          description: Health check response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    required:
+                      - status
+                      - pythonVersion
+                      - tdVersion
+                      - tdBuild
+                    properties:
+                      status:
+                        type: string
+                        description: Server status
+                      pythonVersion:
+                        type: string
+                        description: Python interpreter version
+                      tdVersion:
+                        type: string
+                        description: TouchDesigner version (e.g., 2023.30000)
+                      tdBuild:
+                        type: string
+                        description: TouchDesigner build number
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
+  /api/capabilities:
+    get:
+      summary: Get server capabilities
+      description: Returns available features and tool versions
+      operationId: get_capabilities
+      responses:
+        "200":
+          description: Capabilities report
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      lint_dat:
+                        type: boolean
+                        description: Whether lint_dat is available
+                      format_dat:
+                        type: boolean
+                        description: Whether format_dat is available
+                      validate_glsl_dat:
+                        type: boolean
+                        description: Whether validate_glsl_dat is available (always true, may use fallback)
+                      typecheck_dat:
+                        type: boolean
+                        description: Whether typecheck_dat is available
+                      tools:
+                        type: object
+                        nullable: true
+                        properties:
+                          ruff:
+                            type: object
+                            nullable: true
+                            properties:
+                              installed:
+                                type: boolean
+                                description: Whether the tool is installed
+                              version:
+                                type: string
+                                nullable: true
+                                description: Tool version string
+                          pyright:
+                            type: object
+                            nullable: true
+                            properties:
+                              installed:
+                                type: boolean
+                                description: Whether the tool is installed
+                              version:
+                                type: string
+                                nullable: true
+                                description: Tool version string
+                          glslangValidator:
+                            type: object
+                            nullable: true
+                            properties:
+                              installed:
+                                type: boolean
+                                description: Whether the tool is installed
+                              version:
+                                type: string
+                                nullable: true
+                                description: Tool version string
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
   /api/td/classes:
     get:
-      description: "Returns a list of Python classes, modules, and functions available\
-        \ in TouchDesigner"
+      summary: Get a list of Python classes and modules
       operationId: get_td_python_classes
+      description: Returns a list of Python classes, modules, and functions available in TouchDesigner
       responses:
         "200":
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_td_python_classes_200_response'
-          description: Successful response
-      summary: Get a list of Python classes and modules
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    nullable: true
+                    type: object
+                    properties:
+                      classes:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/TdPythonClassInfo"
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
   /api/td/classes/{className}:
     get:
-      description: "Returns detailed information about a specific Python class, module,\
-        \ or function including methods, properties, and documentation"
+      summary: Get details of a specific Python class or module
       operationId: get_td_python_class_details
+      description: Returns detailed information about a specific Python class, module, or function including methods, properties, and documentation
       parameters:
-      - description: "Name of the class or module. e.g., \"textTOP\""
-        in: path
-        name: className
-        required: true
-        schema:
-          type: string
+        - name: className
+          in: path
+          description: Name of the class or module. e.g., "textTOP"
+          required: true
+          schema:
+            type: string
       responses:
         "200":
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_td_python_class_details_200_response'
-          description: Successful response
-      summary: Get details of a specific Python class or module
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    nullable: true
+                    $ref: "#/components/schemas/TdPythonClassDetails"
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
   /api/td/modules/help:
     get:
-      description: "Retrieve Python help() documentation for TouchDesigner modules,\
-        \ classes, or utilities like tdu."
+      summary: Get module/class Python help documentation
       operationId: get_module_help
+      description: Retrieve Python help() documentation for TouchDesigner modules, classes, or utilities like tdu.
       parameters:
-      - description: "Module or class name (e.g., \"noiseCHOP\", \"td.noiseCHOP\"\
-          , \"tdu\")."
-        in: query
-        name: moduleName
-        required: true
-        schema:
-          type: string
+        - name: moduleName
+          in: query
+          description: Module or class name (e.g., "noiseCHOP", "td.noiseCHOP", "tdu").
+          required: true
+          schema:
+            type: string
       responses:
         "200":
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_module_help_200_response'
-          description: Successful response
-      summary: Get module/class Python help documentation
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    nullable: true
+                    $ref: "#/components/schemas/ModuleHelp"
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
   /api/td/nodes/exec:
     post:
+      summary: Call a method of the specified node
       description: |
         Call a method on the node at the specified path (e.g., /project1).
         This allows operations equivalent to TouchDesigner's Python API such as
         `parent_comp = op('/project1')` and `parent_comp.create('textTOP', 'myText')`.
       operationId: exec_node_method
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/exec_node_method_request'
-        required: true
+              type: object
+              required:
+                - nodePath
+                - method
+              properties:
+                nodePath:
+                  type: string
+                  description: Path to the node (e.g., /null1)
+                method:
+                  type: string
+                  description: Name of the method to call
+                args:
+                  type: array
+                  description: List of arguments for the method call
+                  items:
+                    oneOf:
+                      - type: string
+                      - type: number
+                      - type: boolean
+                kwargs:
+                  type: object
+                  additionalProperties: true
+                  description: Keyword arguments for the method call
       responses:
         "200":
+          description: Method call successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exec_node_method_200_response'
-          description: Method call successful
-      summary: Call a method of the specified node
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    nullable: true
+                    type: object
+                    required:
+                      - result
+                    properties:
+                      result:
+                        description: Result of the method call. Can be any type (equivalent to unknown in TypeScript).
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
   /api/td/server/exec:
     post:
+      summary: Execute python code on the server
       description: |
         Execute a Python script directly in TouchDesigner.
         Multiline scripts and scripts containing comments are supported.
@@ -998,310 +1714,579 @@ paths:
         This endpoint allows you to interact with TouchDesigner nodes programmatically.
       operationId: exec_python_script
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/exec_python_script_request'
-        required: true
+              type: object
+              required:
+                - script
+              properties:
+                script:
+                  type: string
+                  description: e.g., "op('/text_over_image').outputConnectors[0].connect(op('/out1'))"
+                mode:
+                  type: string
+                  enum:
+                    - read-only
+                    - safe-write
+                    - full-exec
+                  default: safe-write
+                  description: |
+                    Execution mode that restricts which operations the script may perform.  read-only blocks all writes; safe-write blocks destructive / system-level operations; full-exec is unrestricted.
       responses:
         "200":
+          description: Script executed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/exec_python_script_200_response'
-          description: Script executed successfully
-      summary: Execute python code on the server
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    required:
+                      - result
+                    nullable: true
+                    properties:
+                      result:
+                        description: Result of the executed script
+                        type: object
+                        properties:
+                          value:
+                            description: Return value of the executed script, can be any serializable value
+                  error:
+                    nullable: true
+                    type: string
+                    description: Error message if the operation was not successful
   /api/td/server/td:
     get:
+      summary: Get TouchDesigner information
       description: Returns information about the TouchDesigner
       operationId: get_td_info
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/get_td_info_200_response'
           description: TouchDesigner information
-      summary: Get TouchDesigner information
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/health:
-    get:
-      description: Returns health status of the TouchDesigner server
-      operationId: get_health
-      responses:
-        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/get_health_200_response'
-          description: Health check response
-      summary: Get server health status
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/capabilities:
-    get:
-      description: Returns available features and tool versions
-      operationId: get_capabilities
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/get_capabilities_200_response'
-          description: Capabilities report
-      summary: Get server capabilities
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    description: Whether the operation was successful
+                    type: boolean
+                  data:
+                    nullable: true
+                    type: object
+                    required:
+                      - mcpApiVersion
+                      - osName
+                      - osVersion
+                      - server
+                      - version
+                    properties:
+                      mcpApiVersion:
+                        type: string
+                        description: Version of the TouchDesigner MCP API server
+                      osName:
+                        type: string
+                        description: Operating system name
+                      osVersion:
+                        type: string
+                        description: Operating system version
+                      server:
+                        type: string
+                        description: Server name (typically "TouchDesigner")
+                      version:
+                        type: string
+                        description: TouchDesigner version number
+                  error:
+                    nullable: true
+                    description: Error message if the operation was not successful
+                    type: string
   /api/td/helpers/geometry-comp:
     post:
+      summary: Create a Geometry COMP with In/Out operators
       description: |
         Create a Geometry COMP with In and Out operators inside it.
         Wraps the td_helpers.network.setup_geometry_comp() helper.
       operationId: create_geometry_comp
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_geometry_comp_request'
-        required: true
+              type: object
+              required:
+                - parentPath
+              properties:
+                parentPath:
+                  type: string
+                  description: Path to the parent node (e.g., /project1)
+                name:
+                  type: string
+                  default: geo1
+                  description: Name for the geometry COMP
+                x:
+                  type: integer
+                  default: 0
+                  description: X position in the network
+                y:
+                  type: integer
+                  default: 0
+                  description: Y position in the network
+                pop:
+                  type: boolean
+                  default: false
+                  description: Whether to use POP (point) topology instead of SOP
       responses:
         "200":
+          description: Geometry COMP created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/create_geometry_comp_200_response'
-          description: Geometry COMP created successfully
-      summary: Create a Geometry COMP with In/Out operators
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    description: Created geometry COMP details
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
   /api/td/helpers/feedback-loop:
     post:
+      summary: Create a Feedback TOP loop
       description: |
         Create a Feedback TOP loop with cache, process, and feedback operators.
         Wraps the td_helpers.network.setup_feedback_loop() helper.
       operationId: create_feedback_loop
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_feedback_loop_request'
-        required: true
+              type: object
+              required:
+                - parentPath
+              properties:
+                parentPath:
+                  type: string
+                  description: Path to the parent node (e.g., /project1)
+                name:
+                  type: string
+                  default: sim
+                  description: Base name for the feedback loop operators
+                x:
+                  type: integer
+                  default: 0
+                  description: X position in the network
+                y:
+                  type: integer
+                  default: 0
+                  description: Y position in the network
+                processType:
+                  type: string
+                  default: glslTOP
+                  description: Operator type for the process step (e.g., glslTOP, compositeTOP)
       responses:
         "200":
+          description: Feedback loop created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/create_feedback_loop_200_response'
-          description: Feedback loop created successfully
-      summary: Create a Feedback TOP loop
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                type: object
+                required:
+                  - success
+                  - data
+                  - error
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  data:
+                    type: object
+                    nullable: true
+                    description: Created feedback loop operator details
+                  error:
+                    type: string
+                    nullable: true
+                    description: Error message if the operation was not successful
   /api/td/helpers/instancing:
     post:
+      summary: Configure instancing on a Geometry COMP
       description: |
         Configure GPU instancing on an existing Geometry COMP.
         Wraps the td_helpers.network.setup_instancing() helper.
       operationId: configure_instancing
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/configure_instancing_request'
-        required: true
+              type: object
+              required:
+                - geoPath
+                - instanceOpName
+              properties:
+                geoPath:
+                  type: string
+                  description: Path to the Geometry COMP (e.g., /geo1)
+                instanceOpName:
+                  type: string
+                  description: Name of the operator providing instance data
+                tx:
+                  type: string
+                  default: tx
+                  description: Column name for translate X
+                ty:
+                  type: string
+                  default: ty
+                  description: Column name for translate Y
+                tz:
+                  type: string
+                  default: tz
+                  description: Column name for translate Z
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/configure_instancing_200_response'
           description: Instancing configured successfully
-      summary: Configure instancing on a Geometry COMP
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/project-index:
-    get:
-      description: |
-        Scan the operator tree starting at rootPath and build a Markdown index
-        for code-completion context. Cheap global scan — use get_td_context for
-        per-node deep inspection.
-      operationId: index_td_project
-      parameters:
-      - description: Root operator path to start scanning from
-        in: query
-        name: rootPath
-        required: false
-        schema:
-          default: /project1
-          type: string
-      - description: Maximum depth for findChildren
-        in: query
-        name: maxDepth
-        required: false
-        schema:
-          default: 10
-          type: integer
-      - description: Hard cap on operators scanned
-        in: query
-        name: opLimit
-        required: false
-        schema:
-          default: 500
-          type: integer
-      - description: "Index detail level: compact (~2k tokens) or full"
-        in: query
-        name: mode
-        required: false
-        schema:
-          default: compact
-          enum:
-          - compact
-          - full
-          type: string
-      responses:
-        "200":
           content:
             application/json:
               schema:
                 type: object
+                required:
+                  - success
+                  - data
+                  - error
                 properties:
                   success:
                     type: boolean
+                    description: Whether the operation was successful
                   data:
                     type: object
-                    properties:
-                      markdown:
-                        type: string
-                      stats:
-                        type: object
-                        properties:
-                          opCount:
-                            type: integer
-                          compCount:
-                            type: integer
-                          extensionCount:
-                            type: integer
-                          warningCount:
-                            type: integer
-                      truncated:
-                        type: boolean
-                      warnings:
-                        type: array
-                        items:
-                          type: string
+                    nullable: true
+                    description: Instancing configuration details
                   error:
                     type: string
                     nullable: true
-          description: Project index built successfully
-      summary: Build project index for code completion
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/copy:
-    post:
-      operationId: copy_node
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/copy_node_request'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/copy_node_200_response'
-          description: Node copied successfully
-      summary: Copy a node to a new location
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/connect:
-    post:
-      operationId: connect_nodes
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/connect_nodes_request'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect_nodes_200_response'
-          description: Nodes connected successfully
-      summary: Connect two nodes
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/layout:
-    post:
-      operationId: layout_nodes
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/layout_nodes_request'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/layout_nodes_200_response'
-          description: Nodes repositioned successfully
-      summary: Reorganize nodes using a layout algorithm
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /api/nodes/context:
-    get:
-      description: |
-        Aggregate contextual information for a single node. Fetches multiple
-        facets (parameters, channels, extensions, errors, etc.) in one call.
-        Use include to select specific facets; omit for all.
-      operationId: get_td_context
-      parameters:
-      - description: "Absolute path to the target node, e.g. \"/geo1\""
-        in: query
-        name: nodePath
-        required: true
-        schema:
-          type: string
-      - description: Facets to include (omit for all)
-        in: query
-        name: include
-        required: false
-        schema:
-          type: array
-          items:
-            type: string
-            enum:
-            - parameters
-            - channels
-            - tableInfo
-            - extensions
-            - children
-            - errors
-            - datText
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                    properties:
-                      nodePath:
-                        type: string
-                      facets:
-                        type: object
-                      warnings:
-                        type: array
-                        items:
-                          type: string
-                  error:
-                    type: string
-                    nullable: true
-          description: Node context retrieved successfully
-      summary: Get contextual info for a node (aggregated)
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+                    description: Error message if the operation was not successful
 components:
   schemas:
+    TdNode:
+      type: object
+      description: Information about a TouchDesigner node
+      required:
+        - id
+        - opType
+        - name
+        - path
+        - properties
+      properties:
+        id:
+          type: integer
+        opType:
+          type: string
+        name:
+          type: string
+        path:
+          type: string
+        properties:
+          type: object
+          additionalProperties: true
+    TdNodeFamilyType:
+      enum:
+        - COMP
+        - CHOP
+        - TOP
+        - SOP
+        - DAT
+        - MAT
+        - CUSTOM
+      type: string
+    TdNodeError:
+      type: object
+      description: Single node error entry
+      required:
+        - nodePath
+        - nodeName
+        - opType
+        - message
+      properties:
+        nodePath:
+          type: string
+          description: Absolute operator path that reported the error
+        nodeName:
+          type: string
+          description: Name of the operator
+        opType:
+          type: string
+          description: TouchDesigner operator type
+        message:
+          type: string
+          description: Error message reported by TouchDesigner
+    TdNodeErrorReport:
+      type: object
+      description: Aggregated node error report
+      required:
+        - nodePath
+        - nodeName
+        - opType
+        - errorCount
+        - hasErrors
+        - errors
+      properties:
+        nodePath:
+          type: string
+          description: Path that was inspected for errors
+        nodeName:
+          type: string
+          description: Name of the inspected node
+        opType:
+          type: string
+          description: Operator type of the inspected node
+        errorCount:
+          type: integer
+          description: Number of errors that were discovered
+        hasErrors:
+          type: boolean
+          description: Convenience flag indicating if any errors were found
+        errors:
+          type: array
+          description: Collection of raw node errors
+          items:
+            $ref: "#/components/schemas/TdNodeError"
+    TdPythonClassDetails:
+      type: object
+      description: Detailed information about a Python class or module
+      required:
+        - name
+        - type
+        - methods
+        - properties
+      properties:
+        name:
+          type: string
+          description: Name of the class or module
+        type:
+          type: string
+          enum:
+            - class
+            - module
+            - function
+            - object
+          description: Type of the Python entity
+        description:
+          type: string
+          description: Description of the class or module
+        methods:
+          type: array
+          description: List of methods available in the class or module
+          items:
+            $ref: "#/components/schemas/TdPythonMethodInfo"
+        properties:
+          type: array
+          description: List of properties available in the class or module
+          items:
+            $ref: "#/components/schemas/TdPythonPropertyInfo"
+    TdPythonClassInfo:
+      type: object
+      description: Information about a Python class or module available in TouchDesigner
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Name of the class or module
+        type:
+          type: string
+          enum:
+            - class
+            - module
+            - function
+            - object
+          description: Type of the Python entity
+        description:
+          type: string
+          description: Description of the class or module
+    TdPythonMethodInfo:
+      type: object
+      description: Information about a Python method
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Method name
+        signature:
+          type: string
+          description: Method signature including parameters
+        description:
+          type: string
+          description: Description of the method
+    TdPythonPropertyInfo:
+      type: object
+      description: Information about a Python property
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Property name
+        type:
+          type: string
+          description: Type of the property
+        value:
+          type: object
+          description: Current value of the property (if serializable)
+          nullable: true
+    ModuleHelp:
+      title: ModuleHelp
+      type: object
+      description: Raw Python help() output for a TouchDesigner module or class
+      required:
+        - moduleName
+        - helpText
+      properties:
+        moduleName:
+          type: string
+          description: Normalized module/class name the help text was generated for
+        helpText:
+          type: string
+          description: Captured output from Python's help() function
+    LintDiagnostic:
+      description: A single ruff lint diagnostic
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        endLine:
+          type: integer
+        endColumn:
+          type: integer
+        fixable:
+          type: boolean
+    TypecheckDiagnostic:
+      description: A single pyright typecheck diagnostic
+      type: object
+      properties:
+        severity:
+          type: string
+          enum:
+            - error
+            - warning
+            - information
+        message:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        rule:
+          type: string
+    JsonValidationDiagnostic:
+      description: A single JSON/YAML validation diagnostic
+      type: object
+      properties:
+        line:
+          type: integer
+        column:
+          type: integer
+        message:
+          type: string
+    GlslValidationDiagnostic:
+      description: A single GLSL validation diagnostic
+      type: object
+      properties:
+        line:
+          type: integer
+        column:
+          type: integer
+        message:
+          type: string
+        severity:
+          type: string
+          enum:
+            - error
+            - warning
+            - info
+    BatchLintSummary:
+      description: Aggregated summary for a batch lint operation
+      type: object
+      properties:
+        totalDatsScanned:
+          type: integer
+        datsWithErrors:
+          type: integer
+        datsClean:
+          type: integer
+        totalIssues:
+          type: integer
+        fixableCount:
+          type: integer
+        manualCount:
+          type: integer
+        bySeverity:
+          type: object
+          properties:
+            error:
+              type: integer
+            warning:
+              type: integer
+            info:
+              type: integer
+        worstOffenders:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              name:
+                type: string
+              diagnosticCount:
+                type: integer
+    BatchLintDatResult:
+      description: Per-DAT lint result in a batch operation
+      type: object
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        diagnosticCount:
+          type: integer
+        diagnostics:
+          type: array
+          items:
+            $ref: "#/components/schemas/LintDiagnostic"
+        error:
+          type: string
     ParameterSchema:
       description: Schema metadata for a single TouchDesigner parameter
       type: object
@@ -1338,1517 +2323,3 @@ components:
           type: boolean
         page:
           type: string
-    TdNode:
-      description: Information about a TouchDesigner node
-      example:
-        path: path
-        opType: opType
-        name: name
-        id: 0
-        properties:
-          key: ""
-      properties:
-        id:
-          title: id
-          type: integer
-        opType:
-          title: opType
-          type: string
-        name:
-          title: name
-          type: string
-        path:
-          title: path
-          type: string
-        properties:
-          additionalProperties: true
-          title: properties
-          type: object
-      required:
-      - id
-      - name
-      - opType
-      - path
-      - properties
-      title: TdNode
-      type: object
-    TdNodeFamilyType:
-      enum:
-      - COMP
-      - CHOP
-      - TOP
-      - SOP
-      - DAT
-      - MAT
-      - CUSTOM
-      type: string
-    TdNodeError:
-      description: Single node error entry
-      example:
-        nodeName: nodeName
-        opType: opType
-        nodePath: nodePath
-        message: message
-      properties:
-        nodePath:
-          description: Absolute operator path that reported the error
-          title: nodePath
-          type: string
-        nodeName:
-          description: Name of the operator
-          title: nodeName
-          type: string
-        opType:
-          description: TouchDesigner operator type
-          title: opType
-          type: string
-        message:
-          description: Error message reported by TouchDesigner
-          title: message
-          type: string
-      required:
-      - message
-      - nodeName
-      - nodePath
-      - opType
-      title: TdNodeError
-      type: object
-    TdNodeErrorReport:
-      description: Aggregated node error report
-      example:
-        nodeName: nodeName
-        hasErrors: true
-        opType: opType
-        nodePath: nodePath
-        errorCount: 0
-        errors:
-        - nodeName: nodeName
-          opType: opType
-          nodePath: nodePath
-          message: message
-        - nodeName: nodeName
-          opType: opType
-          nodePath: nodePath
-          message: message
-      properties:
-        nodePath:
-          description: Path that was inspected for errors
-          title: nodePath
-          type: string
-        nodeName:
-          description: Name of the inspected node
-          title: nodeName
-          type: string
-        opType:
-          description: Operator type of the inspected node
-          title: opType
-          type: string
-        errorCount:
-          description: Number of errors that were discovered
-          title: errorCount
-          type: integer
-        hasErrors:
-          description: Convenience flag indicating if any errors were found
-          title: hasErrors
-          type: boolean
-        errors:
-          description: Collection of raw node errors
-          items:
-            $ref: '#/components/schemas/TdNodeError'
-          title: errors
-          type: array
-      required:
-      - errorCount
-      - errors
-      - hasErrors
-      - nodeName
-      - nodePath
-      - opType
-      title: TdNodeErrorReport
-      type: object
-    LintDiagnostic:
-      description: A single ruff lint diagnostic
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        line:
-          type: integer
-        column:
-          type: integer
-        endLine:
-          type: integer
-        endColumn:
-          type: integer
-        fixable:
-          type: boolean
-      title: LintDiagnostic
-      type: object
-    TypecheckDiagnostic:
-      description: A single pyright typecheck diagnostic
-      properties:
-        severity:
-          type: string
-          enum:
-          - error
-          - warning
-          - information
-        message:
-          type: string
-        line:
-          type: integer
-        column:
-          type: integer
-        rule:
-          type: string
-      title: TypecheckDiagnostic
-      type: object
-    JsonValidationDiagnostic:
-      description: A single JSON/YAML validation diagnostic
-      properties:
-        line:
-          type: integer
-        column:
-          type: integer
-        message:
-          type: string
-      title: JsonValidationDiagnostic
-      type: object
-    GlslValidationDiagnostic:
-      description: A single GLSL validation diagnostic
-      properties:
-        line:
-          type: integer
-        column:
-          type: integer
-        message:
-          type: string
-        severity:
-          type: string
-          enum:
-          - error
-          - warning
-          - info
-      title: GlslValidationDiagnostic
-      type: object
-    BatchLintSummary:
-      description: Aggregated summary for a batch lint operation
-      properties:
-        totalDatsScanned:
-          type: integer
-        datsWithErrors:
-          type: integer
-        datsClean:
-          type: integer
-        totalIssues:
-          type: integer
-        fixableCount:
-          type: integer
-        manualCount:
-          type: integer
-        bySeverity:
-          type: object
-          properties:
-            error:
-              type: integer
-            warning:
-              type: integer
-            info:
-              type: integer
-        worstOffenders:
-          type: array
-          items:
-            type: object
-            properties:
-              path:
-                type: string
-              name:
-                type: string
-              diagnosticCount:
-                type: integer
-      title: BatchLintSummary
-      type: object
-    BatchLintDatResult:
-      description: Per-DAT lint result in a batch operation
-      properties:
-        path:
-          type: string
-        name:
-          type: string
-        diagnosticCount:
-          type: integer
-        diagnostics:
-          type: array
-          items:
-            $ref: '#/components/schemas/LintDiagnostic'
-        error:
-          type: string
-      title: BatchLintDatResult
-      type: object
-    TdPythonClassDetails:
-      description: Detailed information about a Python class or module
-      example:
-        methods:
-        - signature: signature
-          name: name
-          description: description
-        - signature: signature
-          name: name
-          description: description
-        name: name
-        description: description
-        type: class
-        properties:
-        - name: name
-          type: type
-          value: "{}"
-        - name: name
-          type: type
-          value: "{}"
-      properties:
-        name:
-          description: Name of the class or module
-          title: name
-          type: string
-        type:
-          description: Type of the Python entity
-          enum:
-          - class
-          - module
-          - function
-          - object
-          title: type
-          type: string
-        description:
-          description: Description of the class or module
-          title: description
-          type: string
-        methods:
-          description: List of methods available in the class or module
-          items:
-            $ref: '#/components/schemas/TdPythonMethodInfo'
-          title: methods
-          type: array
-        properties:
-          description: List of properties available in the class or module
-          items:
-            $ref: '#/components/schemas/TdPythonPropertyInfo'
-          title: properties
-          type: array
-      required:
-      - methods
-      - name
-      - properties
-      - type
-      title: TdPythonClassDetails
-      type: object
-    TdPythonClassInfo:
-      description: Information about a Python class or module available in TouchDesigner
-      example:
-        name: name
-        description: description
-        type: class
-      properties:
-        name:
-          description: Name of the class or module
-          title: name
-          type: string
-        type:
-          description: Type of the Python entity
-          enum:
-          - class
-          - module
-          - function
-          - object
-          title: type
-          type: string
-        description:
-          description: Description of the class or module
-          title: description
-          type: string
-      required:
-      - name
-      - type
-      title: TdPythonClassInfo
-      type: object
-    TdPythonMethodInfo:
-      description: Information about a Python method
-      example:
-        signature: signature
-        name: name
-        description: description
-      properties:
-        name:
-          description: Method name
-          title: name
-          type: string
-        signature:
-          description: Method signature including parameters
-          title: signature
-          type: string
-        description:
-          description: Description of the method
-          title: description
-          type: string
-      required:
-      - name
-      title: TdPythonMethodInfo
-      type: object
-    TdPythonPropertyInfo:
-      description: Information about a Python property
-      example:
-        name: name
-        type: type
-        value: "{}"
-      properties:
-        name:
-          description: Property name
-          title: name
-          type: string
-        type:
-          description: Type of the property
-          title: type
-          type: string
-        value:
-          description: Current value of the property (if serializable)
-          nullable: true
-          title: value
-          type: object
-      required:
-      - name
-      - type
-      title: TdPythonPropertyInfo
-      type: object
-    ModuleHelp:
-      description: Raw Python help() output for a TouchDesigner module or class
-      example:
-        helpText: helpText
-        moduleName: moduleName
-      properties:
-        moduleName:
-          description: Normalized module/class name the help text was generated for
-          title: moduleName
-          type: string
-        helpText:
-          description: Captured output from Python's help() function
-          title: helpText
-          type: string
-      required:
-      - helpText
-      - moduleName
-      title: ModuleHelp
-      type: object
-    get_nodes_200_response_data:
-      example:
-        nodes:
-        - path: path
-          opType: opType
-          name: name
-          id: 0
-          properties:
-            key: ""
-        - path: path
-          opType: opType
-          name: name
-          id: 0
-          properties:
-            key: ""
-      nullable: true
-      properties:
-        nodes:
-          description: Result of the execution
-          items:
-            $ref: '#/components/schemas/TdNode'
-          title: nodes
-          type: array
-      title: get_nodes_200_response_data
-      type: object
-    get_nodes_200_response:
-      example:
-        data:
-          nodes:
-          - path: path
-            opType: opType
-            name: name
-            id: 0
-            properties:
-              key: ""
-          - path: path
-            opType: opType
-            name: name
-            id: 0
-            properties:
-              key: ""
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/get_nodes_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_nodes_200_response
-      type: object
-    layout_nodes_request:
-      properties:
-        paths:
-          description: Node paths to lay out (minimum 2)
-          items:
-            type: string
-          title: paths
-          type: array
-        mode:
-          default: horizontal
-          description: "Layout mode: horizontal, vertical, or grid"
-          enum:
-          - horizontal
-          - vertical
-          - grid
-          title: mode
-          type: string
-        spacing:
-          description: Override spacing in pixels (default depends on mode)
-          title: spacing
-          type: integer
-        startX:
-          description: Anchor X position (default uses leftmost node)
-          title: startX
-          type: integer
-        startY:
-          description: Anchor Y position (default uses topmost node)
-          title: startY
-          type: integer
-      required:
-      - paths
-      title: layout_nodes_request
-      type: object
-    layout_nodes_200_response_node:
-      properties:
-        path:
-          type: string
-        nodeX:
-          type: integer
-        nodeY:
-          type: integer
-      title: layout_nodes_200_response_node
-      type: object
-    layout_nodes_200_response_data:
-      nullable: true
-      properties:
-        nodes:
-          items:
-            $ref: '#/components/schemas/layout_nodes_200_response_node'
-          type: array
-        mode:
-          type: string
-        spacing:
-          type: integer
-      title: layout_nodes_200_response_data
-      type: object
-    layout_nodes_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/layout_nodes_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: layout_nodes_200_response
-      type: object
-    copy_node_request:
-      properties:
-        sourcePath:
-          description: "Path to the source operator (e.g., /geo1)"
-          title: sourcePath
-          type: string
-        targetParentPath:
-          description: "Path to the target parent COMP (e.g., /container1)"
-          title: targetParentPath
-          type: string
-        name:
-          description: Optional name for the copy (auto-generated if omitted)
-          title: name
-          type: string
-        nodeX:
-          description: Optional X position for the copied node
-          title: nodeX
-          type: number
-        nodeY:
-          description: Optional Y position for the copied node
-          title: nodeY
-          type: number
-      required:
-      - sourcePath
-      - targetParentPath
-      title: copy_node_request
-      type: object
-    copy_node_200_response_data:
-      nullable: true
-      properties:
-        result:
-          $ref: '#/components/schemas/TdNode'
-      title: copy_node_200_response_data
-      type: object
-    copy_node_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/copy_node_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: copy_node_200_response
-      type: object
-    connect_nodes_request:
-      properties:
-        fromPath:
-          description: Path to the source operator
-          title: fromPath
-          type: string
-        toPath:
-          description: Path to the destination operator
-          title: toPath
-          type: string
-        fromOutput:
-          default: 0
-          description: Output connector index (default 0)
-          title: fromOutput
-          type: integer
-        toInput:
-          default: 0
-          description: Input connector index (default 0)
-          title: toInput
-          type: integer
-      required:
-      - fromPath
-      - toPath
-      title: connect_nodes_request
-      type: object
-    connect_nodes_200_response_data:
-      nullable: true
-      properties:
-        from:
-          description: Path of the source node
-          title: from
-          type: string
-        to:
-          description: Path of the destination node
-          title: to
-          type: string
-        fromOutput:
-          description: Output connector index used
-          title: fromOutput
-          type: integer
-        toInput:
-          description: Input connector index used
-          title: toInput
-          type: integer
-        family:
-          description: Operator family of the connected nodes
-          title: family
-          type: string
-      title: connect_nodes_200_response_data
-      type: object
-    connect_nodes_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/connect_nodes_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: connect_nodes_200_response
-      type: object
-    create_node_request:
-      properties:
-        parentPath:
-          description: "Path to the parent node (e.g., /project1)"
-          title: parentPath
-          type: string
-        nodeType:
-          description: "Type of the node to create (e.g., textTop)"
-          title: nodeType
-          type: string
-        nodeName:
-          description: Name of the new node (optional)
-          title: nodeName
-          type: string
-      required:
-      - nodeType
-      - parentPath
-      title: create_node_request
-      type: object
-    create_node_200_response_data:
-      example:
-        result:
-          path: path
-          opType: opType
-          name: name
-          id: 0
-          properties:
-            key: ""
-      nullable: true
-      properties:
-        result:
-          $ref: '#/components/schemas/TdNode'
-      title: create_node_200_response_data
-      type: object
-    create_node_200_response:
-      example:
-        data:
-          result:
-            path: path
-            opType: opType
-            name: name
-            id: 0
-            properties:
-              key: ""
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/create_node_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: create_node_200_response
-      type: object
-    delete_node_200_response_data:
-      example:
-        node:
-          path: path
-          opType: opType
-          name: name
-          id: 0
-          properties:
-            key: ""
-        deleted: true
-      nullable: true
-      properties:
-        deleted:
-          description: Whether the node was successfully deleted
-          title: deleted
-          type: boolean
-        node:
-          $ref: '#/components/schemas/TdNode'
-      title: delete_node_200_response_data
-      type: object
-    delete_node_200_response:
-      example:
-        data:
-          node:
-            path: path
-            opType: opType
-            name: name
-            id: 0
-            properties:
-              key: ""
-          deleted: true
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/delete_node_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: delete_node_200_response
-      type: object
-    get_node_detail_200_response:
-      example:
-        data:
-          path: path
-          opType: opType
-          name: name
-          id: 0
-          properties:
-            key: ""
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/TdNode'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_node_detail_200_response
-      type: object
-    update_node_request:
-      properties:
-        nodePath:
-          description: "Path to the node (e.g., /null1)"
-          title: nodePath
-          type: string
-        properties:
-          additionalProperties: true
-          title: properties
-          type: object
-      required:
-      - nodePath
-      - properties
-      title: update_node_request
-      type: object
-    update_node_200_response_data_failed_inner:
-      example:
-        reason: reason
-        name: name
-      properties:
-        name:
-          description: Name of the property that failed to update
-          title: name
-          type: string
-        reason:
-          description: Reason for the failure
-          title: reason
-          type: string
-      title: update_node_200_response_data_failed_inner
-      type: object
-    update_node_200_response_data:
-      example:
-        path: path
-        failed:
-        - reason: reason
-          name: name
-        - reason: reason
-          name: name
-        message: message
-        updated:
-        - updated
-        - updated
-      nullable: true
-      properties:
-        path:
-          description: Path of the node that was updated
-          title: path
-          type: string
-        updated:
-          description: List of property names that were successfully updated
-          items:
-            type: string
-          title: updated
-          type: array
-        failed:
-          description: List of properties that failed to update
-          items:
-            $ref: '#/components/schemas/update_node_200_response_data_failed_inner'
-          title: failed
-          type: array
-        message:
-          description: Summary message about the update operation
-          title: message
-          type: string
-      title: update_node_200_response_data
-      type: object
-    update_node_200_response:
-      example:
-        data:
-          path: path
-          failed:
-          - reason: reason
-            name: name
-          - reason: reason
-            name: name
-          message: message
-          updated:
-          - updated
-          - updated
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the update operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/update_node_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: update_node_200_response
-      type: object
-    get_node_errors_200_response:
-      example:
-        data:
-          nodeName: nodeName
-          hasErrors: true
-          opType: opType
-          nodePath: nodePath
-          errorCount: 0
-          errors:
-          - nodeName: nodeName
-            opType: opType
-            nodePath: nodePath
-            message: message
-          - nodeName: nodeName
-            opType: opType
-            nodePath: nodePath
-            message: message
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/TdNodeErrorReport'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_node_errors_200_response
-      type: object
-    get_td_python_classes_200_response_data:
-      example:
-        classes:
-        - name: name
-          description: description
-          type: class
-        - name: name
-          description: description
-          type: class
-      nullable: true
-      properties:
-        classes:
-          items:
-            $ref: '#/components/schemas/TdPythonClassInfo'
-          title: classes
-          type: array
-      title: get_td_python_classes_200_response_data
-      type: object
-    get_td_python_classes_200_response:
-      example:
-        data:
-          classes:
-          - name: name
-            description: description
-            type: class
-          - name: name
-            description: description
-            type: class
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/get_td_python_classes_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_td_python_classes_200_response
-      type: object
-    get_td_python_class_details_200_response:
-      example:
-        data:
-          methods:
-          - signature: signature
-            name: name
-            description: description
-          - signature: signature
-            name: name
-            description: description
-          name: name
-          description: description
-          type: class
-          properties:
-          - name: name
-            type: type
-            value: "{}"
-          - name: name
-            type: type
-            value: "{}"
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/TdPythonClassDetails'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_td_python_class_details_200_response
-      type: object
-    get_module_help_200_response:
-      example:
-        data:
-          helpText: helpText
-          moduleName: moduleName
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/ModuleHelp'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_module_help_200_response
-      type: object
-    exec_node_method_request_args_inner:
-      oneOf:
-      - type: string
-      - type: number
-      - type: boolean
-      title: exec_node_method_request_args_inner
-    exec_node_method_request:
-      properties:
-        nodePath:
-          description: "Path to the node (e.g., /null1)"
-          title: nodePath
-          type: string
-        method:
-          description: Name of the method to call
-          title: method
-          type: string
-        args:
-          description: List of arguments for the method call
-          items:
-            $ref: '#/components/schemas/exec_node_method_request_args_inner'
-          title: args
-          type: array
-        kwargs:
-          additionalProperties: true
-          description: Keyword arguments for the method call
-          title: kwargs
-          type: object
-      required:
-      - method
-      - nodePath
-      title: exec_node_method_request
-      type: object
-    exec_node_method_200_response_data:
-      example:
-        result: "{}"
-      nullable: true
-      properties:
-        result:
-          description: Result of the method call. Can be any type (equivalent to unknown
-            in TypeScript).
-          title: result
-          type: object
-      required:
-      - result
-      title: exec_node_method_200_response_data
-      type: object
-    exec_node_method_200_response:
-      example:
-        data:
-          result: "{}"
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/exec_node_method_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: exec_node_method_200_response
-      type: object
-    exec_python_script_request:
-      properties:
-        script:
-          description: "e.g., \"op('/text_over_image').outputConnectors[0].connect(op('/out1'))\""
-          title: script
-          type: string
-      required:
-      - script
-      title: exec_python_script_request
-      type: object
-    exec_python_script_200_response_data_result:
-      description: Result of the executed script
-      example:
-        value: "{}"
-      properties:
-        value:
-          description: "Return value of the executed script, can be any serializable\
-            \ value"
-          title: value
-          type: object
-      title: exec_python_script_200_response_data_result
-      type: object
-    exec_python_script_200_response_data:
-      example:
-        result:
-          value: "{}"
-      nullable: true
-      properties:
-        result:
-          $ref: '#/components/schemas/exec_python_script_200_response_data_result'
-      required:
-      - result
-      title: exec_python_script_200_response_data
-      type: object
-    exec_python_script_200_response:
-      example:
-        data:
-          result:
-            value: "{}"
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/exec_python_script_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: exec_python_script_200_response
-      type: object
-    get_td_info_200_response_data:
-      example:
-        server: server
-        mcpApiVersion: mcpApiVersion
-        osVersion: osVersion
-        osName: osName
-        version: version
-      nullable: true
-      properties:
-        mcpApiVersion:
-          description: Version of the TouchDesigner MCP API server
-          title: mcpApiVersion
-          type: string
-        osName:
-          description: Operating system name
-          title: osName
-          type: string
-        osVersion:
-          description: Operating system version
-          title: osVersion
-          type: string
-        server:
-          description: Server name (typically "TouchDesigner")
-          title: server
-          type: string
-        version:
-          description: TouchDesigner version number
-          title: version
-          type: string
-      required:
-      - mcpApiVersion
-      - osName
-      - osVersion
-      - server
-      - version
-      title: get_td_info_200_response_data
-      type: object
-    get_td_info_200_response:
-      example:
-        data:
-          server: server
-          mcpApiVersion: mcpApiVersion
-          osVersion: osVersion
-          osName: osName
-          version: version
-        success: true
-        error: error
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/get_td_info_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_td_info_200_response
-      type: object
-    create_geometry_comp_request:
-      properties:
-        parentPath:
-          description: "Path to the parent node (e.g., /project1)"
-          title: parentPath
-          type: string
-        name:
-          default: geo1
-          description: Name for the geometry COMP
-          title: name
-          type: string
-        x:
-          default: 0
-          description: X position in the network
-          title: x
-          type: integer
-        "y":
-          default: 0
-          description: Y position in the network
-          title: "y"
-          type: integer
-        pop:
-          default: false
-          description: Whether to use POP (point) topology instead of SOP
-          title: pop
-          type: boolean
-      required:
-      - parentPath
-      title: create_geometry_comp_request
-      type: object
-    create_geometry_comp_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          description: Created geometry COMP details
-          nullable: true
-          title: data
-          type: object
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: create_geometry_comp_200_response
-      type: object
-    create_feedback_loop_request:
-      properties:
-        parentPath:
-          description: "Path to the parent node (e.g., /project1)"
-          title: parentPath
-          type: string
-        name:
-          default: sim
-          description: Base name for the feedback loop operators
-          title: name
-          type: string
-        x:
-          default: 0
-          description: X position in the network
-          title: x
-          type: integer
-        "y":
-          default: 0
-          description: Y position in the network
-          title: "y"
-          type: integer
-        processType:
-          default: glslTOP
-          description: "Operator type for the process step (e.g., glslTOP, compositeTOP)"
-          title: processType
-          type: string
-      required:
-      - parentPath
-      title: create_feedback_loop_request
-      type: object
-    create_feedback_loop_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          description: Created feedback loop operator details
-          nullable: true
-          title: data
-          type: object
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: create_feedback_loop_200_response
-      type: object
-    configure_instancing_request:
-      properties:
-        geoPath:
-          description: "Path to the Geometry COMP (e.g., /geo1)"
-          title: geoPath
-          type: string
-        instanceOpName:
-          description: Name of the operator providing instance data
-          title: instanceOpName
-          type: string
-        tx:
-          default: tx
-          description: Column name for translate X
-          title: tx
-          type: string
-        ty:
-          default: ty
-          description: Column name for translate Y
-          title: ty
-          type: string
-        tz:
-          default: tz
-          description: Column name for translate Z
-          title: tz
-          type: string
-      required:
-      - geoPath
-      - instanceOpName
-      title: configure_instancing_request
-      type: object
-    configure_instancing_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          description: Instancing configuration details
-          nullable: true
-          title: data
-          type: object
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: configure_instancing_200_response
-      type: object
-    get_health_200_response_data:
-      nullable: true
-      properties:
-        status:
-          description: Server status
-          title: status
-          type: string
-        pythonVersion:
-          description: Python interpreter version
-          title: pythonVersion
-          type: string
-        tdVersion:
-          description: "TouchDesigner version (e.g., 2023.30000)"
-          title: tdVersion
-          type: string
-        tdBuild:
-          description: TouchDesigner build number
-          title: tdBuild
-          type: string
-      required:
-      - status
-      - pythonVersion
-      - tdVersion
-      - tdBuild
-      title: get_health_200_response_data
-      type: object
-    get_health_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/get_health_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_health_200_response
-      type: object
-    get_capabilities_200_response_data_tool:
-      nullable: true
-      properties:
-        installed:
-          description: Whether the tool is installed
-          title: installed
-          type: boolean
-        version:
-          description: Tool version string
-          nullable: true
-          title: version
-          type: string
-      title: get_capabilities_200_response_data_tool
-      type: object
-    get_capabilities_200_response_data_tools:
-      nullable: true
-      properties:
-        ruff:
-          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
-        pyright:
-          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
-        glslangValidator:
-          $ref: '#/components/schemas/get_capabilities_200_response_data_tool'
-      title: get_capabilities_200_response_data_tools
-      type: object
-    get_capabilities_200_response_data:
-      nullable: true
-      properties:
-        lint_dat:
-          description: Whether lint_dat is available
-          title: lint_dat
-          type: boolean
-        format_dat:
-          description: Whether format_dat is available
-          title: format_dat
-          type: boolean
-        validate_glsl_dat:
-          description: Whether validate_glsl_dat is available (always true, may use fallback)
-          title: validate_glsl_dat
-          type: boolean
-        typecheck_dat:
-          description: Whether typecheck_dat is available
-          title: typecheck_dat
-          type: boolean
-        tools:
-          $ref: '#/components/schemas/get_capabilities_200_response_data_tools'
-      title: get_capabilities_200_response_data
-      type: object
-    get_capabilities_200_response:
-      properties:
-        success:
-          description: Whether the operation was successful
-          title: success
-          type: boolean
-        data:
-          $ref: '#/components/schemas/get_capabilities_200_response_data'
-        error:
-          description: Error message if the operation was not successful
-          nullable: true
-          title: error
-          type: string
-      required:
-      - data
-      - error
-      - success
-      title: get_capabilities_200_response
-      type: object

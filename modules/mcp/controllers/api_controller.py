@@ -51,7 +51,12 @@ class ApiServiceProtocol(Protocol):
 
     def get_module_help(self, module_name: str) -> Result: ...
 
-    def get_node_detail(self, node_path: str) -> Result: ...
+    def get_node_detail(
+        self,
+        node_path: str,
+        non_default: bool = ...,
+        fields: str | list[str] | None = ...,
+    ) -> Result: ...
 
     def get_node_errors(self, node_path: str) -> Result: ...
 

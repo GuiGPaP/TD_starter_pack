@@ -184,6 +184,48 @@ class TestStateVerification:
 
         assert detail["success"] is False
 
+    def test_node_detail_non_default_filter(self, starter):
+        svc, graph, base = starter
+        node = FakeOp("test_non_default", parent=base, graph=graph)
+        base.children.append(node)
+        node.par.tx = FakePar("tx", 1.0, default=0.0)
+        node.par.ty = FakePar("ty", 0.0, default=0.0)
+
+        detail = svc.get_node_detail("/project1/base1/test_non_default", non_default=True)
+
+        assert detail["success"] is True
+        assert detail["data"]["properties"] == {"tx": 1.0}
+
+    def test_node_detail_fields_filter(self, starter):
+        svc, graph, base = starter
+        node = FakeOp("test_fields", parent=base, graph=graph)
+        base.children.append(node)
+        node.par.tx = FakePar("tx", 1.0, default=0.0)
+        node.par.ty = FakePar("ty", 2.0, default=0.0)
+        node.par.tz = FakePar("tz", 3.0, default=0.0)
+
+        detail = svc.get_node_detail("/project1/base1/test_fields", fields=["tx", "tz"])
+
+        assert detail["success"] is True
+        assert detail["data"]["properties"] == {"tx": 1.0, "tz": 3.0}
+
+    def test_node_detail_combined_filters(self, starter):
+        svc, graph, base = starter
+        node = FakeOp("test_combined", parent=base, graph=graph)
+        base.children.append(node)
+        node.par.tx = FakePar("tx", 1.0, default=0.0)
+        node.par.ty = FakePar("ty", 0.0, default=0.0)
+        node.par.tz = FakePar("tz", 5.0, default=5.0)
+
+        detail = svc.get_node_detail(
+            "/project1/base1/test_combined",
+            non_default="true",
+            fields="tx,ty,tz",
+        )
+
+        assert detail["success"] is True
+        assert detail["data"]["properties"] == {"tx": 1.0}
+
     def test_no_errors_on_base(self, starter):
         svc, _graph, _base = starter
         errors = svc.get_node_errors("/project1/base1")

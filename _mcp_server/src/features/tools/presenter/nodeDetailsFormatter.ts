@@ -40,12 +40,17 @@ interface TextWithContext {
 	context: NodeDetailsContext;
 }
 
+interface NodeDetailsFormatterOptions extends FormatterOptions {
+	fields?: string[];
+	nonDefault?: boolean;
+}
+
 /**
  * Format node parameter details
  */
 export function formatNodeDetails(
 	data: NodeDetailsData | undefined,
-	options?: FormatterOptions,
+	options?: NodeDetailsFormatterOptions,
 ): string {
 	const opts = mergeFormatterOptions(options);
 
@@ -72,12 +77,40 @@ export function formatNodeDetails(
 		result = formatSummary(nodePath, data, opts.limit);
 	}
 
-	const context = result.context as unknown as Record<string, unknown>;
+	const context = {
+		...result.context,
+		...buildFilterContext(options, result.context.total),
+	} as unknown as Record<string, unknown>;
 	return finalizeFormattedText(result.text, opts, {
 		context,
 		structured: context,
 		template: "nodeDetailsSummary",
 	});
+}
+
+function buildFilterContext(
+	options: NodeDetailsFormatterOptions | undefined,
+	total: number,
+): {
+	filterFields?: string;
+	filterFieldsList?: string[];
+	hasFieldsFilter: boolean;
+	hasNonDefaultFilter: boolean;
+	nonDefaultSummary?: string;
+} {
+	const normalizedFields =
+		options?.fields?.map((field) => field.trim()).filter(Boolean) ?? [];
+
+	return {
+		filterFields: normalizedFields.length > 0 ? normalizedFields.join(", ") : undefined,
+		filterFieldsList: normalizedFields.length > 0 ? normalizedFields : undefined,
+		hasFieldsFilter: normalizedFields.length > 0,
+		hasNonDefaultFilter: options?.nonDefault === true,
+		nonDefaultSummary:
+			options?.nonDefault === true
+				? `Showing ${total} non-default parameter${total === 1 ? "" : "s"}`
+				: undefined,
+	};
 }
 
 /**
