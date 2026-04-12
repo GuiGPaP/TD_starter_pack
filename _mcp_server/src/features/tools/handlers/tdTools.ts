@@ -116,7 +116,15 @@ type CapabilitiesToolParams = z.input<typeof capabilitiesToolSchema>;
 
 const getNodesToolSchema = GetNodesQueryParams.extend(
 	formattingOptionsSchema.shape,
-);
+).extend({
+	parentPaths: z
+		.array(z.string().min(1))
+		.max(10)
+		.describe(
+			"Batch mode: list nodes under multiple parents in one call (max 10). Overrides parentPath if both provided.",
+		)
+		.optional(),
+});
 type GetNodesToolParams = z.input<typeof getNodesToolSchema>;
 
 const getNodeDetailToolSchema = GetNodeDetailQueryParams.extend(
@@ -748,7 +756,7 @@ export function registerTdTools(
 
 	server.tool(
 		TOOL_NAMES.GET_TD_NODES,
-		"List nodes under a path with token-optimized output (detailLevel+limit supported)",
+		"List nodes under a path with token-optimized output (detailLevel+limit supported). Supports batch via parentPaths.",
 		getNodesToolSchema.strict().shape,
 		withLiveGuard(
 			TOOL_NAMES.GET_TD_NODES,
@@ -757,18 +765,43 @@ export function registerTdTools(
 			wrap(
 				TOOL_NAMES.GET_TD_NODES,
 				async (params: GetNodesToolParams) => {
-					const { detailLevel, limit, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getNodes(queryParams);
-					if (!result.success) throw result.error;
-
+					const {
+						detailLevel,
+						limit,
+						parentPaths,
+						responseFormat,
+						...queryParams
+					} = params;
 					const fallbackMode = queryParams.includeProperties
 						? "detailed"
 						: "summary";
-					return formatNodeList(result.data, {
+					const fmtOpts = {
 						detailLevel: detailLevel ?? fallbackMode,
 						limit,
 						responseFormat,
-					});
+					};
+
+					if (parentPaths && parentPaths.length > 0) {
+						const sections: string[] = [];
+						for (const parentPath of parentPaths) {
+							const result = await tdClient.getNodes({
+								...queryParams,
+								parentPath,
+							});
+							if (result.success) {
+								sections.push(formatNodeList(result.data, fmtOpts));
+							} else {
+								sections.push(
+									`## ${parentPath}\n\nError: ${result.error.message}`,
+								);
+							}
+						}
+						return sections.join("\n\n---\n\n");
+					}
+
+					const result = await tdClient.getNodes(queryParams);
+					if (!result.success) throw result.error;
+					return formatNodeList(result.data, fmtOpts);
 				},
 				REFERENCE_COMMENT,
 			),
@@ -1370,12 +1403,20 @@ export function registerTdTools(
 
 	const getTdContextToolSchema = GetTdContextQueryParams.extend(
 		detailOnlyFormattingSchema.shape,
-	);
+	).extend({
+		nodePaths: z
+			.array(z.string().min(1))
+			.max(10)
+			.describe(
+				"Batch mode: get context for multiple nodes in one call (max 10). Overrides nodePath if both provided.",
+			)
+			.optional(),
+	});
 	type GetTdContextToolParams = z.input<typeof getTdContextToolSchema>;
 
 	server.tool(
 		TOOL_NAMES.GET_TD_CONTEXT,
-		"Get contextual info for a node (aggregated facets: parameters, channels, extensions, errors, etc.)",
+		"Get contextual info for a node (aggregated facets: parameters, channels, extensions, errors, etc.). Supports batch via nodePaths.",
 		getTdContextToolSchema.strict().shape,
 		withLiveGuard(
 			TOOL_NAMES.GET_TD_CONTEXT,
@@ -1384,13 +1425,34 @@ export function registerTdTools(
 			wrap(
 				TOOL_NAMES.GET_TD_CONTEXT,
 				async (params: GetTdContextToolParams) => {
-					const { detailLevel, responseFormat, ...queryParams } = params;
-					const result = await tdClient.getTdContext(queryParams);
-					if (!result.success) throw result.error;
-					return formatTdContext(result.data, {
+					const { detailLevel, nodePaths, responseFormat, ...queryParams } =
+						params;
+					const fmtOpts = {
 						detailLevel: detailLevel ?? "summary",
 						responseFormat,
-					});
+					};
+
+					if (nodePaths && nodePaths.length > 0) {
+						const sections: string[] = [];
+						for (const nodePath of nodePaths) {
+							const result = await tdClient.getTdContext({
+								...queryParams,
+								nodePath,
+							});
+							if (result.success) {
+								sections.push(formatTdContext(result.data, fmtOpts));
+							} else {
+								sections.push(
+									`# Context for \`${nodePath}\`\n\nError: ${result.error.message}`,
+								);
+							}
+						}
+						return sections.join("\n\n---\n\n");
+					}
+
+					const result = await tdClient.getTdContext(queryParams);
+					if (!result.success) throw result.error;
+					return formatTdContext(result.data, fmtOpts);
 				},
 			),
 		),
