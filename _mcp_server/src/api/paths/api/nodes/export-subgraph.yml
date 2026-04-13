@@ -1,0 +1,103 @@
+post:
+  summary: Export subgraph topology (nodes, connections)
+  operationId: export_subgraph
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - operatorPaths
+          properties:
+            operatorPaths:
+              type: array
+              items:
+                type: string
+              description: List of operator paths to include in the subgraph
+  responses:
+    "200":
+      description: Subgraph topology
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - data
+              - error
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                nullable: true
+                properties:
+                  parent:
+                    type: string
+                    description: Common parent path of all operators
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                        name:
+                          type: string
+                        parent:
+                          type: string
+                        family:
+                          type: string
+                        opType:
+                          type: string
+                        nodeX:
+                          type: number
+                        nodeY:
+                          type: number
+                  edgesInternal:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                          description: Source operator path
+                        to:
+                          type: string
+                          description: Destination operator path
+                        fromOutput:
+                          type: integer
+                          description: Output connector index on source
+                        toInput:
+                          type: integer
+                          description: Input connector index on destination
+                  edgesIncoming:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                        to:
+                          type: string
+                        fromOutput:
+                          type: integer
+                        toInput:
+                          type: integer
+                  edgesOutgoing:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                        to:
+                          type: string
+                        fromOutput:
+                          type: integer
+                        toInput:
+                          type: integer
+              error:
+                type: string
+                nullable: true

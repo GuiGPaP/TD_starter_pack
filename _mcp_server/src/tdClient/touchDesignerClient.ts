@@ -24,6 +24,7 @@ import {
 	discoverDatCandidates as apiDiscoverDatCandidates,
 	execNodeMethod as apiExecNodeMethod,
 	execPythonScript as apiExecPythonScript,
+	exportSubgraph as apiExportSubgraph,
 	formatDat as apiFormatDat,
 	getCapabilities as apiGetCapabilities,
 	getChopChannels as apiGetChopChannels,
@@ -61,6 +62,7 @@ import {
 	type DiscoverDatCandidatesParams,
 	type ExecNodeMethodBody as ExecNodeMethodRequest,
 	type ExecPythonScriptBody as ExecPythonScriptRequest,
+	type ExportSubgraphBody as ExportSubgraphRequest,
 	type FormatDat200Data,
 	type FormatDatBody,
 	type GetCapabilities200Data as GetCapabilities200ResponseData,
@@ -105,6 +107,7 @@ export interface ITouchDesignerApi {
 	completeOpPaths: typeof apiCompleteOpPaths;
 	configureInstancing: typeof apiConfigureInstancing;
 	connectNodes: typeof apiConnectNodes;
+	exportSubgraph: typeof apiExportSubgraph;
 	copyNode: typeof apiCopyNode;
 	layoutNodes: typeof apiLayoutNodes;
 	getCapabilities: typeof apiGetCapabilities;
@@ -154,6 +157,7 @@ const defaultApiClient: ITouchDesignerApi = {
 	discoverDatCandidates: apiDiscoverDatCandidates,
 	execNodeMethod: apiExecNodeMethod,
 	execPythonScript: apiExecPythonScript,
+	exportSubgraph: apiExportSubgraph,
 	formatDat: apiFormatDat,
 	getCapabilities: apiGetCapabilities,
 	getChopChannels: apiGetChopChannels,
@@ -582,6 +586,17 @@ export class TouchDesignerClient {
 				fromPath: params.fromPath,
 				toPath: params.toPath,
 			},
+		);
+	}
+
+	/**
+	 * Export subgraph topology (nodes, edges)
+	 */
+	async exportSubgraph(params: ExportSubgraphRequest) {
+		return this.apiCall(
+			"Exporting subgraph",
+			() => this.api.exportSubgraph(params),
+			{ operatorPaths: params.operatorPaths },
 		);
 	}
 

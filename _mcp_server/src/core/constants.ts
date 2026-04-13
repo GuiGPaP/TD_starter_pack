@@ -26,6 +26,7 @@ export const TOOL_NAMES = {
 	DISCOVER_DAT_CANDIDATES: "discover_dat_candidates",
 	EXECUTE_NODE_METHOD: "exec_node_method",
 	EXECUTE_PYTHON_SCRIPT: "execute_python_script",
+	EXPORT_SUBGRAPH: "export_subgraph",
 	FORMAT_DAT: "format_dat",
 	GET_CAPABILITIES: "get_capabilities",
 	GET_CHOP_CHANNELS: "get_chop_channels",

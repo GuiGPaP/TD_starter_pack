@@ -317,6 +317,10 @@ class IApiService(Protocol):
         from_output: int = ...,
         to_input: int = ...,
     ) -> Result: ...
+    def export_subgraph(
+        self,
+        operator_paths: list[str],
+    ) -> Result: ...
     def layout_nodes(
         self,
         paths: list[str],
@@ -844,6 +848,98 @@ class TouchDesignerApiService(IApiService):
                 "family": from_node.family,
             }
         )
+
+    def export_subgraph(
+        self,
+        operator_paths: list[str],
+    ) -> Result:
+        """Export subgraph topology for a set of operators.
+
+        Returns nodes, internal edges, incoming edges, and outgoing edges.
+        All operators must share the same parent.
+        """
+        if not operator_paths:
+            return error_result("operatorPaths must not be empty")
+
+        # Deduplicate while preserving order
+        seen = set()
+        unique_paths = []
+        for p in operator_paths:
+            if p not in seen:
+                seen.add(p)
+                unique_paths.append(p)
+
+        # Resolve all operators
+        ops = {}
+        for path in unique_paths:
+            node = td.op(path)
+            if node is None or not node.valid:
+                return error_result(f"Operator not found: {path}")
+            ops[path] = node
+
+        # All operators must share the same parent
+        parents = set(o.parent().path for o in ops.values())
+        if len(parents) > 1:
+            return error_result(
+                f"All operators must share the same parent. Found: {', '.join(sorted(parents))}"
+            )
+        parent_path = parents.pop()
+
+        path_set = set(unique_paths)
+
+        # Build nodes list
+        nodes = []
+        for path, node in ops.items():
+            nodes.append({
+                "path": path,
+                "name": node.name,
+                "parent": parent_path,
+                "family": node.family,
+                "opType": node.OPType,
+                "nodeX": node.nodeX,
+                "nodeY": node.nodeY,
+            })
+
+        edges_internal = []
+        edges_incoming = []
+        edges_outgoing = []
+
+        # Scan input connectors for each node in the subgraph
+        for path, node in ops.items():
+            for i, ic in enumerate(node.inputConnectors):
+                for conn in ic.connections:
+                    src_path = conn.owner.path
+                    edge = {
+                        "from": src_path,
+                        "to": path,
+                        "fromOutput": conn.index,
+                        "toInput": i,
+                    }
+                    if src_path in path_set:
+                        edges_internal.append(edge)
+                    else:
+                        edges_incoming.append(edge)
+
+        # Scan output connectors for outgoing edges
+        for path, node in ops.items():
+            for i, oc in enumerate(node.outputConnectors):
+                for conn in oc.connections:
+                    dst_path = conn.owner.path
+                    if dst_path not in path_set:
+                        edges_outgoing.append({
+                            "from": path,
+                            "to": dst_path,
+                            "fromOutput": i,
+                            "toInput": conn.index,
+                        })
+
+        return success_result({
+            "parent": parent_path,
+            "nodes": nodes,
+            "edgesInternal": edges_internal,
+            "edgesIncoming": edges_incoming,
+            "edgesOutgoing": edges_outgoing,
+        })
 
     def layout_nodes(
         self,

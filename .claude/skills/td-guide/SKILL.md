@@ -108,6 +108,7 @@ def onPulse(par):
 | TD techniques (audio, networking, generative...) | `search_techniques` | query + optional `category`/`difficulty` |
 | Step-by-step tutorials | `search_tutorials` | query + optional `difficulty`/`tags` |
 | GLSL shader patterns | `search_glsl_patterns` | query + optional `type`/`difficulty` |
+| Subgraph topology (nodes + edges) | `export_subgraph` | `operatorPaths` array (all ops must share a parent) |
 | Workflow patterns and connections | `search_workflow_patterns` | query + optional `category`/`tags` |
 | Network templates (deployable) | `search_network_templates` | query + optional `category` |
 | TD version features, breaking changes | `list_versions` / `get_version_info` | version ID (e.g. "2025") |

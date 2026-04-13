@@ -74,6 +74,7 @@ export {
 	formatSnippetDetail,
 	formatSnippetSearchResults,
 } from "./snippetFormatter.js";
+export { formatExportSubgraphResult } from "./subgraphFormatter.js";
 export {
 	formatTechniqueDetail,
 	formatTechniqueSearchResults,

@@ -22,6 +22,8 @@ paths:
     $ref: ./paths/api/nodes/copy.yml
   /api/nodes/connect:
     $ref: ./paths/api/nodes/connect.yml
+  /api/nodes/export-subgraph:
+    $ref: ./paths/api/nodes/export-subgraph.yml
   /api/nodes/layout:
     $ref: ./paths/api/nodes/layout.yml
   /api/nodes/context:

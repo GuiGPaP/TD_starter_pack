@@ -17,6 +17,7 @@ import {
 	DiscoverDatCandidatesQueryParams,
 	ExecNodeMethodBody,
 	ExecPythonScriptBody,
+	ExportSubgraphBody,
 	FormatDatBody,
 	GetChopChannelsQueryParams,
 	GetCompExtensionsQueryParams,
@@ -61,6 +62,7 @@ import {
 	formatDeleteNodeResult,
 	formatDiscoverDatCandidates,
 	formatExecNodeMethodResult,
+	formatExportSubgraphResult,
 	formatFormatDat,
 	formatLayoutNodesResult,
 	formatLintDat,
@@ -172,6 +174,11 @@ const connectNodesToolSchema = ConnectNodesBody.extend(
 	detailOnlyFormattingSchema.shape,
 );
 type ConnectNodesToolParams = z.input<typeof connectNodesToolSchema>;
+
+const exportSubgraphToolSchema = ExportSubgraphBody.extend(
+	detailOnlyFormattingSchema.shape,
+);
+type ExportSubgraphToolParams = z.input<typeof exportSubgraphToolSchema>;
 
 const layoutNodesToolSchema = LayoutNodesBody.extend(
 	detailOnlyFormattingSchema.shape,
@@ -721,6 +728,30 @@ export function registerTdTools(
 					const result = await tdClient.connectNodes(connectParams);
 					if (!result.success) throw result.error;
 					return formatConnectNodesResult(result.data, {
+						detailLevel: detailLevel ?? "summary",
+						responseFormat,
+					});
+				},
+				REFERENCE_COMMENT,
+			),
+		),
+	);
+
+	server.tool(
+		TOOL_NAMES.EXPORT_SUBGRAPH,
+		"Export subgraph topology: nodes, internal/incoming/outgoing edges for a set of operators",
+		exportSubgraphToolSchema.strict().shape,
+		withLiveGuard(
+			TOOL_NAMES.EXPORT_SUBGRAPH,
+			serverMode,
+			tdClient,
+			wrap(
+				TOOL_NAMES.EXPORT_SUBGRAPH,
+				async (params: ExportSubgraphToolParams) => {
+					const { detailLevel, responseFormat, ...exportParams } = params;
+					const result = await tdClient.exportSubgraph(exportParams);
+					if (!result.success) throw result.error;
+					return formatExportSubgraphResult(result.data, {
 						detailLevel: detailLevel ?? "summary",
 						responseFormat,
 					});
