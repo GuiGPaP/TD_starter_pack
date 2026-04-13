@@ -315,6 +315,90 @@ Load controls into `content` container.
 
 ---
 
+## Pattern 7: Responsive Anchored Layout
+
+UI that scales proportionally with any parent size.
+
+```
+┌─────────────────────────────────┐
+│ ┌─────────┐     ┌─────────────┐│
+│ │ sidebar │     │   main      ││
+│ │  20%    │     │   80%       ││
+│ └─────────┘     └─────────────┘│
+└─────────────────────────────────┘
+```
+
+### Build sequence
+
+Use `anchors` mode instead of `fixed` or `fill`:
+```python
+# Sidebar: left 0-20% of parent
+sidebar = op('/project1/ui_root/sidebar')
+sidebar.par.hmode = 'anchors'
+sidebar.par.vmode = 'anchors'
+sidebar.par.leftanchor = 0.0
+sidebar.par.rightanchor = 0.2
+sidebar.par.bottomanchor = 0.0
+sidebar.par.topanchor = 1.0
+
+# Main area: right 20-100% of parent
+main = op('/project1/ui_root/main')
+main.par.hmode = 'anchors'
+main.par.vmode = 'anchors'
+main.par.leftanchor = 0.2
+main.par.rightanchor = 1.0
+main.par.bottomanchor = 0.0
+main.par.topanchor = 1.0
+
+# Pixel offsets for margins/gaps
+sidebar.par.rightoffset = -4   # 4px gap on the right
+main.par.leftoffset = 4        # 4px gap on the left
+```
+
+**When to use**: UI that must adapt to different window sizes or projection resolutions. All children stay proportional.
+
+**Note**: Anchors mode does NOT use `par.align` — children are positioned independently. Don't mix anchored and aligned children in the same container.
+
+---
+
+## Pattern 8: Reusable Widget Clone Bank
+
+Same widget repeated N times, driven by a table.
+
+```
+┌──────────┬──────────┬──────────┐
+│ Layer 1  │ Layer 2  │ Layer 3  │
+│ [slider] │ [slider] │ [slider] │
+│ [knob]   │ [knob]   │ [knob]   │
+│ [toggle] │ [toggle] │ [toggle] │
+└──────────┴──────────┴──────────┘
+```
+
+### Build sequence
+
+1. Create a prototype container with widgets inside
+2. Use Replicator COMP to clone it N times from a table
+
+```python
+# 1. Create prototype (manually or via load_palette_component)
+# prototype at /project1/ui_root/proto_layer
+
+# 2. Create table with layer names
+# table1 DAT with rows: Layer1, Layer2, Layer3
+
+# 3. Create replicatorCOMP
+replicator = op('/project1/ui_root/replicator1')
+replicator.par.template = '/project1/ui_root/proto_layer'
+replicator.par.dat = '/project1/ui_root/table1'
+replicator.par.layout = 'horizlr'  # arrange clones horizontally
+```
+
+Each clone can read its index via `me.digits` to customize labels or bind to different parameters.
+
+**When to use**: Channel strips, layer controls, device banks — any time the same set of controls repeats.
+
+---
+
 ## Layout Cheat Sheet
 
 ### Container alignment values

@@ -35,6 +35,41 @@ Load these as needed — do NOT re-read if already loaded in this conversation:
 | Widget catalog | All 55+ Palette widgets with names, params, sizes | @references/widget-catalog.md |
 | Layout patterns | 6 reusable layout patterns with code | @references/layout-patterns.md |
 
+## UI Design Principles
+
+### Resolution and root container
+- Always create the root container at the target output resolution (e.g., 1920x1080, 1280x720)
+- If the sketch doesn't specify, ask the user for the target resolution before building
+- Use `par.w` / `par.h` on the root to match the target
+
+### Separation: UI / Logic / Render
+Keep these in separate containers — never mix UI widgets with scene rendering:
+```
+/project1/
+  ├── ui_root/          ← Panel widgets (this skill builds this)
+  ├── logic/            ← CHOP/DAT control, routing, mapping
+  └── scene/            ← TOPs/COMPs for rendering
+```
+The UI exports clean Panel CHOP values. The scene reads those values. Neither depends on the other's internal structure.
+
+### Naming conventions
+- `ui_` prefix for UI containers: `ui_mixer`, `ui_pads`
+- `btn_` for buttons, `slider_` for sliders, `knob_` for knobs
+- Descriptive names: `slider_speed`, `btn_reset` — never `slider1`, `button2`
+- Tab pages: `page_mixer`, `page_pads`
+
+### Visual consistency
+- Define a color palette up front (background, accent, text, active/inactive/error states)
+- Use 1-2 fonts max with consistent sizes (titles: 12-14px, labels: 10px, values: 10px)
+- Button states must be visually distinct: normal / pressed / active / disabled
+- Ensure sufficient contrast for live performance use (dark venues, projectors)
+
+### Interaction architecture
+- **Panel Execute DAT**: centralize callbacks per container (not scattered scripts)
+- **Panel CHOP**: convert panel values to CHOP channels for downstream use
+- **Extensions** (advanced): for complex UI logic, route to **td-python** skill
+- Define a clear "contract": UI outputs normalized 0-1 values or well-named parameters
+
 ## Critical Guardrails
 
 ### 1. Two-level widget architecture — ALWAYS configure both levels
@@ -141,6 +176,30 @@ Then rescan to confirm 0 errors.
 | `'vertbt'` | Bottom to Top |
 | `'gridrows'` | Grid by Rows |
 | `'gridcols'` | Grid by Columns |
+
+### 13. Panel CHOP for value export
+After building the UI, offer to add a Panel CHOP per widget to export values:
+```python
+# Inside a widget container, create a panelCHOP to export the value
+# Pattern: widget → Panel CHOP → export to target parameter
+panelchop = op('{widget_path}/panelCHOP')
+panelchop.par.comp = '../{inner_widget_name}'
+panelchop.par.select = 'state'  # or 'u', 'v', 'text'
+```
+
+### 14. Performance — disable Viewer Active on hidden pages
+For multi-page UIs, hidden pages still cook if Viewer Active is on:
+```python
+# Use display expression (already handles this) OR explicitly:
+page.par.viewer = False  # when page is hidden
+```
+Also: avoid high-resolution TOPs in UI containers. For large UIs (50+ widgets), use pagination via tabs or collapsible sections.
+
+### 15. Perform Mode reminder
+After building any UI meant for live use, remind the user to:
+- Test in Perform Mode via Window COMP at the target projection resolution
+- Verify touch/mouse interaction works at the real output size
+- Check that `get_performance` shows stable FPS under interaction
 
 ## Workflow
 

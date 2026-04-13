@@ -341,6 +341,76 @@ These are in the `UI/` category but not part of Basic Widgets:
 
 ---
 
+## Interaction & Data Export
+
+### Panel Execute DAT (event-driven callbacks)
+
+Place a `panelexecuteDAT` inside or adjacent to a widget container to respond to user interaction:
+
+```python
+# panelexecuteDAT callbacks (configured via its parameters):
+
+def onOffToOn(panelValue):
+    """Fires once when state goes 0→1 (button press, toggle on)"""
+    op('/project1/logic/trigger').par.value0 = 1
+
+def onOnToOff(panelValue):
+    """Fires once when state goes 1→0"""
+    pass
+
+def onValueChange(panelValue):
+    """Fires whenever the value changes (sliders, knobs, fields)"""
+    op('/project1/scene/noise1').par.roughness = panelValue.val
+
+def whileOn(panelValue):
+    """Fires every frame while state == 1 — use sparingly"""
+    pass
+```
+
+Key parameters on the panelexecuteDAT:
+- `par.panels` — which Panel COMPs to monitor (supports `*` wildcards)
+- `par.panelvalue` — which value to watch: `state`, `u`, `v`, `text`, etc.
+- Toggle `offtoon`, `ontooff`, `valuechange`, `whileon` to enable each callback
+
+**Best practice**: One Panel Execute DAT per logical group of widgets (e.g., one for the mixer section, one for the transport controls). Don't scatter individual scripts on each widget.
+
+### Panel CHOP (value export to channels)
+
+Convert panel values into CHOP channels for downstream use:
+
+```python
+# Create a panelCHOP inside or next to a widget
+# panelCHOP parameters:
+#   par.comp = '../slider_speed/sliderHorz'   # which widget to read
+#   par.select = 'u'                           # which panel value ('u', 'v', 'state', etc.)
+
+# The output is a CHOP channel that can be exported to any parameter:
+#   panelCHOP → [export] → target_op.par.speed
+```
+
+Common panel values to export:
+
+| Widget type | Panel value | Range |
+|-------------|------------|-------|
+| sliderHorz/Vert | `u` or `v` | 0.0 - 1.0 |
+| slider2D | `u`, `v` | 0.0 - 1.0 each |
+| knobFixed | `u` | 0.0 - 1.0 |
+| buttonToggle | `state` | 0 or 1 |
+| buttonMomentary | `state` | 0 or 1 (momentary) |
+| fieldString | `text` | string |
+| dropDownMenu | `state` | menu index |
+
+### Reading panel values in Python
+
+```python
+# Direct access from any script:
+slider_val = op('slider_speed/sliderHorz').panel.u      # 0.0 - 1.0
+button_on = op('btn_play/buttonToggle').panel.state      # 0 or 1
+text_val = op('field_name/fieldString').panel.text.val   # string
+```
+
+---
+
 ## Common Parameter Patterns
 
 ### All value widgets share (Values page):
