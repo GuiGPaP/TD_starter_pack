@@ -10,6 +10,7 @@ When working with TouchDesigner, pick the right skill:
 | GLSL shaders (pixel, vertex, compute, particles) | **td-glsl** |
 | Python utilities (TDFunctions, TDJSON, TDStoreTools, TDResources) / DAT linting / ruff | **td-python** |
 | Native text layout / font atlas / obstacle avoidance / char instancing | **td-pretext** |
+| UI from sketch / wireframe / mockup image → Palette widgets in TD | **td-sketch-ui** |
 
 **When in doubt:** Start with `td-guide` — it routes to td-glsl for shaders and td-python for Python work.
 
