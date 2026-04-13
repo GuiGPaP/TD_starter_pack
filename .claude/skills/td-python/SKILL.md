@@ -116,11 +116,15 @@ Before any lint workflow, call `get_capabilities` to verify tools:
 | Question domain | Tool to use | How |
 |---|---|---|
 | TD Python API (`op`, `par`, `COMP` methods) | `mcp__Context7__query-docs` | Resolve `"derivative/touchdesigner"`, then query |
+| Official Python examples from Derivative | `search_snippets` | query + optional `family`/`opType` |
+| Full snippet with embedded Python code | `get_snippet` | snippet ID |
 | Function signatures in TDFunctions/TDJSON | `mcp__Context7__query-docs` | Query with module + function name |
 | Parameter names on a specific node | `get_node_parameter_schema` | Pass `nodePath` + optional `pattern` |
 | Community patterns for StorageManager | `mcp__exa__web_search_exa` | Semantic search |
 | Ruff rule details (what E711 means) | `mcp__Context7__query-docs` | Resolve `ruff`, then query the rule code |
 | Ruff config options | `mcp__Context7__query-docs` | Query `"ruff configuration select ignore"` |
+
+**Snippets for Python:** `search_snippets` returns Derivative's official .tox examples containing embedded Python code in DAT operators. Use when you need working Python patterns for a specific operator type, data-flow examples, or CHOP export configurations.
 
 ### When to trust this skill vs. fetch fresh docs
 

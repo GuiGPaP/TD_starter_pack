@@ -63,11 +63,15 @@ mat3 TDRotateToVector(vec3 forward, vec3 up);
 | Question domain | Tool to use | How |
 |---|---|---|
 | GLSL patterns in our knowledge base | `search_glsl_patterns` | query + type/difficulty/tags |
+| Official shader examples from Derivative | `search_snippets` | query + `family="TOP"` or `family="MAT"` |
+| Full snippet with embedded GLSL code | `get_snippet` | snippet ID (e.g. `"glsl-top"`) |
 | Operator params, examples | `search_operators` | query "glsl" or "noise" etc. |
 | TD techniques (audio-reactive, feedback, etc.) | `search_techniques` | query + category |
 | TD version features, breaking changes | `get_version_info` / `list_versions` | version ID |
 | GLSL language spec, advanced features | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | `"GLSL [function] specification"` |
 | Shader algorithms, visual effects | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | `"GLSL [effect name] shader tutorial"` |
+
+**`search_glsl_patterns` vs `search_snippets`:** `search_glsl_patterns` is curated and difficulty-ranked — use it first for known shader patterns. `search_snippets` with `family="TOP"` or `family="MAT"` returns Derivative's official .tox examples with embedded GLSL code, readMe explanations, and full network context — use it when you need real-world shader usage patterns or connection examples.
 
 ### When to trust this skill vs. fetch fresh docs
 

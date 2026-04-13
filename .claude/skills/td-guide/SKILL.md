@@ -103,6 +103,8 @@ def onPulse(par):
 | Question domain | Tool to use | How |
 |---|---|---|
 | Operator knowledge, examples, families | `search_operators` | query + optional `family`/`version` filters |
+| Official Derivative examples (483 .tox snippets) | `search_snippets` | query + optional `family`/`opType`/`maxResults` |
+| Full snippet detail (operators, connections, code) | `get_snippet` | snippet ID (e.g. `"noise-top"`) |
 | TD techniques (audio, networking, generative...) | `search_techniques` | query + optional `category`/`difficulty` |
 | Step-by-step tutorials | `search_tutorials` | query + optional `difficulty`/`tags` |
 | GLSL shader patterns | `search_glsl_patterns` | query + optional `type`/`difficulty` |
@@ -114,6 +116,8 @@ def onPulse(par):
 | Operator paths and references | `complete_op_paths` | Pass `contextNodePath` + `prefix` |
 | CHOP channel names and stats | `get_chop_channels` | Pass `nodePath`, set `includeStats=true` |
 | TD patterns, community examples (external) | `mcp__plugin_exa-mcp-server_exa__get_code_context_exa` | Natural language query |
+
+**Snippets vs other tools:** `search_snippets` returns real working networks from Derivative's official examples — use it when you need connection patterns between operators, non-default parameter values in practice, or embedded Python/GLSL code from proven examples. `search_operators` gives operator docs; snippets give working network context.
 
 ### When to trust this skill vs. fetch fresh docs
 
