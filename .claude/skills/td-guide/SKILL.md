@@ -113,6 +113,10 @@ def onPulse(par):
 
 31. **Preload heavy assets at startup.** `op('comp').cook(force=True, recurse=True)` for geometry, `moviefileinTOP.preload()` for video. Without this, the first display/transition causes a visible freeze.
 
+32. **Tabbed UI: toggle `allowCooking` on inactive pages.** `display = False` only hides visually — children still cook. Use a Parameter Execute DAT watching the tab value to set `page.allowCooking = False` on inactive pages. This is the Switch pattern applied to panel UIs. `allowCooking` is a Python property (not a parameter), so it requires a callback — not an expression.
+
+33. **Palette widget rollovers cause FPS drops on hover.** Each Palette Basic Widget (knob, slider, button) has internal `rollover`/`overlay` containers that cook on every mouse movement. With many widgets and deep nesting (8+ levels), a mouse sweep triggers hundreds of cooks propagating up the parent chain. Fix: disable rollovers at startup with `rollover.allowCooking = False`. Interaction (click/drag) still works — only the hover highlight disappears.
+
 ## Fetching Documentation
 
 ### Which tool for which question

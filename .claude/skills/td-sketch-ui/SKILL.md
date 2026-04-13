@@ -113,10 +113,23 @@ Widgets like `knobFixed`, `slider2D`, `buttonMomentary` have internal sub-compon
 - `Buttonofffontcolorr/g/b` / `Buttononfontcolorr/g/b` — text colors
 
 ### 5. Disable rollover on ALL widgets
-Rollover causes FPS drops when the mouse moves over widgets. Always disable:
+Each Palette widget has internal `rollover`/`overlay` containers that cook on every mouse movement. With many widgets and deep nesting (8+ levels), a mouse sweep triggers thousands of cooks propagating up the parent chain — measured: 4000+ unnecessary cooks causing visible FPS drops. Always disable at creation:
 ```python
 inner.par.Enablerollover = False
 ```
+**For existing UIs** where rollover is already enabled, disable retroactively at startup:
+```python
+# In an Execute DAT onStart
+def disable_rollovers(comp, depth=0):
+    if depth > 10:
+        return
+    for c in comp.children:
+        if c.isCOMP and c.name in ('rollover', 'overlay'):
+            c.allowCooking = False
+        if c.isCOMP:
+            disable_rollovers(c, depth + 1)
+```
+Click/drag interaction is unaffected — only the hover highlight disappears.
 
 ### 6. Container height — calculate, don't guess
 ```python
@@ -155,6 +168,18 @@ Use `me.parent().op()` in display expressions — relative paths resolve from th
 page.par.display.expr = "me.parent().op('tabs/folderTabs').par.Value0 == 'tabname'"
 page.par.display.mode = page.par.display.mode.EXPRESSION
 ```
+**Critical performance addition:** `display = False` only hides visually — children still cook. ALWAYS also create a `parameterexecuteDAT` that toggles `allowCooking` on inactive pages:
+```python
+# parameterexecuteDAT watching folderTabs.par.Value0, onValueChange:
+def onValueChange(par, prev):
+    active = str(par)
+    ui = me.parent()
+    for page_name, tab_id in [('page_A', 'tabA'), ('page_B', 'tabB')]:
+        page = ui.op(page_name)
+        if page:
+            page.allowCooking = (active == tab_id)
+```
+`allowCooking` is a Python property (not a parameter) — requires a callback. Apply initial state in an Execute DAT `onStart` too.
 
 ### 10. Error detection and cleanup
 After building any UI, ALWAYS run `scan_network_errors` to check for problems.

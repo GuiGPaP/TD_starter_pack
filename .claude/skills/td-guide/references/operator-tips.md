@@ -7,6 +7,7 @@ Operator-specific patterns, tips, and common pitfalls.
 1. [Feedback TOP](#feedback-top)
 2. [Parent Shortcuts](#parent-shortcuts)
 3. [Scene Changer Pattern](#scene-changer-pattern)
+4. [Palette Widget Performance](#palette-widget-performance)
 
 ---
 

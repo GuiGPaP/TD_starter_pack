@@ -185,6 +185,45 @@ op('noise1').lock = True
 
 The Switch OP naturally prevents inactive branches from receiving cook requests. Only the selected input cooks; all others go idle. See @cook-system.md Switch Pattern section.
 
+### Tabbed UI pattern — disable inactive pages
+
+`display = False` on a COMP only hides it visually — all children still cook. For tabbed interfaces, toggle `allowCooking` on inactive pages via a Parameter Execute DAT:
+
+```python
+# parameterexecuteDAT watching folderTabs.par.Value0
+def onValueChange(par, prev):
+    active = str(par)
+    ui = me.parent()
+    for page_name, tab_id in [('page_mixer', 'mixer'), ('page_pads', 'pads')]:
+        page = ui.op(page_name)
+        if page:
+            page.allowCooking = (active == tab_id)
+```
+
+`allowCooking` is a Python property (not a parameter) — it cannot be set via expression, only via callback or script. Apply initial state in an Execute DAT `onStart`.
+
+### Palette widget rollover optimization
+
+Palette Basic Widgets (knob, slider, button, folderTabs) embed ~30-40 internal operators each, including `rollover` and `overlay` containers that cook on every mouse movement. With deep nesting (8+ levels), each hover pixel triggers a cook chain propagating up through all parent levels.
+
+**Fix:** Disable all rollover/overlay containers at startup:
+
+```python
+# In an Execute DAT onStart callback
+def disable_rollovers(comp, depth=0):
+    if depth > 10:
+        return
+    for c in comp.children:
+        if c.isCOMP and c.name in ('rollover', 'overlay'):
+            c.allowCooking = False
+        if c.isCOMP:
+            disable_rollovers(c, depth + 1)
+
+disable_rollovers(op('/project1/ui_main'))
+```
+
+Click/drag interaction is unaffected — only the hover highlight disappears. Measured impact: eliminated 4000+ unnecessary cooks and FPS drops during mouse interaction.
+
 ---
 
 ## Preloading Assets
