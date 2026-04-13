@@ -80,6 +80,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Shape",
+				"language": "python",
+				"code": "n = op('interpolate1')\nn.par.blendfunc = 'holdprev'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Shape value",
+				"language": "python",
+				"code": "n = op('interpolate1')\nprint(n.par.blendfunc.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

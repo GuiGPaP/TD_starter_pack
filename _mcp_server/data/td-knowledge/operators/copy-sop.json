@@ -284,6 +284,27 @@
 				"description": "These allow you to specify the Translation (how much it moves over in a given direction), Rotation, and the Scale between each copy. Three columns are given for X, Y, and Z coordinates. Guide geometry"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Number of Copies and Tx",
+				"language": "python",
+				"code": "n = op('copy1')\nn.par.ncy = 5\nn.par.tx = 0\nn.par.ty = 0",
+				"context": "textport",
+				"description": "Common settings from 16 real Derivative examples"
+			},
+			{
+				"label": "Read Number of Copies value",
+				"language": "python",
+				"code": "n = op('copy1')\nprint(n.par.ncy.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('copy1')\nn.par.ncy = 2\nn.par.tx = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

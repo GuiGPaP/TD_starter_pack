@@ -786,6 +786,27 @@
 				"style": "Int"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pageindex and Number of Threads",
+				"language": "python",
+				"code": "n = op('glsladvanced1')\nn.par.pageindex = 1\nn.par.numthreadsmode = 'outputpoint'\nn.par.numelemsattr = 'NumVerts'",
+				"context": "textport",
+				"description": "Common settings from 37 real Derivative examples"
+			},
+			{
+				"label": "Read pageindex value",
+				"language": "python",
+				"code": "n = op('glsladvanced1')\nprint(n.par.pageindex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('glsladvanced1')\nn.par.pageindex = 3\nn.par.numthreadsmode = 'numelemsattrib'",
+				"context": "textport"
+			}
+		]
 	}
 }

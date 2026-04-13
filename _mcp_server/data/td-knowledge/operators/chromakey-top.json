@@ -116,6 +116,27 @@
 				"description": "Determines the output of the Alpha channel from the Chroma Key ."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pageindex and Hue Max",
+				"language": "python",
+				"code": "n = op('chromakey1')\nn.par.pageindex = 2\nn.par.huemax = 9\nn.par.satmin = 0.451",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read pageindex value",
+				"language": "python",
+				"code": "n = op('chromakey1')\nprint(n.par.pageindex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('chromakey1')\nn.par.pageindex = 1\nn.par.huemax = 280",
+				"context": "textport"
+			}
+		]
 	}
 }

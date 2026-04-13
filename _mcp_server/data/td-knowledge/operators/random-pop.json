@@ -242,6 +242,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Combine Operation and Output Attribute Scope",
+				"language": "python",
+				"code": "n = op('random1')\nn.par.combineop = 'set'\nn.par.outputattrscope = 'Color.rgb'\nn.par.randomsize = 1",
+				"context": "textport",
+				"description": "Common settings from 62 real Derivative examples"
+			},
+			{
+				"label": "Read Combine Operation value",
+				"language": "python",
+				"code": "n = op('random1')\nprint(n.par.combineop.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('random1')\nn.par.combineop = 'translatealongnormal'\nn.par.outputattrscope = 'P'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -154,6 +154,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure snap and Time Slice",
+				"language": "python",
+				"code": "n = op('lag1')\nn.par.snap = False\nn.par.timeslice = True\nn.par.lag1 = 0",
+				"context": "textport",
+				"description": "Common settings from 25 real Derivative examples"
+			},
+			{
+				"label": "Read snap value",
+				"language": "python",
+				"code": "n = op('lag1')\nprint(n.par.snap.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('lag1')\nn.par.snap = False\nn.par.timeslice = True",
+				"context": "textport"
+			}
+		]
 	}
 }

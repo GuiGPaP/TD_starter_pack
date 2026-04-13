@@ -122,6 +122,27 @@
 				"description": "Instantly empty the cache."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Index and Cache Size",
+				"language": "python",
+				"code": "n = op('cache1')\nn.par.outputindex = -1\nn.par.cachesize = 100\nn.par.active = False",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read Output Index value",
+				"language": "python",
+				"code": "n = op('cache1')\nprint(n.par.outputindex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('cache1')\nn.par.outputindex = -10\nn.par.cachesize = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

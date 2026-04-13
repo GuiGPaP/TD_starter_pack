@@ -101,6 +101,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure inputattrscope and Use Input Range",
+				"language": "python",
+				"code": "n = op('histogram1')\nn.par.inputattrscope = 'P(1)'\nn.par.useinputrange = True\nn.par.inputrangemin = 0",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read inputattrscope value",
+				"language": "python",
+				"code": "n = op('histogram1')\nprint(n.par.inputattrscope.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('histogram1')\nn.par.inputattrscope = 'P(2)'\nn.par.useinputrange = True",
+				"context": "textport"
+			}
+		]
 	}
 }

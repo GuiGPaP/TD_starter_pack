@@ -115,6 +115,27 @@
 				"description": "This will bridge all holes in the output so that they may be rendered properly. Bzier curves and polygons can be holed, but polygonal holing sometimes produces better results. You may want to use the "
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pageindex and Compute Normals",
+				"language": "python",
+				"code": "n = op('trace1')\nn.par.pageindex = 1\nn.par.normals = False\nn.par.addtexture = False",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read pageindex value",
+				"language": "python",
+				"code": "n = op('trace1')\nprint(n.par.pageindex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('trace1')\nn.par.pageindex = 1\nn.par.normals = False",
+				"context": "textport"
+			}
+		]
 	}
 }

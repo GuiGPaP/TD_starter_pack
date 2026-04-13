@@ -105,6 +105,27 @@
 				"description": "Set the UV position to use for dark end of the lookup table. In the original image connected to the first input, any pixel with a value of (0,0,0) will be replaced by the value found at this UV positi"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Index Channel and Method",
+				"language": "python",
+				"code": "n = op('lookup1')\nn.par.channel = 'luminance'\nn.par.method = 'chop'",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Index Channel value",
+				"language": "python",
+				"code": "n = op('lookup1')\nprint(n.par.channel.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('lookup1')\nn.par.channel = 'green'\nn.par.method = 'chop'",
+				"context": "textport"
+			}
+		]
 	}
 }

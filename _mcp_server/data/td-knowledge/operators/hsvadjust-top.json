@@ -96,6 +96,27 @@
 				"style": "RGBA"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Hue Offset and Hue Range",
+				"language": "python",
+				"code": "n = op('hsvadjust1')\nn.par.hueoffset = 360\nn.par.huerange = 127\nn.par.valuerange = 0.622",
+				"context": "textport",
+				"description": "Common settings from 13 real Derivative examples"
+			},
+			{
+				"label": "Read Hue Offset value",
+				"language": "python",
+				"code": "n = op('hsvadjust1')\nprint(n.par.hueoffset.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('hsvadjust1')\nn.par.hueoffset = 5\nn.par.huerange = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

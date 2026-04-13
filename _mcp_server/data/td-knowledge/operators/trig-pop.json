@@ -129,6 +129,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure inputattrscopea and operation",
+				"language": "python",
+				"code": "n = op('trig1')\nn.par.inputattrscopea = 'P.x'\nn.par.operation = 'cos'\nn.par.outputattrscope = 'P.y'",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read inputattrscopea value",
+				"language": "python",
+				"code": "n = op('trig1')\nprint(n.par.inputattrscopea.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('trig1')\nn.par.inputattrscopea = 'P.y'\nn.par.operation = 'sin'",
+				"context": "textport"
+			}
+		]
 	}
 }

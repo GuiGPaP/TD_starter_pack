@@ -289,6 +289,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Label and Language",
+				"language": "python",
+				"code": "n = op('parameter1')\nn.par.label = True\nn.par.language = 'text'",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Label value",
+				"language": "python",
+				"code": "n = op('parameter1')\nprint(n.par.label.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('parameter1')\nn.par.label = True\nn.par.language = 'text'",
+				"context": "textport"
+			}
+		]
 	}
 }

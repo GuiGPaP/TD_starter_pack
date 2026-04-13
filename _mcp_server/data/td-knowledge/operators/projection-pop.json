@@ -163,6 +163,21 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Angle Units",
+				"language": "python",
+				"code": "n = op('projection1')\nn.par.angunit = 'rad'",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Angle Units value",
+				"language": "python",
+				"code": "n = op('projection1')\nprint(n.par.angunit.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -134,6 +134,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Sendrate and Time Slice",
+				"language": "python",
+				"code": "n = op('oscout1')\nn.par.sendrate = False\nn.par.timeslice = True\nn.par.port = 10001",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Sendrate value",
+				"language": "python",
+				"code": "n = op('oscout1')\nprint(n.par.sendrate.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('oscout1')\nn.par.sendrate = False\nn.par.timeslice = True",
+				"context": "textport"
+			}
+		]
 	}
 }

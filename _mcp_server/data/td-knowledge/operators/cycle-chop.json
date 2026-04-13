@@ -127,6 +127,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Cycles After",
+				"language": "python",
+				"code": "n = op('cycle1')\nn.par.after = 2",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Cycles After value",
+				"language": "python",
+				"code": "n = op('cycle1')\nprint(n.par.after.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

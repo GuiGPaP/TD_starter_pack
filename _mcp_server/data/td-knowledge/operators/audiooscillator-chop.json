@@ -133,6 +133,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and Type",
+				"language": "python",
+				"code": "n = op('audiooscillator1')\nn.par.timeslice = True\nn.par.wavetype = 'tri'\nn.par.amp = 0",
+				"context": "textport",
+				"description": "Common settings from 19 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('audiooscillator1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('audiooscillator1')\nn.par.timeslice = True\nn.par.wavetype = 'whitenoise'",
+				"context": "textport"
+			}
+		]
 	}
 }

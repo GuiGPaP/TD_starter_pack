@@ -150,6 +150,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Strength and Weight Attribute",
+				"language": "python",
+				"code": "n = op('twist1')\nn.par.strength = 83\nn.par.weightattr = 'Normalize(0)'\nn.par.op = 'bend'",
+				"context": "textport",
+				"description": "Common settings from 9 real Derivative examples"
+			},
+			{
+				"label": "Read Strength value",
+				"language": "python",
+				"code": "n = op('twist1')\nprint(n.par.strength.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('twist1')\nn.par.strength = 177\nn.par.weightattr = 'Normalize(0)'",
+				"context": "textport"
+			}
+		]
 	}
 }

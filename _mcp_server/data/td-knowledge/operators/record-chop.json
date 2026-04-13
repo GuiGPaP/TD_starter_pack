@@ -114,6 +114,27 @@
 				"description": "The data gets recorded in a fixed-range interval and the most recent data gets recorded at the end of the interval and the remaining samples get shifted toward the start of the interval. This is usefu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Record and Segment1",
+				"language": "python",
+				"code": "n = op('record1')\nn.par.record = 'off'\nn.par.segment1 = 0\nn.par.segment2 = 600",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Record value",
+				"language": "python",
+				"code": "n = op('record1')\nprint(n.par.record.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('record1')\nn.par.record = 'auto'\nn.par.segment1 = 0",
+				"context": "textport"
+			}
+		]
 	}
 }

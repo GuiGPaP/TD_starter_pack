@@ -80,6 +80,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Edge",
+				"language": "python",
+				"code": "n = op('phaser1')\nn.par.edge = 0.2",
+				"context": "textport",
+				"description": "Common settings from 27 real Derivative examples"
+			},
+			{
+				"label": "Read Edge value",
+				"language": "python",
+				"code": "n = op('phaser1')\nprint(n.par.edge.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

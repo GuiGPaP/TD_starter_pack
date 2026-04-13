@@ -62,6 +62,21 @@
 				"description": "When checked, the Up Vector of the geometry inputs will be blended based on the weights of the blend channels."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Blend Factor",
+				"language": "python",
+				"code": "n = op('sequenceblend1')\nn.par.blend = 0",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Blend Factor value",
+				"language": "python",
+				"code": "n = op('sequenceblend1')\nprint(n.par.blend.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

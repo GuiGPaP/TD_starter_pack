@@ -944,6 +944,27 @@
 				"description": "The four fields allow you to specify the space that surrounds the Panel Component. The margin is the space between the Panel Component's border and the outer edge. The Margin is defined in absolute pi"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Width and Height",
+				"language": "python",
+				"code": "n = op('field1')\nn.par.w = 100\nn.par.h = 20\nn.par.topsmoothness = 'mipmap'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Width value",
+				"language": "python",
+				"code": "n = op('field1')\nprint(n.par.w.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('field1')\nn.par.w = 100\nn.par.h = 20",
+				"context": "textport"
+			}
+		]
 	}
 }

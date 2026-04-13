@@ -172,6 +172,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Trail Length and Age Attribute",
+				"language": "python",
+				"code": "n = op('trail1')\nn.par.length = 2\nn.par.ageattr = 'seconds'\nn.par.attrmatch = True",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Trail Length value",
+				"language": "python",
+				"code": "n = op('trail1')\nprint(n.par.length.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('trail1')\nn.par.length = 48\nn.par.ageattr = 'seconds'",
+				"context": "textport"
+			}
+		]
 	}
 }

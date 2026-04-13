@@ -356,6 +356,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Amp0 and Period",
+				"language": "python",
+				"code": "n = op('noise1')\nn.par.amp0 = 0.5\nn.par.period = 12.4\nn.par.pageindex = 2",
+				"context": "textport",
+				"description": "Common settings from 67 real Derivative examples"
+			},
+			{
+				"label": "Read Amp0 value",
+				"language": "python",
+				"code": "n = op('noise1')\nprint(n.par.amp0.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('noise1')\nn.par.amp0 = 1\nn.par.period = 0.3",
+				"context": "textport"
+			}
+		]
 	}
 }

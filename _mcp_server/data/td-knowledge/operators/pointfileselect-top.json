@@ -55,6 +55,27 @@
 				"description": "Select one of the available point data channels to place it into the alpha channel of the output image. Selecting One or Zero will place the constance value into the output channel."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Red and Green",
+				"language": "python",
+				"code": "n = op('pointfileselect1')\nn.par.red = 'red'\nn.par.green = 'green'\nn.par.blue = 'blue'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Red value",
+				"language": "python",
+				"code": "n = op('pointfileselect1')\nprint(n.par.red.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('pointfileselect1')\nn.par.red = 'red'\nn.par.green = 'green'",
+				"context": "textport"
+			}
+		]
 	}
 }

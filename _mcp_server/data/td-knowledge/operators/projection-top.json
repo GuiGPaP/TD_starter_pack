@@ -57,6 +57,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure outputresolution and resolutionw",
+				"language": "python",
+				"code": "n = op('projection1')\nn.par.outputresolution = 'custom'\nn.par.resolutionw = 2000\nn.par.resolutionh = 1000",
+				"context": "textport",
+				"description": "Common settings from 18 real Derivative examples"
+			},
+			{
+				"label": "Read outputresolution value",
+				"language": "python",
+				"code": "n = op('projection1')\nprint(n.par.outputresolution.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('projection1')\nn.par.outputresolution = 'custom'\nn.par.resolutionw = 1000",
+				"context": "textport"
+			}
+		]
 	}
 }

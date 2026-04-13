@@ -581,6 +581,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Name and Vec0Valuex",
+				"language": "python",
+				"code": "n = op('glsl1')\nn.par.vec0name = 'uAlphaFront'\nn.par.vec0valuex = 0\nn.par.vec0valuey = 0",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Name value",
+				"language": "python",
+				"code": "n = op('glsl1')\nprint(n.par.vec0name.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('glsl1')\nn.par.vec0name = 'uRange'\nn.par.vec0valuex = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

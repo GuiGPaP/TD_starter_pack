@@ -113,6 +113,21 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacy Transform",
+				"language": "python",
+				"code": "n = op('inside1')\nn.par.legacyxform = True",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Legacy Transform value",
+				"language": "python",
+				"code": "n = op('inside1')\nprint(n.par.legacyxform.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

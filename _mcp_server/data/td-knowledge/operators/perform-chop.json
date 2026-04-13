@@ -223,6 +223,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and Frames per Second",
+				"language": "python",
+				"code": "n = op('perform1')\nn.par.timeslice = True\nn.par.fps = False\nn.par.msec = True",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('perform1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('perform1')\nn.par.timeslice = True\nn.par.fps = False",
+				"context": "textport"
+			}
+		]
 	}
 }

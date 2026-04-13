@@ -67,6 +67,27 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Skin and N",
+				"language": "python",
+				"code": "n = op('skin1')\nn.par.skinops = 'group'\nn.par.inc = 3",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Skin value",
+				"language": "python",
+				"code": "n = op('skin1')\nprint(n.par.skinops.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('skin1')\nn.par.skinops = 'skip'\nn.par.inc = 3",
+				"context": "textport"
+			}
+		]
 	}
 }

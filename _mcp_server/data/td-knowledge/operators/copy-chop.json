@@ -116,6 +116,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Method",
+				"language": "python",
+				"code": "n = op('copy1')\nn.par.output = 'accum'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Output Method value",
+				"language": "python",
+				"code": "n = op('copy1')\nprint(n.par.output.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -182,6 +182,21 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Active",
+				"language": "python",
+				"code": "n = op('dmxout1')\nn.par.active = False",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Active value",
+				"language": "python",
+				"code": "n = op('dmxout1')\nprint(n.par.active.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

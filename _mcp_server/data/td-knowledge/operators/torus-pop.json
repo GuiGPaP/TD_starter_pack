@@ -180,6 +180,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Columns and Rows",
+				"language": "python",
+				"code": "n = op('torus1')\nn.par.cols = 6\nn.par.rows = 8\nn.par.texture = 'pointNormals'",
+				"context": "textport",
+				"description": "Common settings from 74 real Derivative examples"
+			},
+			{
+				"label": "Read Columns value",
+				"language": "python",
+				"code": "n = op('torus1')\nprint(n.par.cols.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('torus1')\nn.par.cols = 50\nn.par.rows = 30",
+				"context": "textport"
+			}
+		]
 	}
 }

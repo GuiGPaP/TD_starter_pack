@@ -177,6 +177,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure lookupindexattr and Output Attribute Scope",
+				"language": "python",
+				"code": "n = op('lookupchannel1')\nn.par.lookupindexattr = 'Tex(0)'\nn.par.lookup0outputattrscope = 'test'\nn.par.lookup0chanscope = 'chan1'",
+				"context": "textport",
+				"description": "Common settings from 25 real Derivative examples"
+			},
+			{
+				"label": "Read lookupindexattr value",
+				"language": "python",
+				"code": "n = op('lookupchannel1')\nprint(n.par.lookupindexattr.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('lookupchannel1')\nn.par.lookupindexattr = 'lookup'\nn.par.lookup0outputattrscope = 'P'",
+				"context": "textport"
+			}
+		]
 	}
 }

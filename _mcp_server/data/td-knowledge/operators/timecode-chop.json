@@ -248,6 +248,27 @@
 				"description": "When enabled, the timecode value will cycle back to 00:00:00:00 upon reaching the custom length, rather than holding the last value."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and extendright",
+				"language": "python",
+				"code": "n = op('timecode1')\nn.par.timeslice = True\nn.par.extendright = 'hold'\nn.par.mode = 'timecodepar'",
+				"context": "textport",
+				"description": "Common settings from 38 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('timecode1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('timecode1')\nn.par.timeslice = True\nn.par.extendright = 'hold'",
+				"context": "textport"
+			}
+		]
 	}
 }

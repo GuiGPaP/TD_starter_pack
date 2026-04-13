@@ -220,6 +220,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Frequency and Tx",
+				"language": "python",
+				"code": "n = op('sphere1')\nn.par.freq = 2\nn.par.tx = 0\nn.par.ty = 0",
+				"context": "textport",
+				"description": "Common settings from 45 real Derivative examples"
+			},
+			{
+				"label": "Read Frequency value",
+				"language": "python",
+				"code": "n = op('sphere1')\nprint(n.par.freq.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('sphere1')\nn.par.freq = 6\nn.par.tx = -2.5",
+				"context": "textport"
+			}
+		]
 	}
 }

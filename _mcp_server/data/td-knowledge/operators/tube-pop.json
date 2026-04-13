@@ -176,6 +176,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Radx and Rady",
+				"language": "python",
+				"code": "n = op('tube1')\nn.par.radx = 0.6\nn.par.rady = 0.3\nn.par.rows = 5",
+				"context": "textport",
+				"description": "Common settings from 28 real Derivative examples"
+			},
+			{
+				"label": "Read Radx value",
+				"language": "python",
+				"code": "n = op('tube1')\nprint(n.par.radx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('tube1')\nn.par.radx = 0.3\nn.par.rady = 0.1",
+				"context": "textport"
+			}
+		]
 	}
 }

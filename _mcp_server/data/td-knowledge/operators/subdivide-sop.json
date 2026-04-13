@@ -85,6 +85,27 @@
 				"description": "Determines which points are moved when pulling crack closed."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Depth and Override Crease Weight Attribute",
+				"language": "python",
+				"code": "n = op('subdivide1')\nn.par.iterations = 4\nn.par.overridecrease = False\nn.par.surroundpoly = 'triangulate'",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Depth value",
+				"language": "python",
+				"code": "n = op('subdivide1')\nprint(n.par.iterations.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('subdivide1')\nn.par.iterations = 2\nn.par.overridecrease = False",
+				"context": "textport"
+			}
+		]
 	}
 }

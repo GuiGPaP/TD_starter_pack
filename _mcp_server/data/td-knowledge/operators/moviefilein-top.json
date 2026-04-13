@@ -318,6 +318,27 @@
 				"description": "Controls if this node should use hardware decoding via the Nvidia hardware decoder chip. You can check if hardware decoding is being used using the Info , 'hardware_decode' channel. This parameter doe"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Hardware Decode and Pre-Multiply RGB by Alpha",
+				"language": "python",
+				"code": "n = op('moviefilein1')\nn.par.hwdecode = False\nn.par.premultrgbbyalpha = 'off'\nn.par.index = 117",
+				"context": "textport",
+				"description": "Common settings from 313 real Derivative examples"
+			},
+			{
+				"label": "Read Hardware Decode value",
+				"language": "python",
+				"code": "n = op('moviefilein1')\nprint(n.par.hwdecode.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('moviefilein1')\nn.par.hwdecode = False\nn.par.premultrgbbyalpha = 'off'",
+				"context": "textport"
+			}
+		]
 	}
 }

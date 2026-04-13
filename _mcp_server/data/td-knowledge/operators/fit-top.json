@@ -120,6 +120,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure outputresolution and outputaspect",
+				"language": "python",
+				"code": "n = op('fit1')\nn.par.outputresolution = 'custom'\nn.par.outputaspect = 'resolution'\nn.par.resolutionw = 1000",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read outputresolution value",
+				"language": "python",
+				"code": "n = op('fit1')\nprint(n.par.outputresolution.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('fit1')\nn.par.outputresolution = 'custom'\nn.par.outputaspect = 'resolution'",
+				"context": "textport"
+			}
+		]
 	}
 }

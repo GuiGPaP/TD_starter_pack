@@ -41,6 +41,21 @@
 				"description": "This menu selects how the monochrome conversion is calculated for the alpha channel."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure RGB",
+				"language": "python",
+				"code": "n = op('monochrome1')\nn.par.rgb = 'rgbmax'",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read RGB value",
+				"language": "python",
+				"code": "n = op('monochrome1')\nprint(n.par.rgb.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

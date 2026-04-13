@@ -109,6 +109,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Function R and Function G",
+				"language": "python",
+				"code": "n = op('function1')\nn.par.funcr = 'powb'\nn.par.funcg = 'sqrt'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Function R value",
+				"language": "python",
+				"code": "n = op('function1')\nprint(n.par.funcr.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('function1')\nn.par.funcr = 'sqrt'\nn.par.funcg = 'cos'",
+				"context": "textport"
+			}
+		]
 	}
 }

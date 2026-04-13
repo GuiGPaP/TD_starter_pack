@@ -76,6 +76,27 @@
 				"description": "This parameter determines what happens at the edges of the tiles."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Crop Right and Crop Bottom",
+				"language": "python",
+				"code": "n = op('crop1')\nn.par.cropright = 0.76\nn.par.cropbottom = 0.58\nn.par.cropleft = 0.471",
+				"context": "textport",
+				"description": "Common settings from 15 real Derivative examples"
+			},
+			{
+				"label": "Read Crop Right value",
+				"language": "python",
+				"code": "n = op('crop1')\nprint(n.par.cropright.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('crop1')\nn.par.cropright = 0.502\nn.par.cropbottom = 0.524",
+				"context": "textport"
+			}
+		]
 	}
 }

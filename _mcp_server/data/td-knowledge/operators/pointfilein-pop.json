@@ -211,6 +211,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure File",
+				"language": "python",
+				"code": "n = op('pointfilein1')\nn.par.file = 'POPout.4.exr'",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read File value",
+				"language": "python",
+				"code": "n = op('pointfilein1')\nprint(n.par.file.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('pointfilein1')\nn.par.file = 'POPout.5.ply'\nn.par.colorfields = 'red green blue alpha'",
+				"context": "textport"
+			}
+		]
 	}
 }

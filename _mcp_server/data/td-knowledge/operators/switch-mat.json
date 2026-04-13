@@ -232,6 +232,21 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Index",
+				"language": "python",
+				"code": "n = op('switch1')\nn.par.index = 0",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Index value",
+				"language": "python",
+				"code": "n = op('switch1')\nprint(n.par.index.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -56,6 +56,27 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Cache Index and cacheindexunit",
+				"language": "python",
+				"code": "n = op('cacheselect1')\nn.par.index = -21.919200897216797\nn.par.cacheindexunit = 'seconds'\nn.par.interp = True",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Cache Index value",
+				"language": "python",
+				"code": "n = op('cacheselect1')\nprint(n.par.index.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('cacheselect1')\nn.par.index = -0.5\nn.par.cacheindexunit = 'indices'",
+				"context": "textport"
+			}
+		]
 	}
 }

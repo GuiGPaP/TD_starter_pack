@@ -761,6 +761,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Width and Height",
+				"language": "python",
+				"code": "n = op('select1')\nn.par.w = 100\nn.par.h = 100\nn.par.topsmoothness = 'mipmap'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Width value",
+				"language": "python",
+				"code": "n = op('select1')\nprint(n.par.w.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('select1')\nn.par.w = 80\nn.par.h = 80",
+				"context": "textport"
+			}
+		]
 	}
 }

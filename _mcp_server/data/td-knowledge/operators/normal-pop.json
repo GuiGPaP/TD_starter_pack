@@ -205,6 +205,21 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Normals Action",
+				"language": "python",
+				"code": "n = op('normal1')\nn.par.nml = 'remove'",
+				"context": "textport",
+				"description": "Common settings from 29 real Derivative examples"
+			},
+			{
+				"label": "Read Normals Action value",
+				"language": "python",
+				"code": "n = op('normal1')\nprint(n.par.nml.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

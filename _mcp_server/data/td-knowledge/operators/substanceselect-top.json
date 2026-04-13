@@ -35,6 +35,21 @@
 				"description": "Choose which texture is being grabbed from the ."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Channel",
+				"language": "python",
+				"code": "n = op('substanceselect1')\nn.par.output = 'normal'",
+				"context": "textport",
+				"description": "Common settings from 13 real Derivative examples"
+			},
+			{
+				"label": "Read Output Channel value",
+				"language": "python",
+				"code": "n = op('substanceselect1')\nprint(n.par.output.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

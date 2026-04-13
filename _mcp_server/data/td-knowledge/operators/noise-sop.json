@@ -179,6 +179,27 @@
 				"description": "Translate the sampling plane through the noise space."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Tx and Ty",
+				"language": "python",
+				"code": "n = op('noise1')\nn.par.tx = 0\nn.par.ty = 0\nn.par.tz = 8.65",
+				"context": "textport",
+				"description": "Common settings from 23 real Derivative examples"
+			},
+			{
+				"label": "Read Tx value",
+				"language": "python",
+				"code": "n = op('noise1')\nprint(n.par.tx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('noise1')\nn.par.tx = 0\nn.par.ty = 1.5",
+				"context": "textport"
+			}
+		]
 	}
 }

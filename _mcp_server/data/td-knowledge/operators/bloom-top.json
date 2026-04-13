@@ -92,6 +92,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Bloom Intensity and Bloom Threshold",
+				"language": "python",
+				"code": "n = op('bloom1')\nn.par.bloomintensity = 4\nn.par.bloomthreshold = 0\nn.par.minbloomradius = 0.477",
+				"context": "textport",
+				"description": "Common settings from 34 real Derivative examples"
+			},
+			{
+				"label": "Read Bloom Intensity value",
+				"language": "python",
+				"code": "n = op('bloom1')\nprint(n.par.bloomintensity.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('bloom1')\nn.par.bloomintensity = 1.25\nn.par.bloomthreshold = -0.0146",
+				"context": "textport"
+			}
+		]
 	}
 }

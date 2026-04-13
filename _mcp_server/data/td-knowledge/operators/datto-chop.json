@@ -193,6 +193,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure First Row is and Output",
+				"language": "python",
+				"code": "n = op('datto1')\nn.par.firstrow = 'names'\nn.par.output = 'chanpercol'\nn.par.firstcolumn = 'values'",
+				"context": "textport",
+				"description": "Common settings from 15 real Derivative examples"
+			},
+			{
+				"label": "Read First Row is value",
+				"language": "python",
+				"code": "n = op('datto1')\nprint(n.par.firstrow.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('datto1')\nn.par.firstrow = 'ignored'\nn.par.output = 'chanpercol'",
+				"context": "textport"
+			}
+		]
 	}
 }

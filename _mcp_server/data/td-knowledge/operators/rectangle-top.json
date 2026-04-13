@@ -216,6 +216,27 @@
 				"description": "Color to use for the fill of the shape."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Sizex and Sizey",
+				"language": "python",
+				"code": "n = op('rectangle1')\nn.par.sizex = 0.9\nn.par.sizey = 0.3\nn.par.resolutionw = 1024",
+				"context": "textport",
+				"description": "Common settings from 30 real Derivative examples"
+			},
+			{
+				"label": "Read Sizex value",
+				"language": "python",
+				"code": "n = op('rectangle1')\nprint(n.par.sizex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('rectangle1')\nn.par.sizex = 1\nn.par.sizey = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

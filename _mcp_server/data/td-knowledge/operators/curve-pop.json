@@ -284,6 +284,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure U and seg1startval0",
+				"language": "python",
+				"code": "n = op('curve1')\nn.par.seg0u = 0.5\nn.par.seg1startval0 = 1\nn.par.seg1endval0 = 0",
+				"context": "textport",
+				"description": "Common settings from 15 real Derivative examples"
+			},
+			{
+				"label": "Read U value",
+				"language": "python",
+				"code": "n = op('curve1')\nprint(n.par.seg0u.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('curve1')\nn.par.seg0u = 0.6\nn.par.seg1startval0 = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

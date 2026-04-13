@@ -109,6 +109,27 @@
 				"description": "Set lower and upper bounds for when Convert Input is set to Off When Outside Bounds."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and Channel Pre OP",
+				"language": "python",
+				"code": "n = op('logic1')\nn.par.timeslice = True\nn.par.preop = 'invert'\nn.par.convert = 'bound'",
+				"context": "textport",
+				"description": "Common settings from 48 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('logic1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('logic1')\nn.par.timeslice = True\nn.par.preop = 'rise'",
+				"context": "textport"
+			}
+		]
 	}
 }

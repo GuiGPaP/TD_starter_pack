@@ -92,6 +92,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Export Method and Channel Pickup",
+				"language": "python",
+				"code": "n = op('bind1')\nn.par.exportmethod = 'datname'\nn.par.pickup = True",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Export Method value",
+				"language": "python",
+				"code": "n = op('bind1')\nprint(n.par.exportmethod.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('bind1')\nn.par.exportmethod = 'datname'\nn.par.pickup = True",
+				"context": "textport"
+			}
+		]
 	}
 }

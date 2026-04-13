@@ -106,6 +106,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Start and Start Unit",
+				"language": "python",
+				"code": "n = op('shift1')\nn.par.start = 10\nn.par.startunit = 'seconds'\nn.par.endunit = 'seconds'",
+				"context": "textport",
+				"description": "Common settings from 9 real Derivative examples"
+			},
+			{
+				"label": "Read Start value",
+				"language": "python",
+				"code": "n = op('shift1')\nprint(n.par.start.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('shift1')\nn.par.start = 1000\nn.par.startunit = 'fraction'",
+				"context": "textport"
+			}
+		]
 	}
 }

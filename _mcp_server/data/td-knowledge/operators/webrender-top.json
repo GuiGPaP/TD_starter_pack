@@ -156,6 +156,27 @@
 				"description": "Triggers the Restart immediately on button release (button-up). This can be accessed in python using the pulse() method."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure outputresolution and resolutionw",
+				"language": "python",
+				"code": "n = op('webrender1')\nn.par.outputresolution = 'custom'\nn.par.resolutionw = 1280\nn.par.resolutionh = 720",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read outputresolution value",
+				"language": "python",
+				"code": "n = op('webrender1')\nprint(n.par.outputresolution.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('webrender1')\nn.par.outputresolution = 'custom'\nn.par.resolutionw = 1280",
+				"context": "textport"
+			}
+		]
 	}
 }

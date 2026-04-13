@@ -143,6 +143,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Sizex and Sizey",
+				"language": "python",
+				"code": "n = op('grid1')\nn.par.sizex = 10\nn.par.sizey = 10\nn.par.reverseanchors = True",
+				"context": "textport",
+				"description": "Common settings from 37 real Derivative examples"
+			},
+			{
+				"label": "Read Sizex value",
+				"language": "python",
+				"code": "n = op('grid1')\nprint(n.par.sizex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('grid1')\nn.par.sizex = 2\nn.par.sizey = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

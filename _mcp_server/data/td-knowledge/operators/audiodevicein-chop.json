@@ -242,6 +242,21 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice",
+				"language": "python",
+				"code": "n = op('audiodevicein1')\nn.par.timeslice = True",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('audiodevicein1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

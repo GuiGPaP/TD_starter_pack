@@ -377,6 +377,27 @@
 				"style": "Toggle"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure First RGBA Contains and pageindex",
+				"language": "python",
+				"code": "n = op('topto1')\nn.par.rgba = 'depth'\nn.par.pageindex = 2\nn.par.overrideresx = True",
+				"context": "textport",
+				"description": "Common settings from 17 real Derivative examples"
+			},
+			{
+				"label": "Read First RGBA Contains value",
+				"language": "python",
+				"code": "n = op('topto1')\nprint(n.par.rgba.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('topto1')\nn.par.rgba = 'pos'\nn.par.pageindex = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

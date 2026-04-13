@@ -108,6 +108,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Envelope Bounds and Envelope Width",
+				"language": "python",
+				"code": "n = op('envelope1')\nn.par.bounds = 'min'\nn.par.width = 1000\nn.par.widthunit = 'samples'",
+				"context": "textport",
+				"description": "Common settings from 9 real Derivative examples"
+			},
+			{
+				"label": "Read Envelope Bounds value",
+				"language": "python",
+				"code": "n = op('envelope1')\nprint(n.par.bounds.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('envelope1')\nn.par.bounds = 'max'\nn.par.width = 20",
+				"context": "textport"
+			}
+		]
 	}
 }

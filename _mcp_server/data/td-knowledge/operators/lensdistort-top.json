@@ -207,6 +207,27 @@
 				"description": "Shifts the distorted image within the output image frame."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure K1 and K3",
+				"language": "python",
+				"code": "n = op('lensdistort1')\nn.par.k1 = -0.436\nn.par.k3 = -0.208\nn.par.invert = True",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read K1 value",
+				"language": "python",
+				"code": "n = op('lensdistort1')\nprint(n.par.k1.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('lensdistort1')\nn.par.k1 = -0.277\nn.par.k3 = -0.208",
+				"context": "textport"
+			}
+		]
 	}
 }

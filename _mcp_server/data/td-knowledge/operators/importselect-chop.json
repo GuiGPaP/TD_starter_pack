@@ -212,6 +212,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Use Parent Animation and Animation",
+				"language": "python",
+				"code": "n = op('importselect1')\nn.par.useparentanim = False\nn.par.animation = 'punch'\nn.par.playmode = 'outputfullrange'",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Use Parent Animation value",
+				"language": "python",
+				"code": "n = op('importselect1')\nprint(n.par.useparentanim.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('importselect1')\nn.par.useparentanim = False\nn.par.animation = 'run'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -92,6 +92,21 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure axis",
+				"language": "python",
+				"code": "n = op('extrude1')\nn.par.axis = 'normal'",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read axis value",
+				"language": "python",
+				"code": "n = op('extrude1')\nprint(n.par.axis.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

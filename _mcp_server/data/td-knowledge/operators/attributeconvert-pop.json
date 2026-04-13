@@ -78,6 +78,27 @@
 				"style": "StrMenu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Convert Operation and inputattrs",
+				"language": "python",
+				"code": "n = op('attributeconvert1')\nn.par.convertop = 'pointtovert'\nn.par.inputattrs = 'Tex'",
+				"context": "textport",
+				"description": "Common settings from 7 real Derivative examples"
+			},
+			{
+				"label": "Read Convert Operation value",
+				"language": "python",
+				"code": "n = op('attributeconvert1')\nprint(n.par.convertop.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('attributeconvert1')\nn.par.convertop = 'verttopoint'\nn.par.inputattrs = 'N'",
+				"context": "textport"
+			}
+		]
 	}
 }

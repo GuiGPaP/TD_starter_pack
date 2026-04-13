@@ -208,6 +208,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pageindex and Toranger1",
+				"language": "python",
+				"code": "n = op('math1')\nn.par.pageindex = 2\nn.par.toranger1 = -1\nn.par.toranger2 = 1",
+				"context": "textport",
+				"description": "Common settings from 16 real Derivative examples"
+			},
+			{
+				"label": "Read pageindex value",
+				"language": "python",
+				"code": "n = op('math1')\nprint(n.par.pageindex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('math1')\nn.par.pageindex = 3\nn.par.toranger1 = 0",
+				"context": "textport"
+			}
+		]
 	}
 }

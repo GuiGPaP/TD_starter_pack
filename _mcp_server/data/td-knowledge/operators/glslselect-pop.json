@@ -55,6 +55,21 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Name",
+				"language": "python",
+				"code": "n = op('glslselect1')\nn.par.name = 'Counting'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Output Name value",
+				"language": "python",
+				"code": "n = op('glslselect1')\nprint(n.par.name.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -138,6 +138,27 @@
 				"style": "Str"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Maximum Distance and Duplicate Lines",
+				"language": "python",
+				"code": "n = op('proximity1')\nn.par.maxdist = 0.12\nn.par.duplines = 'donothing'\nn.par.maxlinesperpoint = 30",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Maximum Distance value",
+				"language": "python",
+				"code": "n = op('proximity1')\nprint(n.par.maxdist.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('proximity1')\nn.par.maxdist = 0.041\nn.par.duplines = 'delete'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -138,6 +138,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Method and Unit Values",
+				"language": "python",
+				"code": "n = op('resample1')\nn.par.method = 'strech'\nn.par.relative = 'abs'\nn.par.end = 3",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Method value",
+				"language": "python",
+				"code": "n = op('resample1')\nprint(n.par.method.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('resample1')\nn.par.method = 'newint'\nn.par.relative = 'abs'",
+				"context": "textport"
+			}
+		]
 	}
 }

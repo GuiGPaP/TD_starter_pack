@@ -42,6 +42,27 @@
 				"description": "Flops the image. Flop is a combination of a flip and a rotation."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Flip X and Flop",
+				"language": "python",
+				"code": "n = op('flip1')\nn.par.flipx = True\nn.par.flop = 'bottomleft'\nn.par.flipy = True",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Flip X value",
+				"language": "python",
+				"code": "n = op('flip1')\nprint(n.par.flipx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('flip1')\nn.par.flipx = True\nn.par.flop = 'topleft'",
+				"context": "textport"
+			}
+		]
 	}
 }

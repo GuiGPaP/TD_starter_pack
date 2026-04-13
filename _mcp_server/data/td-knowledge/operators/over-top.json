@@ -113,6 +113,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacy Transform and Pre-Fit Overlay",
+				"language": "python",
+				"code": "n = op('over1')\nn.par.legacyxform = True\nn.par.prefit = 'nativeres'\nn.par.tx = 0",
+				"context": "textport",
+				"description": "Common settings from 18 real Derivative examples"
+			},
+			{
+				"label": "Read Legacy Transform value",
+				"language": "python",
+				"code": "n = op('over1')\nprint(n.par.legacyxform.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('over1')\nn.par.legacyxform = True\nn.par.prefit = 'fitbest'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -269,6 +269,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and Export Method",
+				"language": "python",
+				"code": "n = op('object1')\nn.par.timeslice = True\nn.par.exportmethod = 'datname'\nn.par.compute = 'measure'",
+				"context": "textport",
+				"description": "Common settings from 31 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('object1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('object1')\nn.par.timeslice = True\nn.par.exportmethod = 'datname'",
+				"context": "textport"
+			}
+		]
 	}
 }

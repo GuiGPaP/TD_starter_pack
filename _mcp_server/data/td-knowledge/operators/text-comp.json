@@ -1236,6 +1236,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Border Over Children and Legacy Font Selection",
+				"language": "python",
+				"code": "n = op('text1')\nn.par.borderover = False\nn.par.legacyfontselection = True\nn.par.text = 'The quick brown fox jumped over the bush.'",
+				"context": "textport",
+				"description": "Common settings from 17 real Derivative examples"
+			},
+			{
+				"label": "Read Border Over Children value",
+				"language": "python",
+				"code": "n = op('text1')\nprint(n.par.borderover.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('text1')\nn.par.borderover = False\nn.par.legacyfontselection = True",
+				"context": "textport"
+			}
+		]
 	}
 }

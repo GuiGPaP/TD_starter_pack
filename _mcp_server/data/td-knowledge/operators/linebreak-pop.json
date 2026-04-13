@@ -134,6 +134,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Every N Points and Line Break Attribute",
+				"language": "python",
+				"code": "n = op('linebreak1')\nn.par.everyn = False\nn.par.uselinebreak = True",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Every N Points value",
+				"language": "python",
+				"code": "n = op('linebreak1')\nprint(n.par.everyn.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('linebreak1')\nn.par.everyn = False\nn.par.uselinebreak = True",
+				"context": "textport"
+			}
+		]
 	}
 }

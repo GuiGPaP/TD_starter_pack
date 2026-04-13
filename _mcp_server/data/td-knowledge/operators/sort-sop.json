@@ -194,6 +194,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Primitive Sort and pageindex",
+				"language": "python",
+				"code": "n = op('sort1')\nn.par.primsort = 'seed'\nn.par.pageindex = 1\nn.par.ptsort = 'vtxord'",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read Primitive Sort value",
+				"language": "python",
+				"code": "n = op('sort1')\nprint(n.par.primsort.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('sort1')\nn.par.primsort = 'rev'\nn.par.pageindex = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -115,6 +115,21 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Cyclic Range",
+				"language": "python",
+				"code": "n = op('lookup1')\nn.par.cyclic = 'no'",
+				"context": "textport",
+				"description": "Common settings from 38 real Derivative examples"
+			},
+			{
+				"label": "Read Cyclic Range value",
+				"language": "python",
+				"code": "n = op('lookup1')\nprint(n.par.cyclic.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

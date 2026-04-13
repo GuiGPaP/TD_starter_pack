@@ -341,6 +341,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Inc and Life Expect",
+				"language": "python",
+				"code": "n = op('particle1')\nn.par.timeinc = 0.016666666666666666\nn.par.life = 2\nn.par.pageindex = 1",
+				"context": "textport",
+				"description": "Common settings from 23 real Derivative examples"
+			},
+			{
+				"label": "Read Time Inc value",
+				"language": "python",
+				"code": "n = op('particle1')\nprint(n.par.timeinc.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('particle1')\nn.par.timeinc = 0.016666666666666666\nn.par.life = 12",
+				"context": "textport"
+			}
+		]
 	}
 }

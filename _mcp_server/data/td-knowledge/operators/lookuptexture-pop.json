@@ -295,6 +295,27 @@
 				"style": "Menu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Attribute Scope and lookupindexattr0",
+				"language": "python",
+				"code": "n = op('lookuptexture1')\nn.par.outputattrscope = 'Color'\nn.par.lookupindexattr0 = 'Tex(0)'\nn.par.lookupindexattr1 = 'Tex(1)'",
+				"context": "textport",
+				"description": "Common settings from 20 real Derivative examples"
+			},
+			{
+				"label": "Read Output Attribute Scope value",
+				"language": "python",
+				"code": "n = op('lookuptexture1')\nprint(n.par.outputattrscope.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('lookuptexture1')\nn.par.outputattrscope = 'Shape'\nn.par.lookupindexattr0 = 'DistStartNorm'",
+				"context": "textport"
+			}
+		]
 	}
 }

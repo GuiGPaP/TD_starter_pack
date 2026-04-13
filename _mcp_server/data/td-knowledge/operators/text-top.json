@@ -464,6 +464,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacyfontselection and resmult",
+				"language": "python",
+				"code": "n = op('text1')\nn.par.legacyfontselection = True\nn.par.resmult = False",
+				"context": "textport",
+				"description": "Common settings from 47 real Derivative examples"
+			},
+			{
+				"label": "Read Legacyfontselection value",
+				"language": "python",
+				"code": "n = op('text1')\nprint(n.par.legacyfontselection.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('text1')\nn.par.legacyfontselection = True\nn.par.resmult = False",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -151,6 +151,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Export Method and Custom",
+				"language": "python",
+				"code": "n = op('sopto1')\nn.par.exportmethod = 'datname'\nn.par.custom = True\nn.par.attribscope = 'P'",
+				"context": "textport",
+				"description": "Common settings from 33 real Derivative examples"
+			},
+			{
+				"label": "Read Export Method value",
+				"language": "python",
+				"code": "n = op('sopto1')\nprint(n.par.exportmethod.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('sopto1')\nn.par.exportmethod = 'datname'\nn.par.custom = True",
+				"context": "textport"
+			}
+		]
 	}
 }

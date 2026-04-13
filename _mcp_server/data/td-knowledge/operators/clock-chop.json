@@ -228,6 +228,27 @@
 				"description": "Enter a latitude (hours/min north/south) of your location. (defaults to Toronto, Canada). Fractional hours are permitted. For example:  43.6532 hours and 0 minutes, is identical to 43 hours and 39 min"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Export Method",
+				"language": "python",
+				"code": "n = op('clock1')\nn.par.exportmethod = 'datname'",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Export Method value",
+				"language": "python",
+				"code": "n = op('clock1')\nprint(n.par.exportmethod.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('clock1')\nn.par.exportmethod = 'datname'",
+				"context": "textport"
+			}
+		]
 	}
 }

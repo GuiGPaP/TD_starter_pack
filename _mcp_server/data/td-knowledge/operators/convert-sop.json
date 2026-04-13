@@ -122,6 +122,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Convert to and Connectivity",
+				"language": "python",
+				"code": "n = op('convert1')\nn.par.totype = 'particlesperpoint'\nn.par.surftype = 'alttriangles'",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Convert to value",
+				"language": "python",
+				"code": "n = op('convert1')\nprint(n.par.totype.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('convert1')\nn.par.totype = 'circle'\nn.par.surftype = 'rowcol'",
+				"context": "textport"
+			}
+		]
 	}
 }

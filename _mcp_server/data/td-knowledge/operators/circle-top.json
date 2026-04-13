@@ -239,6 +239,27 @@
 				"description": "Color to use for the fill of the shape."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Radiusx and Radiusy",
+				"language": "python",
+				"code": "n = op('circle1')\nn.par.radiusx = 0.1\nn.par.radiusy = 0.1\nn.par.fillcolorr = 0",
+				"context": "textport",
+				"description": "Common settings from 36 real Derivative examples"
+			},
+			{
+				"label": "Read Radiusx value",
+				"language": "python",
+				"code": "n = op('circle1')\nprint(n.par.radiusx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('circle1')\nn.par.radiusx = 0.05\nn.par.radiusy = 0.3",
+				"context": "textport"
+			}
+		]
 	}
 }

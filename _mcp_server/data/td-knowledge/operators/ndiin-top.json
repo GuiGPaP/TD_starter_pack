@@ -86,6 +86,21 @@
 				"description": "The length of the audio buffer in seconds. Audio output is delayed by this amount. For example, if the Buffer Length is 0.1 then the sound will occur 100ms = 0.1 seconds later than received (to keep t"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Source Name",
+				"language": "python",
+				"code": "n = op('ndiin1')\nn.par.name = 'PC_Guigz (ndiSnippet1A)'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Source Name value",
+				"language": "python",
+				"code": "n = op('ndiin1')\nprint(n.par.name.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

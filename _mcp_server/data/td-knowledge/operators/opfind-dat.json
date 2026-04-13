@@ -409,6 +409,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Type and Language",
+				"language": "python",
+				"code": "n = op('opfind1')\nn.par.typecol = False\nn.par.language = 'text'\nn.par.pageindex = 2",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Type value",
+				"language": "python",
+				"code": "n = op('opfind1')\nprint(n.par.typecol.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('opfind1')\nn.par.typecol = False\nn.par.language = 'text'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -82,6 +82,27 @@
 				"style": "Toggle"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Connectivity and firstdim",
+				"language": "python",
+				"code": "n = op('connectivity1')\nn.par.surftype = 'spiralperplane'\nn.par.firstdim = 1",
+				"context": "textport",
+				"description": "Common settings from 34 real Derivative examples"
+			},
+			{
+				"label": "Read Connectivity value",
+				"language": "python",
+				"code": "n = op('connectivity1')\nprint(n.par.surftype.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('connectivity1')\nn.par.surftype = 'quads'\nn.par.firstdim = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

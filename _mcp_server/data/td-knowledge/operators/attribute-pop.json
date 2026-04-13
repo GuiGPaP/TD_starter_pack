@@ -229,6 +229,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Attr0Value0 and Attr0Value1",
+				"language": "python",
+				"code": "n = op('attribute1')\nn.par.attr0value0 = 1\nn.par.attr0value1 = 0\nn.par.attr0value2 = 0",
+				"context": "textport",
+				"description": "Common settings from 52 real Derivative examples"
+			},
+			{
+				"label": "Read Attr0Value0 value",
+				"language": "python",
+				"code": "n = op('attribute1')\nprint(n.par.attr0value0.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('attribute1')\nn.par.attr0value0 = 0\nn.par.attr0value1 = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

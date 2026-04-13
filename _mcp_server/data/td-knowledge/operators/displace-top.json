@@ -101,6 +101,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Vertical Source and Displaceweightx",
+				"language": "python",
+				"code": "n = op('displace1')\nn.par.vertsource = 'blue'\nn.par.displaceweightx = 0\nn.par.displaceweighty = 0.1",
+				"context": "textport",
+				"description": "Common settings from 14 real Derivative examples"
+			},
+			{
+				"label": "Read Vertical Source value",
+				"language": "python",
+				"code": "n = op('displace1')\nprint(n.par.vertsource.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('displace1')\nn.par.vertsource = 'red'\nn.par.displaceweightx = 3",
+				"context": "textport"
+			}
+		]
 	}
 }

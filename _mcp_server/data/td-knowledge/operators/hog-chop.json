@@ -85,6 +85,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Delay and Active",
+				"language": "python",
+				"code": "n = op('hog1')\nn.par.delay = 0.06\nn.par.active = False\nn.par.cookalways = False",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Delay value",
+				"language": "python",
+				"code": "n = op('hog1')\nprint(n.par.delay.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('hog1')\nn.par.delay = 0.05\nn.par.active = False",
+				"context": "textport"
+			}
+		]
 	}
 }

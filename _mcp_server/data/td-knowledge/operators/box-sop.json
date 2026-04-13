@@ -167,6 +167,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Reverse Anchors and Sizex",
+				"language": "python",
+				"code": "n = op('box1')\nn.par.reverseanchors = True\nn.par.sizex = 2\nn.par.sizey = 0.5",
+				"context": "textport",
+				"description": "Common settings from 87 real Derivative examples"
+			},
+			{
+				"label": "Read Reverse Anchors value",
+				"language": "python",
+				"code": "n = op('box1')\nprint(n.par.reverseanchors.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('box1')\nn.par.reverseanchors = True\nn.par.sizex = 0.5",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -1164,6 +1164,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pageindex and Layoutsizew",
+				"language": "python",
+				"code": "n = op('geotext1')\nn.par.pageindex = 1\nn.par.layoutsizew = 4\nn.par.layoutsizeh = 20",
+				"context": "textport",
+				"description": "Common settings from 21 real Derivative examples"
+			},
+			{
+				"label": "Read pageindex value",
+				"language": "python",
+				"code": "n = op('geotext1')\nprint(n.par.pageindex.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('geotext1')\nn.par.pageindex = 2\nn.par.layoutsizew = 20",
+				"context": "textport"
+			}
+		]
 	}
 }

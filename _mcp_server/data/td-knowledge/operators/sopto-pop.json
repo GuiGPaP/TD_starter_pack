@@ -61,6 +61,27 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure 5+ Points Polygons and Meshes",
+				"language": "python",
+				"code": "n = op('sopto1')\nn.par.polygons = 'ignore'\nn.par.mesh = 'quads'",
+				"context": "textport",
+				"description": "Common settings from 13 real Derivative examples"
+			},
+			{
+				"label": "Read 5+ Points Polygons value",
+				"language": "python",
+				"code": "n = op('sopto1')\nprint(n.par.polygons.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('sopto1')\nn.par.polygons = 'triangulated'\nn.par.mesh = 'rows'",
+				"context": "textport"
+			}
+		]
 	}
 }

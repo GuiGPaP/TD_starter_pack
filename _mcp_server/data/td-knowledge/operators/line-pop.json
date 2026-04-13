@@ -221,6 +221,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pt1posx and pt1posy",
+				"language": "python",
+				"code": "n = op('line1')\nn.par.pt1posx = 1\nn.par.pt1posy = 0.1\nn.par.pt1posz = 0",
+				"context": "textport",
+				"description": "Common settings from 79 real Derivative examples"
+			},
+			{
+				"label": "Read pt1posx value",
+				"language": "python",
+				"code": "n = op('line1')\nprint(n.par.pt1posx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('line1')\nn.par.pt1posx = 1.7\nn.par.pt1posy = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

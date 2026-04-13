@@ -94,6 +94,27 @@
 				"style": "Menu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Cache Size and Active",
+				"language": "python",
+				"code": "n = op('cache1')\nn.par.cachesize = 1\nn.par.active = False",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Cache Size value",
+				"language": "python",
+				"code": "n = op('cache1')\nprint(n.par.cachesize.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('cache1')\nn.par.cachesize = 2\nn.par.active = True",
+				"context": "textport"
+			}
+		]
 	}
 }

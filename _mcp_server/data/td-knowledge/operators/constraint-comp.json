@@ -362,6 +362,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacypattern and Actor Bodies",
+				"language": "python",
+				"code": "n = op('constraint1')\nn.par.legacypattern = True\nn.par.bodies1 = 0\nn.par.pivot1x = 0",
+				"context": "textport",
+				"description": "Common settings from 14 real Derivative examples"
+			},
+			{
+				"label": "Read Legacypattern value",
+				"language": "python",
+				"code": "n = op('constraint1')\nprint(n.par.legacypattern.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('constraint1')\nn.par.legacypattern = True\nn.par.bodies1 = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

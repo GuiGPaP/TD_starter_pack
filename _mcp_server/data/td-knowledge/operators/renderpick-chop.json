@@ -290,6 +290,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Fetch Position and Export Method",
+				"language": "python",
+				"code": "n = op('renderpick1')\nn.par.position = 'no'\nn.par.exportmethod = 'datname'\nn.par.pageindex = 1",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Fetch Position value",
+				"language": "python",
+				"code": "n = op('renderpick1')\nprint(n.par.position.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('renderpick1')\nn.par.position = 'worldspace'\nn.par.exportmethod = 'datname'",
+				"context": "textport"
+			}
+		]
 	}
 }

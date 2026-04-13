@@ -338,6 +338,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Clearcolor and Clear Depth Buffer",
+				"language": "python",
+				"code": "n = op('renderpass1')\nn.par.clearcolor = True\nn.par.cleardepth = True",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Clearcolor value",
+				"language": "python",
+				"code": "n = op('renderpass1')\nprint(n.par.clearcolor.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('renderpass1')\nn.par.clearcolor = True\nn.par.cleardepth = True",
+				"context": "textport"
+			}
+		]
 	}
 }

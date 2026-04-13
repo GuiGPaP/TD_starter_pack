@@ -188,6 +188,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Period and End",
+				"language": "python",
+				"code": "n = op('wave1')\nn.par.period = 10\nn.par.end = 1\nn.par.wavetype = 'ramp'",
+				"context": "textport",
+				"description": "Common settings from 38 real Derivative examples"
+			},
+			{
+				"label": "Read Period value",
+				"language": "python",
+				"code": "n = op('wave1')\nprint(n.par.period.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('wave1')\nn.par.period = 2\nn.par.end = 599",
+				"context": "textport"
+			}
+		]
 	}
 }

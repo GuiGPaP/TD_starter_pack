@@ -340,6 +340,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Type0 and Output Attribute Scope",
+				"language": "python",
+				"code": "n = op('pattern1')\nn.par.type0 = 'ramp'\nn.par.outputattrscope = 'rampupdown'\nn.par.type1 = 'ramp'",
+				"context": "textport",
+				"description": "Common settings from 41 real Derivative examples"
+			},
+			{
+				"label": "Read Type0 value",
+				"language": "python",
+				"code": "n = op('pattern1')\nprint(n.par.type0.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('pattern1')\nn.par.type0 = 'random'\nn.par.outputattrscope = 'signal'",
+				"context": "textport"
+			}
+		]
 	}
 }

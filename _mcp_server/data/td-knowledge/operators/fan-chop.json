@@ -92,6 +92,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Outside Range and Quantize Output",
+				"language": "python",
+				"code": "n = op('fan1')\nn.par.range = 'loop'\nn.par.quantize = False\nn.par.channame = 'chan[1-4]'",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Outside Range value",
+				"language": "python",
+				"code": "n = op('fan1')\nprint(n.par.range.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('fan1')\nn.par.range = 'zero'\nn.par.quantize = False",
+				"context": "textport"
+			}
+		]
 	}
 }

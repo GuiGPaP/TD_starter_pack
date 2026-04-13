@@ -92,6 +92,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Function",
+				"language": "python",
+				"code": "n = op('analyze1')\nn.par.function = 'minimum'",
+				"context": "textport",
+				"description": "Common settings from 20 real Derivative examples"
+			},
+			{
+				"label": "Read Function value",
+				"language": "python",
+				"code": "n = op('analyze1')\nprint(n.par.function.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

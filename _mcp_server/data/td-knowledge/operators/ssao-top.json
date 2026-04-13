@@ -104,6 +104,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure SSAO Radius and Contrast",
+				"language": "python",
+				"code": "n = op('ssao1')\nn.par.ssaoradius = 0.06\nn.par.contrast = 0.59\nn.par.ssaopassres = 'full'",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read SSAO Radius value",
+				"language": "python",
+				"code": "n = op('ssao1')\nprint(n.par.ssaoradius.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('ssao1')\nn.par.ssaoradius = 0.2\nn.par.contrast = 0.84",
+				"context": "textport"
+			}
+		]
 	}
 }

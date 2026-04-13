@@ -74,6 +74,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Index and First Input is Index",
+				"language": "python",
+				"code": "n = op('switch1')\nn.par.index = 0\nn.par.indexfirst = True",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Index value",
+				"language": "python",
+				"code": "n = op('switch1')\nprint(n.par.index.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('switch1')\nn.par.index = 2\nn.par.indexfirst = True",
+				"context": "textport"
+			}
+		]
 	}
 }

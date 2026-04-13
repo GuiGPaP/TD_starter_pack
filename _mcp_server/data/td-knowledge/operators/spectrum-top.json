@@ -49,6 +49,27 @@
 				"description": "When enabled, will perform the DFT/IDFT by row."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Mode and Channel",
+				"language": "python",
+				"code": "n = op('spectrum1')\nn.par.mode = 'idft'\nn.par.chan = 'g'\nn.par.transrows = True",
+				"context": "textport",
+				"description": "Common settings from 25 real Derivative examples"
+			},
+			{
+				"label": "Read Mode value",
+				"language": "python",
+				"code": "n = op('spectrum1')\nprint(n.par.mode.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('spectrum1')\nn.par.mode = 'idft'\nn.par.chan = 'b'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -312,6 +312,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Group Name and pageindex",
+				"language": "python",
+				"code": "n = op('group1')\nn.par.grname = 'ring'\nn.par.pageindex = 1\nn.par.entity = 'primitive'",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read Group Name value",
+				"language": "python",
+				"code": "n = op('group1')\nprint(n.par.grname.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('group1')\nn.par.grname = 'groupTop'\nn.par.pageindex = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

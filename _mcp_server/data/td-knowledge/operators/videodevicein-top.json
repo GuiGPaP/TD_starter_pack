@@ -267,6 +267,27 @@
 				"style": "RGBA"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Field Precedence and Device",
+				"language": "python",
+				"code": "n = op('videodevicein1')\nn.par.precedence = 'even'\nn.par.device = 'V1|||6|||6|||0|||OBS Virtual Camera'\nn.par.signalformat = 'f640x480p-30.00hz'",
+				"context": "textport",
+				"description": "Common settings from 8 real Derivative examples"
+			},
+			{
+				"label": "Read Field Precedence value",
+				"language": "python",
+				"code": "n = op('videodevicein1')\nprint(n.par.precedence.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('videodevicein1')\nn.par.precedence = 'even'\nn.par.device = 'V1|||6|||6|||0|||OBS Virtual Camera'",
+				"context": "textport"
+			}
+		]
 	}
 }

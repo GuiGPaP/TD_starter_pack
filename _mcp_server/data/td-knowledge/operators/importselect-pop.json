@@ -201,6 +201,21 @@
 				"style": "Menu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Geo Path",
+				"language": "python",
+				"code": "n = op('importselect1')\nn.par.geometry = '/Humanoid/Humanoid'",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Geo Path value",
+				"language": "python",
+				"code": "n = op('importselect1')\nprint(n.par.geometry.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

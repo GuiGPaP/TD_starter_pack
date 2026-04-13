@@ -80,6 +80,27 @@
 				"description": "The weight or contribution of this input. 0 has no contribution, 1 is full contribution."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure input1weight and input2weight",
+				"language": "python",
+				"code": "n = op('blend1')\nn.par.input1weight = 0\nn.par.input2weight = 0\nn.par.input3weight = 0",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read input1weight value",
+				"language": "python",
+				"code": "n = op('blend1')\nprint(n.par.input1weight.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('blend1')\nn.par.input1weight = 0.1\nn.par.input2weight = 0.75",
+				"context": "textport"
+			}
+		]
 	}
 }

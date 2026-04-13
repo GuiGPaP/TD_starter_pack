@@ -945,6 +945,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Width and Height",
+				"language": "python",
+				"code": "n = op('button1')\nn.par.w = 50\nn.par.h = 50\nn.par.borderover = False",
+				"context": "textport",
+				"description": "Common settings from 131 real Derivative examples"
+			},
+			{
+				"label": "Read Width value",
+				"language": "python",
+				"code": "n = op('button1')\nprint(n.par.w.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('button1')\nn.par.w = 80\nn.par.h = 40",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -434,6 +434,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Point Output Attributes and Name",
+				"language": "python",
+				"code": "n = op('glslcopy1')\nn.par.ptoutputattrs = 'P N'\nn.par.vec0name = 'uRotate'\nn.par.vec0valuex = 40",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Point Output Attributes value",
+				"language": "python",
+				"code": "n = op('glslcopy1')\nprint(n.par.ptoutputattrs.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('glslcopy1')\nn.par.ptoutputattrs = 'P N'\nn.par.vec0name = 'uPercent'",
+				"context": "textport"
+			}
+		]
 	}
 }

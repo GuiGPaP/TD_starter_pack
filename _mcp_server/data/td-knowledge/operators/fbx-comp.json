@@ -718,6 +718,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Parent Shortcut and Animation",
+				"language": "python",
+				"code": "n = op('fbx1')\nn.par.parentshortcut = 'FBX'\nn.par.animation = 'run'\nn.par.pops = False",
+				"context": "textport",
+				"description": "Common settings from 7 real Derivative examples"
+			},
+			{
+				"label": "Read Parent Shortcut value",
+				"language": "python",
+				"code": "n = op('fbx1')\nprint(n.par.parentshortcut.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('fbx1')\nn.par.parentshortcut = 'FBX'\nn.par.animation = 'punch'",
+				"context": "textport"
+			}
+		]
 	}
 }

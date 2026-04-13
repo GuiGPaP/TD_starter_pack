@@ -171,6 +171,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure roundcorners and sizeu",
+				"language": "python",
+				"code": "n = op('rectangle1')\nn.par.roundcorners = True\nn.par.sizeu = 0.8\nn.par.sizev = 1",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read roundcorners value",
+				"language": "python",
+				"code": "n = op('rectangle1')\nprint(n.par.roundcorners.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('rectangle1')\nn.par.roundcorners = True\nn.par.sizeu = 0.8",
+				"context": "textport"
+			}
+		]
 	}
 }

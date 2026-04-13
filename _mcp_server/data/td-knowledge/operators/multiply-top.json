@@ -113,6 +113,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacy Transform and Fixed Layer",
+				"language": "python",
+				"code": "n = op('multiply1')\nn.par.legacyxform = True\nn.par.size = 'input1'",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Legacy Transform value",
+				"language": "python",
+				"code": "n = op('multiply1')\nprint(n.par.legacyxform.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('multiply1')\nn.par.legacyxform = True\nn.par.size = 'input1'",
+				"context": "textport"
+			}
+		]
 	}
 }

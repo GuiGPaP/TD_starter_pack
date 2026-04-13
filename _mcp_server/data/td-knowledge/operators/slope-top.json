@@ -95,6 +95,27 @@
 				"description": "When sampling the image, this determines the distance from each pixel to the sample pixel. When units are set to pixels, it is the number of pixels away from the current pixel which is sampled to find"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Green and Blue",
+				"language": "python",
+				"code": "n = op('slope1')\nn.par.green = 'neutral'\nn.par.blue = 'vluminance'\nn.par.format = 'rgba32float'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Green value",
+				"language": "python",
+				"code": "n = op('slope1')\nprint(n.par.green.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('slope1')\nn.par.green = 'neutral'\nn.par.blue = 'vred'",
+				"context": "textport"
+			}
+		]
 	}
 }

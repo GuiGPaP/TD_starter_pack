@@ -146,6 +146,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Name Format and Attributes Scope",
+				"language": "python",
+				"code": "n = op('popto1')\nn.par.nameformat = 'basic'\nn.par.attribscope = 'P(1)'\nn.par.renscope = 'tx ty tz'",
+				"context": "textport",
+				"description": "Common settings from 95 real Derivative examples"
+			},
+			{
+				"label": "Read Name Format value",
+				"language": "python",
+				"code": "n = op('popto1')\nprint(n.par.nameformat.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('popto1')\nn.par.nameformat = 'basic'\nn.par.attribscope = 'Count'",
+				"context": "textport"
+			}
+		]
 	}
 }

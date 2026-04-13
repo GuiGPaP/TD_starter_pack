@@ -397,6 +397,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure MIDI Channels and Legacypattern",
+				"language": "python",
+				"code": "n = op('midiin1')\nn.par.channel = '1-16'\nn.par.legacypattern = True\nn.par.timeslice = True",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read MIDI Channels value",
+				"language": "python",
+				"code": "n = op('midiin1')\nprint(n.par.channel.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('midiin1')\nn.par.channel = 1\nn.par.legacypattern = True",
+				"context": "textport"
+			}
+		]
 	}
 }

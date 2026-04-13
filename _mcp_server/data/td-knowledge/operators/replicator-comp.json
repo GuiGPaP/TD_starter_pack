@@ -301,6 +301,27 @@
 				"description": "Where to lay out the new nodes, giving the XY location of the top-left node's bottom-left corner."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Layoutorigin1 and Layoutorigin2",
+				"language": "python",
+				"code": "n = op('replicator1')\nn.par.layoutorigin1 = 0\nn.par.layoutorigin2 = -70",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Layoutorigin1 value",
+				"language": "python",
+				"code": "n = op('replicator1')\nprint(n.par.layoutorigin1.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('replicator1')\nn.par.layoutorigin1 = 420\nn.par.layoutorigin2 = 10",
+				"context": "textport"
+			}
+		]
 	}
 }

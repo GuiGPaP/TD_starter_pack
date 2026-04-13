@@ -299,6 +299,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Birth Rate and Maximum Particles",
+				"language": "python",
+				"code": "n = op('particle1')\nn.par.birthrate = 1000\nn.par.maxparticles = 10000\nn.par.life = 5",
+				"context": "textport",
+				"description": "Common settings from 30 real Derivative examples"
+			},
+			{
+				"label": "Read Birth Rate value",
+				"language": "python",
+				"code": "n = op('particle1')\nprint(n.par.birthrate.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('particle1')\nn.par.birthrate = 30\nn.par.maxparticles = 1024",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -122,6 +122,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Function and Exponent Value",
+				"language": "python",
+				"code": "n = op('function1')\nn.par.func = 'powb'\nn.par.expval = 3\nn.par.error = 'replace'",
+				"context": "textport",
+				"description": "Common settings from 46 real Derivative examples"
+			},
+			{
+				"label": "Read Function value",
+				"language": "python",
+				"code": "n = op('function1')\nprint(n.par.func.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('function1')\nn.par.func = 'logb'\nn.par.expval = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

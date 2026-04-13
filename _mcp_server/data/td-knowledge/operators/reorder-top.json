@@ -74,6 +74,27 @@
 				"description": "The channel to use from the selected input to use as the alpha channel in the output image."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Alpha Channel and Ouput Green Channel",
+				"language": "python",
+				"code": "n = op('reorder1')\nn.par.outputalphachan = 'one'\nn.par.outputgreenchan = 'zero'\nn.par.outputbluechan = 'zero'",
+				"context": "textport",
+				"description": "Common settings from 37 real Derivative examples"
+			},
+			{
+				"label": "Read Output Alpha Channel value",
+				"language": "python",
+				"code": "n = op('reorder1')\nprint(n.par.outputalphachan.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('reorder1')\nn.par.outputalphachan = 'zero'\nn.par.outputgreenchan = 'alpha'",
+				"context": "textport"
+			}
+		]
 	}
 }

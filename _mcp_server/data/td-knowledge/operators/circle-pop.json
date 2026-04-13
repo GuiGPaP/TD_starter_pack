@@ -171,6 +171,21 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Divisions",
+				"language": "python",
+				"code": "n = op('circle1')\nn.par.divs = 10",
+				"context": "textport",
+				"description": "Common settings from 116 real Derivative examples"
+			},
+			{
+				"label": "Read Divisions value",
+				"language": "python",
+				"code": "n = op('circle1')\nprint(n.par.divs.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

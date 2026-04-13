@@ -80,6 +80,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure resolutionsource and depthressource",
+				"language": "python",
+				"code": "n = op('remap1')\nn.par.resolutionsource = 'input2'\nn.par.depthressource = 'input2'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read resolutionsource value",
+				"language": "python",
+				"code": "n = op('remap1')\nprint(n.par.resolutionsource.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('remap1')\nn.par.resolutionsource = 'input2'\nn.par.depthressource = 'input2'",
+				"context": "textport"
+			}
+		]
 	}
 }

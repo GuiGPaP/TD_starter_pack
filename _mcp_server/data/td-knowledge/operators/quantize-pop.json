@@ -139,6 +139,21 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Quantize0",
+				"language": "python",
+				"code": "n = op('quantize1')\nn.par.quantize0 = 'round'",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Quantize0 value",
+				"language": "python",
+				"code": "n = op('quantize1')\nprint(n.par.quantize0.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

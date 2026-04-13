@@ -139,6 +139,27 @@
 				"description": "Enable Word Wrap for Node Display."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Language and Source",
+				"language": "python",
+				"code": "n = op('examine1')\nn.par.language = 'text'\nn.par.source = 'extensions'\nn.par.format = 'table'",
+				"context": "textport",
+				"description": "Common settings from 15 real Derivative examples"
+			},
+			{
+				"label": "Read Language value",
+				"language": "python",
+				"code": "n = op('examine1')\nprint(n.par.language.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('examine1')\nn.par.language = 'python'\nn.par.source = 'locals'",
+				"context": "textport"
+			}
+		]
 	}
 }

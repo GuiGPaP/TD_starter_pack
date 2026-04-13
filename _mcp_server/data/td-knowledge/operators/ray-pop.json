@@ -214,6 +214,27 @@
 				"style": "Str"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Inside and Point Intersection Distance",
+				"language": "python",
+				"code": "n = op('ray1')\nn.par.inside = True\nn.par.dist = True\nn.par.doreflectedray = True",
+				"context": "textport",
+				"description": "Common settings from 8 real Derivative examples"
+			},
+			{
+				"label": "Read Inside value",
+				"language": "python",
+				"code": "n = op('ray1')\nprint(n.par.inside.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('ray1')\nn.par.inside = True\nn.par.dist = True",
+				"context": "textport"
+			}
+		]
 	}
 }

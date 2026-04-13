@@ -113,6 +113,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure End and Start Unit",
+				"language": "python",
+				"code": "n = op('stretch1')\nn.par.end = 3\nn.par.startunit = 'seconds'\nn.par.endunit = 'seconds'",
+				"context": "textport",
+				"description": "Common settings from 13 real Derivative examples"
+			},
+			{
+				"label": "Read End value",
+				"language": "python",
+				"code": "n = op('stretch1')\nprint(n.par.end.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('stretch1')\nn.par.end = 11\nn.par.startunit = 'seconds'",
+				"context": "textport"
+			}
+		]
 	}
 }

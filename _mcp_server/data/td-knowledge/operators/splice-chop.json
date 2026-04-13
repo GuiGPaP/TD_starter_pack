@@ -138,6 +138,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Start and Trim Length",
+				"language": "python",
+				"code": "n = op('splice1')\nn.par.start = 292\nn.par.trimlength = 16\nn.par.trimmethod = 'insertlength'",
+				"context": "textport",
+				"description": "Common settings from 7 real Derivative examples"
+			},
+			{
+				"label": "Read Start value",
+				"language": "python",
+				"code": "n = op('splice1')\nprint(n.par.start.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('splice1')\nn.par.start = 0\nn.par.trimlength = 60",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -184,6 +184,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Name and Attribute",
+				"language": "python",
+				"code": "n = op('dmxfixture1')\nn.par.dmxchan0name = 'Position'\nn.par.dmxchan0attr = 'Position'\nn.par.pageindex = 1",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Name value",
+				"language": "python",
+				"code": "n = op('dmxfixture1')\nprint(n.par.dmxchan0name.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('dmxfixture1')\nn.par.dmxchan0name = 'RGB'\nn.par.dmxchan0attr = 'Color(0) Color(1) Color(2)'",
+				"context": "textport"
+			}
+		]
 	}
 }

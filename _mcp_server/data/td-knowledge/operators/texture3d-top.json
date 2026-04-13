@@ -92,6 +92,27 @@
 				"description": "Instantly empty the cache."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Pre Fill and Type",
+				"language": "python",
+				"code": "n = op('texture3d1')\nn.par.prefill = True\nn.par.type = 'texture2darray'\nn.par.cachesize = 4",
+				"context": "textport",
+				"description": "Common settings from 8 real Derivative examples"
+			},
+			{
+				"label": "Read Pre Fill value",
+				"language": "python",
+				"code": "n = op('texture3d1')\nprint(n.par.prefill.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('texture3d1')\nn.par.prefill = True\nn.par.type = 'texture2darray'",
+				"context": "textport"
+			}
+		]
 	}
 }

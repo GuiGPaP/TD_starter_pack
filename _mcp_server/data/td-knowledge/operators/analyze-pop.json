@@ -154,6 +154,27 @@
 				"style": "Menu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Average and Dimension",
+				"language": "python",
+				"code": "n = op('analyze1')\nn.par.avg = False\nn.par.dimension = True\nn.par.max = True",
+				"context": "textport",
+				"description": "Common settings from 29 real Derivative examples"
+			},
+			{
+				"label": "Read Average value",
+				"language": "python",
+				"code": "n = op('analyze1')\nprint(n.par.avg.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('analyze1')\nn.par.avg = False\nn.par.dimension = True",
+				"context": "textport"
+			}
+		]
 	}
 }

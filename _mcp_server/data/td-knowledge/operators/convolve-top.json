@@ -55,6 +55,21 @@
 				"description": "After the convolution, this value will be multiplied to the sum of the RGB(A) of the pixel and the offset."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Normalize Coefficients",
+				"language": "python",
+				"code": "n = op('convolve1')\nn.par.normalize = True",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Normalize Coefficients value",
+				"language": "python",
+				"code": "n = op('convolve1')\nprint(n.par.normalize.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

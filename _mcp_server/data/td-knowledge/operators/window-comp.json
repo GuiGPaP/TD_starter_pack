@@ -385,6 +385,27 @@
 				"description": "Horizontal offset applied to window after justifying."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure DPI Scaling and Borders",
+				"language": "python",
+				"code": "n = op('window1')\nn.par.dpiscaling = 'native'\nn.par.borders = False",
+				"context": "textport",
+				"description": "Common settings from 13 real Derivative examples"
+			},
+			{
+				"label": "Read DPI Scaling value",
+				"language": "python",
+				"code": "n = op('window1')\nprint(n.par.dpiscaling.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('window1')\nn.par.dpiscaling = 'native'\nn.par.borders = False",
+				"context": "textport"
+			}
+		]
 	}
 }

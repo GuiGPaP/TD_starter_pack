@@ -362,6 +362,27 @@
 				"style": "Int"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Prim Attribute Mode and Primitive Source Mode",
+				"language": "python",
+				"code": "n = op('topology1')\nn.par.primattrmode = 'specpop'\nn.par.primsourcemode = 'specpop'\nn.par.pointindexattrname = 'PointIndex'",
+				"context": "textport",
+				"description": "Common settings from 14 real Derivative examples"
+			},
+			{
+				"label": "Read Prim Attribute Mode value",
+				"language": "python",
+				"code": "n = op('topology1')\nprint(n.par.primattrmode.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('topology1')\nn.par.primattrmode = 'primsource'\nn.par.primsourcemode = 'specpop'",
+				"context": "textport"
+			}
+		]
 	}
 }

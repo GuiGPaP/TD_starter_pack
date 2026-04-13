@@ -217,6 +217,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and Play Mode",
+				"language": "python",
+				"code": "n = op('beat1')\nn.par.timeslice = True\nn.par.playmode = 'locked'\nn.par.ramp = False",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('beat1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('beat1')\nn.par.timeslice = True\nn.par.playmode = 'locked'",
+				"context": "textport"
+			}
+		]
 	}
 }

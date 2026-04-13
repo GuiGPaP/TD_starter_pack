@@ -92,6 +92,27 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Seed and Number of Points",
+				"language": "python",
+				"code": "n = op('sprinkle1')\nn.par.seed = 1.51\nn.par.numpoints = 5\nn.par.method = 'vol'",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Seed value",
+				"language": "python",
+				"code": "n = op('sprinkle1')\nprint(n.par.seed.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('sprinkle1')\nn.par.seed = 270\nn.par.numpoints = 10",
+				"context": "textport"
+			}
+		]
 	}
 }

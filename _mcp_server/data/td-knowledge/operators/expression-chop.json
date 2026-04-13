@@ -92,6 +92,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure pageindex",
+				"language": "python",
+				"code": "n = op('expression1')\nn.par.pageindex = 1",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read pageindex value",
+				"language": "python",
+				"code": "n = op('expression1')\nprint(n.par.pageindex.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

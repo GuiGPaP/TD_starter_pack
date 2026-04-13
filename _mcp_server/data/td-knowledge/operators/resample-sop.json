@@ -85,6 +85,27 @@
 				"description": "If selected, the primitive's final CV is included in the resampled polygon, even if the final resulting edge is shorter then the given segment length."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Resample by Polygon Edge and Length",
+				"language": "python",
+				"code": "n = op('resample1')\nn.par.edge = True\nn.par.length = 0.03",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Resample by Polygon Edge value",
+				"language": "python",
+				"code": "n = op('resample1')\nprint(n.par.edge.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('resample1')\nn.par.edge = True\nn.par.length = 0.14",
+				"context": "textport"
+			}
+		]
 	}
 }

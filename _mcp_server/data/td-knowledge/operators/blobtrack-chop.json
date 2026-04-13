@@ -168,6 +168,27 @@
 				"description": "The center of the area of interest."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Max Blobs and Max Point Distance in Blob",
+				"language": "python",
+				"code": "n = op('blobtrack1')\nn.par.maxblobs = 6\nn.par.maxpointdistance = 0.2\nn.par.maxblobmovement = 0.5",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Max Blobs value",
+				"language": "python",
+				"code": "n = op('blobtrack1')\nprint(n.par.maxblobs.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('blobtrack1')\nn.par.maxblobs = 6\nn.par.maxpointdistance = 0.2",
+				"context": "textport"
+			}
+		]
 	}
 }

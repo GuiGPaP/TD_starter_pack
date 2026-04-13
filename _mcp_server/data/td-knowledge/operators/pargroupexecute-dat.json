@@ -169,6 +169,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Parameters and On Pulse",
+				"language": "python",
+				"code": "n = op('pargroupexecute1')\nn.par.pars = 'size'\nn.par.onpulse = False\nn.par.expressionchange = False",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Parameters value",
+				"language": "python",
+				"code": "n = op('pargroupexecute1')\nprint(n.par.pars.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('pargroupexecute1')\nn.par.pars = '*'\nn.par.onpulse = False",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -78,6 +78,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Force and Directional Force",
+				"language": "python",
+				"code": "n = op('force1')\nn.par.radial = 12\nn.par.doaxis = True\nn.par.doradial = True",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Force value",
+				"language": "python",
+				"code": "n = op('force1')\nprint(n.par.radial.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('force1')\nn.par.radial = 0\nn.par.doaxis = True",
+				"context": "textport"
+			}
+		]
 	}
 }

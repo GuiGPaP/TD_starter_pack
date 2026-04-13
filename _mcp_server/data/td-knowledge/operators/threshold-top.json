@@ -54,6 +54,27 @@
 				"description": "The rate of falloff at the threshold value. As this value set set larger, pixels near the threshold value will be set to something between 0-1."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Threshold and Soften",
+				"language": "python",
+				"code": "n = op('threshold1')\nn.par.threshold = 0.241\nn.par.soften = 0.264\nn.par.comparator = 'greater'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Threshold value",
+				"language": "python",
+				"code": "n = op('threshold1')\nprint(n.par.threshold.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('threshold1')\nn.par.threshold = 0.259\nn.par.soften = 0.093",
+				"context": "textport"
+			}
+		]
 	}
 }

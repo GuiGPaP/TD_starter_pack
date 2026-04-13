@@ -118,6 +118,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Cross and Legacy Transform",
+				"language": "python",
+				"code": "n = op('cross1')\nn.par.cross = 0\nn.par.legacyxform = True\nn.par.prefit = 'fitbest'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read Cross value",
+				"language": "python",
+				"code": "n = op('cross1')\nprint(n.par.cross.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('cross1')\nn.par.cross = 0.0027312859892845154\nn.par.legacyxform = True",
+				"context": "textport"
+			}
+		]
 	}
 }

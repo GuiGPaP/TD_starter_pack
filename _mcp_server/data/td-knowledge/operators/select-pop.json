@@ -64,6 +64,14 @@
 				"style": "StrMenu"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Read pointattrscope value",
+				"language": "python",
+				"code": "n = op('select1')\nprint(n.par.pointattrscope.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

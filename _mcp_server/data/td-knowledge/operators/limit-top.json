@@ -108,6 +108,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Mintype and Maxtype",
+				"language": "python",
+				"code": "n = op('limit1')\nn.par.mintype = 'clamp'\nn.par.maxtype = 'clamp'\nn.par.min = 0.25",
+				"context": "textport",
+				"description": "Common settings from 7 real Derivative examples"
+			},
+			{
+				"label": "Read Mintype value",
+				"language": "python",
+				"code": "n = op('limit1')\nprint(n.par.mintype.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('limit1')\nn.par.mintype = 'zigzag'\nn.par.maxtype = 'zigzag'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -257,6 +257,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Minimum Corner Hold and Maximum Corner Hold",
+				"language": "python",
+				"code": "n = op('laser1')\nn.par.mincornerhold = 0.1\nn.par.maxcornerhold = 0.1\nn.par.timeslice = True",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Minimum Corner Hold value",
+				"language": "python",
+				"code": "n = op('laser1')\nprint(n.par.mincornerhold.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('laser1')\nn.par.mincornerhold = 0.1\nn.par.maxcornerhold = 0.1",
+				"context": "textport"
+			}
+		]
 	}
 }

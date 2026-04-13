@@ -74,6 +74,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure To",
+				"language": "python",
+				"code": "n = op('rename1')\nn.par.renameto = 'envelope'",
+				"context": "textport",
+				"description": "Common settings from 40 real Derivative examples"
+			},
+			{
+				"label": "Read To value",
+				"language": "python",
+				"code": "n = op('rename1')\nprint(n.par.renameto.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

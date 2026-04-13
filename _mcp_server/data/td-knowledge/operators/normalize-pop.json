@@ -215,6 +215,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Attribute Scope and Mode0",
+				"language": "python",
+				"code": "n = op('normalize1')\nn.par.outputattrscope = 'Color(0) Color(1) Color(2)'\nn.par.mode0 = 'boxx'\nn.par.mode1 = 'zero'",
+				"context": "textport",
+				"description": "Common settings from 58 real Derivative examples"
+			},
+			{
+				"label": "Read Output Attribute Scope value",
+				"language": "python",
+				"code": "n = op('normalize1')\nprint(n.par.outputattrscope.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('normalize1')\nn.par.outputattrscope = 'Color.rgb'\nn.par.mode0 = 'radiusxy'",
+				"context": "textport"
+			}
+		]
 	}
 }

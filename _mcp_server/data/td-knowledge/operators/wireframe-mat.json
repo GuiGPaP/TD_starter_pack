@@ -254,6 +254,27 @@
 				"description": "The color of the light reflected from the material."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Colorr and Colorg",
+				"language": "python",
+				"code": "n = op('wireframe1')\nn.par.colorr = 1\nn.par.colorg = 0\nn.par.colorb = 0",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Colorr value",
+				"language": "python",
+				"code": "n = op('wireframe1')\nprint(n.par.colorr.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('wireframe1')\nn.par.colorr = 0.364706\nn.par.colorg = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

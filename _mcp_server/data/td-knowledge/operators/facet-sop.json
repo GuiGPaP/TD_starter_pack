@@ -104,6 +104,27 @@
 				"description": "Again, allows you to compute the normals after the consolidation or cusping stages. You should select this if you have set either the Cusp or Consolidate option."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Compute Normals and Unique Points",
+				"language": "python",
+				"code": "n = op('facet1')\nn.par.postnml = True\nn.par.unique = True",
+				"context": "textport",
+				"description": "Common settings from 24 real Derivative examples"
+			},
+			{
+				"label": "Read Compute Normals value",
+				"language": "python",
+				"code": "n = op('facet1')\nprint(n.par.postnml.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('facet1')\nn.par.postnml = True\nn.par.unique = True",
+				"context": "textport"
+			}
+		]
 	}
 }

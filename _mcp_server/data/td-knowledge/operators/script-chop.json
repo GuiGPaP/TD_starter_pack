@@ -80,6 +80,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Export Method and pageindex",
+				"language": "python",
+				"code": "n = op('script1')\nn.par.exportmethod = 'datname'\nn.par.pageindex = 2\nn.par.Samples = 1",
+				"context": "textport",
+				"description": "Common settings from 8 real Derivative examples"
+			},
+			{
+				"label": "Read Export Method value",
+				"language": "python",
+				"code": "n = op('script1')\nprint(n.par.exportmethod.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('script1')\nn.par.exportmethod = 'datname'\nn.par.pageindex = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

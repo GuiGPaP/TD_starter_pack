@@ -110,6 +110,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Filter Size and Pre-Shrink",
+				"language": "python",
+				"code": "n = op('blur1')\nn.par.size = 32\nn.par.preshrink = 8\nn.par.offsetx = 0",
+				"context": "textport",
+				"description": "Common settings from 24 real Derivative examples"
+			},
+			{
+				"label": "Read Filter Size value",
+				"language": "python",
+				"code": "n = op('blur1')\nprint(n.par.size.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('blur1')\nn.par.size = 1\nn.par.preshrink = 2",
+				"context": "textport"
+			}
+		]
 	}
 }

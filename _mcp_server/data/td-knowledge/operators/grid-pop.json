@@ -233,6 +233,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Columns and Rows",
+				"language": "python",
+				"code": "n = op('grid1')\nn.par.cols = 100\nn.par.rows = 2\nn.par.surftype = 'points'",
+				"context": "textport",
+				"description": "Common settings from 83 real Derivative examples"
+			},
+			{
+				"label": "Read Columns value",
+				"language": "python",
+				"code": "n = op('grid1')\nprint(n.par.cols.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('grid1')\nn.par.cols = 4\nn.par.rows = 100",
+				"context": "textport"
+			}
+		]
 	}
 }

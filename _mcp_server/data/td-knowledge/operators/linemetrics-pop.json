@@ -277,6 +277,27 @@
 				"style": "Str"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Displacement to Next and Line Strip Index",
+				"language": "python",
+				"code": "n = op('linemetrics1')\nn.par.dispnext = True\nn.par.linestripindex = True\nn.par.distnext = True",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Displacement to Next value",
+				"language": "python",
+				"code": "n = op('linemetrics1')\nprint(n.par.dispnext.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('linemetrics1')\nn.par.dispnext = True\nn.par.linestripindex = True",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -283,6 +283,27 @@
 				"description": "Controls if this node should use hardware decoding via the Nvidia hardware decoder chip. You can check if hardware decoding is being used using the Info , 'hardware_decode' channel. This parameter doe"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Red and Green",
+				"language": "python",
+				"code": "n = op('pointfilein1')\nn.par.red = 'x'\nn.par.green = 'y'\nn.par.blue = 'z'",
+				"context": "textport",
+				"description": "Common settings from 10 real Derivative examples"
+			},
+			{
+				"label": "Read Red value",
+				"language": "python",
+				"code": "n = op('pointfilein1')\nprint(n.par.red.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('pointfilein1')\nn.par.red = 'x'\nn.par.green = 'y'",
+				"context": "textport"
+			}
+		]
 	}
 }

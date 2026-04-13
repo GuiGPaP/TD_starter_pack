@@ -948,6 +948,27 @@
 				"description": "The four fields allow you to specify the space that surrounds the Panel Component. The margin is the space between the Panel Component's border and the outer edge. The Margin is defined in absolute pi"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Height and Bgcolorr",
+				"language": "python",
+				"code": "n = op('parameter1')\nn.par.h = 360\nn.par.bgcolorr = 0.25\nn.par.bgcolorg = 0.25",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Height value",
+				"language": "python",
+				"code": "n = op('parameter1')\nprint(n.par.h.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('parameter1')\nn.par.h = 360\nn.par.bgcolorr = 0.25",
+				"context": "textport"
+			}
+		]
 	}
 }

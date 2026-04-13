@@ -85,6 +85,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Layout and Mode",
+				"language": "python",
+				"code": "n = op('popto1')\nn.par.layout = 'popdim'\nn.par.rgbamode = 'custom'\nn.par.outputresolution = 'custom'",
+				"context": "textport",
+				"description": "Common settings from 25 real Derivative examples"
+			},
+			{
+				"label": "Read Layout value",
+				"language": "python",
+				"code": "n = op('popto1')\nprint(n.par.layout.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('popto1')\nn.par.layout = 'wrapped'\nn.par.rgbamode = 'custom'",
+				"context": "textport"
+			}
+		]
 	}
 }

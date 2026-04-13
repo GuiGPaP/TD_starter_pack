@@ -157,6 +157,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Phase Attribute Scope and Fraction",
+				"language": "python",
+				"code": "n = op('phaser1')\nn.par.phaseattrscope = 'Shape'\nn.par.fract = 0.4866600036621094\nn.par.edge0 = 0.5",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Phase Attribute Scope value",
+				"language": "python",
+				"code": "n = op('phaser1')\nprint(n.par.phaseattrscope.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('phaser1')\nn.par.phaseattrscope = 'Tex(2)'\nn.par.fract = 0.2499963790178299",
+				"context": "textport"
+			}
+		]
 	}
 }

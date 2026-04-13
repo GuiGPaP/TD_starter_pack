@@ -68,6 +68,21 @@
 				"description": "Sets the extend conditions to determine what happens to the blur at the edge of the image."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure White Filter Width",
+				"language": "python",
+				"code": "n = op('lumablur1')\nn.par.whitewidth = 1",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read White Filter Width value",
+				"language": "python",
+				"code": "n = op('lumablur1')\nprint(n.par.whitewidth.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

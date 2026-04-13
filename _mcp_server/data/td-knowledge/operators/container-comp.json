@@ -856,6 +856,27 @@
 				"description": "The four fields allow you to specify the space that surrounds the Panel Component. The margin is the space between the Panel Component's border and the outer edge. The Margin is defined in absolute pi"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure TOP Smoothness and Height",
+				"language": "python",
+				"code": "n = op('container1')\nn.par.topsmoothness = 'mipmap'\nn.par.h = 720\nn.par.w = 1280",
+				"context": "textport",
+				"description": "Common settings from 126 real Derivative examples"
+			},
+			{
+				"label": "Read TOP Smoothness value",
+				"language": "python",
+				"code": "n = op('container1')\nprint(n.par.topsmoothness.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('container1')\nn.par.topsmoothness = 'usetop'\nn.par.h = 190",
+				"context": "textport"
+			}
+		]
 	}
 }

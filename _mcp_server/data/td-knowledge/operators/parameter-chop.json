@@ -127,6 +127,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Custom and Built-In",
+				"language": "python",
+				"code": "n = op('parameter1')\nn.par.custom = False\nn.par.builtin = True",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Custom value",
+				"language": "python",
+				"code": "n = op('parameter1')\nprint(n.par.custom.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('parameter1')\nn.par.custom = False\nn.par.builtin = True",
+				"context": "textport"
+			}
+		]
 	}
 }

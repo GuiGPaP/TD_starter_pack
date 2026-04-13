@@ -142,6 +142,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Blend Time",
+				"language": "python",
+				"code": "n = op('clip1')\nn.par.blendtime = 0",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Blend Time value",
+				"language": "python",
+				"code": "n = op('clip1')\nprint(n.par.blendtime.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

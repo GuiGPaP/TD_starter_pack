@@ -295,6 +295,27 @@
 				"description": "Offsets the texture coordinates a specific amount."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure X Channel and Y Channel",
+				"language": "python",
+				"code": "n = op('limit1')\nn.par.chanx = 'tx'\nn.par.chany = 'ty'\nn.par.pageindex = 1",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read X Channel value",
+				"language": "python",
+				"code": "n = op('limit1')\nprint(n.par.chanx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('limit1')\nn.par.chanx = 'chan1'\nn.par.chany = 'chan2'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -95,6 +95,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Divisions and Axis",
+				"language": "python",
+				"code": "n = op('revolve1')\nn.par.divs = 26\nn.par.axis = 'y'\nn.par.autopivot = False",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Divisions value",
+				"language": "python",
+				"code": "n = op('revolve1')\nprint(n.par.divs.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('revolve1')\nn.par.divs = 40\nn.par.axis = 'x'",
+				"context": "textport"
+			}
+		]
 	}
 }

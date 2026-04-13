@@ -245,6 +245,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Text and Output",
+				"language": "python",
+				"code": "n = op('text1')\nn.par.text = 'abcdefg'\nn.par.output = 'closedpolys'\nn.par.legacyparsing = True",
+				"context": "textport",
+				"description": "Common settings from 24 real Derivative examples"
+			},
+			{
+				"label": "Read Text value",
+				"language": "python",
+				"code": "n = op('text1')\nprint(n.par.text.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('text1')\nn.par.text = 'Q R a'\nn.par.output = 'closedpolys'",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -210,6 +210,14 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Read Active value",
+				"language": "python",
+				"code": "n = op('event1')\nprint(n.par.active.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

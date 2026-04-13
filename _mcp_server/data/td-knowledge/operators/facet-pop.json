@@ -115,6 +115,21 @@
 				"style": "Toggle"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Operation",
+				"language": "python",
+				"code": "n = op('facet1')\nn.par.operation = 'unique'",
+				"context": "textport",
+				"description": "Common settings from 14 real Derivative examples"
+			},
+			{
+				"label": "Read Operation value",
+				"language": "python",
+				"code": "n = op('facet1')\nprint(n.par.operation.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

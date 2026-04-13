@@ -48,6 +48,21 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Convert",
+				"language": "python",
+				"code": "n = op('convert1')\nn.par.convert = 'tolinestrips'",
+				"context": "textport",
+				"description": "Common settings from 21 real Derivative examples"
+			},
+			{
+				"label": "Read Convert value",
+				"language": "python",
+				"code": "n = op('convert1')\nprint(n.par.convert.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

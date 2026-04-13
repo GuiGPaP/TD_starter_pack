@@ -186,6 +186,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Rangestart and Rangeend",
+				"language": "python",
+				"code": "n = op('delete1')\nn.par.rangestart = 0\nn.par.rangeend = 6\nn.par.usenumber = True",
+				"context": "textport",
+				"description": "Common settings from 17 real Derivative examples"
+			},
+			{
+				"label": "Read Rangestart value",
+				"language": "python",
+				"code": "n = op('delete1')\nprint(n.par.rangestart.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('delete1')\nn.par.rangestart = 1660\nn.par.rangeend = 361",
+				"context": "textport"
+			}
+		]
 	}
 }

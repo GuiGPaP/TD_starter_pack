@@ -108,6 +108,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Scope and Children Cook Time",
+				"language": "python",
+				"code": "n = op('info1')\nn.par.iscope = 'resx resy'\nn.par.childcooktime = True",
+				"context": "textport",
+				"description": "Common settings from 112 real Derivative examples"
+			},
+			{
+				"label": "Read Scope value",
+				"language": "python",
+				"code": "n = op('info1')\nprint(n.par.iscope.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('info1')\nn.par.iscope = 'resx resy aspectx aspecty'\nn.par.childcooktime = True",
+				"context": "textport"
+			}
+		]
 	}
 }

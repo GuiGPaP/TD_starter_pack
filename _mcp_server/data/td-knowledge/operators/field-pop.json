@@ -380,6 +380,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Radx and Rady",
+				"language": "python",
+				"code": "n = op('field1')\nn.par.radx = 1\nn.par.rady = 0.7\nn.par.radz = 1",
+				"context": "textport",
+				"description": "Common settings from 21 real Derivative examples"
+			},
+			{
+				"label": "Read Radx value",
+				"language": "python",
+				"code": "n = op('field1')\nprint(n.par.radx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('field1')\nn.par.radx = 1.5\nn.par.rady = 1.5",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -116,6 +116,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Keys",
+				"language": "python",
+				"code": "n = op('keyboardin1')\nn.par.keys = '1 2 3'",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Keys value",
+				"language": "python",
+				"code": "n = op('keyboardin1')\nprint(n.par.keys.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

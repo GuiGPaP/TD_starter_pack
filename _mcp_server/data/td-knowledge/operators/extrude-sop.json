@@ -152,6 +152,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Depth Scale and pageindex",
+				"language": "python",
+				"code": "n = op('extrude1')\nn.par.depthscale = 0.085\nn.par.pageindex = 1\nn.par.dofuse = 'all'",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Depth Scale value",
+				"language": "python",
+				"code": "n = op('extrude1')\nprint(n.par.depthscale.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('extrude1')\nn.par.depthscale = 0.0778076\nn.par.pageindex = 1",
+				"context": "textport"
+			}
+		]
 	}
 }

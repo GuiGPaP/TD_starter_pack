@@ -167,6 +167,27 @@
 				"description": "Color applied behind the foreground image. The background is visible when the image is translated or scaled down. Try scaling an image down 50% in size (Scale = 0.5,0.5) and setting the background col"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Pre-Multiply RGB by Alpha and Rotate",
+				"language": "python",
+				"code": "n = op('transform1')\nn.par.premultrgbbyalpha = False\nn.par.rotate = 80583\nn.par.limittiles = True",
+				"context": "textport",
+				"description": "Common settings from 69 real Derivative examples"
+			},
+			{
+				"label": "Read Pre-Multiply RGB by Alpha value",
+				"language": "python",
+				"code": "n = op('transform1')\nprint(n.par.premultrgbbyalpha.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('transform1')\nn.par.premultrgbbyalpha = False\nn.par.rotate = 67152.5",
+				"context": "textport"
+			}
+		]
 	}
 }

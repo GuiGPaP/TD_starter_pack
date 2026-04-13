@@ -92,6 +92,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Expression and Filter",
+				"language": "python",
+				"code": "n = op('json1')\nn.par.expression = 'me.results'\nn.par.filter = '$.store.book[?(@.price > 9.0)]'\nn.par.output = 'result'",
+				"context": "textport",
+				"description": "Common settings from 59 real Derivative examples"
+			},
+			{
+				"label": "Read Expression value",
+				"language": "python",
+				"code": "n = op('json1')\nprint(n.par.expression.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('json1')\nn.par.expression = 'me.result'\nn.par.filter = '$.store.book'",
+				"context": "textport"
+			}
+		]
 	}
 }

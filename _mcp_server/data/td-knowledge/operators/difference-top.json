@@ -113,6 +113,21 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacyxform",
+				"language": "python",
+				"code": "n = op('difference1')\nn.par.legacyxform = True",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Legacyxform value",
+				"language": "python",
+				"code": "n = op('difference1')\nprint(n.par.legacyxform.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

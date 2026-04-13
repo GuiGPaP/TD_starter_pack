@@ -86,6 +86,27 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure cache1index and cache2index",
+				"language": "python",
+				"code": "n = op('cacheblend1')\nn.par.cache1index = -1\nn.par.cache2index = -2\nn.par.cache3index = -3",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read cache1index value",
+				"language": "python",
+				"code": "n = op('cacheblend1')\nprint(n.par.cache1index.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('cacheblend1')\nn.par.cache1index = -4\nn.par.cache2index = -6",
+				"context": "textport"
+			}
+		]
 	}
 }

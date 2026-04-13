@@ -131,6 +131,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Constant1 and Constant2",
+				"language": "python",
+				"code": "n = op('channelmix1')\nn.par.constant1 = -1\nn.par.constant2 = -1\nn.par.constant3 = -1",
+				"context": "textport",
+				"description": "Common settings from 17 real Derivative examples"
+			},
+			{
+				"label": "Read Constant1 value",
+				"language": "python",
+				"code": "n = op('channelmix1')\nprint(n.par.constant1.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('channelmix1')\nn.par.constant1 = 0\nn.par.constant2 = 0",
+				"context": "textport"
+			}
+		]
 	}
 }

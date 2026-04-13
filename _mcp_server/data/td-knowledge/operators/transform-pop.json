@@ -368,6 +368,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Rx and Ry",
+				"language": "python",
+				"code": "n = op('transform1')\nn.par.rx = 0\nn.par.ry = 0\nn.par.rz = 0",
+				"context": "textport",
+				"description": "Common settings from 68 real Derivative examples"
+			},
+			{
+				"label": "Read Rx value",
+				"language": "python",
+				"code": "n = op('transform1')\nprint(n.par.rx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('transform1')\nn.par.rx = 261\nn.par.ry = -0.4",
+				"context": "textport"
+			}
+		]
 	}
 }

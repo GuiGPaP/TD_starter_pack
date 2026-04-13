@@ -86,6 +86,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Units and Input Units",
+				"language": "python",
+				"code": "n = op('angle1')\nn.par.outunit = 'radians'\nn.par.inunit = 'radians'",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Output Units value",
+				"language": "python",
+				"code": "n = op('angle1')\nprint(n.par.outunit.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('angle1')\nn.par.outunit = 'quaternions'\nn.par.inunit = 'quaternions'",
+				"context": "textport"
+			}
+		]
 	}
 }

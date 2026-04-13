@@ -140,6 +140,27 @@
 				"description": "When using Location = Breakpoints, the resulting primitive is divided at all V breakpoints into separate primitives."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Second U and Second U",
+				"language": "python",
+				"code": "n = op('carve1')\nn.par.secondu = True\nn.par.domainu2 = 1\nn.par.firstv = True",
+				"context": "textport",
+				"description": "Common settings from 11 real Derivative examples"
+			},
+			{
+				"label": "Read Second U value",
+				"language": "python",
+				"code": "n = op('carve1')\nprint(n.par.secondu.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('carve1')\nn.par.secondu = True\nn.par.domainu2 = 0.668",
+				"context": "textport"
+			}
+		]
 	}
 }

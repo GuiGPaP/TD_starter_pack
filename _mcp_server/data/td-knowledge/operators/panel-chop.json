@@ -92,6 +92,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Select and Queue Overlapping Events",
+				"language": "python",
+				"code": "n = op('panel1')\nn.par.select = 'select u v'\nn.par.queue = False",
+				"context": "textport",
+				"description": "Common settings from 9 real Derivative examples"
+			},
+			{
+				"label": "Read Select value",
+				"language": "python",
+				"code": "n = op('panel1')\nprint(n.par.select.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('panel1')\nn.par.select = 'select state rollu rollv rollover'\nn.par.queue = False",
+				"context": "textport"
+			}
+		]
 	}
 }

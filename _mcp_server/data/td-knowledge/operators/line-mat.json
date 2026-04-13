@@ -729,6 +729,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Width Near and Width Far",
+				"language": "python",
+				"code": "n = op('line1')\nn.par.widthnear = 6\nn.par.widthfar = 0.1\nn.par.legacyalphabehavior = True",
+				"context": "textport",
+				"description": "Common settings from 18 real Derivative examples"
+			},
+			{
+				"label": "Read Width Near value",
+				"language": "python",
+				"code": "n = op('line1')\nprint(n.par.widthnear.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('line1')\nn.par.widthnear = 2\nn.par.widthfar = 0.5",
+				"context": "textport"
+			}
+		]
 	}
 }

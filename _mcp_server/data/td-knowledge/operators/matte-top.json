@@ -35,6 +35,27 @@
 				"description": "Select which channel from input3 is used to create the matte."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Switch Inputs and Matte Channel",
+				"language": "python",
+				"code": "n = op('matte1')\nn.par.switchinputs = 1\nn.par.mattechannel = 'luminance'",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Switch Inputs value",
+				"language": "python",
+				"code": "n = op('matte1')\nprint(n.par.switchinputs.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('matte1')\nn.par.switchinputs = 1\nn.par.mattechannel = 'red'",
+				"context": "textport"
+			}
+		]
 	}
 }

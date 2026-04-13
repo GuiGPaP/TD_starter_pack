@@ -314,6 +314,21 @@
 				"description": "The color of the light reflected from the material."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Legacy Alpha Behavior",
+				"language": "python",
+				"code": "n = op('constant1')\nn.par.legacyalphabehavior = True",
+				"context": "textport",
+				"description": "Common settings from 17 real Derivative examples"
+			},
+			{
+				"label": "Read Legacy Alpha Behavior value",
+				"language": "python",
+				"code": "n = op('constant1')\nprint(n.par.legacyalphabehavior.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

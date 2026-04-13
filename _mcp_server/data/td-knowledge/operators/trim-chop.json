@@ -101,6 +101,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Time Slice and Shiftstart",
+				"language": "python",
+				"code": "n = op('trim1')\nn.par.timeslice = True\nn.par.shiftstart = False\nn.par.relative = 'abs'",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read Time Slice value",
+				"language": "python",
+				"code": "n = op('trim1')\nprint(n.par.timeslice.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('trim1')\nn.par.timeslice = True\nn.par.shiftstart = False",
+				"context": "textport"
+			}
+		]
 	}
 }

@@ -155,6 +155,27 @@
 				"style": "Float"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Lookup Index Attribute(s) and Value Attributes",
+				"language": "python",
+				"code": "n = op('lookupattribute1')\nn.par.lookupindexattr = 'IndexMin(1)'\nn.par.lookup0valueattr = 'P'\nn.par.lookup0outputattrscope = 'P(1)'",
+				"context": "textport",
+				"description": "Common settings from 12 real Derivative examples"
+			},
+			{
+				"label": "Read Lookup Index Attribute(s) value",
+				"language": "python",
+				"code": "n = op('lookupattribute1')\nprint(n.par.lookupindexattr.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('lookupattribute1')\nn.par.lookupindexattr = 'CopyId'\nn.par.lookup0valueattr = 'Curve'",
+				"context": "textport"
+			}
+		]
 	}
 }

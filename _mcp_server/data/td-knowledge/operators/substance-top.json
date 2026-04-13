@@ -62,6 +62,27 @@
 				"description": "Select the Substance Engine used for rendering. The engine has much lower render times and is the default engine, while the CPU is included as a legacy mode and was the engine used in TouchDesigner ve"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Graph and resolutionw",
+				"language": "python",
+				"code": "n = op('substance1')\nn.par.graph = 'graph1'\nn.par.resolutionw = 1024\nn.par.resolutionh = 1024",
+				"context": "textport",
+				"description": "Common settings from 6 real Derivative examples"
+			},
+			{
+				"label": "Read Graph value",
+				"language": "python",
+				"code": "n = op('substance1')\nprint(n.par.graph.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('substance1')\nn.par.graph = 'graph2'\nn.par.resolutionw = 512",
+				"context": "textport"
+			}
+		]
 	}
 }

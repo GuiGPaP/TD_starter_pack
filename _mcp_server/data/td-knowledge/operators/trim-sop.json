@@ -56,6 +56,21 @@
 				"description": "You can specify the altitude of the trim. The variable is the surface's current altitude. This marks the transition for the surface from trimmed in to trimmed out."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure optype",
+				"language": "python",
+				"code": "n = op('trim1')\nn.par.optype = 'keepin'",
+				"context": "textport",
+				"description": "Common settings from 5 real Derivative examples"
+			},
+			{
+				"label": "Read optype value",
+				"language": "python",
+				"code": "n = op('trim1')\nprint(n.par.optype.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

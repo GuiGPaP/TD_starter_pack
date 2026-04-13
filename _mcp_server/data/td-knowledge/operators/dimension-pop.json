@@ -55,6 +55,27 @@
 				"description": "Only output which attributes you specify in this helps isolate attributes into a separate branch."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Number and dim1number",
+				"language": "python",
+				"code": "n = op('dimension1')\nn.par.dim0number = 4\nn.par.dim1number = 2",
+				"context": "textport",
+				"description": "Common settings from 3 real Derivative examples"
+			},
+			{
+				"label": "Read Number value",
+				"language": "python",
+				"code": "n = op('dimension1')\nprint(n.par.dim0number.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('dimension1')\nn.par.dim0number = 6\nn.par.dim1number = 3",
+				"context": "textport"
+			}
+		]
 	}
 }

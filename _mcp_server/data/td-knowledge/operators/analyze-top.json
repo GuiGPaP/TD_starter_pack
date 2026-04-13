@@ -55,6 +55,27 @@
 				"description": "This parameter allows you to exclude certain pixels based on the values in one or more channels in the input. For example, if set to Alpha, only pixels that have a non-zero value in the alpha will be "
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Operation and Scope",
+				"language": "python",
+				"code": "n = op('analyze1')\nn.par.op = 'maximum'\nn.par.scope = 'rows'",
+				"context": "textport",
+				"description": "Common settings from 20 real Derivative examples"
+			},
+			{
+				"label": "Read Operation value",
+				"language": "python",
+				"code": "n = op('analyze1')\nprint(n.par.op.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('analyze1')\nn.par.op = 'minimum'\nn.par.scope = 'columns'",
+				"context": "textport"
+			}
+		]
 	}
 }

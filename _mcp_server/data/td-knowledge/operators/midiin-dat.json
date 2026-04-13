@@ -151,6 +151,27 @@
 				"description": "Enable Word Wrap for Node Display."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Maximum Lines and Language",
+				"language": "python",
+				"code": "n = op('midiin1')\nn.par.maxlines = 100\nn.par.language = 'text'",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Maximum Lines value",
+				"language": "python",
+				"code": "n = op('midiin1')\nprint(n.par.maxlines.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('midiin1')\nn.par.maxlines = 100\nn.par.language = 'text'",
+				"context": "textport"
+			}
+		]
 	}
 }

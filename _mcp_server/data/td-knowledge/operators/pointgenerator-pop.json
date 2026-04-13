@@ -241,6 +241,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Number of Points and Shape",
+				"language": "python",
+				"code": "n = op('pointgenerator1')\nn.par.numpoints = 1000\nn.par.shape = 'circle'",
+				"context": "textport",
+				"description": "Common settings from 34 real Derivative examples"
+			},
+			{
+				"label": "Read Number of Points value",
+				"language": "python",
+				"code": "n = op('pointgenerator1')\nprint(n.par.numpoints.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('pointgenerator1')\nn.par.numpoints = 3\nn.par.shape = 'rectangle'",
+				"context": "textport"
+			}
+		]
 	}
 }

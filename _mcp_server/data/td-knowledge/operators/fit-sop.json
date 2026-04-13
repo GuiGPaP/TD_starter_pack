@@ -122,6 +122,21 @@
 				"description": "Specifies whether corners in the data should be preserved when doing local curve interpolation."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Tolerance",
+				"language": "python",
+				"code": "n = op('fit1')\nn.par.tol = 0.5",
+				"context": "textport",
+				"description": "Common settings from 4 real Derivative examples"
+			},
+			{
+				"label": "Read Tolerance value",
+				"language": "python",
+				"code": "n = op('fit1')\nprint(n.par.tol.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

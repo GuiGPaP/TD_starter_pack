@@ -104,6 +104,27 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Filter Cutoff (Hz=10**val) and Filter Cutoff (Hz)",
+				"language": "python",
+				"code": "n = op('audiofilter1')\nn.par.cutofflog = 2.3181838989257812\nn.par.cutofffrequency = 208.057\nn.par.timeslice = True",
+				"context": "textport",
+				"description": "Common settings from 7 real Derivative examples"
+			},
+			{
+				"label": "Read Filter Cutoff (Hz=10**val) value",
+				"language": "python",
+				"code": "n = op('audiofilter1')\nprint(n.par.cutofflog.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('audiofilter1')\nn.par.cutofflog = 3.41\nn.par.cutofffrequency = 2570.41",
+				"context": "textport"
+			}
+		]
 	}
 }

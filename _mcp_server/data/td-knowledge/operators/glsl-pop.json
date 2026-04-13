@@ -466,6 +466,27 @@
 				"style": "Int"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Output Attributes and pageindex",
+				"language": "python",
+				"code": "n = op('glsl1')\nn.par.outputattrs = 'P Color'\nn.par.pageindex = 1\nn.par.vec0name = 'uTime'",
+				"context": "textport",
+				"description": "Common settings from 17 real Derivative examples"
+			},
+			{
+				"label": "Read Output Attributes value",
+				"language": "python",
+				"code": "n = op('glsl1')\nprint(n.par.outputattrs.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('glsl1')\nn.par.outputattrs = 'P'\nn.par.pageindex = 3",
+				"context": "textport"
+			}
+		]
 	}
 }

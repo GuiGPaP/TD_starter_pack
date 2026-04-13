@@ -158,6 +158,27 @@
 				"description": "Enable Word Wrap for Node Display."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Parse SGML/HTML and Show",
+				"language": "python",
+				"code": "n = op('xml1')\nn.par.sgml = False\nn.par.show = 'text'\nn.par.ptext = 'author'",
+				"context": "textport",
+				"description": "Common settings from 8 real Derivative examples"
+			},
+			{
+				"label": "Read Parse SGML/HTML value",
+				"language": "python",
+				"code": "n = op('xml1')\nprint(n.par.sgml.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('xml1')\nn.par.sgml = False\nn.par.show = 'attribscol'",
+				"context": "textport"
+			}
+		]
 	}
 }

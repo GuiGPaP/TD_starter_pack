@@ -67,6 +67,27 @@
 				"style": "XYZW"
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Pivotx and Pivoty",
+				"language": "python",
+				"code": "n = op('mirror1')\nn.par.pivotx = 0.6\nn.par.pivoty = 0.56\nn.par.rotate = 56",
+				"context": "textport",
+				"description": "Common settings from 9 real Derivative examples"
+			},
+			{
+				"label": "Read Pivotx value",
+				"language": "python",
+				"code": "n = op('mirror1')\nprint(n.par.pivotx.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('mirror1')\nn.par.pivotx = 0.33\nn.par.pivoty = 0.33",
+				"context": "textport"
+			}
+		]
 	}
 }

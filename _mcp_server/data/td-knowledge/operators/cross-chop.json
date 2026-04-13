@@ -67,6 +67,21 @@
 				"description": "The used to hold the export information when using the Table Methods (See above)."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Cross",
+				"language": "python",
+				"code": "n = op('cross1')\nn.par.cross = 0",
+				"context": "textport",
+				"description": "Common settings from 2 real Derivative examples"
+			},
+			{
+				"label": "Read Cross value",
+				"language": "python",
+				"code": "n = op('cross1')\nprint(n.par.cross.eval())",
+				"context": "textport"
+			}
+		]
 	}
 }

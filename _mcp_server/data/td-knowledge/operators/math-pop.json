@@ -178,6 +178,27 @@
 				"description": "Help Not Available."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Input Attribute Scope and Output Attribute Scope",
+				"language": "python",
+				"code": "n = op('math1')\nn.par.inputattrscope = 'Color(0) Color(1) Color(2)'\nn.par.outputattrscope = 'Color'\nn.par.mult0 = 1",
+				"context": "textport",
+				"description": "Common settings from 71 real Derivative examples"
+			},
+			{
+				"label": "Read Input Attribute Scope value",
+				"language": "python",
+				"code": "n = op('math1')\nprint(n.par.inputattrscope.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('math1')\nn.par.inputattrscope = 'N'\nn.par.outputattrscope = 'P.y'",
+				"context": "textport"
+			}
+		]
 	}
 }

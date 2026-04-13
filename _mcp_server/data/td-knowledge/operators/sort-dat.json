@@ -104,6 +104,27 @@
 				"description": "Enable Word Wrap for Node Display."
 			}
 		],
-		"versions": {}
+		"versions": {},
+		"examples": [
+			{
+				"label": "Configure Preserve First and Order",
+				"language": "python",
+				"code": "n = op('sort1')\nn.par.preservefirst = True\nn.par.order = 'alphanum'\nn.par.sortmethod = 'colname'",
+				"context": "textport",
+				"description": "Common settings from 13 real Derivative examples"
+			},
+			{
+				"label": "Read Preserve First value",
+				"language": "python",
+				"code": "n = op('sort1')\nprint(n.par.preservefirst.eval())",
+				"context": "textport"
+			},
+			{
+				"label": "Alternative configuration",
+				"language": "python",
+				"code": "n = op('sort1')\nn.par.preservefirst = True\nn.par.order = 'alpha'",
+				"context": "textport"
+			}
+		]
 	}
 }
