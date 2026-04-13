@@ -1,17 +1,41 @@
-# td-sketch-ui — Sketch to TouchDesigner UI
+---
+name: td-sketch-ui
+description: "Convert hand-drawn UI sketches, wireframes, or mockup images into functional TouchDesigner panels using Palette Basic Widgets. Use this skill when the user provides a photo of a paper sketch, a wireframe image, or any visual mockup and wants it built as an interactive UI in TouchDesigner. Covers widget selection, panel layout, tab navigation, button styling, knob configuration, and error-free deployment."
+---
 
-Convert hand-drawn UI sketches (paper photos, wireframes, mockups) into functional TouchDesigner panels using Palette Basic Widgets.
+# TouchDesigner Sketch-to-UI
 
-## When to Use
+> **Cache rule**: If you already loaded this skill or read a reference file in the current conversation, do NOT re-read it. Use your memory of the content.
 
-Trigger when user provides an image of a UI sketch/wireframe and wants it built in TouchDesigner.
+> **Execution mode rule**: Default to `safe-write` for `execute_python_script` when configuring widgets. Only use `full-exec` when destroying operators. Use `read-only` for introspection.
+
+> **Post-build rule**: After building ANY UI, run `scan_network_errors` on the root container. Must be **0 errors** before reporting success. If errors are cached, `cook(force=True)` on affected ops and rescan.
 
 ## Prerequisites
 
 - TouchDesigner running and connected via MCP
 - Palette indexed (`index_palette` — cached after first run)
 
-## Critical Rules (learned from real builds)
+## Skill Routing
+
+For specialized work within the UI, use the appropriate skill:
+
+| Task | Skill |
+|------|-------|
+| GLSL shaders for widget backgrounds or visual effects | **td-glsl** |
+| Python extensions on widgets (callbacks, custom logic) | **td-python** |
+| General TD network creation, operator wiring | **td-guide** |
+
+## Reference Files
+
+Load these as needed — do NOT re-read if already loaded in this conversation:
+
+| Reference | Content | Load |
+|-----------|---------|------|
+| Widget catalog | All 55+ Palette widgets with names, params, sizes | @references/widget-catalog.md |
+| Layout patterns | 6 reusable layout patterns with code | @references/layout-patterns.md |
+
+## Critical Guardrails
 
 ### 1. Two-level widget architecture — ALWAYS configure both levels
 Every Palette widget loads as: `containerCOMP` (outer) → `widgetCOMP` (inner).
