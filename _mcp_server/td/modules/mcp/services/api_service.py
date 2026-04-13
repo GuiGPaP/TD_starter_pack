@@ -878,7 +878,7 @@ class TouchDesignerApiService(IApiService):
             ops[path] = node
 
         # All operators must share the same parent
-        parents = set(o.parent().path for o in ops.values())
+        parents = {o.parent().path for o in ops.values()}
         if len(parents) > 1:
             return error_result(
                 f"All operators must share the same parent. Found: {', '.join(sorted(parents))}"
@@ -900,11 +900,20 @@ class TouchDesignerApiService(IApiService):
                 "nodeY": node.nodeY,
             })
 
-        edges_internal = []
-        edges_incoming = []
-        edges_outgoing = []
+        internal, incoming, outgoing = self._collect_edges(ops, path_set)
 
-        # Scan input connectors for each node in the subgraph
+        return success_result({
+            "parent": parent_path,
+            "nodes": nodes,
+            "edgesInternal": internal,
+            "edgesIncoming": incoming,
+            "edgesOutgoing": outgoing,
+        })
+
+    @staticmethod
+    def _collect_edges(ops, path_set):
+        """Classify connections as internal, incoming, or outgoing."""
+        internal, incoming, outgoing = [], [], []
         for path, node in ops.items():
             for i, ic in enumerate(node.inputConnectors):
                 for conn in ic.connections:
@@ -916,30 +925,20 @@ class TouchDesignerApiService(IApiService):
                         "toInput": i,
                     }
                     if src_path in path_set:
-                        edges_internal.append(edge)
+                        internal.append(edge)
                     else:
-                        edges_incoming.append(edge)
-
-        # Scan output connectors for outgoing edges
-        for path, node in ops.items():
+                        incoming.append(edge)
             for i, oc in enumerate(node.outputConnectors):
                 for conn in oc.connections:
                     dst_path = conn.owner.path
                     if dst_path not in path_set:
-                        edges_outgoing.append({
+                        outgoing.append({
                             "from": path,
                             "to": dst_path,
                             "fromOutput": i,
                             "toInput": conn.index,
                         })
-
-        return success_result({
-            "parent": parent_path,
-            "nodes": nodes,
-            "edgesInternal": edges_internal,
-            "edgesIncoming": edges_incoming,
-            "edgesOutgoing": edges_outgoing,
-        })
+        return internal, incoming, outgoing
 
     def layout_nodes(
         self,
