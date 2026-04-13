@@ -79,6 +79,10 @@ description: "TouchDesigner Python: utility modules (TDFunctions, TDJSON, TDStor
 
 25. **Pyright may silently fail.** `typecheck_dat` returns 0 diagnostics when pyright can't run. Check `get_capabilities()`.
 
+26. **`tdu.Dependency.val` not direct assignment.** `op('comp').Scale = 5` overwrites the Dependency object with a plain int, destroying reactivity. Use `op('comp').Scale.val = 5` to set the value and notify dependents. See `@tdstoretools.md` tdu.Dependency section.
+
+27. **Mutable Dependency contents require `.modified()`.** Appending to a list or modifying a dict key inside a `tdu.Dependency` does not notify dependents. Call `dep.modified()` after in-place mutations, or reassign `.val` entirely to trigger notification.
+
 ## Preflight — Check Capabilities
 
 Before any lint workflow, call `get_capabilities` to verify tools:

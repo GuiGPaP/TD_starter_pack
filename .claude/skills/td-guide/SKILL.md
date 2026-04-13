@@ -15,6 +15,7 @@ description: "TouchDesigner network creation, operator layout, rendering, data c
 - Every operator belongs to exactly one family; cross-family data transfer requires explicit conversion operators (e.g., `soptoCHOP`, `choptoTOP`)
 - Geometry COMP is the bridge between SOP/POP geometry and the render pipeline — shapes are prepared outside, passed in via In/Out
 - The MCP API exposes TD's Python runtime — prefer high-level MCP tools (`create_geometry_comp`, `create_feedback_loop`, `configure_instancing`) over raw `execute_python_script`
+- TD uses a pull-based cook system: operators only compute when downstream needs data AND something changed. Reference dependencies (dashed lines) and wire connections both trigger cooks. See `@basics/cook-system.md`
 - Your pre-trained TD knowledge is unreliable. Always verify against this skill, reference files, and runtime introspection before writing code
 
 ## Skill Routing
@@ -95,6 +96,22 @@ def onPulse(par):
 22. **Script CHOP : `chan.numpyArray()[:] = data` non fiable.** Le bulk write numpy sur les channels CHOP produit des résultats invisibles/zéro. Utiliser `chan[i] = value` sample par sample.
 
 23. **Font atlas natif : RENDER_SCALE = 3.** Pour du texte sharp dans un atlas texture, rendre les glyphes à 3x dans le Script TOP. 2x est flou, 4x n'apporte pas grand-chose. Voir skill **td-pretext** pour le pattern complet.
+
+24. **Cook system is pull-based.** Operators only cook when two conditions are met: a downstream cook REQUEST exists (connected downstream, viewer, export, explicit `cook()`) AND a cook REASON occurred (input cooked, param changed, script ran, time-dependent). If nothing is connected downstream and no viewer is active, the operator does not compute. See `@basics/cook-system.md`.
+
+25. **Events are push-based, cooking is pull-based.** TD is a hybrid system. Execute DAT callbacks (CHOP Execute, Panel Execute, Parameter Execute, etc.) fire immediately on events (push). Operator cooking is lazy/pull. A callback firing does not mean the target operator has cooked yet — it will cook on the next frame when requested.
+
+26. **Viewers force upstream cooking.** An active viewer on a node at the end of a chain forces the ENTIRE upstream chain to cook. When diagnosing performance, close all unnecessary viewers first. Also applies to: open parameter dialogs, Select OPs, CHOP exports.
+
+27. **Place static SOPs before animated SOPs.** In a SOP chain, everything after a time-dependent SOP (Noise, etc.) cooks every frame. Move static operations (Sort, Point adding normals) before the animated operator to avoid unnecessary per-frame cooking.
+
+28. **Transform on Geometry COMP, not Transform SOP.** Geometry COMP transforms are GPU-accelerated (~0.02ms). Transform SOP moves each point on CPU (~1ms for 1600 points). Factor 50x. Same for materials: use Render page on Geo COMP, not Material SOP (per-primitive calls).
+
+29. **Info CHOP needs Passive mode.** By default, Info CHOP forces its target to cook. Enable the Passive toggle to monitor cook data without distorting results.
+
+30. **Lag/Filter/Slope are time-dependent.** These CHOPs compare current frame to previous — they cook every frame and force everything downstream to cook too. Place them as LATE as possible in the chain.
+
+31. **Preload heavy assets at startup.** `op('comp').cook(force=True, recurse=True)` for geometry, `moviefileinTOP.preload()` for video. Without this, the first display/transition causes a visible freeze.
 
 ## Fetching Documentation
 

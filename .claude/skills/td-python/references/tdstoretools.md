@@ -90,3 +90,84 @@ self.stored = TDStoreTools.StorageManager(self, comp, [
 def onFrameStart(self):
     self.Config['frame'] = absTime.frame  # triggers dependency every frame for nothing
 ```
+
+## tdu.Dependency
+
+Low-level dependency primitive. `DependDict` and `DependList` are built on top of this. Use `tdu.Dependency` directly when you need a single reactive value outside of StorageManager.
+
+### Constructor
+
+```python
+dep = tdu.Dependency(val=None)
+```
+
+### Properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| `.val` | read/write | The stored value. **Reading** creates a dependency link (the reader will cook when value changes). **Writing** notifies all dependents. |
+| `.peekVal` | read-only | Returns the value **without** creating a dependency. Use for logging, debugging, or non-reactive reads. |
+| `.callbacks` | read/write | List of callables invoked when `.val` changes. Each receives `(dependency, setInfo)`. |
+| `.ops` | read-only | List of operators currently dependent on this value. |
+| `.listAttributes` | read-only | List of attribute names on operators that depend on this. |
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `.modified()` | Notify dependents after in-place mutation of a mutable value (list append, dict key change). Required because TD cannot detect sub-component changes. |
+| `.setVal(val, setInfo=None)` | Set value with optional info dict passed to callbacks. |
+
+### Critical pitfall: assignment overwrites the Dependency
+
+```python
+# BAD — replaces the Dependency object with a plain int
+op('comp1').Scale = 5
+
+# GOOD — sets the value inside the existing Dependency
+op('comp1').Scale.val = 5
+```
+
+This applies to any storage key that was created as `dependable: True` in StorageManager. Direct assignment destroys the reactivity.
+
+### Mutable object pitfall
+
+```python
+dep = tdu.Dependency([1, 2, 3])
+
+# BAD — dependents NOT notified (list mutated in place)
+dep.val.append(4)
+
+# FIX — manually notify after in-place mutation
+dep.val.append(4)
+dep.modified()
+
+# ALTERNATIVE — reassign entirely (triggers .val setter)
+dep.val = dep.val + [4]
+```
+
+Same applies to dicts: `dep.val['key'] = 'new'` does not notify — call `dep.modified()` after.
+
+### Callback pattern
+
+```python
+def on_scale_change(dependency, setInfo):
+    print(f"Scale changed to {dependency.val}")
+
+scale = tdu.Dependency(1.0)
+scale.callbacks.append(on_scale_change)
+scale.val = 2.0  # prints "Scale changed to 2.0"
+
+# With setInfo for context
+scale.setVal(3.0, setInfo={'source': 'slider'})
+```
+
+### When to use what
+
+| Need | Use |
+|------|-----|
+| Single reactive value | `tdu.Dependency` |
+| Reactive dict/list with multiple keys | `DependDict` / `DependList` |
+| Reactive value managed by StorageManager | `dependable: True` in items list |
+| Non-reactive data | Plain Python variable |
+| Read without creating dependency | `.peekVal` (Dependency) or `.peekValue(key)` (DependDict) |
