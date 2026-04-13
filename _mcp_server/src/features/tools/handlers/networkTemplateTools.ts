@@ -213,6 +213,7 @@ export function registerNetworkTemplateTools(
 	registry: KnowledgeRegistry,
 	serverMode: ServerMode,
 	tdClient: TouchDesignerClient,
+	snapshotRegistry?: import("../deploy/snapshotRegistry.js").DeploySnapshotRegistry,
 ): void {
 	// search_network_templates
 	server.tool(
@@ -341,6 +342,16 @@ export function registerNetworkTemplateTools(
 						return { content: [{ text, type: "text" as const }] };
 					}
 
+					// Pre-deploy snapshot
+					let snapshotId: string | undefined;
+					if (snapshotRegistry) {
+						snapshotId = await snapshotRegistry.capture(
+							tdClient,
+							params.parentPath,
+							TOOL_NAMES.DEPLOY_NETWORK_TEMPLATE,
+						);
+					}
+
 					const execResult = await tdClient.execPythonScript({
 						mode: "full-exec",
 						script,
@@ -356,6 +367,11 @@ export function registerNetworkTemplateTools(
 						parentPath: params.parentPath,
 						templateId: params.id,
 					};
+
+					if (snapshotId) {
+						(deployResult as unknown as Record<string, unknown>).snapshotId =
+							snapshotId;
+					}
 
 					const text = formatDeployTemplateResult(deployResult, {
 						detailLevel: params.detailLevel ?? "summary",

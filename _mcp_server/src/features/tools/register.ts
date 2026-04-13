@@ -17,6 +17,7 @@ import {
 } from "../templates/paths.js";
 import { AssetRegistry } from "../templates/registry.js";
 import type { AssetSource } from "../templates/types.js";
+import { DeploySnapshotRegistry } from "./deploy/snapshotRegistry.js";
 import { registerAssetTools } from "./handlers/assetTools.js";
 import { registerBuildTools } from "./handlers/buildTools.js";
 import { registerErrorScanTools } from "./handlers/errorScanTools.js";
@@ -28,6 +29,7 @@ import { registerNetworkTemplateTools } from "./handlers/networkTemplateTools.js
 import { registerPaletteTools } from "./handlers/paletteTools.js";
 import { registerPerfTools } from "./handlers/perfTools.js";
 import { registerProjectCatalogTools } from "./handlers/projectCatalogTools.js";
+import { registerRollbackTools } from "./handlers/rollbackTools.js";
 import { registerScreenshotTools } from "./handlers/screenshotTools.js";
 import { registerSearchTools } from "./handlers/searchTools.js";
 import { registerSnippetTools } from "./handlers/snippetTools.js";
@@ -55,6 +57,7 @@ export function registerTools(
 	resourceDeps?: ResourceDeps,
 ): { assetRegistry: AssetRegistry } {
 	const auditLog = new ExecAuditLog();
+	const snapshotRegistry = new DeploySnapshotRegistry();
 	registerTdTools(server, logger, tdClient, serverMode, auditLog);
 	registerHealthTools(server, logger, tdClient, serverMode);
 	registerErrorScanTools(server, logger, tdClient, serverMode);
@@ -83,14 +86,23 @@ export function registerTools(
 
 	assetRegistry.loadAll(assetPaths);
 
-	registerAssetTools(server, logger, tdClient, assetRegistry, serverMode);
+	registerAssetTools(
+		server,
+		logger,
+		tdClient,
+		assetRegistry,
+		serverMode,
+		snapshotRegistry,
+	);
 	registerGlslPatternTools(
 		server,
 		logger,
 		tdClient,
 		knowledgeRegistry,
 		serverMode,
+		snapshotRegistry,
 	);
+	registerRollbackTools(server, tdClient, serverMode, snapshotRegistry, logger);
 
 	// Register search/compare tools if resource dependencies available
 	if (resourceDeps) {
@@ -140,6 +152,7 @@ export function registerTools(
 		knowledgeRegistry,
 		serverMode,
 		tdClient,
+		snapshotRegistry,
 	);
 
 	// Register build tracking tools (offline)

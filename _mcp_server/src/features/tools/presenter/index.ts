@@ -68,6 +68,7 @@ export {
 	formatLoadResult,
 	formatPaletteSearchResults,
 } from "./paletteFormatter.js";
+export { formatUndoDeployResult } from "./rollbackFormatter.js";
 export type { ScriptResultData } from "./scriptResultFormatter.js";
 export { formatScriptResult } from "./scriptResultFormatter.js";
 export {

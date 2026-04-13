@@ -274,6 +274,7 @@ export function registerGlslPatternTools(
 	tdClient: TouchDesignerClient,
 	registry: KnowledgeRegistry,
 	serverMode: ServerMode,
+	snapshotRegistry?: import("../deploy/snapshotRegistry.js").DeploySnapshotRegistry,
 ): void {
 	server.tool(
 		TOOL_NAMES.SEARCH_GLSL_PATTERNS,
@@ -412,6 +413,16 @@ export function registerGlslPatternTools(
 						return { content: [{ text, type: "text" as const }] };
 					}
 
+					// Pre-deploy snapshot
+					let snapshotId: string | undefined;
+					if (snapshotRegistry) {
+						snapshotId = await snapshotRegistry.capture(
+							tdClient,
+							parentPath,
+							TOOL_NAMES.DEPLOY_GLSL_PATTERN,
+						);
+					}
+
 					const deployResult = await executeGlslDeploy(
 						tdClient,
 						pattern,
@@ -419,6 +430,9 @@ export function registerGlslPatternTools(
 						parentPath,
 					);
 					await runGlslPostChecks(tdClient, deployResult);
+					if (snapshotId) {
+						deployResult.snapshotId = snapshotId;
+					}
 
 					const text = formatGlslDeployResult(deployResult, {
 						detailLevel,

@@ -69,7 +69,7 @@ description: "TouchDesigner Python: utility modules (TDFunctions, TDJSON, TDStor
 
 20. **Save original text before fixing.** Call `get_dat_text` and store result before `lint_dat({ fix: true })`. No undo in MCP API.
 
-21. **Verify runtime after every fix.** Call `get_node_errors` after applying fixes. If errors appear, rollback with `set_dat_text`.
+21. **Verify runtime after every fix.** Call `get_td_node_errors` after applying fixes. If errors appear, rollback with `set_dat_text`.
 
 22. **Respect TD's false-positive globals.** `op`, `me`, `parent()`, `ipar`, `tdu`, `ext`, `mod`, `absTime` are injected by TD. Ruff flags these as F821/F401 — suppress with `# noqa`, never "fix" by removing.
 
@@ -96,7 +96,7 @@ Before any lint workflow, call `get_capabilities` to verify tools:
 | `lint_dat` | Lint (check/dry-run/fix modes) |
 | `lint_dats` | Batch lint under a parent |
 | `set_dat_text` | Write text back (rollback) |
-| `get_node_errors` | Check TD runtime errors post-fix |
+| `get_td_node_errors` | Check TD runtime errors post-fix |
 | `format_dat` | Auto-format with ruff |
 | `typecheck_dat` | Type-check with pyright |
 | `validate_json_dat` | Validate JSON/YAML content |
@@ -109,7 +109,7 @@ Before any lint workflow, call `get_capabilities` to verify tools:
 3. **Lint** — `lint_dat({ fix: false })` (check only, see all diagnostics)
 4. **Report** — present diagnostics grouped by severity and fixability
 5. **Fix** — use the correction loop (see @examples/correction-loop.md)
-6. **Verify** — `get_node_errors` to confirm no TD runtime errors
+6. **Verify** — `get_td_node_errors` to confirm no TD runtime errors
 
 ## Fetching Documentation
 

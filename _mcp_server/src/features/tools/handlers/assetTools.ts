@@ -218,6 +218,7 @@ export function registerAssetTools(
 	tdClient: TouchDesignerClient,
 	registry: AssetRegistry,
 	serverMode: ServerMode,
+	snapshotRegistry?: import("../deploy/snapshotRegistry.js").DeploySnapshotRegistry,
 ): void {
 	server.tool(
 		TOOL_NAMES.SEARCH_TD_ASSETS,
@@ -343,6 +344,16 @@ export function registerAssetTools(
 						return { content: [{ text, type: "text" as const }] };
 					}
 
+					// Pre-deploy snapshot
+					let snapshotId: string | undefined;
+					if (snapshotRegistry) {
+						snapshotId = await snapshotRegistry.capture(
+							tdClient,
+							parentPath,
+							TOOL_NAMES.DEPLOY_TD_ASSET,
+						);
+					}
+
 					const deployResult = await executeAssetDeploy(
 						tdClient,
 						registry,
@@ -352,6 +363,9 @@ export function registerAssetTools(
 						force ?? false,
 					);
 					await appendDeployNodeWarnings(tdClient, deployResult);
+					if (snapshotId) {
+						(deployResult as Record<string, unknown>).snapshotId = snapshotId;
+					}
 
 					const text = formatDeployResult(deployResult, {
 						detailLevel,

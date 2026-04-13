@@ -82,6 +82,7 @@ export const TOOL_NAMES = {
 	SET_DAT_TEXT: "set_dat_text",
 	SUGGEST_WORKFLOW: "suggest_workflow",
 	TYPECHECK_DAT: "typecheck_dat",
+	UNDO_LAST_DEPLOY: "undo_last_deploy",
 	UPDATE_TD_NODE_PARAMETERS: "update_td_node_parameters",
 	VALIDATE_GLSL_DAT: "validate_glsl_dat",
 	VALIDATE_JSON_DAT: "validate_json_dat",
