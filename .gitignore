@@ -27,6 +27,9 @@ TDImportCache/
 _mcp_server/data/td-knowledge/toolkits/
 _mcp_server/data/introspection/
 
+# Operator Snippets raw extraction (generated via TD introspection)
+snippets_data/
+
 # Complexity audit reports (ephemeral)
 reports/complexity/
 

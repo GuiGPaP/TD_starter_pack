@@ -71,6 +71,10 @@ export {
 export type { ScriptResultData } from "./scriptResultFormatter.js";
 export { formatScriptResult } from "./scriptResultFormatter.js";
 export {
+	formatSnippetDetail,
+	formatSnippetSearchResults,
+} from "./snippetFormatter.js";
+export {
 	formatTechniqueDetail,
 	formatTechniqueSearchResults,
 } from "./techniqueFormatter.js";

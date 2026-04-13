@@ -7,6 +7,10 @@ import { resolveKnowledgePath } from "../resources/paths.js";
 import type { KnowledgeRegistry } from "../resources/registry.js";
 import type { VersionManifest } from "../resources/versionManifest.js";
 import {
+	resolveSnippetsDataPath,
+	SnippetRegistry,
+} from "../snippets/registry.js";
+import {
 	resolveBuiltinAssetsPath,
 	resolveProjectAssetsPath,
 	resolveUserAssetsPath,
@@ -26,6 +30,7 @@ import { registerPerfTools } from "./handlers/perfTools.js";
 import { registerProjectCatalogTools } from "./handlers/projectCatalogTools.js";
 import { registerScreenshotTools } from "./handlers/screenshotTools.js";
 import { registerSearchTools } from "./handlers/searchTools.js";
+import { registerSnippetTools } from "./handlers/snippetTools.js";
 import { registerTdTools } from "./handlers/tdTools.js";
 import { registerTechniqueTools } from "./handlers/techniqueTools.js";
 import { registerTutorialTools } from "./handlers/tutorialTools.js";
@@ -151,6 +156,15 @@ export function registerTools(
 
 	// Register palette tools (index, search, load)
 	registerPaletteTools(server, logger, tdClient, serverMode, auditLog);
+
+	// Register snippet tools (offline, from extracted Operator Snippets)
+	const snippetsPath = resolveSnippetsDataPath(import.meta.url);
+	if (snippetsPath) {
+		const snippetRegistry = new SnippetRegistry(snippetsPath, logger);
+		if (snippetRegistry.load()) {
+			registerSnippetTools(server, logger, snippetRegistry);
+		}
+	}
 
 	return { assetRegistry };
 }
