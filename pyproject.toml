@@ -1,7 +1,25 @@
 [project]
 name = "td-starter-pack"
 version = "0.1.0"
+description = "TouchDesigner x Claude MCP starter pack — live control, introspection, GLSL deployment, and operator knowledge base"
+authors = [{ name = "Guillaume Parrat", email = "guillaume.parrat@gmail.com" }]
+license = { text = "MIT" }
+readme = "README.md"
 requires-python = ">=3.11"
+keywords = ["touchdesigner", "mcp", "claude", "glsl", "ai", "creative-coding"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Multimedia :: Graphics",
+  "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Homepage = "https://github.com/GuiGPaP/TD_starter_pack"
+Repository = "https://github.com/GuiGPaP/TD_starter_pack"
+Issues = "https://github.com/GuiGPaP/TD_starter_pack/issues"
 
 # ── dependency-groups (PEP 735) ───────────────────────────────────
 [dependency-groups]

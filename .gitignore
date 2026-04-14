@@ -17,7 +17,6 @@ build/
 
 # Third-party toolkit .tox files (proprietary, not redistributable)
 custom OP/
-olib/
 
 # TouchDesigner caches and backups
 Backup/
@@ -26,6 +25,9 @@ TDImportCache/
 # Toolkit knowledge data (populated via live TD introspection, not committed)
 _mcp_server/data/td-knowledge/toolkits/
 _mcp_server/data/introspection/
+
+# Gource visualization output (generated, not versioned)
+gource_vertical.mp4
 
 # Operator Snippets raw extraction (generated via TD introspection)
 snippets_data/

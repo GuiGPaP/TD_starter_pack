@@ -1,0 +1,192 @@
+{
+	"schemaVersion": "1.1",
+	"name": "starter_pack.4",
+	"file": "starter_pack.4.toe",
+	"tdVersion": "099",
+	"created": "2026-04-13",
+	"modified": "2026-04-13",
+	"author": "GuiGPaP",
+	"tags": [
+		"mcp",
+		"webserver"
+	],
+	"description": "TouchDesigner project centered on a webserver/API bridge network via mcp_webserver_base.",
+	"operators": {
+		"COMP": 1,
+		"DAT": 4
+	},
+	"components": [
+		"mcp_webserver_base"
+	],
+	"nodeCount": 5,
+	"connectionCount": 0,
+	"nodes": [
+		{
+			"path": "/project1/mcp_webserver_base",
+			"name": "mcp_webserver_base",
+			"opType": "baseCOMP",
+			"family": "COMP",
+			"parentPath": "/project1",
+			"parameters": {
+				"pageindex": {
+					"value": 3,
+					"style": "Int"
+				},
+				"opviewer": {
+					"value": null,
+					"style": "OP"
+				},
+				"enableexternaltox": {
+					"value": false,
+					"style": "Toggle"
+				},
+				"externaltox": {
+					"value": "C:/Users/guill/Desktop/TD_starter_pack/mcp_webserver_base.tox",
+					"style": "File",
+					"mode": "EXPRESSION",
+					"expr": "me.parent().fileFolder + '/' + 'mcp_webserver_base.tox'"
+				},
+				"Port": {
+					"value": 9981,
+					"style": "Int"
+				}
+			},
+			"customParameters": [
+				{
+					"name": "Port",
+					"label": "Port",
+					"page": "params",
+					"style": "Int",
+					"value": 9981
+				},
+				{
+					"name": "Restart",
+					"label": "Restart",
+					"page": "params",
+					"style": "Pulse",
+					"value": false
+				},
+				{
+					"name": "Active",
+					"label": "Active",
+					"page": "params",
+					"style": "Toggle",
+					"value": true
+				}
+			]
+		},
+		{
+			"path": "/project1/mcp_webserver_base/parameter1",
+			"name": "parameter1",
+			"opType": "parameterDAT",
+			"family": "DAT",
+			"parentPath": "/project1/mcp_webserver_base",
+			"parameters": {
+				"pageindex": {
+					"value": 0,
+					"style": "Int"
+				},
+				"ops": {
+					"value": "/project1/mcp_webserver_base",
+					"style": "OP"
+				}
+			}
+		},
+		{
+			"path": "/project1/mcp_webserver_base/mpc_webserver",
+			"name": "mpc_webserver",
+			"opType": "webserverDAT",
+			"family": "DAT",
+			"parentPath": "/project1/mcp_webserver_base",
+			"parameters": {
+				"pageindex": {
+					"value": 0,
+					"style": "Int"
+				},
+				"active": {
+					"value": true,
+					"style": "Toggle",
+					"mode": "EXPRESSION",
+					"expr": "parent().par.Active"
+				},
+				"restart": {
+					"value": false,
+					"style": "Pulse",
+					"mode": "EXPRESSION",
+					"expr": "op('parameter1')['Restart',1]"
+				},
+				"port": {
+					"value": 9981,
+					"style": "Int",
+					"mode": "EXPRESSION",
+					"expr": "op('parameter1')['Port',1]"
+				},
+				"callbacks": {
+					"value": "/project1/mcp_webserver_base/mcp_webserver_script",
+					"style": "DAT"
+				},
+				"minprotocol": {
+					"value": "tls10",
+					"style": "Menu"
+				},
+				"language": {
+					"value": "json",
+					"style": "Menu"
+				}
+			}
+		},
+		{
+			"path": "/project1/mcp_webserver_base/import_modules",
+			"name": "import_modules",
+			"opType": "textDAT",
+			"family": "DAT",
+			"parentPath": "/project1/mcp_webserver_base",
+			"parameters": {
+				"pageindex": {
+					"value": 0,
+					"style": "Int"
+				},
+				"syncfile": {
+					"value": true,
+					"style": "Toggle"
+				},
+				"language": {
+					"value": "python",
+					"style": "Menu"
+				}
+			}
+		},
+		{
+			"path": "/project1/mcp_webserver_base/mcp_webserver_script",
+			"name": "mcp_webserver_script",
+			"opType": "textDAT",
+			"family": "DAT",
+			"parentPath": "/project1/mcp_webserver_base",
+			"parameters": {
+				"pageindex": {
+					"value": 0,
+					"style": "Int"
+				},
+				"syncfile": {
+					"value": true,
+					"style": "Toggle"
+				},
+				"language": {
+					"value": "python",
+					"style": "Menu"
+				}
+			}
+		}
+	],
+	"connections": [],
+	"patterns": [
+		{
+			"kind": "api-bridge",
+			"summary": "Appears to expose a webserver or MCP-facing control network."
+		}
+	],
+	"warnings": [
+		"No suitable TOP found for thumbnail"
+	],
+	"thumbnail": null
+}

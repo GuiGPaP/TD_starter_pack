@@ -226,6 +226,15 @@ When in doubt, start with `td-guide` — it routes to `td-glsl` for shaders and 
 - **Flask integration tests not collected** — deselected by default via `addopts` + markers in `pyproject.toml`
 - **`import_modules.py` can't find schema** — check path `modules/td_server/openapi_server/openapi/openapi.yaml`
 
+## Versioning
+
+This monorepo contains two independently versioned components:
+
+- **`pyproject.toml` (v0.1.0)** — Python wrapper for the monorepo (tests, CI, modules). Follows its own SemVer, starting from MVP.
+- **`_mcp_server/package.json` (v1.5.0-td.1)** — TouchDesigner MCP server, forked from [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) v1.5.0. The `-td.1` suffix marks our divergence for TD_starter_pack.
+
+These cycles stay separate by design: the MCP server may be published standalone on npm, while the root wrapper tracks the starter-pack release cadence.
+
 ## Attribution
 
 Based on and adapted from open-source repos (MIT):
