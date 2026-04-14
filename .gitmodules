@@ -1,0 +1,3 @@
+[submodule "TDpretext"]
+	path = TDpretext
+	url = https://github.com/GuiGPaP/TDpretext.git
