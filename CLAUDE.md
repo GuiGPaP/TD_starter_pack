@@ -28,6 +28,23 @@ If `tasks/errors-log.md` exists, read the **Unresolved** section and **Lesson Ca
 - `just check` — lint + typecheck only (does **not** run tests)
 - `just test` — run test suite
 
+## Submodules
+
+After cloning, always run:
+
+```bash
+git submodule update --init --recursive
+```
+
+Two components live in their own public repos, included here as submodules:
+
+- **TDpretext** (`TDpretext/`) — Pretext-based text layout in TouchDesigner via Web Render TOP.
+  Repo: https://github.com/GuiGPaP/TDpretext
+- **TDDocker** (`TDDocker/`) — Docker lifecycle manager for TD (compose overlay, transports, watchdog).
+  Repo: https://github.com/GuiGPaP/TDDocker. Contains a nested submodule `TD_SLlidar_docker/sllidar_ros2/` pinned to the Slamtec upstream.
+
+Extracted on 2026-04-14 to enable standalone OSS distribution. TDDocker history was preserved via `git subtree split`.
+
 ## MCP Server
 
 `_mcp_server/` contains the TouchDesigner MCP server (TypeScript + Python). It lives directly in the mono-repo — no submodule.

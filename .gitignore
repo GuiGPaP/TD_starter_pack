@@ -36,9 +36,6 @@ reports/complexity/
 # Stop hook error log (local session state)
 tasks/errors-log.md
 
-# TDDocker generated files
-TDDocker/td-overlay.yml
-
 # AI coding assistants config dirs
 .adal/
 .agents/
