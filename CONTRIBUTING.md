@@ -14,12 +14,20 @@ Thanks for your interest in contributing! This project pairs a TypeScript MCP se
 ```bash
 git clone https://github.com/GuiGPaP/TD_starter_pack.git
 cd TD_starter_pack
-git submodule update --init --recursive    # TDpretext + TDDocker
 
-mise install                                # tool versions
-uv sync                                     # Python deps
-cd _mcp_server && npm install && cd ..      # MCP server deps
+mise install                                # install uv, just, lefthook, lychee
+just setup                                  # submodules + Python + Node + git hooks
 ```
+
+`just setup` is idempotent — re-run it whenever you pull changes that touch submodules or dependencies.
+
+What it does:
+- `git submodule update --init --recursive` (TDpretext + TDDocker)
+- `uv sync` (Python deps from `pyproject.toml`)
+- `cd _mcp_server && npm install` (MCP server deps)
+- `lefthook install` (activates git hooks from `lefthook.yml`)
+
+The last step is important: **without `lefthook install`, the hooks defined in `lefthook.yml` are inert** because Git only executes scripts under `.git/hooks/`, not the config file. Each clone needs this one-time activation.
 
 ## Workflow
 

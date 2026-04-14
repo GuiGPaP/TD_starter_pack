@@ -1,6 +1,13 @@
 default:
     @just --list
 
+# One-shot bootstrap: submodules + Python deps + Node deps + git hooks
+setup:
+    git submodule update --init --recursive
+    uv sync
+    cd _mcp_server && npm install
+    lefthook install
+
 # Lint
 lint:
     uv run ruff check modules/

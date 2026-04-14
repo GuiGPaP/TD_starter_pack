@@ -22,19 +22,18 @@ The MCP server runs in **docs-only mode** (operator search, GLSL patterns, asset
 ### Docs-only mode (without TouchDesigner)
 
 ```bash
-# 1. Clone the repo and initialize submodules (TDpretext, TDDocker)
+# 1. Clone and bootstrap (submodules, deps, git hooks)
 git clone https://github.com/GuiGPaP/TD_starter_pack.git
 cd TD_starter_pack
-git submodule update --init --recursive
+just setup                                  # requires `mise install` if you don't have just/uv
 
 # 2. Build the MCP server
-cd _mcp_server
-npm ci
-npm run build:dist
-cd ..
+cd _mcp_server && npm run build:dist && cd ..
 ```
 
 3. Relaunch Claude Code in this folder — the MCP config is included (`.mcp.json`), search tools are immediately available (operators, GLSL patterns, assets).
+
+> **No `just` available?** Run the steps manually: `git submodule update --init --recursive && cd _mcp_server && npm ci && npm run build:dist`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full developer setup including git hooks.
 
 ### Live mode (with TouchDesigner)
 
