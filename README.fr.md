@@ -5,7 +5,7 @@
 Starter pack pour piloter TouchDesigner depuis Claude via le Model Context Protocol (MCP).
 Le serveur MCP fonctionne en **mode docs-only** (recherche d'operateurs, GLSL patterns, assets) sans TouchDesigner, et passe automatiquement en **mode live** quand TD est connecte.
 
-> Fork de [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) avec des fonctionnalites supplementaires : validation GLSL, linting/typechecking de DATs, indexation de projet, base de connaissances (542 docs offline), templates reseau, skills Claude, et plus.
+> Base sur [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) avec des fonctionnalites supplementaires : validation GLSL, linting/typechecking de DATs, indexation de projet, base de connaissances (542 docs offline), templates reseau, suggestions de workflow, bibliotheque de tutoriels, historique des versions TD, skills Claude, et plus.
 
 **[Guide utilisateur complet](docs/user-guide.md)** | **[Full user guide (EN)](docs/user-guide.en.md)**
 
@@ -22,9 +22,10 @@ Le serveur MCP fonctionne en **mode docs-only** (recherche d'operateurs, GLSL pa
 ### Mode docs-only (sans TouchDesigner)
 
 ```bash
-# 1. Cloner le repo
+# 1. Cloner le repo et initialiser les submodules (TDpretext, TDDocker)
 git clone https://github.com/GuiGPaP/TD_starter_pack.git
 cd TD_starter_pack
+git submodule update --init --recursive
 
 # 2. Builder le serveur MCP
 cd _mcp_server
@@ -40,6 +41,19 @@ cd ..
 1. Completer le Quick Start docs-only ci-dessus
 2. Ouvrir `starter_pack.toe` dans TouchDesigner — le composant `mcp_webserver_base.tox` lance le web bridge sur le port 9981
 3. Utiliser `get_health` pour verifier la connexion, ou `wait_for_td` pour attendre que TD soit pret
+
+## Submodules
+
+Deux composants vivent dans leurs propres repos publics et sont inclus ici en tant que submodules git (extraits le 2026-04-14 pour une distribution OSS standalone) :
+
+- **[TDpretext](https://github.com/GuiGPaP/TDpretext)** (`TDpretext/`) — Layout de texte base sur Pretext dans TouchDesigner via Web Render TOP.
+- **[TDDocker](https://github.com/GuiGPaP/TDDocker)** (`TDDocker/`) — Gestionnaire de cycle de vie Docker pour TD (compose overlay, transports, watchdog). Contient un submodule imbrique `TD_SLlidar_docker/sllidar_ros2/` pinne sur l'upstream Slamtec.
+
+Apres clonage, toujours executer :
+
+```bash
+git submodule update --init --recursive
+```
 
 ## Configuration multi-client
 
@@ -78,23 +92,31 @@ codex mcp add touchdesigner -- node /chemin/vers/TD_starter_pack/_mcp_server/dis
 | Categorie | Outils | Mode |
 |-----------|--------|------|
 | **Sante** | `get_health`, `wait_for_td` | offline |
-| **Recherche** | `search_operators`, `search_td_assets`, `search_glsl_patterns`, `search_projects`, `describe_td_tools` | offline |
+| **Recherche** | `search_operators`, `search_td_assets`, `search_glsl_patterns`, `search_projects`, `search_tutorials`, `search_techniques`, `search_workflow_patterns`, `search_network_templates`, `search_snippets`, `search_palette`, `search_lessons`, `describe_td_tools` | offline |
 | **Comparaison** | `compare_operators` | offline |
-| **Catalogues** | `get_td_asset`, `get_glsl_pattern`, `get_capabilities` | offline |
+| **Catalogues** | `get_td_asset`, `get_glsl_pattern`, `get_tutorial`, `get_technique`, `get_workflow_pattern`, `get_network_template`, `get_snippet`, `get_lesson`, `get_capabilities` | offline |
+| **Workflow** | `suggest_workflow` | offline |
+| **Versions** | `list_versions`, `get_version_info`, `list_experimental_builds`, `get_experimental_build` | offline |
 | **Catalogue projets** | `scan_projects`, `search_projects` | offline |
-| **Nodes** | `get_td_nodes`, `get_td_node_parameters`, `create_td_node`, `delete_td_node`, `update_td_node_parameters`, `get_td_node_errors` | live |
+| **Nodes** | `get_td_nodes`, `get_td_node_parameters`, `create_td_node`, `delete_td_node`, `update_td_node_parameters`, `get_td_node_errors`, `scan_network_errors` | live |
+| **Layout / Cablage** | `layout_nodes`, `connect_nodes`, `copy_node`, `screenshot_operator`, `export_subgraph` | live |
 | **Helpers** | `create_geometry_comp`, `create_feedback_loop`, `configure_instancing` | live |
 | **Execution** | `execute_python_script` (modes: read-only/safe-write/full-exec), `exec_node_method` | live |
 | **Audit** | `get_exec_log` | offline |
-| **Packaging** | `package_project` | live |
+| **Packaging** | `package_project`, `bulk_package_projects` | live |
 | **Introspection TD** | `get_td_info`, `get_td_classes`, `get_td_class_details`, `get_td_module_help` | live |
 | **Introspection noeuds** | `get_node_parameter_schema`, `complete_op_paths`, `get_chop_channels`, `get_dat_table_info`, `get_comp_extensions` | live |
 | **DAT** | `get_dat_text`, `set_dat_text`, `lint_dat`, `lint_dats`, `typecheck_dat`, `format_dat`, `discover_dat_candidates` | live |
 | **Validation** | `validate_glsl_dat`, `validate_json_dat` | live |
-| **Deploy** | `deploy_td_asset`, `deploy_glsl_pattern` | live |
+| **Deploy** | `deploy_td_asset`, `deploy_glsl_pattern`, `deploy_network_template`, `undo_last_deploy` | live |
+| **Palette** | `index_palette`, `load_palette_component` | live |
 | **Contexte projet** | `index_td_project`, `get_td_context` | live |
+| **Performance** | `get_performance` (FPS + trail stats via `_perf_monitor` / `_perf_trail`) | live |
+| **Lessons** | `capture_lesson`, `scan_for_lessons` | live |
 
 **offline** = fonctionne sans TouchDesigner | **live** = requiert une connexion TD active
+
+> Appeler `describe_td_tools` au runtime pour la liste canonique toujours a jour.
 
 ## Golden Path — workflows de base
 
@@ -119,7 +141,9 @@ configure_instancing(geoPath="/project1/base1/geo1", instanceOpName="noise_chop"
 ## Structure du projet
 
 ```
-_mcp_server/             # serveur MCP Node.js — fork de 8beeeaaat/touchdesigner-mcp
+_mcp_server/             # serveur MCP Node.js (inline depuis 2026-03-26) — fork a l'origine de 8beeeaaat/touchdesigner-mcp
+TDpretext/               # submodule : layout de texte Pretext dans TD (Web Render TOP)
+TDDocker/                # submodule : gestionnaire Docker pour TD (+ submodule SLlidar imbrique)
 modules/
   mcp/services/          # logique metier (maintenu a la main)
   mcp/controllers/       # routing OpenAPI + handlers generes
@@ -127,7 +151,7 @@ modules/
   td_server/             # serveur OpenAPI (d'origine generee)
   utils/                 # result types, logging, serialization
   tests/                 # pytest unit + smoke tests (fake_td.py = fake graph TD)
-.claude/skills/          # skills Claude (td-guide, td-glsl, td-glsl-vertex, td-pops, td-lint)
+.claude/skills/          # skills Claude (td-guide, td-glsl, td-python, td-pretext, td-sketch-ui)
 .mcp.example.json        # config MCP exemple (copier vers .mcp.json)
 starter_pack.toe         # projet TD de demarrage
 mcp_webserver_base.tox   # composant serveur web MCP
@@ -179,11 +203,13 @@ npm run lint                         # lint + typecheck
 
 | Besoin | Skill |
 |--------|-------|
-| Reseau TD / operateurs / layout | `td-guide` |
-| Pixel shader / GLSL TOP | `td-glsl` |
-| Vertex shader / GLSL MAT | `td-glsl-vertex` |
-| Compute shader / particules | `td-pops` |
-| Linting Python DAT / ruff | `td-lint` |
+| Reseau TD / operateurs / layout / rendu / contexte projet | `td-guide` |
+| Shaders GLSL (pixel, vertex, compute, particules) | `td-glsl` |
+| Utilitaires Python (TDFunctions, TDJSON, TDStoreTools, TDResources), linting DAT, ruff | `td-python` |
+| Layout de texte natif / atlas de fontes / evitement d'obstacles | `td-pretext` |
+| UI depuis sketch / wireframe → widgets Palette | `td-sketch-ui` |
+
+En cas de doute, commencer par `td-guide` — il route vers `td-glsl` pour les shaders et `td-python` pour le travail Python.
 
 ## Troubleshooting
 
@@ -203,9 +229,10 @@ npm run lint                         # lint + typecheck
 ## Attribution
 
 Base sur et adapte de repos open-source (MIT) :
-- [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) — serveur MCP TouchDesigner d'origine
+- [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) — serveur MCP TouchDesigner d'origine (code de base pour `_mcp_server/`)
+- [bottobot/touchdesigner-mcp-server](https://github.com/bottobot/touchdesigner-mcp-server) — inspiration pour les features de documentation offline : workflow suggestion engine, tutoriels, network templates, builds experimentaux, bibliotheque de techniques, historique des versions TD
 - [satoruhiga/claude-touchdesigner](https://github.com/satoruhiga/claude-touchdesigner) — skill td-guide
-- [rheadsh/audiovisual-production-skills](https://github.com/rheadsh/audiovisual-production-skills) — skills td-glsl, td-glsl-vertex, td-pops
+- [rheadsh/audiovisual-production-skills](https://github.com/rheadsh/audiovisual-production-skills) — materiel des skills GLSL / POP (fusionne dans `td-glsl`)
 
 ## Licence
 
