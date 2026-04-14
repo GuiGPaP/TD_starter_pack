@@ -63,3 +63,8 @@ Patterns and corrections captured during work sessions. Review at session start.
 
 - Skill frontmatters must have mutually exclusive triggers — no overlap between td-guide, td-glsl, td-glsl-vertex, td-pops.
 - MCP tool names (e.g., `get_td_nodes`) differ from OpenAPI operationIds (e.g., `get_nodes`). Document the MCP-facing names, not the internal ones.
+
+## Claude Code Infrastructure (hooks, submodules)
+
+- **Hooks must be submodule-aware**: `cd "$(git rev-parse --show-toplevel)"` inside `.claude/settings.json` commands breaks when the shell cwd is inside a submodule (returns the submodule root, not the parent). Use `cd "${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-superproject-working-tree 2>/dev/null || git rev-parse --show-toplevel)}"` — `CLAUDE_PROJECT_DIR` is the preferred anchor, `--show-superproject-working-tree` is the git-native fallback, bare `--show-toplevel` is the last resort for non-submodule repos. Applies to PreToolUse, PostToolUse, Stop hooks equally.
+- **After extracting a submodule**: always run `git submodule update --init --recursive` post-clone, and verify the validate-on-stop hook doesn't crash (`MODULE_NOT_FOUND` on `.claude/hooks/run-hook.js` is the tell).
