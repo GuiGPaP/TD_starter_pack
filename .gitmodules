@@ -1,3 +1,6 @@
 [submodule "TDpretext"]
 	path = TDpretext
 	url = https://github.com/GuiGPaP/TDpretext.git
+[submodule "TDDocker"]
+	path = TDDocker
+	url = https://github.com/GuiGPaP/TDDocker.git
