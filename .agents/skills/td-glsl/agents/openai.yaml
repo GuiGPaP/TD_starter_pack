@@ -1,0 +1,6 @@
+interface:
+  display_name: "TouchDesigner GLSL"
+  short_description: "TouchDesigner GLSL shaders and validation"
+  default_prompt: "Use $td-glsl to write and validate a TouchDesigner shader."
+policy:
+  allow_implicit_invocation: true

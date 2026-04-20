@@ -1,0 +1,6 @@
+interface:
+  display_name: "TouchDesigner Guide"
+  short_description: "TD networks, operators, layout, MCP tools"
+  default_prompt: "Use $td-guide to inspect and modify a TouchDesigner network safely."
+policy:
+  allow_implicit_invocation: true
