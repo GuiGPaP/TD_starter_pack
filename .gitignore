@@ -37,10 +37,13 @@ reports/complexity/
 
 # Stop hook error log (local session state)
 tasks/errors-log.md
+plans/
+
+# Nested projects kept out of the main repo until added as submodules
+SMTC/
 
 # AI coding assistants config dirs
 .adal/
-.agents/
 .augment/
 .bob/
 .codebuddy/
@@ -48,6 +51,7 @@ tasks/errors-log.md
 .continue/
 .cortex/
 .crush/
+.codex/
 .factory/
 .goose/
 .iflow/
@@ -68,3 +72,6 @@ tasks/errors-log.md
 .vibe/
 .windsurf/
 .zencoder/
+
+# Local assistant settings
+.claude/settings.local.json
