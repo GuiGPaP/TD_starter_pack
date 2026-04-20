@@ -1,9 +1,15 @@
 import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { deduplicateId, titleToId } from "../../../src/features/lessons/idGenerator.js";
-import { appendLessonToSidecar, writeLessonToBuiltin } from "../../../src/features/lessons/writer.js";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import {
+	deduplicateId,
+	titleToId,
+} from "../../../src/features/lessons/idGenerator.js";
+import {
+	appendLessonToSidecar,
+	writeLessonToBuiltin,
+} from "../../../src/features/lessons/writer.js";
 import { KnowledgeRegistry } from "../../../src/features/resources/registry.js";
 import type { TDLessonEntry } from "../../../src/features/resources/types.js";
 
@@ -37,7 +43,9 @@ describe("titleToId", () => {
 	});
 
 	it("handles special characters", () => {
-		expect(titleToId("CHOP Export → TOP Params")).toBe("chop-export-top-params");
+		expect(titleToId("CHOP Export → TOP Params")).toBe(
+			"chop-export-top-params",
+		);
 	});
 
 	it("collapses multiple hyphens", () => {

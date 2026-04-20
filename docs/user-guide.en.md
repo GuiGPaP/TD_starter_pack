@@ -62,8 +62,10 @@ Mode transitions are logged to stderr. Use `get_health` to check connection stat
 
 | Tool | Mode | Description |
 |------|------|-------------|
-| `search_operators` | offline | Scored search across operator catalogue. Filters: family, TD version |
+| `search_operators` | offline | Scored search across the local operator catalogue. Filters: family, TD version |
 | `compare_operators` | offline | Side-by-side comparison of 2 operators (common/unique params, version) |
+| `refresh_operator_catalog` | live | Generate the local catalogue from TouchDesigner runtime introspection |
+| `index_td_offline_help` | offline | Index the user's local TouchDesigner OfflineHelp folder into the cache |
 | `search_glsl_patterns` | offline | Search GLSL patterns by type, difficulty, tags |
 | `search_td_assets` | offline | Search reusable .tox assets |
 | `describe_td_tools` | offline | Manifest of all available MCP tools |
@@ -151,8 +153,8 @@ Resources accessible via the MCP protocol (auto-read by clients):
 |-----|-------------|
 | `td://modules` | Index of documented Python modules |
 | `td://modules/{id}` | Module detail (e.g., `td://modules/tdfunctions`) |
-| `td://operators` | Index of 22 operators in the catalogue |
-| `td://operators/{id}` | Operator detail (enriched with live data when TD is connected) |
+| `td://operators` | Index of operators from the user's local cache |
+| `td://operators/{id}` | Operator detail from the local cache, enriched with live data when TD is connected |
 
 ---
 
@@ -237,6 +239,8 @@ get_exec_log(mode="read-only")
 ---
 
 ## Operator search
+
+The operator catalogue is not bundled with the package. Generate it locally with `refresh_operator_catalog` when TouchDesigner is connected, then add descriptions from your installation with `index_td_offline_help` if the OfflineHelp folder is available.
 
 ### Scored search
 

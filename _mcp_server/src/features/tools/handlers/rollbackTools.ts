@@ -1,13 +1,16 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { REFERENCE_COMMENT, TOOL_NAMES } from "../../../core/constants.js";
+import { TOOL_NAMES } from "../../../core/constants.js";
 import type { ILogger } from "../../../core/logger.js";
 import type { ServerMode } from "../../../core/serverMode.js";
 import type { TouchDesignerClient } from "../../../tdClient/touchDesignerClient.js";
-import type { DeploySnapshotRegistry } from "../deploy/snapshotRegistry.js";
+import type {
+	DeploySnapshot,
+	DeploySnapshotRegistry,
+} from "../deploy/snapshotRegistry.js";
 import { formatUndoDeployResult } from "../presenter/index.js";
-import { detailOnlyFormattingSchema } from "../types.js";
 import { withLiveGuard } from "../toolGuards.js";
+import { detailOnlyFormattingSchema } from "../types.js";
 
 const undoLastDeploySchema = detailOnlyFormattingSchema.extend({
 	confirm: z
@@ -24,6 +27,150 @@ const undoLastDeploySchema = detailOnlyFormattingSchema.extend({
 
 type UndoLastDeployParams = z.input<typeof undoLastDeploySchema>;
 
+interface RollbackDeps {
+	snapshotRegistry: DeploySnapshotRegistry;
+	tdClient: TouchDesignerClient;
+}
+
+function formatUndoResult(
+	data: Parameters<typeof formatUndoDeployResult>[0],
+	params: UndoLastDeployParams,
+): string {
+	return formatUndoDeployResult(data, {
+		detailLevel: params.detailLevel ?? "summary",
+		responseFormat: params.responseFormat,
+	});
+}
+
+function formatMissingSnapshot(
+	snapshotId: string | undefined,
+	params: UndoLastDeployParams,
+): string {
+	const error = snapshotId
+		? `No snapshot found with ID: ${snapshotId}`
+		: "No deploy snapshots available. Deploy something first.";
+
+	return formatUndoResult(
+		{
+			error,
+			opsToDelete: [],
+			parentPath: "",
+			snapshotId: snapshotId ?? "",
+		},
+		params,
+	);
+}
+
+async function getCurrentOperatorPaths(
+	tdClient: TouchDesignerClient,
+	parentPath: string,
+): Promise<Set<string>> {
+	const result = await tdClient.getNodes({ parentPath });
+	const currentOps = new Set<string>();
+
+	if (!result.success || !result.data?.nodes) return currentOps;
+
+	for (const node of result.data.nodes) {
+		if (node.path) currentOps.add(node.path);
+	}
+
+	return currentOps;
+}
+
+function getAddedOperatorPaths(
+	snapshot: DeploySnapshot,
+	currentOps: ReadonlySet<string>,
+): string[] {
+	const snapshotSet = new Set(snapshot.operators);
+	return [...currentOps].filter((path) => !snapshotSet.has(path));
+}
+
+function formatEmptyRollback(
+	snapshot: DeploySnapshot,
+	params: UndoLastDeployParams,
+): string {
+	return formatUndoResult(
+		{
+			message: "No new operators found since snapshot — nothing to undo.",
+			opsToDelete: [],
+			parentPath: snapshot.parentPath,
+			snapshotId: snapshot.id,
+		},
+		params,
+	);
+}
+
+function formatDryRunRollback(
+	snapshot: DeploySnapshot,
+	addedOps: string[],
+	params: UndoLastDeployParams,
+): string {
+	return formatUndoResult(
+		{
+			dryRun: true,
+			message: `Would delete ${addedOps.length} operator(s) added by ${snapshot.toolName}`,
+			opsToDelete: addedOps,
+			parentPath: snapshot.parentPath,
+			snapshotId: snapshot.id,
+		},
+		params,
+	);
+}
+
+function buildDeleteScript(operatorPaths: string[]): string {
+	return operatorPaths
+		.map((operatorPath) => `op(${JSON.stringify(operatorPath)}).destroy()`)
+		.join("\n");
+}
+
+async function executeRollback(
+	snapshot: DeploySnapshot,
+	addedOps: string[],
+	params: UndoLastDeployParams,
+	tdClient: TouchDesignerClient,
+): Promise<string> {
+	const execResult = await tdClient.execPythonScript({
+		mode: "full-exec",
+		script: buildDeleteScript(addedOps),
+	});
+	const success = execResult.success;
+
+	return formatUndoResult(
+		{
+			confirmed: true,
+			message: success
+				? `Deleted ${addedOps.length} operator(s)`
+				: `Rollback script failed: ${execResult.error}`,
+			opsToDelete: addedOps,
+			parentPath: snapshot.parentPath,
+			snapshotId: snapshot.id,
+			success,
+		},
+		params,
+	);
+}
+
+async function handleUndoLastDeploy(
+	params: UndoLastDeployParams,
+	deps: RollbackDeps,
+): Promise<string> {
+	const { confirm, snapshotId } = params;
+	const snapshot = deps.snapshotRegistry.get(snapshotId);
+
+	if (!snapshot) return formatMissingSnapshot(snapshotId, params);
+
+	const currentOps = await getCurrentOperatorPaths(
+		deps.tdClient,
+		snapshot.parentPath,
+	);
+	const addedOps = getAddedOperatorPaths(snapshot, currentOps);
+
+	if (addedOps.length === 0) return formatEmptyRollback(snapshot, params);
+	if (!confirm) return formatDryRunRollback(snapshot, addedOps, params);
+
+	return executeRollback(snapshot, addedOps, params, deps.tdClient);
+}
+
 export function registerRollbackTools(
 	server: McpServer,
 	tdClient: TouchDesignerClient,
@@ -31,10 +178,8 @@ export function registerRollbackTools(
 	snapshotRegistry: DeploySnapshotRegistry,
 	_logger: ILogger,
 ): void {
-	const wrap = (
-		toolName: string,
+	const asToolResult = (
 		handler: (params: UndoLastDeployParams) => Promise<string>,
-		_refComment: string,
 	) => {
 		return async (params: UndoLastDeployParams) => {
 			const text = await handler(params);
@@ -50,97 +195,8 @@ export function registerRollbackTools(
 			TOOL_NAMES.UNDO_LAST_DEPLOY,
 			serverMode,
 			tdClient,
-			wrap(
-				TOOL_NAMES.UNDO_LAST_DEPLOY,
-				async (params: UndoLastDeployParams) => {
-					const { confirm, snapshotId, detailLevel, responseFormat } =
-						params;
-
-					const snapshot = snapshotRegistry.get(snapshotId);
-					if (!snapshot) {
-						const msg = snapshotId
-							? `No snapshot found with ID: ${snapshotId}`
-							: "No deploy snapshots available. Deploy something first.";
-						return formatUndoDeployResult(
-							{
-								error: msg,
-								opsToDelete: [],
-								parentPath: "",
-								snapshotId: snapshotId ?? "",
-							},
-							{ detailLevel: detailLevel ?? "summary", responseFormat },
-						);
-					}
-
-					// Get current operators under the same parent
-					const result = await tdClient.getNodes({
-						parentPath: snapshot.parentPath,
-					});
-
-					const currentOps = new Set<string>();
-					if (result.success && result.data?.nodes) {
-						for (const node of result.data.nodes) {
-							if (node.path) currentOps.add(node.path);
-						}
-					}
-
-					// Find operators added since snapshot
-					const snapshotSet = new Set(snapshot.operators);
-					const addedOps = [...currentOps].filter(
-						(p) => !snapshotSet.has(p),
-					);
-
-					if (addedOps.length === 0) {
-						return formatUndoDeployResult(
-							{
-								message:
-									"No new operators found since snapshot — nothing to undo.",
-								opsToDelete: [],
-								parentPath: snapshot.parentPath,
-								snapshotId: snapshot.id,
-							},
-							{ detailLevel: detailLevel ?? "summary", responseFormat },
-						);
-					}
-
-					if (!confirm) {
-						return formatUndoDeployResult(
-							{
-								dryRun: true,
-								message: `Would delete ${addedOps.length} operator(s) added by ${snapshot.toolName}`,
-								opsToDelete: addedOps,
-								parentPath: snapshot.parentPath,
-								snapshotId: snapshot.id,
-							},
-							{ detailLevel: detailLevel ?? "summary", responseFormat },
-						);
-					}
-
-					// Actually delete
-					const deleteScript = addedOps
-						.map((p) => `op('${p}').destroy()`)
-						.join("\n");
-					const execResult = await tdClient.execPythonScript({
-						mode: "full-exec",
-						script: deleteScript,
-					});
-
-					const success = execResult.success;
-					return formatUndoDeployResult(
-						{
-							confirmed: true,
-							message: success
-								? `Deleted ${addedOps.length} operator(s)`
-								: `Rollback script failed: ${execResult.error}`,
-							opsToDelete: addedOps,
-							parentPath: snapshot.parentPath,
-							snapshotId: snapshot.id,
-							success,
-						},
-						{ detailLevel: detailLevel ?? "summary", responseFormat },
-					);
-				},
-				REFERENCE_COMMENT,
+			asToolResult((params) =>
+				handleUndoLastDeploy(params, { snapshotRegistry, tdClient }),
 			),
 		),
 	);

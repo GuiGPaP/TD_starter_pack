@@ -109,6 +109,7 @@ export function registerTools(
 		registerSearchTools(
 			server,
 			logger,
+			tdClient,
 			knowledgeRegistry,
 			resourceDeps.versionManifest,
 			resourceDeps.fusionService,

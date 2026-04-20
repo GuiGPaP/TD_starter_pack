@@ -35,13 +35,13 @@
 		"enabled": true,
 		"rules": {
 			"complexity": {
-				"noStaticOnlyClass": "off",
 				"noExcessiveCognitiveComplexity": {
 					"level": "error",
 					"options": {
 						"maxAllowedComplexity": 20
 					}
-				}
+				},
+				"noStaticOnlyClass": "off"
 			},
 			"recommended": true,
 			"style": {

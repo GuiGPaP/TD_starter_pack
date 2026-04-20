@@ -29,10 +29,7 @@ function makeLessonEntry(
 	} as TDKnowledgeEntry;
 }
 
-function writeLessonEntry(
-	basePath: string,
-	entry: TDKnowledgeEntry,
-): void {
+function writeLessonEntry(basePath: string, entry: TDKnowledgeEntry): void {
 	const dir = join(basePath, "lessons");
 	mkdirSync(dir, { recursive: true });
 	const { writeFileSync } = require("node:fs");

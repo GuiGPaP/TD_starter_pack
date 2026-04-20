@@ -164,15 +164,12 @@ describe("Corpus contract — data/td-knowledge/", () => {
 				e.kind === "operator",
 		);
 
-		it("contains glsl-top", () => {
-			const ids = operators.map((o) => o.id);
-			expect(ids).toContain("glsl-top");
-		});
-
-		it("glsl-top has kind 'operator'", () => {
-			const glslTop = operators.find((o) => o.id === "glsl-top");
-			expect(glslTop).toBeDefined();
-			expect(glslTop?.kind).toBe("operator");
+		it("does not redistribute td-docs operator entries", () => {
+			expect(
+				operators.filter(
+					(operator) => operator.provenance.source === "td-docs",
+				),
+			).toHaveLength(0);
 		});
 	});
 });

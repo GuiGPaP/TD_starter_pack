@@ -1,3 +1,6 @@
+import { mkdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ConsoleLogger } from "../../src/core/logger.js";
 import { TouchDesignerServer } from "../../src/server/touchDesignerServer.js";
@@ -19,6 +22,8 @@ describe("Resources Transport Integration (offline)", () => {
 	const PROTOCOL_VERSION = "2024-11-05";
 	let activeSessionId: string | null = null;
 	let initializeResult: Record<string, unknown> | null = null;
+	let previousCacheDir: string | undefined;
+	let tempCacheDir: string;
 	const config: StreamableHttpTransportConfig = {
 		endpoint: "/mcp",
 		host: "127.0.0.1",
@@ -28,6 +33,10 @@ describe("Resources Transport Integration (offline)", () => {
 	};
 
 	beforeAll(async () => {
+		tempCacheDir = join(tmpdir(), `td-resources-transport-${Date.now()}`);
+		mkdirSync(tempCacheDir, { recursive: true });
+		previousCacheDir = process.env.TD_MCP_OPERATOR_CACHE_DIR;
+		process.env.TD_MCP_OPERATOR_CACHE_DIR = tempCacheDir;
 		process.env.TD_WEB_SERVER_HOST = "http://127.0.0.1";
 		process.env.TD_WEB_SERVER_PORT = "9981";
 
@@ -76,6 +85,12 @@ describe("Resources Transport Integration (offline)", () => {
 	afterAll(async () => {
 		await httpManager.stop();
 		sessionManager?.stopTTLCleanup();
+		if (previousCacheDir === undefined) {
+			delete process.env.TD_MCP_OPERATOR_CACHE_DIR;
+		} else {
+			process.env.TD_MCP_OPERATOR_CACHE_DIR = previousCacheDir;
+		}
+		rmSync(tempCacheDir, { force: true, recursive: true });
 	});
 
 	// --- Tâche 3: capabilities.resources ---
@@ -118,15 +133,6 @@ describe("Resources Transport Integration (offline)", () => {
 		expect(uris).toContain("td://modules/tdfunctions");
 	});
 
-	it("should list template resources including td://operators/glsl-top", async () => {
-		const response = await mcpRequest("resources/list", {});
-		const payload = await readFirstSseEvent(response);
-		const resources = payload.result.resources as Array<{ uri: string }>;
-		const uris = resources.map((r) => r.uri);
-
-		expect(uris).toContain("td://operators/glsl-top");
-	});
-
 	// --- Tâche 5b: resources/read ---
 
 	it("should read td://modules/tdfunctions offline with correct structure", async () => {
@@ -149,9 +155,9 @@ describe("Resources Transport Integration (offline)", () => {
 		expect(parsed.entry.payload.canonicalName).toBe("TDFunctions");
 	});
 
-	it("should read td://operators/glsl-top offline with _meta.source = 'static'", async () => {
+	it("should read td://operators offline as an empty local-cache index", async () => {
 		const response = await mcpRequest("resources/read", {
-			uri: "td://operators/glsl-top",
+			uri: "td://operators",
 		});
 		const payload = await readFirstSseEvent(response);
 
@@ -164,7 +170,8 @@ describe("Resources Transport Integration (offline)", () => {
 		expect(contents).toHaveLength(1);
 
 		const parsed = JSON.parse(contents[0].text);
-		expect(parsed._meta.source).toBe("static");
+		expect(parsed.version).toBe("1");
+		expect(parsed.entries).toEqual([]);
 	});
 
 	// --- Helpers ---

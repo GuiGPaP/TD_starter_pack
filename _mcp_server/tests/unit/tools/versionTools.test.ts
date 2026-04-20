@@ -71,6 +71,12 @@ function createMockVersionManifest(versions: TDVersionInfo[] = MOCK_VERSIONS) {
 	};
 }
 
+function getRegisteredHandler(tools: ToolCall[], toolName: string) {
+	const tool = tools.find((candidate) => candidate.name === toolName);
+	if (!tool) throw new Error(`Expected tool to be registered: ${toolName}`);
+	return tool.handler;
+}
+
 const mockLogger = {
 	sendLog: vi.fn(),
 };
@@ -99,8 +105,7 @@ describe("versionTools", () => {
 
 	describe("list_versions", () => {
 		function getHandler() {
-			return tools.find((t) => t.name === TOOL_NAMES.LIST_VERSIONS)!
-				.handler;
+			return getRegisteredHandler(tools, TOOL_NAMES.LIST_VERSIONS);
 		}
 
 		it("should return all versions", async () => {
@@ -123,8 +128,7 @@ describe("versionTools", () => {
 
 	describe("get_version_info", () => {
 		function getHandler() {
-			return tools.find((t) => t.name === TOOL_NAMES.GET_VERSION_INFO)!
-				.handler;
+			return getRegisteredHandler(tools, TOOL_NAMES.GET_VERSION_INFO);
 		}
 
 		it("should return version detail", async () => {

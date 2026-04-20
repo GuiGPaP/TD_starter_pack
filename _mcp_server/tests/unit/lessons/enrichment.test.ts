@@ -28,7 +28,7 @@ describe("generateSkillProposal", () => {
 	it("maps GLSL tags to td-glsl skill", () => {
 		const lesson = makeLesson({
 			payload: { category: "pattern", tags: ["glsl", "shader", "feedback"] },
-		} as any);
+		});
 
 		const proposal = generateSkillProposal(lesson);
 		expect(proposal).toBeDefined();
@@ -40,7 +40,7 @@ describe("generateSkillProposal", () => {
 	it("maps Python tags to td-python skill", () => {
 		const lesson = makeLesson({
 			payload: { category: "pitfall", tags: ["python", "callback"] },
-		} as any);
+		});
 
 		const proposal = generateSkillProposal(lesson);
 		expect(proposal?.targetFile).toBe("td-python");
@@ -53,7 +53,7 @@ describe("generateSkillProposal", () => {
 				operatorChain: [{ family: "CHOP", opType: "lfoCHOP" }],
 				tags: ["lfo", "audio"],
 			},
-		} as any);
+		});
 
 		const proposal = generateSkillProposal(lesson);
 		expect(proposal?.targetFile).toBe("td-guide");
@@ -62,7 +62,7 @@ describe("generateSkillProposal", () => {
 	it("returns undefined for unmatched tags/families", () => {
 		const lesson = makeLesson({
 			payload: { category: "pattern", tags: ["misc", "random"] },
-		} as any);
+		});
 
 		const proposal = generateSkillProposal(lesson);
 		expect(proposal).toBeUndefined();
@@ -75,7 +75,7 @@ describe("generateSkillProposal", () => {
 				fix: "Clamp to 0-1",
 				tags: ["glsl", "decay"],
 			},
-		} as any);
+		});
 
 		const proposal = generateSkillProposal(lesson);
 		expect(proposal?.proposedAddition).toContain("⚠️");
@@ -85,7 +85,7 @@ describe("generateSkillProposal", () => {
 	it("uses pattern prefix for patterns", () => {
 		const lesson = makeLesson({
 			payload: { category: "pattern", tags: ["glsl", "feedback"] },
-		} as any);
+		});
 
 		const proposal = generateSkillProposal(lesson);
 		expect(proposal?.proposedAddition).toContain("✅");

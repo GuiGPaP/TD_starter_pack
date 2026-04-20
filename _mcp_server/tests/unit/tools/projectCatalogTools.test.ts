@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TOOL_NAMES } from "../../../src/core/constants.js";
 import { ServerMode } from "../../../src/core/serverMode.js";
 import { registerProjectCatalogTools } from "../../../src/features/tools/handlers/projectCatalogTools.js";

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ServerMode } from "../../../src/core/serverMode.js";
 import {
 	FusionService,
@@ -99,6 +99,13 @@ function createRegistryWithEntries(entries: TDOperatorEntry[]) {
 	return registry;
 }
 
+function requireValue<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label}`);
+	}
+	return value;
+}
+
 describe("FusionService", () => {
 	let serverMode: ServerMode;
 	let mockClient: ReturnType<typeof createMockTdClient>;
@@ -126,10 +133,12 @@ describe("FusionService", () => {
 
 	it("should return static entry when offline (docs-only)", async () => {
 		// serverMode defaults to docs-only
-		const result = await service.getEntry("glsl-top");
-		expect(result).toBeDefined();
-		expect(result!._meta.source).toBe("static");
-		expect(result!.entry.payload.liveParameters).toBeUndefined();
+		const result = requireValue(
+			await service.getEntry("glsl-top"),
+			"fusion result",
+		);
+		expect(result._meta.source).toBe("static");
+		expect(result.entry.payload.liveParameters).toBeUndefined();
 		expect(mockClient.execPythonScript).not.toHaveBeenCalled();
 	});
 
@@ -141,9 +150,12 @@ describe("FusionService", () => {
 			success: true,
 		});
 
-		const result = await service.getEntry("glsl-top");
-		expect(result!._meta.source).toBe("static");
-		expect(result!.entry.payload.liveParameters).toBeUndefined();
+		const result = requireValue(
+			await service.getEntry("glsl-top"),
+			"fusion result",
+		);
+		expect(result._meta.source).toBe("static");
+		expect(result.entry.payload.liveParameters).toBeUndefined();
 	});
 
 	it("should return hybrid entry when instance found and params fetched", async () => {
@@ -158,30 +170,31 @@ describe("FusionService", () => {
 			success: true,
 		});
 
-		const result = await service.getEntry("glsl-top");
-		expect(result!._meta.source).toBe("hybrid");
-		expect(result!._meta.tdBuild).toBe("2023.11000");
-		expect(result!._meta.enrichedAt).toBeDefined();
+		const result = requireValue(
+			await service.getEntry("glsl-top"),
+			"fusion result",
+		);
+		expect(result._meta.source).toBe("hybrid");
+		expect(result._meta.tdBuild).toBe("2023.11000");
+		expect(result._meta.enrichedAt).toBeDefined();
 
 		// Static description preserved
-		expect(result!.entry.payload.parameters[0].description).toBe(
+		expect(result.entry.payload.parameters[0].description).toBe(
 			"GLSL language version",
 		);
 		// Live style/default override
-		expect(result!.entry.payload.parameters[0].menuNames).toEqual([
+		expect(result.entry.payload.parameters[0].menuNames).toEqual([
 			"1.20",
 			"3.30",
 			"4.50",
 		]);
-		expect(result!.entry.payload.parameters[0].default).toBe("3.30");
+		expect(result.entry.payload.parameters[0].default).toBe("3.30");
 
 		// liveParameters present
-		expect(result!.entry.payload.liveParameters).toHaveLength(3);
+		expect(result.entry.payload.liveParameters).toHaveLength(3);
 
 		// Live-only param NOT in static parameters
-		const staticParamNames = result!.entry.payload.parameters.map(
-			(p) => p.name,
-		);
+		const staticParamNames = result.entry.payload.parameters.map((p) => p.name);
 		expect(staticParamNames).not.toContain("compute");
 	});
 
@@ -262,8 +275,11 @@ describe("FusionService", () => {
 			success: false,
 		});
 
-		const result = await service.getEntry("glsl-top");
-		expect(result!._meta.source).toBe("static");
+		const result = requireValue(
+			await service.getEntry("glsl-top"),
+			"fusion result",
+		);
+		expect(result._meta.source).toBe("static");
 	});
 
 	it("should return static when execPythonScript throws", async () => {
@@ -271,8 +287,11 @@ describe("FusionService", () => {
 
 		mockClient.execPythonScript.mockRejectedValue(new Error("Connection lost"));
 
-		const result = await service.getEntry("glsl-top");
-		expect(result!._meta.source).toBe("static");
+		const result = requireValue(
+			await service.getEntry("glsl-top"),
+			"fusion result",
+		);
+		expect(result._meta.source).toBe("static");
 	});
 });
 
@@ -286,18 +305,20 @@ describe("mergeOperatorEntry", () => {
 		// glslversion: live menuNames/menuLabels injected
 		const glslParam = result.payload.parameters.find(
 			(p) => p.name === "glslversion",
-		)!;
-		expect(glslParam.menuNames).toEqual(["1.20", "3.30", "4.50"]);
-		expect(glslParam.description).toBe("GLSL language version"); // static wins
+		);
+		const requiredGlslParam = requireValue(glslParam, "glslversion param");
+		expect(requiredGlslParam.menuNames).toEqual(["1.20", "3.30", "4.50"]);
+		expect(requiredGlslParam.description).toBe("GLSL language version"); // static wins
 
 		// resolutionw: live default/min/max override
 		const resParam = result.payload.parameters.find(
 			(p) => p.name === "resolutionw",
-		)!;
-		expect(resParam.default).toBe(1920); // live overrides static 1280
-		expect(resParam.min).toBe(1);
-		expect(resParam.max).toBe(16384);
-		expect(resParam.description).toBe("Output width"); // static wins
+		);
+		const requiredResParam = requireValue(resParam, "resolutionw param");
+		expect(requiredResParam.default).toBe(1920); // live overrides static 1280
+		expect(requiredResParam.min).toBe(1);
+		expect(requiredResParam.max).toBe(16384);
+		expect(requiredResParam.description).toBe("Output width"); // static wins
 	});
 
 	it("should include all live params in liveParameters", () => {
@@ -306,8 +327,12 @@ describe("mergeOperatorEntry", () => {
 
 		const result = mergeOperatorEntry(staticEntry, liveParams);
 
-		expect(result.payload.liveParameters).toHaveLength(3);
-		expect(result.payload.liveParameters![2].name).toBe("compute");
+		const liveParameters = requireValue(
+			result.payload.liveParameters,
+			"live parameters",
+		);
+		expect(liveParameters).toHaveLength(3);
+		expect(liveParameters[2].name).toBe("compute");
 	});
 
 	it("should not inject live-only params into static parameters", () => {

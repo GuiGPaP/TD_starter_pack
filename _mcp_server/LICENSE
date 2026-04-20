@@ -1,6 +1,22 @@
 MIT License
 
 Copyright (c) 2025 sadao komaki
+Copyright (c) 2026 Guillaume PARRAT (GuiGPaP)
+
+License scope
+-------------
+
+Unless otherwise noted, the source code and package assets in this package are
+licensed under the MIT License below.
+
+The knowledge template and workflow JSON files under:
+
+- dist/data/td-knowledge/templates/
+- dist/data/td-knowledge/workflows/
+
+are distributed under CC-BY-4.0 as declared in each file's provenance metadata.
+These files are manually authored project knowledge and are not bundled
+Derivative operator documentation.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

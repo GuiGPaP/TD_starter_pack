@@ -113,6 +113,22 @@ export class KnowledgeRegistry {
 		}
 		return true;
 	}
+
+	/**
+	 * Insert or replace a single entry.
+	 * Used for runtime-generated operator metadata caches.
+	 */
+	upsertEntry(entry: TDKnowledgeEntry): void {
+		const previous = this.entries.get(entry.id);
+		if (previous?.kind === "operator") {
+			this.opTypeIndex.delete(previous.payload.opType.toLowerCase());
+		}
+
+		this.entries.set(entry.id, entry);
+		if (entry.kind === "operator") {
+			this.opTypeIndex.set(entry.payload.opType.toLowerCase(), entry);
+		}
+	}
 }
 
 function collectKindTerms(entry: TDKnowledgeEntry): string[] {

@@ -69,6 +69,26 @@ Tools allow AI agents to perform actions in TouchDesigner.
 | `search_td_assets`      | Searches the catalogue of reusable TD assets (offline).            |
 | `get_td_asset`          | Gets detailed info about a specific TD asset by ID (offline).      |
 | `deploy_td_asset`       | Deploys a reusable .tox asset into the running TD project.         |
+| `search_operators`      | Searches the local operator catalogue once generated.              |
+| `refresh_operator_catalog` | Generates a factual local operator catalogue from a running TouchDesigner instance. |
+| `index_td_offline_help` | Indexes the user's local TouchDesigner Offline Help into the local operator cache. |
+
+### Operator Catalogue
+
+The npm package does not bundle Derivative operator documentation or the old
+`data/td-knowledge/operators/*.json` corpus. Operator knowledge is generated
+locally on the user's machine:
+
+- `refresh_operator_catalog` connects to TouchDesigner and records factual
+  runtime metadata such as operator type, family, parameter names, styles,
+  defaults, ranges, and menu values.
+- `index_td_offline_help` reads the user's local TouchDesigner Offline Help
+  folder, when available, and stores extracted summaries/descriptions in the
+  user's local cache.
+
+The local cache is stored outside the repository by default. Set
+`TD_MCP_OPERATOR_CACHE_DIR` to override the cache directory, or
+`TD_MCP_OFFLINE_HELP_PATH` to point directly at an Offline Help folder.
 
 ### Prompts
 

@@ -71,8 +71,10 @@ Le passage d'un mode a l'autre est affiche dans les logs stderr du serveur. Util
 
 | Outil | Mode | Description |
 |-------|------|-------------|
-| `search_operators` | offline | Recherche scoree dans le catalogue d'operateurs. Filtres : famille, version TD |
+| `search_operators` | offline | Recherche scoree dans le catalogue local d'operateurs. Filtres : famille, version TD |
 | `compare_operators` | offline | Comparaison cote-a-cote de 2 operateurs (params communs/uniques, version) |
+| `refresh_operator_catalog` | live | Genere le catalogue local depuis l'introspection TouchDesigner runtime |
+| `index_td_offline_help` | offline | Indexe le dossier OfflineHelp local de TouchDesigner dans le cache utilisateur |
 | `search_glsl_patterns` | offline | Recherche de patterns GLSL par type, difficulte, tags |
 | `search_td_assets` | offline | Recherche d'assets .tox reutilisables |
 | `describe_td_tools` | offline | Manifeste de tous les outils MCP disponibles |
@@ -160,8 +162,8 @@ Resources accessibles via le protocole MCP (lecture automatique par les clients)
 |-----|-------------|
 | `td://modules` | Index des modules Python documentes |
 | `td://modules/{id}` | Detail d'un module (ex: `td://modules/tdfunctions`) |
-| `td://operators` | Index des 22 operateurs dans le catalogue |
-| `td://operators/{id}` | Detail d'un operateur (enrichi avec les donnees live si TD connecte) |
+| `td://operators` | Index des operateurs du cache local utilisateur |
+| `td://operators/{id}` | Detail d'un operateur depuis le cache local, enrichi avec les donnees live si TD connecte |
 
 ---
 
@@ -246,6 +248,8 @@ get_exec_log(mode="read-only")
 ---
 
 ## Recherche d'operateurs
+
+Le catalogue d'operateurs n'est pas embarque dans le package. Generez-le localement avec `refresh_operator_catalog` lorsque TouchDesigner est connecte, puis ajoutez les descriptions de votre installation avec `index_td_offline_help` si le dossier OfflineHelp est disponible.
 
 ### Recherche scoree
 

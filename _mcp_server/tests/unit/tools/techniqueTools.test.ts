@@ -97,9 +97,7 @@ function createMockServer() {
 function createMockRegistry(entries: TDKnowledgeEntry[]) {
 	return {
 		getById: vi.fn((id: string) => entries.find((e) => e.id === id)),
-		getByKind: vi.fn((kind: string) =>
-			entries.filter((e) => e.kind === kind),
-		),
+		getByKind: vi.fn((kind: string) => entries.filter((e) => e.kind === kind)),
 		getIndexByKind: vi.fn((kind: string) =>
 			entries
 				.filter((e) => e.kind === kind)
@@ -107,6 +105,12 @@ function createMockRegistry(entries: TDKnowledgeEntry[]) {
 		),
 		search: vi.fn(),
 	} as unknown as KnowledgeRegistry;
+}
+
+function getRegisteredHandler(tools: ToolCall[], toolName: string) {
+	const tool = tools.find((candidate) => candidate.name === toolName);
+	if (!tool) throw new Error(`Expected tool to be registered: ${toolName}`);
+	return tool.handler;
 }
 
 const mockLogger = { sendLog: vi.fn() };
@@ -138,8 +142,7 @@ describe("techniqueTools", () => {
 
 	describe("search_techniques", () => {
 		function getHandler() {
-			return tools.find((t) => t.name === TOOL_NAMES.SEARCH_TECHNIQUES)!
-				.handler;
+			return getRegisteredHandler(tools, TOOL_NAMES.SEARCH_TECHNIQUES);
 		}
 
 		it("should return all techniques without filters", async () => {
@@ -177,8 +180,7 @@ describe("techniqueTools", () => {
 
 	describe("get_technique", () => {
 		function getHandler() {
-			return tools.find((t) => t.name === TOOL_NAMES.GET_TECHNIQUE)!
-				.handler;
+			return getRegisteredHandler(tools, TOOL_NAMES.GET_TECHNIQUE);
 		}
 
 		it("should return technique detail", async () => {

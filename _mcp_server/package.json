@@ -11,7 +11,7 @@
 		"TouchDesigner"
 	],
 	"author": "8beeeaaat",
-	"license": "MIT",
+	"license": "SEE LICENSE IN LICENSE",
 	"mcpName": "io.github.8beeeaaat/touchdesigner-mcp-server",
 	"mcpCompatibility": {
 		"minApiVersion": "1.5.0"
@@ -70,7 +70,7 @@
 	"scripts": {
 		"build": "run-s build:*",
 		"build:gen": "npm run gen",
-		"build:dist": "tsc && shx chmod +x dist/*.js && shx cp -r src/features/tools/presenter/templates dist/features/tools/presenter/ && shx cp -r data dist/data",
+		"build:dist": "tsc && shx chmod +x dist/*.js && shx cp -r src/features/tools/presenter/templates dist/features/tools/presenter/ && shx rm -rf dist/data && shx cp -r data dist/data",
 		"build:mcpb": "npx @anthropic-ai/mcpb pack mcpb/ touchdesigner-mcp.mcpb",
 		"lint": "run-p lint:*",
 		"lint:biome": "biome check",

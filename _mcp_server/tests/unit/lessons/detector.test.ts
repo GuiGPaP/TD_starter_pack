@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ScanData } from "../../../src/features/lessons/detector.js";
 import { detectLessons } from "../../../src/features/lessons/detector.js";
 import { KnowledgeRegistry } from "../../../src/features/resources/registry.js";
+import type { TDLessonEntry } from "../../../src/features/resources/types.js";
 
 function emptyRegistry(): KnowledgeRegistry {
 	return new KnowledgeRegistry();
@@ -34,7 +35,11 @@ describe("detectLessons", () => {
 			};
 
 			const candidates = detectLessons(data, emptyRegistry());
-			expect(candidates.some((c) => c.category === "pattern" && c.tags.includes("feedback"))).toBe(true);
+			expect(
+				candidates.some(
+					(c) => c.category === "pattern" && c.tags.includes("feedback"),
+				),
+			).toBe(true);
 		});
 
 		it("detects GLSL + Feedback pattern", () => {
@@ -52,7 +57,9 @@ describe("detectLessons", () => {
 			};
 
 			const candidates = detectLessons(data, emptyRegistry());
-			const glslFeedback = candidates.find((c) => c.tags.includes("glsl") && c.tags.includes("feedback"));
+			const glslFeedback = candidates.find(
+				(c) => c.tags.includes("glsl") && c.tags.includes("feedback"),
+			);
 			expect(glslFeedback).toBeDefined();
 			expect(glslFeedback?.title).toContain("GLSL");
 		});
@@ -80,17 +87,23 @@ describe("detectLessons", () => {
 		it("detects CHOP exports", () => {
 			const data: ScanData = {
 				anomalies: [
-					{ detail: "CHOP has active export", path: "/p/lfo1", type: "chop_export" },
+					{
+						detail: "CHOP has active export",
+						path: "/p/lfo1",
+						type: "chop_export",
+					},
 				],
 				connections: [],
 				errors: [],
-				operators: [
-					{ family: "CHOP", opType: "lfoCHOP", path: "/p/lfo1" },
-				],
+				operators: [{ family: "CHOP", opType: "lfoCHOP", path: "/p/lfo1" }],
 			};
 
 			const candidates = detectLessons(data, emptyRegistry());
-			expect(candidates.some((c) => c.tags.includes("chop") && c.tags.includes("export"))).toBe(true);
+			expect(
+				candidates.some(
+					(c) => c.tags.includes("chop") && c.tags.includes("export"),
+				),
+			).toBe(true);
 		});
 	});
 
@@ -102,13 +115,13 @@ describe("detectLessons", () => {
 				],
 				connections: [],
 				errors: [],
-				operators: [
-					{ family: "TOP", opType: "noiseTOP", path: "/p/orphan1" },
-				],
+				operators: [{ family: "TOP", opType: "noiseTOP", path: "/p/orphan1" }],
 			};
 
 			const candidates = detectLessons(data, emptyRegistry());
-			const orphan = candidates.find((c) => c.category === "pitfall" && c.tags.includes("orphan"));
+			const orphan = candidates.find(
+				(c) => c.category === "pitfall" && c.tags.includes("orphan"),
+			);
 			expect(orphan).toBeDefined();
 		});
 
@@ -116,16 +129,14 @@ describe("detectLessons", () => {
 			const data: ScanData = {
 				anomalies: [],
 				connections: [],
-				errors: [
-					{ message: "Cook error", path: "/p/broken1" },
-				],
-				operators: [
-					{ family: "TOP", opType: "glslTOP", path: "/p/broken1" },
-				],
+				errors: [{ message: "Cook error", path: "/p/broken1" }],
+				operators: [{ family: "TOP", opType: "glslTOP", path: "/p/broken1" }],
 			};
 
 			const candidates = detectLessons(data, emptyRegistry());
-			const errorCandidate = candidates.find((c) => c.category === "pitfall" && c.tags.includes("error"));
+			const errorCandidate = candidates.find(
+				(c) => c.category === "pitfall" && c.tags.includes("error"),
+			);
 			expect(errorCandidate).toBeDefined();
 		});
 	});
@@ -133,7 +144,7 @@ describe("detectLessons", () => {
 	describe("deduplication", () => {
 		it("marks candidates matching existing lessons", () => {
 			const registry = emptyRegistry();
-			registry.addEntry({
+			const existingLesson: TDLessonEntry = {
 				aliases: [],
 				content: { summary: "Existing feedback lesson" },
 				id: "feedback-existing",
@@ -154,7 +165,8 @@ describe("detectLessons", () => {
 				},
 				searchKeywords: ["feedback"],
 				title: "Existing Feedback",
-			} as any);
+			};
+			registry.addEntry(existingLesson);
 
 			const data: ScanData = {
 				anomalies: [],

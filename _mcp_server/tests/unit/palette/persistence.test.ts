@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	readIndex,
@@ -46,8 +46,9 @@ describe("palette persistence", () => {
 		expect(existsSync(filePath)).toBe(true);
 		const loaded = readIndex(filePath);
 		expect(loaded).not.toBeNull();
-		expect(loaded!.entryCount).toBe(1);
-		expect(loaded!.entries[0].name).toBe("TestComp");
+		if (!loaded) throw new Error("Expected palette index to load");
+		expect(loaded.entryCount).toBe(1);
+		expect(loaded.entries[0].name).toBe("TestComp");
 	});
 
 	it("readIndex returns null for missing file", () => {
@@ -64,10 +65,7 @@ describe("palette persistence", () => {
 	it("readIndex returns null for wrong schema", () => {
 		mkdirSync(TEST_DIR, { recursive: true });
 		const filePath = join(TEST_DIR, "wrong.json");
-		require("node:fs").writeFileSync(
-			filePath,
-			JSON.stringify({ foo: "bar" }),
-		);
+		require("node:fs").writeFileSync(filePath, JSON.stringify({ foo: "bar" }));
 		expect(readIndex(filePath)).toBeNull();
 	});
 

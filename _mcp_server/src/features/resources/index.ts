@@ -5,6 +5,7 @@ import type { TouchDesignerClient } from "../../tdClient/touchDesignerClient.js"
 import { FusionService } from "./fusionService.js";
 import { registerKnowledgeResources } from "./handlers/knowledgeResources.js";
 import { registerOperatorResources } from "./handlers/operatorResources.js";
+import { loadRuntimeOperatorEntries } from "./operatorRuntimeCache.js";
 import { resolveKnowledgePath } from "./paths.js";
 import { KnowledgeRegistry } from "./registry.js";
 import { VersionManifest } from "./versionManifest.js";
@@ -29,6 +30,21 @@ export function registerResources(
 		logger.sendLog({
 			data: "Knowledge base path not found — resources will be empty. Check TD_MCP_KNOWLEDGE_PATH or verify data/td-knowledge/ exists.",
 			level: "warning",
+			logger: "registerResources",
+		});
+	}
+
+	const runtimeOperators = loadRuntimeOperatorEntries(
+		serverMode.tdBuild,
+		logger,
+	);
+	for (const entry of runtimeOperators) {
+		registry.upsertEntry(entry);
+	}
+	if (runtimeOperators.length > 0) {
+		logger.sendLog({
+			data: `Loaded runtime operator catalogue: ${runtimeOperators.length} operator(s)`,
+			level: "info",
 			logger: "registerResources",
 		});
 	}

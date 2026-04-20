@@ -92,6 +92,7 @@ codex mcp add touchdesigner -- node /path/to/TD_starter_pack/_mcp_server/dist/cl
 |----------|-------|------|
 | **Health** | `get_health`, `wait_for_td` | offline |
 | **Search** | `search_operators`, `search_td_assets`, `search_glsl_patterns`, `search_projects`, `search_tutorials`, `search_techniques`, `search_workflow_patterns`, `search_network_templates`, `search_snippets`, `search_palette`, `search_lessons`, `describe_td_tools` | offline |
+| **Operator catalog** | `index_td_offline_help`, `refresh_operator_catalog` | offline/live |
 | **Comparison** | `compare_operators` | offline |
 | **Catalogs** | `get_td_asset`, `get_glsl_pattern`, `get_tutorial`, `get_technique`, `get_workflow_pattern`, `get_network_template`, `get_snippet`, `get_lesson`, `get_capabilities` | offline |
 | **Workflow** | `suggest_workflow` | offline |

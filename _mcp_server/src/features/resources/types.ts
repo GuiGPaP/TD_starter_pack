@@ -5,7 +5,13 @@ import { z } from "zod";
 const provenanceSchema = z.object({
 	confidence: z.enum(["high", "medium", "low"]),
 	license: z.string(),
-	source: z.enum(["skills-reference", "td-docs", "manual"]),
+	source: z.enum([
+		"skills-reference",
+		"td-docs",
+		"manual",
+		"runtime-introspection",
+		"local-offline-help",
+	]),
 });
 
 const contentSchema = z.object({
@@ -61,11 +67,21 @@ const pythonModuleEntrySchema = knowledgeEntryBaseSchema.extend({
 // ── Operator schemas ────────────────────────────────────────────────
 
 const staticOperatorParamSchema = z.object({
+	clampMax: z.boolean().optional(),
+	clampMin: z.boolean().optional(),
 	default: z.unknown().optional(),
 	description: z.string().optional(),
+	isOP: z.boolean().optional(),
 	label: z.string().optional(),
+	max: z.number().nullable().optional(),
+	menuLabels: z.array(z.string()).optional(),
+	menuNames: z.array(z.string()).optional(),
+	min: z.number().nullable().optional(),
 	name: z.string(),
+	page: z.string().optional(),
+	readOnly: z.boolean().optional(),
 	style: z.string().optional(),
+	val: z.unknown().optional(),
 });
 
 const operatorVersionSchema = z
