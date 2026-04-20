@@ -42,7 +42,7 @@ export class ConnectionManager {
 			this.transport = null;
 			const err = error instanceof Error ? error : new Error(String(error));
 			console.error(
-				"Fatal error starting server! Check TouchDesigner setup and starting webserver. For detailed setup instructions, see https://github.com/8beeeaaat/touchdesigner-mcp",
+				"Fatal error starting server! Check TouchDesigner setup and starting webserver. For detailed setup instructions, see https://github.com/GuiGPaP/TD_starter_pack",
 				err,
 			);
 			return createErrorResult(err);

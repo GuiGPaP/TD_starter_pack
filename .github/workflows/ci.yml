@@ -54,3 +54,19 @@ jobs:
       - run: cd _mcp_server && npm ci
       - run: cd _mcp_server && npm run gen:handlers
       - run: diff _mcp_server/td/modules/mcp/controllers/generated_handlers.py modules/mcp/controllers/generated_handlers.py
+
+  mcp-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: astral-sh/setup-uv@v4
+      - run: cd _mcp_server && npm ci
+      - run: cd _mcp_server && uv sync --group dev
+      - run: cd _mcp_server && npm run build:dist
+      - run: cd _mcp_server && npm run lint
+      - run: cd _mcp_server && npm test

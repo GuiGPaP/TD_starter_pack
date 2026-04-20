@@ -1092,7 +1092,7 @@ Possible causes:
      → Default port is 9981, check your configuration
 
 For setup instructions, visit:
-https://github.com/8beeeaaat/touchdesigner-mcp/releases/latest
+https://github.com/GuiGPaP/TD_starter_pack/releases/latest
 
 Original error: ${error}`;
 		}

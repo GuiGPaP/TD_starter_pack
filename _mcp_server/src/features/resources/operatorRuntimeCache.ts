@@ -13,7 +13,7 @@ const CACHE_VERSION = 1;
 const CACHE_ENV = "TD_MCP_OPERATOR_CACHE_DIR";
 const LATEST_CACHE_FILE = "operators-latest.json";
 const OP_FAMILY_SUFFIXES = ["CHOP", "SOP", "TOP", "DAT", "COMP", "MAT", "POP"];
-const TEXT_PROVENANCE = new Set(["local-offline-help", "td-docs"]);
+const TEXT_PROVENANCE = new Set(["local-offline-help"]);
 
 const runtimeOperatorCacheSchema = z.object({
 	entries: z.array(knowledgeEntrySchema),

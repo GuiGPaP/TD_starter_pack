@@ -1,15 +1,13 @@
-# TouchDesigner MCP
+# TD Starter Pack MCP Server
 
-[![Version](https://img.shields.io/npm/v/touchdesigner-mcp-server?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/touchdesigner-mcp-server)
-[![Downloads](https://img.shields.io/npm/dt/touchdesigner-mcp-server.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/touchdesigner-mcp-server)
+[![Version](https://img.shields.io/npm/v/td-starter-pack-mcp-server?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/td-starter-pack-mcp-server)
+[![Downloads](https://img.shields.io/npm/dt/td-starter-pack-mcp-server.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/td-starter-pack-mcp-server)
 
 TouchDesignerのためのMCP(Model Context Protocol) サーバー実装です。AIエージェントがTouchDesignerプロジェクトを制御・操作できるようになることを目指しています。
 
 [English](README.md) / [日本語](README.ja.md)
 
 ## 概要
-
-[![demo clip](https://github.com/8beeeaaat/touchdesigner-mcp/blob/main/assets/particle_on_youtube.png)](https://youtu.be/V2znaqGU7f4?si=6HDFbcBHCFPdttkM&t=635)
 
 TouchDesigner MCPは、AIモデルとTouchDesigner WebServer DAT 間のブリッジとして機能し、AIエージェントが以下のことが可能になります
 
@@ -21,7 +19,7 @@ TouchDesigner MCPは、AIモデルとTouchDesigner WebServer DAT 間のブリッ
 
 **[インストールガイド](docs/installation.ja.md)** を参照してください。
 
-アップデートする場合は **[最新リリース](https://github.com/8beeeaaat/touchdesigner-mcp/releases/latest#for-updates-from-previous-versions)** の手順を参照してください。
+アップデートする場合は **[TD Starter Pack releases](https://github.com/GuiGPaP/TD_starter_pack/releases/latest)** の手順を参照してください。
 
 ## MCPサーバーの機能
 
@@ -85,8 +83,8 @@ TouchDesigner MCPは、AIモデルとTouchDesigner WebServer DAT 間のブリッ
 - ❌ **エラー**: MAJORバージョンが異なる、またはAPIサーバー < 最小互換バージョン（即座に実行停止、更新が必要）
 
 - **互換性エラーを解決するには：**
-  1. リリースページから最新の [touchdesigner-mcp-td.zip](https://github.com/8beeeaaat/touchdesigner-mcp/releases/latest/download/touchdesigner-mcp-td.zip) をダウンロードします。
-  2. 既存の `touchdesigner-mcp-td` フォルダを削除し、新しく展開した内容に置き換えます。
+  1. [TD Starter Pack releases](https://github.com/GuiGPaP/TD_starter_pack/releases/latest) から最新のリリースファイルをダウンロードします。
+  2. 既存のTD Starter Pack MCPファイルを削除し、新しく展開した内容に置き換えます。
   3. TouchDesignerプロジェクトから古い `mcp_webserver_base` コンポーネントを削除し、新しいフォルダから `.tox` をインポートします。
   4. TouchDesignerとMCPサーバーを実行しているAIエージェント（例：Claude Desktop）を再起動します。
 

@@ -164,10 +164,12 @@ describe("Corpus contract — data/td-knowledge/", () => {
 				e.kind === "operator",
 		);
 
-		it("does not redistribute td-docs operator entries", () => {
+		it("does not redistribute bundled operator documentation entries", () => {
 			expect(
-				operators.filter(
-					(operator) => operator.provenance.source === "td-docs",
+				operators.filter((operator) =>
+					["local-offline-help", "runtime-introspection"].includes(
+						operator.provenance.source,
+					),
 				),
 			).toHaveLength(0);
 		});

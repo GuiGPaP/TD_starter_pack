@@ -145,6 +145,7 @@ src/gen
 **/generated_handlers.py
 .github/copilot-instructions.md
 .venv
+.uv-cache/
 .actrc
 *.dxt
 *.mcpb

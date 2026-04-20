@@ -5,7 +5,7 @@
 Starter pack pour piloter TouchDesigner depuis Claude via le Model Context Protocol (MCP).
 Le serveur MCP fonctionne en **mode docs-only** (recherche d'operateurs, GLSL patterns, assets) sans TouchDesigner, et passe automatiquement en **mode live** quand TD est connecte.
 
-> Base sur [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) avec des fonctionnalites supplementaires : validation GLSL, linting/typechecking de DATs, indexation de projet, base de connaissances (542 docs offline), templates reseau, suggestions de workflow, bibliotheque de tutoriels, historique des versions TD, skills Claude, et plus.
+> Base sur [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) avec des fonctionnalites supplementaires : validation GLSL, linting/typechecking de DATs, indexation de projet, catalogues locaux de connaissances, templates reseau, suggestions de workflow, bibliotheque de tutoriels, historique des versions TD, skills Claude/Codex, et plus.
 
 **[Guide utilisateur complet](docs/user-guide.md)** | **[Full user guide (EN)](docs/user-guide.en.md)**
 
@@ -31,7 +31,7 @@ just setup                                  # necessite `mise install` si just/u
 cd _mcp_server && npm run build:dist && cd ..
 ```
 
-3. Relancer Claude Code dans ce dossier — la config MCP est incluse (`.mcp.json`), les tools de recherche sont disponibles immediatement (operateurs, GLSL patterns, assets).
+3. Relancer Claude Code dans ce dossier — la config MCP est incluse (`.mcp.json`), et les tools locaux de recherche pour patterns GLSL, assets, lessons et caches operateurs generes sont disponibles immediatement.
 
 > **Pas de `just` ?** Etapes manuelles : `git submodule update --init --recursive && cd _mcp_server && npm ci && npm run build:dist`. Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le setup dev complet (git hooks inclus).
 
@@ -43,10 +43,11 @@ cd _mcp_server && npm run build:dist && cd ..
 
 ## Submodules
 
-Deux composants vivent dans leurs propres repos publics et sont inclus ici en tant que submodules git (extraits le 2026-04-14 pour une distribution OSS standalone) :
+Trois composants vivent dans leurs propres repos publics et sont inclus ici en tant que submodules git (extraits pour une distribution OSS standalone) :
 
 - **[TDpretext](https://github.com/GuiGPaP/TDpretext)** (`TDpretext/`) — Layout de texte base sur Pretext dans TouchDesigner via Web Render TOP.
 - **[TDDocker](https://github.com/GuiGPaP/TDDocker)** (`TDDocker/`) — Gestionnaire de cycle de vie Docker pour TD (compose overlay, transports, watchdog). Contient un submodule imbrique `TD_SLlidar_docker/sllidar_ros2/` pinne sur l'upstream Slamtec.
+- **[SMTC](https://github.com/GuiGPaP/SMTC)** (`SMTC/`) — Composants et exemples Spotify/SMTC pour TouchDesigner.
 
 Apres clonage, toujours executer :
 
@@ -58,7 +59,7 @@ git submodule update --init --recursive
 
 ### Claude Code (config locale au projet)
 
-Le fichier `.mcp.example.json` est pret pour Claude Code (chemin relatif) :
+Le repo inclut volontairement un `.mcp.json` fonctionnel pour demarrer Claude Code sans friction. Il ne contient qu'une commande locale relative et le port TD WebServer par defaut. Le fichier `.mcp.example.json` reste la reference copiable :
 
 ```bash
 cp .mcp.example.json .mcp.json
@@ -143,6 +144,7 @@ configure_instancing(geoPath="/project1/base1/geo1", instanceOpName="noise_chop"
 _mcp_server/             # serveur MCP Node.js (inline depuis 2026-03-26) — fork a l'origine de 8beeeaaat/touchdesigner-mcp
 TDpretext/               # submodule : layout de texte Pretext dans TD (Web Render TOP)
 TDDocker/                # submodule : gestionnaire Docker pour TD (+ submodule SLlidar imbrique)
+SMTC/                    # submodule : integration Spotify/SMTC pour TouchDesigner
 modules/
   mcp/services/          # logique metier (maintenu a la main)
   mcp/controllers/       # routing OpenAPI + handlers generes
@@ -230,7 +232,11 @@ En cas de doute, commencer par `td-guide` — il route vers `td-glsl` pour les s
 Ce monorepo contient deux composants versionnes independamment :
 
 - **`pyproject.toml` (v0.1.0)** — wrapper Python du monorepo (tests, CI, modules). Suit son propre SemVer, demarre au MVP.
-- **`_mcp_server/package.json` (v1.5.0-td.1)** — serveur MCP TouchDesigner, forke depuis [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) v1.5.0. Le suffixe `-td.1` marque notre divergence pour TD_starter_pack.
+- **`_mcp_server/package.json` (v1.5.0-td.1)** — `td-starter-pack-mcp-server`, forke depuis [8beeeaaat/touchdesigner-mcp](https://github.com/8beeeaaat/touchdesigner-mcp) v1.5.0. Le suffixe `-td.1` marque notre divergence pour TD_starter_pack.
+
+## Politique contenu Derivative
+
+Ce depot n'embarque pas la documentation operateurs Derivative, les exports OfflineHelp locaux, ni les donnees extraites d'Operator Snippets. Les metadonnees et descriptions d'operateurs sont generees localement par l'utilisateur avec `refresh_operator_catalog`, `index_td_offline_help`, ou une extraction locale `snippets_data/`. Les caches generes restent hors du repo par defaut et ne doivent pas etre redistribues.
 
 Ces cycles restent separes volontairement : le serveur MCP peut etre publie seul sur npm, tandis que le wrapper root suit le rythme de release du starter-pack.
 

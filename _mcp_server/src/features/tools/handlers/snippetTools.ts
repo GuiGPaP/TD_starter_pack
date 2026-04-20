@@ -51,7 +51,7 @@ export function registerSnippetTools(
 	// ── search_snippets ───────────────────────────────────────────
 	server.tool(
 		TOOL_NAMES.SEARCH_SNIPPETS,
-		"Search official Derivative Operator Snippets — 483 examples with best practices, readMe explanations, and network patterns (offline)",
+		"Search locally extracted Operator Snippets data — examples with readMe explanations and network patterns (offline)",
 		searchSnippetsSchema.strict().shape,
 		async (params: SearchSnippetsParams = {}) => {
 			try {
@@ -99,7 +99,7 @@ export function registerSnippetTools(
 	// ── get_snippet ───────────────────────────────────────────────
 	server.tool(
 		TOOL_NAMES.GET_SNIPPET,
-		"Get full detail of an Operator Snippet — readMe, operators, connections, embedded code, CHOP exports (offline)",
+		"Get full detail from locally extracted Operator Snippets data — readMe, operators, connections, embedded code, CHOP exports (offline)",
 		getSnippetSchema.strict().shape,
 		async (params: GetSnippetParams) => {
 			try {

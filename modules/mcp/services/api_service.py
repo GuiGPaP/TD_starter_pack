@@ -1072,12 +1072,12 @@ class TouchDesignerApiService(IApiService):
     @staticmethod
     def _try_extract_last_result(script: str, namespace: dict) -> None:
         """Try to eval the last line of a multi-line script as an implicit result."""
-        _NON_EXPR_PREFIXES = ("import", "from", "#", "if", "def", "class", "for", "while")
+        non_expr_prefixes = ("import", "from", "#", "if", "def", "class", "for", "while")
         lines = script.strip().split("\n")
         if not lines:
             return
         last_expr = lines[-1].strip()
-        if not last_expr or last_expr.startswith(_NON_EXPR_PREFIXES):
+        if not last_expr or last_expr.startswith(non_expr_prefixes):
             return
         try:
             namespace["result"] = eval(last_expr, namespace, namespace)

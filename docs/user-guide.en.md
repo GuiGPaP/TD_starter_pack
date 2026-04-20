@@ -172,7 +172,7 @@ Pre-defined prompts to guide Claude through common tasks:
 
 ## Security modes
 
-`execute_python_script` supports 3 security modes via the `mode` parameter:
+`execute_python_script` supports 3 security modes via the `mode` parameter. If omitted, the server uses `safe-write`.
 
 ### read-only
 
@@ -180,15 +180,15 @@ Allows: parameter reads, introspection, queries, `print()`, `len()`, `dir()`.
 
 Blocks: parameter assignment (`.par.x = ...`), `.create()`, `.connect()`, `.text = ...`, and everything blocked in safe-write.
 
-### safe-write
+### safe-write (default)
 
 Allows: everything read-only allows + node creation, parameter modification, connections.
 
 Blocks: `.destroy()`, filesystem access (`os.remove`, `shutil`, `open('w')`), dynamic execution (`exec()`, `eval()`), network (`socket`, `urllib`), `subprocess`, `sys.exit()`.
 
-### full-exec (default)
+### full-exec
 
-No restrictions. Default behavior (backward compatible).
+Unrestricted execution. Required for filesystem writes, subprocesses, dynamic imports/execution, networking, exits, and destructive node operations. Use only for local projects you trust.
 
 ### Preview
 
@@ -206,7 +206,7 @@ Returns: status (ALLOWED/BLOCKED), required mode, violations with line numbers, 
 
 ### Limitations
 
-Analysis is pattern-based, not a full Python AST. Dynamic constructs (`eval()`, `getattr()`, `__import__()`) can bypass restrictions. **This is not a security sandbox — it is a usage guard rail.**
+Analysis is pattern-based, not a full Python AST. `safe-write` and `read-only` are usage guard rails, not a security sandbox. Do not expose the TD WebServer port or MCP server to untrusted clients.
 
 ---
 
@@ -240,7 +240,7 @@ get_exec_log(mode="read-only")
 
 ## Operator search
 
-The operator catalogue is not bundled with the package. Generate it locally with `refresh_operator_catalog` when TouchDesigner is connected, then add descriptions from your installation with `index_td_offline_help` if the OfflineHelp folder is available.
+The operator catalogue is not bundled with the package. Generate it locally with `refresh_operator_catalog` when TouchDesigner is connected, then add descriptions from your installation with `index_td_offline_help` if the OfflineHelp folder is available. Do not commit or redistribute generated OfflineHelp or Operator Snippets caches.
 
 ### Scored search
 

@@ -7,7 +7,6 @@ const provenanceSchema = z.object({
 	license: z.string(),
 	source: z.enum([
 		"skills-reference",
-		"td-docs",
 		"manual",
 		"runtime-introspection",
 		"local-offline-help",
@@ -208,7 +207,7 @@ const skillUpdateProposalSchema = z.object({
 const lessonProvenanceSchema = provenanceSchema.extend({
 	discoveredAt: z.string().optional(),
 	discoveredIn: z.string().optional(),
-	source: z.enum(["skills-reference", "td-docs", "manual", "auto-scan"]),
+	source: z.enum(["skills-reference", "manual", "auto-scan"]),
 	validatedIn: z.array(z.string()).optional(),
 	validationCount: z.number().int().min(0).default(0),
 });

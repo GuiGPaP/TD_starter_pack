@@ -74,7 +74,7 @@ describe("HTTP Transport Integration", () => {
 				params: {
 					capabilities: {},
 					clientInfo: {
-						name: "touchdesigner-mcp-tests",
+						name: "td-starter-pack-mcp-tests",
 						version: "0.0.0",
 					},
 					protocolVersion: PROTOCOL_VERSION,

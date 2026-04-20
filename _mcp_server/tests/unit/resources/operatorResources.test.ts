@@ -27,8 +27,8 @@ function makeOperatorEntry(
 		},
 		provenance: {
 			confidence: "high",
-			license: "Derivative",
-			source: "td-docs",
+			license: "local-user-cache-not-redistributed",
+			source: "local-offline-help",
 		},
 		searchKeywords: ["glsl"],
 		title: "GLSL TOP",

@@ -34,7 +34,7 @@ export function formatSnippetSearchResults(
 	}
 
 	const lines: string[] = [
-		`Operator Snippets (${results.length} results):`,
+		`Local Operator Snippets (${results.length} results):`,
 		"",
 	];
 

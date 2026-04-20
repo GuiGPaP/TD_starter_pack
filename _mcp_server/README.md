@@ -1,7 +1,7 @@
-# TouchDesigner MCP
+# TD Starter Pack MCP Server
 
-[![Version](https://img.shields.io/npm/v/touchdesigner-mcp-server?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/touchdesigner-mcp-server)
-[![Downloads](https://img.shields.io/npm/dt/touchdesigner-mcp-server.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/touchdesigner-mcp-server)
+[![Version](https://img.shields.io/npm/v/td-starter-pack-mcp-server?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/td-starter-pack-mcp-server)
+[![Downloads](https://img.shields.io/npm/dt/td-starter-pack-mcp-server.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/td-starter-pack-mcp-server)
 
 This is an implementation of an MCP (Model Context Protocol) server for TouchDesigner. Its goal is to enable AI agents to control and operate TouchDesigner projects.
 
@@ -9,9 +9,7 @@ This is an implementation of an MCP (Model Context Protocol) server for TouchDes
 
 ## Overview
 
-[![demo clip](https://github.com/8beeeaaat/touchdesigner-mcp/blob/main/assets/particle_on_youtube.png)](https://youtu.be/V2znaqGU7f4?si=6HDFbcBHCFPdttkM&t=635)
-
-TouchDesigner MCP acts as a bridge between AI models and the TouchDesigner WebServer DAT, enabling AI agents to:
+TD Starter Pack MCP Server acts as a bridge between AI models and the TouchDesigner WebServer DAT, enabling AI agents to:
 
 - Create, modify, and delete nodes
 - Query node properties and project structure
@@ -21,7 +19,7 @@ TouchDesigner MCP acts as a bridge between AI models and the TouchDesigner WebSe
 
 Please refer to the **[Installation Guide](docs/installation.md)**.
 
-If you are updating, please refer to the procedure in the **[Latest Release](https://github.com/8beeeaaat/touchdesigner-mcp/releases/latest#for-updates-from-previous-versions)**.
+If you are updating, please refer to the procedure in the **[TD Starter Pack releases](https://github.com/GuiGPaP/TD_starter_pack/releases/latest)**.
 
 ## MCP Server Features
 
@@ -130,8 +128,8 @@ The MCP server uses **semantic versioning** for flexible compatibility checks
 - ❌ **Error**: Different MAJOR versions OR API server < 1.3.0 (execution stops immediately, update required)
 
 - **To resolve compatibility errors:**
-  1. Download the latest [touchdesigner-mcp-td.zip](https://github.com/8beeeaaat/touchdesigner-mcp/releases/latest/download/touchdesigner-mcp-td.zip) from the releases page.
-  2. Delete the existing `touchdesigner-mcp-td` folder and replace it with the newly extracted contents.
+  1. Download the latest release files from the [TD Starter Pack releases page](https://github.com/GuiGPaP/TD_starter_pack/releases/latest).
+  2. Delete the existing TD Starter Pack MCP files and replace them with the newly extracted contents.
   3. Remove the old `mcp_webserver_base` component from your TouchDesigner project and import the `.tox` from the new folder.
   4. Restart TouchDesigner and the AI agent running the MCP server (e.g., Claude Desktop).
 

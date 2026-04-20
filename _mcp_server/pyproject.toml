@@ -3,14 +3,14 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "touchdesigner-mcp"
-version = "1.5.0-td.1"
-description = "TouchDesigner MCP Server - Python modules"
+name = "td-starter-pack-mcp"
+version = "1.5.0+td.1"
+description = "TD Starter Pack MCP Server - Python modules"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
 authors = [
-    { name = "8beeeaaat" },
+    { name = "Guillaume Parrat" },
 ]
 keywords = ["touchdesigner", "mcp", "openapi"]
 classifiers = [
@@ -23,10 +23,15 @@ dependencies = [
     "PyYAML>=6.0",
 ]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+]
+
 [project.urls]
-Homepage = "https://github.com/8beeeaaat/touchdesigner-mcp"
-Repository = "https://github.com/8beeeaaat/touchdesigner-mcp"
-Issues = "https://github.com/8beeeaaat/touchdesigner-mcp/issues"
+Homepage = "https://github.com/GuiGPaP/TD_starter_pack"
+Repository = "https://github.com/GuiGPaP/TD_starter_pack"
+Issues = "https://github.com/GuiGPaP/TD_starter_pack/issues"
 
 [tool.ruff]
 # Line length to match Biome's default (80) or customize as needed

@@ -171,7 +171,7 @@ export function registerTools(
 	// Register palette tools (index, search, load)
 	registerPaletteTools(server, logger, tdClient, serverMode, auditLog);
 
-	// Register snippet tools (offline, from extracted Operator Snippets)
+	// Register snippet tools (offline, from locally extracted Operator Snippets)
 	const snippetsPath = resolveSnippetsDataPath(import.meta.url);
 	if (snippetsPath) {
 		const snippetRegistry = new SnippetRegistry(snippetsPath, logger);

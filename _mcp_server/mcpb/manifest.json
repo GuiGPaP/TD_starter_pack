@@ -1,17 +1,17 @@
 {
   "manifest_version": "0.3",
-  "name": "touchdesigner-mcp",
+  "name": "td-starter-pack-mcp",
   "version": "1.5.0-td.1",
-  "display_name": "TouchDesigner MCP Server",
-  "description": "AI assistant for TouchDesigner - control nodes, execute Python scripts, and create interactive visual content",
-  "long_description": "# TouchDesigner MCP Server\n\nBridge between AI assistants and TouchDesigner for creative coding and visual programming. Features include:\n\n- **Node Operations**: Create, delete, and modify TouchDesigner nodes\n- **Python Execution**: Run Python scripts directly in TouchDesigner environment\n- **Parameter Control**: Update node parameters and connections\n- **Real-time Monitoring**: Get TouchDesigner server information and node details\n- **Creative Assistance**: AI-powered workflow optimization and debugging\n- **Code Execution Manifest**: Generate filesystem-style tool manifests (`describe_td_tools`) for code-mode agents\n\nPerfect for visual artists, creative coders, and interactive media developers who want to leverage AI for TouchDesigner projects.",
+  "display_name": "TD Starter Pack MCP Server",
+  "description": "AI assistant for TouchDesigner - control nodes, execute Python scripts, search local catalogues, and create interactive visual content",
+  "long_description": "# TD Starter Pack MCP Server\n\nBridge between AI assistants and TouchDesigner for creative coding and visual programming. Features include:\n\n- **Node Operations**: Create, delete, and modify TouchDesigner nodes\n- **Python Execution**: Run Python scripts in TouchDesigner with read-only, safe-write, and full-exec modes\n- **Parameter Control**: Update node parameters and connections\n- **Real-time Monitoring**: Get TouchDesigner server information and node details\n- **Local Catalogues**: Search generated operator metadata, GLSL patterns, lessons, templates, and reusable assets\n- **Code Execution Manifest**: Generate filesystem-style tool manifests (`describe_td_tools`) for code-mode agents\n\nThe package does not redistribute Derivative operator documentation; operator descriptions are generated from the user's local TouchDesigner installation when requested.",
   "author": {
-    "name": "8beeeaaat",
-    "url": "https://github.com/GuiGPaP/touchdesigner-mcp"
+    "name": "Guillaume Parrat",
+    "url": "https://github.com/GuiGPaP/TD_starter_pack"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/GuiGPaP/touchdesigner-mcp"
+    "url": "https://github.com/GuiGPaP/TD_starter_pack"
   },
   "server": {
     "type": "node",
@@ -20,7 +20,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "touchdesigner-mcp-server@latest",
+        "td-starter-pack-mcp-server@latest",
         "--stdio",
         "--port=${user_config.TD_WEB_SERVER_PORT}"
       ]
@@ -138,5 +138,5 @@
     "interactive-media"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/8beeeaaat/touchdesigner-mcp"
+  "homepage": "https://github.com/GuiGPaP/TD_starter_pack"
 }

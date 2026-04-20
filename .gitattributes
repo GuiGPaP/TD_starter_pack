@@ -1,0 +1,15 @@
+* text=auto
+
+*.toe binary
+*.tox binary
+*.mcpb binary
+*.dxt binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.mp4 binary
+*.mov binary
+*.wav binary
+*.aiff binary

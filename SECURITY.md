@@ -2,23 +2,26 @@
 
 ## Python script execution modes
 
-The MCP server can execute Python code inside TouchDesigner via `execute_python_script` and `exec_node_method`. Because this is a privileged capability, execution is gated by an explicit mode setting:
+The MCP server can execute Python code inside TouchDesigner via `execute_python_script` and call node methods via `exec_node_method`. These are privileged local capabilities and must only be exposed to clients you trust.
+
+`execute_python_script` accepts an explicit `mode` parameter:
 
 | Mode | Behavior | When to use |
 |---|---|---|
-| `off` (**default**) | All script execution blocked — only read-only inspection tools work | Untrusted projects, shared sessions, production |
-| `allowlist` | Scripts allowed only if they match a curated safe builtins list (read-only inspection, parameter reads) | Controlled environments where you trust the prompts but not arbitrary code |
-| `on` | Full Python execution, including file I/O, subprocess, and network | Local dev on your own projects only |
+| `read-only` | Allows introspection and reads; blocks parameter writes, node creation, connections, DAT text writes, and higher-risk patterns | Inspecting untrusted projects or previewing scripts |
+| `safe-write` (**default**) | Allows normal TD graph edits such as creating nodes, changing parameters, connecting nodes, and editing DAT text; blocks destructive node operations, filesystem writes, subprocesses, network access, dynamic execution/imports, and process exits | Local creative coding workflows where graph edits are expected |
+| `full-exec` | Unrestricted Python execution in the TouchDesigner process | Local development on your own trusted projects only |
 
-**Defaults are safe**: out of the box the server refuses to execute scripts. Opt-in is explicit via env var or config.
+`preview=true` analyzes a script without executing it and returns the required mode plus detected violations. The execution audit log is available through `get_exec_log`.
 
-The allowlist enforcement lives in the Python-side of the MCP (`modules/mcp/services/api_service.py`) — it is the primary gate. The TypeScript MCP server mirrors the mode parameter but is not the security boundary.
+This is a usage guard rail, not an OS-level sandbox. The analyzer is pattern-based and the Python process still runs inside TouchDesigner.
 
 ### What to avoid
 
-- Running in `on` mode with untrusted prompts, shared sessions, or public MCP endpoints.
+- Running `full-exec` with untrusted prompts, shared sessions, or public MCP endpoints.
 - Exposing the TD web server port (`9981`) beyond `localhost` — there is no auth layer.
-- Committing `.mcp.json` with a non-default mode into a public repo.
+- Exposing the MCP HTTP transport beyond `localhost` unless you add your own network controls.
+- Committing local secrets, generated OfflineHelp caches, extracted Operator Snippets data, or project-specific credentials.
 
 ## Reporting a vulnerability
 
@@ -40,7 +43,7 @@ Expect an initial acknowledgement within 7 days. Coordinated disclosure is appre
 ## Out of scope
 
 - **TouchDesigner itself** — report TD vulnerabilities to [Derivative](https://derivative.ca/).
-- **Intentional local execution** — `execute_python_script` with `mode=on` is designed to run arbitrary code; that is the feature, not a bug.
+- **Intentional local execution** — `execute_python_script` with `mode=full-exec` is designed to run arbitrary code; that is the feature, not a bug.
 - **Third-party submodules** — `TDpretext` and `TDDocker` have their own repos and policies.
 
 ## Supported versions

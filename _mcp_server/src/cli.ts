@@ -51,10 +51,10 @@ export function parseArgs(args?: string[]) {
  * @example
  * ```bash
  * # Stdio mode (default)
- * touchdesigner-mcp-server --host=http://localhost --port=9981
+ * td-starter-pack-mcp-server --host=http://localhost --port=9981
  *
  * # HTTP mode
- * touchdesigner-mcp-server --mcp-http-port=6280 --mcp-http-host=127.0.0.1
+ * td-starter-pack-mcp-server --mcp-http-port=6280 --mcp-http-host=127.0.0.1
  * ```
  */
 export function parseTransportConfig(args?: string[]): TransportConfig {
@@ -106,10 +106,10 @@ export function parseTransportConfig(args?: string[]): TransportConfig {
  * @example
  * ```bash
  * # Stdio mode (default)
- * touchdesigner-mcp-server --host=http://localhost --port=9981
+ * td-starter-pack-mcp-server --host=http://localhost --port=9981
  *
  * # HTTP mode
- * touchdesigner-mcp-server --mcp-http-port=6280 --host=http://localhost --port=9981
+ * td-starter-pack-mcp-server --mcp-http-port=6280 --host=http://localhost --port=9981
  * ```
  */
 export async function startServer(params?: {

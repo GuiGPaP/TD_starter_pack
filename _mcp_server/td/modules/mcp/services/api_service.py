@@ -890,25 +890,29 @@ class TouchDesignerApiService(IApiService):
         # Build nodes list
         nodes = []
         for path, node in ops.items():
-            nodes.append({
-                "path": path,
-                "name": node.name,
-                "parent": parent_path,
-                "family": node.family,
-                "opType": node.OPType,
-                "nodeX": node.nodeX,
-                "nodeY": node.nodeY,
-            })
+            nodes.append(
+                {
+                    "path": path,
+                    "name": node.name,
+                    "parent": parent_path,
+                    "family": node.family,
+                    "opType": node.OPType,
+                    "nodeX": node.nodeX,
+                    "nodeY": node.nodeY,
+                }
+            )
 
         internal, incoming, outgoing = self._collect_edges(ops, path_set)
 
-        return success_result({
-            "parent": parent_path,
-            "nodes": nodes,
-            "edgesInternal": internal,
-            "edgesIncoming": incoming,
-            "edgesOutgoing": outgoing,
-        })
+        return success_result(
+            {
+                "parent": parent_path,
+                "nodes": nodes,
+                "edgesInternal": internal,
+                "edgesIncoming": incoming,
+                "edgesOutgoing": outgoing,
+            }
+        )
 
     @staticmethod
     def _collect_edges(ops, path_set):
@@ -932,12 +936,14 @@ class TouchDesignerApiService(IApiService):
                 for conn in oc.connections:
                     dst_path = conn.owner.path
                     if dst_path not in path_set:
-                        outgoing.append({
-                            "from": path,
-                            "to": dst_path,
-                            "fromOutput": i,
-                            "toInput": conn.index,
-                        })
+                        outgoing.append(
+                            {
+                                "from": path,
+                                "to": dst_path,
+                                "fromOutput": i,
+                                "toInput": conn.index,
+                            }
+                        )
         return internal, incoming, outgoing
 
     def layout_nodes(
@@ -1066,12 +1072,12 @@ class TouchDesignerApiService(IApiService):
     @staticmethod
     def _try_extract_last_result(script: str, namespace: dict) -> None:
         """Try to eval the last line of a multi-line script as an implicit result."""
-        _NON_EXPR_PREFIXES = ("import", "from", "#", "if", "def", "class", "for", "while")
+        non_expr_prefixes = ("import", "from", "#", "if", "def", "class", "for", "while")
         lines = script.strip().split("\n")
         if not lines:
             return
         last_expr = lines[-1].strip()
-        if not last_expr or last_expr.startswith(_NON_EXPR_PREFIXES):
+        if not last_expr or last_expr.startswith(non_expr_prefixes):
             return
         try:
             namespace["result"] = eval(last_expr, namespace, namespace)

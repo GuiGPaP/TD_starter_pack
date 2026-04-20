@@ -80,7 +80,7 @@ describe("ConnectionManager", () => {
 				expect(result.error).toBe(connectionError);
 			}
 			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				"Fatal error starting server! Check TouchDesigner setup and starting webserver. For detailed setup instructions, see https://github.com/8beeeaaat/touchdesigner-mcp",
+				"Fatal error starting server! Check TouchDesigner setup and starting webserver. For detailed setup instructions, see https://github.com/GuiGPaP/TD_starter_pack",
 				connectionError,
 			);
 			expect(connectionManager.isConnected()).toBe(false);
@@ -188,7 +188,7 @@ describe("ConnectionManager", () => {
 			await connectionManager.connect(mockTransport);
 
 			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				"Fatal error starting server! Check TouchDesigner setup and starting webserver. For detailed setup instructions, see https://github.com/8beeeaaat/touchdesigner-mcp",
+				"Fatal error starting server! Check TouchDesigner setup and starting webserver. For detailed setup instructions, see https://github.com/GuiGPaP/TD_starter_pack",
 				connectionError,
 			);
 		});

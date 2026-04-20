@@ -181,7 +181,7 @@ Prompts predefined pour guider Claude dans des taches courantes :
 
 ## Modes de securite
 
-`execute_python_script` supporte 3 modes de securite via le parametre `mode` :
+`execute_python_script` supporte 3 modes de securite via le parametre `mode`. Si le parametre est omis, le serveur utilise `safe-write`.
 
 ### read-only (lecture seule)
 
@@ -189,7 +189,7 @@ Autorise : lecture de parametres, introspection, queries, `print()`, `len()`, `d
 
 Bloque : assignation de parametres (`.par.x = ...`), `.create()`, `.connect()`, `.text = ...`, et tout ce qui est bloque en safe-write.
 
-### safe-write (ecriture securisee)
+### safe-write (ecriture securisee, defaut)
 
 Autorise : tout ce que read-only autorise + creation de nodes, modification de parametres, connexions.
 
@@ -197,7 +197,7 @@ Bloque : `.destroy()`, acces filesystem (`os.remove`, `shutil`, `open('w')`), ex
 
 ### full-exec (execution complete)
 
-Aucune restriction. Comportement par defaut (retrocompatible).
+Execution sans restriction. Requis pour les ecritures filesystem, subprocess, imports/execution dynamiques, reseau, exits, et operations destructrices sur les nodes. A utiliser uniquement sur des projets locaux de confiance.
 
 ### Preview
 
@@ -215,7 +215,7 @@ Retourne : status (ALLOWED/BLOCKED), mode requis, violations avec numeros de lig
 
 ### Limites
 
-L'analyse est basee sur du pattern matching statique, pas un AST Python complet. Les constructions dynamiques (`eval()`, `getattr()`, `__import__()`) peuvent contourner les restrictions. **Ce n'est pas une sandbox de securite, c'est un garde-fou d'usage.**
+L'analyse est basee sur du pattern matching statique, pas un AST Python complet. `safe-write` et `read-only` sont des garde-fous d'usage, pas une sandbox de securite. N'exposez pas le port WebServer TD ni le serveur MCP a des clients non fiables.
 
 ---
 
@@ -249,7 +249,7 @@ get_exec_log(mode="read-only")
 
 ## Recherche d'operateurs
 
-Le catalogue d'operateurs n'est pas embarque dans le package. Generez-le localement avec `refresh_operator_catalog` lorsque TouchDesigner est connecte, puis ajoutez les descriptions de votre installation avec `index_td_offline_help` si le dossier OfflineHelp est disponible.
+Le catalogue d'operateurs n'est pas embarque dans le package. Generez-le localement avec `refresh_operator_catalog` lorsque TouchDesigner est connecte, puis ajoutez les descriptions de votre installation avec `index_td_offline_help` si le dossier OfflineHelp est disponible. Ne commitez pas et ne redistribuez pas les caches generes depuis OfflineHelp ou Operator Snippets.
 
 ### Recherche scoree
 
