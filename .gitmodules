@@ -4,3 +4,6 @@
 [submodule "TDDocker"]
 	path = TDDocker
 	url = https://github.com/GuiGPaP/TDDocker.git
+[submodule "SMTC"]
+	path = SMTC
+	url = https://github.com/GuiGPaP/SMTC.git

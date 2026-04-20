@@ -39,9 +39,6 @@ reports/complexity/
 tasks/errors-log.md
 plans/
 
-# Nested projects kept out of the main repo until added as submodules
-SMTC/
-
 # AI coding assistants config dirs
 .adal/
 .augment/
