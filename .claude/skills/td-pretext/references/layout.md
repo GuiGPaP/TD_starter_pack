@@ -60,6 +60,12 @@ def _layout_next_line(words, char_widths_norm, font_size, space_w,
 - **Native** (`_layout_line`): spaces are separate "words" in `_words` list → trailing space stripping is implicit. Already Pretext-aligned.
 - **POP** (`_layout_next_line`): spaces are implicit between `text.split(' ')` words → explicit pending break tracking needed.
 
+### Source-text whitespace preservation (leading / trailing)
+Pretext's default `whiteSpace: 'normal'` runs `normalizeWhitespaceNormal()` on the *source text*, which collapses whitespace runs and **strips a single leading and trailing space**. The effect: the user typing `"hello "` loses the trailing space before layout.
+- **Web** (`par_to_webrender._build_config`): pass `'whiteSpace': 'pre-wrap'` in the config if the user's text field should preserve edge spaces. pre-wrap also preserves `\n`, which is usually desired for multi-line Str params.
+- **Native** (`layout_engine._build_words_native`): do **not** call `ts.text.strip()` before `list(raw)` / word tokenization — it silently drops the exact same characters Pretext's `normal` mode would. Use `raw = ts.text` and let the word builder handle inter-word spacing.
+Both bugs surface the same way: user-visible trailing/leading whitespace gets "eaten" and repeats jam together with no gap.
+
 ## Circle Obstacle Segments
 
 Identical math to Pretext's `buildSegments`:
@@ -74,6 +80,9 @@ for obstacle in obstacles:
 ```
 
 ## Bitmap Obstacle Spans (numpy-optimized)
+
+### Baseline-Y → mask row mapping (use floor, not round)
+When mapping a text baseline Y to its mask row, use `Math.floor((baselineY / canvasH) * numRows)`. `Math.round` pushes the last text row (baselineY near canvasH) to `numRows`, which is out of range and triggers the "no obstacle" fallback — the last text row leaks across the silhouette unmasked. Floor also matches `rowH = canvasH / numRows` used to draw the silhouette bands, keeping the Y→row mapping consistent with the paint.
 
 ### Reading Spans from Mask TOP
 
