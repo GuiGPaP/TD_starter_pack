@@ -8,7 +8,7 @@ When working with TouchDesigner, pick the right skill:
 |------|-------|
 | TD network / operators / layout / rendering / project context (`index_td_project`, `get_td_context`) | **td-guide** |
 | GLSL shaders (pixel, vertex, compute, particles) | **td-glsl** |
-| Python utilities (TDFunctions, TDJSON, TDStoreTools, TDResources) / DAT linting / ruff | **td-python** |
+| Python utilities (TDFunctions, TDJSON, TDStoreTools, TDResources) / DAT linting / ruff / Python env (venv, conda, requirements.txt, tdPyEnvManager) | **td-python** |
 | Native text layout / font atlas / obstacle avoidance / char instancing | **td-pretext** |
 | UI from sketch / wireframe / mockup image → Palette widgets in TD | **td-sketch-ui** |
 

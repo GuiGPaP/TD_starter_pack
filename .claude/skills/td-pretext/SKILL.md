@@ -111,12 +111,15 @@ Also detect changes in the layout engine via text hash comparison (belt + suspen
 
 | Aspect | Pretext.js | TD Native |
 |--------|-----------|-----------|
-| Latency | ~22 frames (Chromium pipeline) | 0 frames (synchronous) |
+| Pointer tracking latency | ~2-3 frames (Chromium paint pipeline) | 0 frames (synchronous) |
+| Bitmap obstacle injection | ~22 frames (numpy→JSON→executeJavaScript→recompute→repaint) | 0 frames |
 | Layout granularity | Grapheme segments | Character-level |
 | Text measurement | Canvas measureText (sub-pixel) | evalTextSize (integer) |
 | Rendering | Canvas fillText | GPU instanced quads |
 | Unicode support | Full (CJK, bidi, Thai) | Latin only (sufficient for this project) |
 | Obstacle types | Circle + bitmap | Circle + bitmap (identical math) |
+
+**Important**: the « ~22 frames » figure applies only to the bitmap obstacle path (`displaced` preset). Pointer tracking with the canonical Web Render config (`maxrenderrate=60` + `setPointer`/`interactMouse` two-path pattern) is ~2-3 frames, perceptually instant on editorial/poster/kinetic/textstring. See @references/webrender_input.md for the pattern.
 
 ## Loading References
 
@@ -125,3 +128,4 @@ Also detect changes in the layout engine via text hash comparison (belt + suspen
 | Atlas generation patterns, metrics table format | @references/atlas.md |
 | Layout algorithm, obstacle math, performance tips | @references/layout.md |
 | GLSL MAT shaders for instanced text rendering | @references/rendering.md |
+| Web Render TOP input pattern (mouse, clicks, config) | @references/webrender_input.md |

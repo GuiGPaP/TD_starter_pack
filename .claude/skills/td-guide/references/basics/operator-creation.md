@@ -108,6 +108,39 @@ op('out1').render = True
 
 If an operator with the same name exists, TD increments the number (`null1` -> `null2`). Always check the returned operator's `.name` if you need the actual name.
 
+## Auto-Spawned Companion DATs
+
+Some operators automatically spawn a sibling textDAT with callback boilerplate when created via `create_td_node` / palette / `base.create()`:
+
+| Operator | Auto-spawned sibling |
+|---|---|
+| `scriptDAT` | `<name>_callbacks` textDAT |
+| `scriptSOP` / `scriptCHOP` / `scriptTOP` | `<name>_callbacks` textDAT |
+| `executeDAT` / `chopexecuteDAT` / `datexecuteDAT` / `parameterexecuteDAT` | Self-contained — `.text` IS the callback code |
+| `timerCHOP` | `<name>_callbacks` textDAT (via "Setup Parameters") |
+
+The companion DAT is a **sibling, not docked** (`op.docked` is empty). The main op's `.par.callbacks` already points to it.
+
+**Pitfall via MCP:** if you call `create_td_node` for the scriptDAT and then again for `<name>_callbacks` to hold your own code, the second call gets suffixed to `<name>_callbacks1`, leaving the boilerplate orphan in place.
+
+```python
+# WRONG — creates a duplicate
+create_td_node(parentPath='/foo', nodeType='scriptDAT', nodeName='my_dat')
+create_td_node(parentPath='/foo', nodeType='textDAT', nodeName='my_dat_callbacks')  # becomes my_dat_callbacks1
+
+# RIGHT — reuse the auto-spawned one
+create_td_node(parentPath='/foo', nodeType='scriptDAT', nodeName='my_dat')
+set_dat_text(nodePath='/foo/my_dat_callbacks', text='def onCook(scriptOp): ...')
+```
+
+If you've already created the duplicate, delete the boilerplate and rename yours:
+
+```python
+op('/foo/my_dat_callbacks').destroy()
+op('/foo/my_dat_callbacks1').name = 'my_dat_callbacks'
+op('/foo/my_dat').par.callbacks = 'my_dat_callbacks'
+```
+
 ## Extension Wiring on baseCOMP
 
 To add a Python extension to a dynamically created baseCOMP:

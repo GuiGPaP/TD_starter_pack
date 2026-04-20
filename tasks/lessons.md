@@ -23,6 +23,7 @@ Patterns and corrections captured during work sessions. Review at session start.
 - Script output must be assigned to `result` variable. MCP expects `{ result: T }`.
 - `get_performance` Cook Rate was `project.cookRate` (target, always 60). Fixed: now reads real FPS from `/mcp_webserver_base/_perf_monitor` Perform CHOP. Always verify FPS with perform CHOP, never trust cook rate alone.
 - MCP tox includes `_perf_monitor` (performCHOP) + `_perf_trail` (trailCHOP, 5s window). `get_performance` returns trail stats (avg/min/max/p95/stddev) for FPS, frame time, CPU, drops, GPU mem.
+- Creating a `scriptDAT` via `create_td_node` (or palette) **auto-spawns a sibling `<name>_callbacks` textDAT** with boilerplate, and `scriptDAT.par.callbacks` already points to it. If you then create your own callbacks DAT with the same name, it gets suffixed (`_callbacks1`) → duplicate DATs. **Always `op('<name>_callbacks')` first and overwrite `.text`** instead of creating a new one. Not docked, just a sibling. Confirmed 2026-04-18 on `/lrc_reader/line_durations`.
 
 ## Threading & Performance
 
@@ -52,6 +53,20 @@ Patterns and corrections captured during work sessions. Review at session start.
 - For GLSL MAT + POP text rendering: use SOP instancing (rectangleSOP template) with POP as instance source. SOP provides UVs (`uv[0].st`), POP provides per-instance position/scale/color/custom. This is the correct architecture.
 - GLSL MAT vertex shader: use `Cd` for instance color (via `instancecolormode: replace`), use `TDInstanceCustomAttrib0()` for custom instance data. `TDInstanceColor()` does NOT exist.
 - DAT-based instancing (instanceop=tableDAT) parses strings per frame — SLOWER than POP/SOP (34 FPS vs 60 FPS with 9K instances). Avoid.
+
+## TouchDesigner — inTOP/COMP Input
+
+- **Pattern « passthrough avec fallback » via inTOP** : un `inTOP` dans un COMP a 2 sources naturelles — l'**input externe** (via le port d'entrée du COMP) qui prend la **priorité automatique**, et l'**input local [0]** (à l'intérieur du COMP) utilisé en **fallback** quand rien n'est branché côté externe. Pas besoin de `switchTOP` + expression de détection. Utile pour exposer un override externe optionnel sans casser le comportement par défaut interne. Confirmé 2026-04-15 sur `/TDPretext_web/in_mask`.
+
+## Web Render TOP (TDPretext_web, Pretext.js)
+
+- **`sharedtexture=False` OBLIGATOIRE** sur Windows — D3D11 shared texture fuit des ressources GPU/buffers à chaque `executeJavaScript` → lag qui grandit au fil d'une session (souris instantanée au début, traîne après tuning de params). Refresh manuel fixe temporairement. Passer en `shared memory` (default quand sharedtexture off) élimine la fuite définitivement. Confirmé 2026-04-15.
+- **`maxrenderrate=60` is canonical** — never monter à 120/240 même si intuitif. Un render rate plus haut que le cook rate TD empile des frames stales que TD échantillonne en retard → latence perçue au lieu d'accélération. Confirmé forum Derivative "Bad Performance of Webrender Top".
+- **Input en deux chemins** : position via `wr.executeJavaScript('window.setPointer(x,y)')` chaque frame, clics via `wr.interactMouse(u, v, leftClick=1, ...)` **uniquement sur transitions** de `lselect`. Jamais de `else: interactMouse(u, v, left=left_down)` chaque frame — ça flood l'input queue Chromium et retarde le dispatch du prochain click.
+- **Chaque page HTML consommée doit exposer `window.setPointer`** (sinon le call JS est no-op côté Chromium).
+- **La note « ~22 frames »** dans `td-pretext/SKILL.md` concerne **l'injection de masque bitmap** (`_send_obstacle_spans`), pas le tracking pointeur qui tombe à ~2-3 frames avec la config canonique.
+- **Vérifier les refs d'OP après renommage de COMP** : `chopexecuteDAT.par.chop` et `datexecuteDAT.par.dat` gardent des chemins absolus qui deviennent invalides silencieusement. Symptôme : plus d'interaction / plus de mise à jour.
+- **`parameterexecuteDAT.par.pars` est une watchlist explicite** : ajouter un nouveau custom par sur le COMP ne le fait PAS écouter par le DAT. Symptôme typique : le param « ne fait rien » sauf quand on bouge un autre param surveillé (qui re-pousse `_push_live_config()` qui relit toutes les valeurs). Toujours append le nom du nouveau par à `par.pars` après `appendToggle`/`appendFloat`/etc.
 
 ## Atlas & Text Rendering
 

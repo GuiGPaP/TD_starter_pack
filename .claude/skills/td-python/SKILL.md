@@ -1,6 +1,6 @@
 ---
 name: td-python
-description: "TouchDesigner Python: utility modules (TDFunctions, TDJSON, TDStoreTools, TDResources), DAT linting with ruff, code quality, formatting, and type-checking. Use this skill when serializing TD objects to JSON, round-tripping parameters via JSON, using StorageManager or DependDict/DependList, creating PopMenu or PopDialog, downloading files with op.TDResources, using TDFunctions helpers, linting DAT operators, auto-fixing Python code, reviewing ruff diagnostics, running correction loops, cleaning up Python, fixing PEP8 warnings, or formatting TD Python. Also trigger on imports of TDFunctions, TDJSON, TDStoreTools, references to op.TDResources, StorageManager, DependDict, or mentions of ruff, DAT code quality, Python linting in a TD context."
+description: "TouchDesigner Python: utility modules (TDFunctions, TDJSON, TDStoreTools, TDResources), DAT linting with ruff, code quality, formatting, and type-checking. Use this skill when serializing TD objects to JSON, round-tripping parameters via JSON, using StorageManager or DependDict/DependList, creating PopMenu or PopDialog, downloading files with op.TDResources, using TDFunctions helpers, linting DAT operators, auto-fixing Python code, reviewing ruff diagnostics, running correction loops, cleaning up Python, fixing PEP8 warnings, or formatting TD Python. Also trigger on imports of TDFunctions, TDJSON, TDStoreTools, references to op.TDResources, StorageManager, DependDict, or mentions of ruff, DAT code quality, Python linting in a TD context. Also covers Python environment management via tdPyEnvManager: creating venvs or conda envs, writing requirements.txt with PEP 508 platform markers (sys_platform), pip install inside TD, TDPyEnvManagerContext.yaml as project lockfile, Autosetuponstartup pattern. Trigger on: tdPyEnvManager, TDPyEnvManagerContext, venv in TD, conda env in TD, requirements.txt, pip install in TouchDesigner, TD project-local Python deps, winsdk / dasbus / pyobjc in TD."
 ---
 
 # TD Python & Code Quality
@@ -167,3 +167,104 @@ If you discover mid-task that you need a second reference, load it then.
 3. **Fix plan** — auto-fixable, manual, TD false positives to suppress
 4. **Correction results** — diff preview, applied status, remaining diagnostics, runtime verification
 5. **Rollback notice** (if needed) — what failed and that the original was restored
+
+## Python Environment Management (tdPyEnvManager)
+
+> **When to load this section**: user mentions venv, conda env, requirements.txt, pip install, tdPyEnvManager, TDPyEnvManagerContext, installing a Python package in TD, project-local Python deps, or cross-platform markers.
+
+### Mental Model
+
+- `tdPyEnvManager` is a third-party COMP (v1.4.1, `yusuke-nakamura-1992/tdPyEnvManager`) that activates a project-local `.venv/` or conda env by **prepending** its `site-packages` to TD's `sys.path` — it does **not** swap the Python interpreter.
+- The interpreter stays TD's bundled Python (e.g. `C:/Program Files/Derivative/TouchDesigner/bin/python.exe`). Consequence: the venv's Python version must match TD's (3.11 for TD 2025.x), otherwise C-extension wheels fail to load.
+- `TDPyEnvManagerContext.yaml` is the **lockfile** — it records `mode`, `envName`, `installPath`, `pythonVersion`, `autoSetup` → **commit it**. `.venv/` is the env itself → **gitignore**.
+- All heavy operations (`Createvenv`, `Createfromrequirementstxt`, `Exportrequirementstxt`, `Createcondaenv`, …) run on a background thread and mutate `par.Status` when done. **Pulses return immediately** — poll `Status` for completion before chaining the next pulse.
+
+### Setup Workflow (first time)
+
+1. Import the `tdPyEnvManager` COMP (Palette or .tox).
+2. Set `Mode=Python vEnv` (default) or `Conda Env`.
+3. Set `Installpath=.` (relative to project folder) and `Environmentname=.venv`.
+4. Pulse `Createvenv`. Wait until `par.Status == "Environment linked and ready."`.
+5. Write `requirements.txt` next to the .toe.
+6. Pulse `Createfromrequirementstxt`. Wait again for `Status` to return to ready.
+7. Enable `Autosetuponstartup = True` **only after** a successful setup.
+8. Save the .toe.
+
+### Cross-Platform `requirements.txt` (PEP 508 markers)
+
+```
+# Windows only
+winsdk>=1.0.0b10; sys_platform == 'win32'
+
+# Linux only
+dasbus>=1.7;     sys_platform == 'linux'
+PyGObject>=3.46; sys_platform == 'linux'
+
+# macOS only
+pyobjc-core>=10.0;            sys_platform == 'darwin'
+pyobjc-framework-Cocoa>=10.0; sys_platform == 'darwin'
+
+# Shared (all OSes)
+requests>=2.31.0
+```
+
+pip skips lines whose marker does not match the running platform — **one file covers all three OSes**.
+
+### Guardrails (environment-specific)
+
+**E1. tdPyEnvManager does not swap the Python interpreter.** It only modifies `sys.path`. Python version mismatch between the venv and TD's bundled Python breaks C-extension wheel loading. Before creating a venv on a fresh machine, check `sys.version_info` vs TD's bundled version.
+
+**E2. Pulses are async.** `comp.par.Createvenv.pulse()` returns immediately, the work runs on a thread. **Poll `par.Status.val`** until it reads `"Environment linked and ready."` before pulsing `Createfromrequirementstxt`. Chaining pulses back-to-back from one MCP call fires two threads simultaneously.
+
+**E3. `Autosetuponstartup=True` only after a successful first setup.** Setting it before `Createvenv` fires makes the COMP attempt reactivation of a non-existent env at every .toe open → red error on the COMP.
+
+**E4. `TDPyEnvManagerContext.yaml` is the lockfile — commit it.** Its absence forces future sessions to re-infer `mode`, `pythonVersion`, `envName`. `.venv/`, `.cache/`, `__pycache__/` go in `.gitignore`.
+
+**E5. Activation is per-process.** The venv's `site-packages` is injected into `sys.path` at startup (if `Autosetuponstartup=True`) or on pulse. Re-importing an already-imported module does not pick up changes — you need a TD restart or `reload_mod()` if hot-swapping deps.
+
+**E6. Conda mode needs Anaconda or Miniconda on PATH.** If neither is detected, `Createcondaenv` prompts to download a bundled Miniconda (~100 MB). `Keepcondainstaller=True` preserves the installer after setup for offline re-use.
+
+### Key Parameters Reference
+
+| Par | Style | Purpose |
+|---|---|---|
+| `Active` | Toggle | Master on/off for env linking. |
+| `Mode` | Menu | `Python vEnv` / `Conda Env`. |
+| `Installpath` | Folder | Where `.venv` / conda env lives (default `.`). |
+| `Environmentname` | StrMenu | Env dir name (default `.venv`). |
+| `Createvenv` | Pulse | Create a fresh venv. |
+| `Createfromrequirementstxt` | Pulse | `pip install -r requirements.txt`. |
+| `Exportrequirementstxt` | Pulse | `pip freeze > requirements.txt` (snapshot). |
+| `Createcondaenv` | Pulse | Create a conda env. |
+| `Createfromenvironmentyml` | Pulse | `conda env create -f environment.yml`. |
+| `Exportenvironmentyml` | Pulse | `conda env export > environment.yml`. |
+| `Includeglobal` | Toggle | Conda: include global envs in the selector. |
+| `Autosetuponstartup` | Toggle | Re-activate env at every .toe open. |
+| `Refresh` | Pulse | Re-scan environments. |
+| `Reset` | Pulse | Unlink current env (does not delete files on disk). |
+| `Restart` | Pulse | Re-run activation logic. |
+| `Opencli` | Pulse | Open a shell with the venv activated. |
+| `Status` | Str | Read-only status string. |
+
+### MCP Snippets (ready to paste)
+
+```python
+# 1. Create the venv
+op('/YourComp/tdPyEnvManager').par.Createvenv.pulse()
+
+# 2. Wait (poll) until Status reads "Environment linked and ready."
+#    — do this in a SEPARATE execute_python_script call, pulses are async.
+
+# 3. Install from requirements.txt
+op('/YourComp/tdPyEnvManager').par.Createfromrequirementstxt.pulse()
+
+# 4. Enable auto-setup on subsequent launches
+op('/YourComp/tdPyEnvManager').par.Autosetuponstartup = True
+
+# 5. Snapshot currently installed packages back to requirements.txt
+op('/YourComp/tdPyEnvManager').par.Exportrequirementstxt.pulse()
+
+# Inspect the lockfile
+print(str(op('/YourComp/tdPyEnvManager').par.Status.val))
+# → "Environment linked and ready."
+```
