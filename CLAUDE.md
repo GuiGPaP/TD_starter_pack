@@ -14,6 +14,8 @@ When working with TouchDesigner, pick the right skill:
 
 **When in doubt:** Start with `td-guide` — it routes to td-glsl for shaders and td-python for Python work.
 
+Skill source of truth: edit `skills/` first, then run `just skill-sync` to regenerate `.claude/skills` and `.agents/skills`. Do not hand-edit the synchronized copies.
+
 ## Session Start
 
 If `tasks/errors-log.md` exists, read the **Unresolved** section and **Lesson Candidates** — these are errors and lesson candidates captured by the stop hook in previous sessions. Check if they're still relevant before starting new work.
@@ -25,7 +27,9 @@ If `tasks/errors-log.md` exists, read the **Unresolved** section and **Lesson Ca
 ## Dev Workflow
 
 - `just` — list all available commands
-- `just check` — lint + typecheck only (does **not** run tests)
+- `just check` — lint + typecheck + sync checks (does **not** run tests)
+- `just skill-sync-check` — verify `skills/`, `.claude/skills`, and `.agents/skills` match
+- `just skill-sync` — regenerate `.claude/skills` and `.agents/skills` from `skills/`
 - `just test` — run test suite
 
 ## Submodules

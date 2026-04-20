@@ -2,7 +2,8 @@
 
 ## Skill Decision Tree
 
-When working with TouchDesigner, use the repo skills in `.agents/skills`:
+When working with TouchDesigner, use the repo skills in `.agents/skills`.
+The canonical source lives in `skills/`; `.agents/skills` and `.claude/skills` are synchronized copies for their respective agents.
 
 | Need | Skill |
 |------|-------|
@@ -24,8 +25,10 @@ When in doubt, start with `td-guide`; it routes shader work to `td-glsl` and Pyt
 ## Development Workflow
 
 - `just` lists available commands.
-- `just check` runs lint, type check, and module sync checks.
+- `just check` runs lint, type check, module sync, and skill sync checks.
 - `just test` runs the Python test suite.
+- `just skill-sync-check` verifies `skills/`, `.agents/skills`, and `.claude/skills` are identical.
+- `just skill-sync` regenerates `.agents/skills` and `.claude/skills` from `skills/`.
 - For `_mcp_server/`, use `npm run lint`, `npm run test:unit`, or `npm test` from `_mcp_server/`.
 - For `TDDocker/`, run checks from that directory with its own `pyproject.toml`.
 
@@ -41,5 +44,6 @@ When in doubt, start with `td-guide`; it routes shader work to `td-glsl` and Pyt
 ## Generated and External Areas
 
 - `modules/td_server/openapi_server/` and `modules/mcp/controllers/generated_handlers.py` are generated; change templates or generators instead of hand-editing generated output.
+- `skills/` is the source of truth for local agent skills; do not hand-edit `.agents/skills` or `.claude/skills` directly.
 - `TDpretext/` and `TDDocker/` may be submodules or separately versioned components. Check their status before editing.
 - Avoid committing local session state such as `tasks/errors-log.md`.

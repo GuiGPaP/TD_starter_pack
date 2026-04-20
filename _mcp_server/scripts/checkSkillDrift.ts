@@ -1,6 +1,6 @@
 /**
  * CI skill drift detection verifies that:
- * 1. Tool names referenced in SKILL.md files exist in TOOL_NAMES (constants.ts)
+ * 1. Tool names referenced in canonical skills/SKILL.md files exist in TOOL_NAMES (constants.ts)
  * 2. Parameter names used in bundled operator examples exist in the operator's
  *    parameters array, when a bundled operator corpus is present.
  *
@@ -28,7 +28,7 @@ interface OperatorEntry {
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SKILLS_DIR = path.resolve(__dirname, "../../.claude/skills");
+const SKILLS_DIR = path.resolve(__dirname, "../../skills");
 const OPERATORS_DIR = path.resolve(__dirname, "../data/td-knowledge/operators");
 
 const IGNORED_BACKTICK_IDENTIFIERS = new Set([

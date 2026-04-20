@@ -1,0 +1,6 @@
+interface:
+  display_name: "TD Sketch UI"
+  short_description: "Build TD Palette UIs from sketches"
+  default_prompt: "Use $td-sketch-ui to turn a sketch or wireframe into a TouchDesigner Palette UI."
+policy:
+  allow_implicit_invocation: true

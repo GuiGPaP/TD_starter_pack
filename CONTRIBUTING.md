@@ -34,7 +34,7 @@ The last step is important: **without `lefthook install`, the hooks defined in `
 1. **Plan first** — for any non-trivial change (3+ steps or architectural decisions), start with a written plan. See `CLAUDE.md` if you use Claude Code.
 2. **Branch via worktree** — `git-wt <name> [branch]` keeps multiple changes isolated; see `CLAUDE.md`.
 3. **Verify locally** before pushing:
-   - `just check` — ruff lint + pyright typecheck (Python)
+   - `just check` — ruff lint + pyright typecheck + module/skill sync checks
    - `just test` — pytest suite
    - `cd _mcp_server && npm run lint && npm test` — TS lint + tests
 4. **Open a PR** against `main`. CI runs the same checks (see `.github/workflows/ci.yml`).
@@ -43,6 +43,7 @@ The last step is important: **without `lefthook install`, the hooks defined in `
 
 - **Python**: `ruff` (lint + format) + `pyright` (type-check). Config in `pyproject.toml`. Target `py311`.
 - **TypeScript**: ESLint + strict TS. Config in `_mcp_server/`.
+- **Agent skills**: edit canonical files under `skills/`, then run `just skill-sync`.
 - Generated code (`modules/td_server/openapi_server/`, `modules/mcp/controllers/generated_handlers.py`) is excluded from linting — don't hand-edit.
 
 ## Submodules

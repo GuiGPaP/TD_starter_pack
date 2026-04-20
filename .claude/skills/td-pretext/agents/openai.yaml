@@ -1,0 +1,6 @@
+interface:
+  display_name: "TD Pretext"
+  short_description: "Native TD text layout, atlas, obstacle flow"
+  default_prompt: "Use $td-pretext to build native TouchDesigner text layout with obstacle avoidance."
+policy:
+  allow_implicit_invocation: true

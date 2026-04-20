@@ -152,7 +152,9 @@ modules/
   td_server/             # serveur OpenAPI (d'origine generee)
   utils/                 # result types, logging, serialization
   tests/                 # pytest unit + smoke tests (fake_td.py = fake graph TD)
-.claude/skills/          # skills Claude (td-guide, td-glsl, td-python, td-pretext, td-sketch-ui)
+skills/                  # source canonique des skills Claude/Codex
+.agents/skills/          # copie synchronisee Codex
+.claude/skills/          # copie synchronisee Claude
 .mcp.example.json        # config MCP exemple (copier vers .mcp.json)
 starter_pack.toe         # projet TD de demarrage
 mcp_webserver_base.tox   # composant serveur web MCP
@@ -175,7 +177,7 @@ Pour ajouter une fonctionnalite :
 3. **OpenAPI** — mettre a jour la spec `openapi.yaml`, puis synchroniser les couches derivees (`generated_handlers.py`, `default_controller.py`)
 4. **Tests** — unit test du helper + smoke test du workflow bout-en-bout
 
-> Quand mettre a jour les skills : si la surface d'outils MCP change (nouvel outil, parametres modifies).
+> Quand mettre a jour les skills : si la surface d'outils MCP change (nouvel outil, parametres modifies). Modifier `skills/`, puis lancer `just skill-sync`.
 
 ## Developpement
 
@@ -188,6 +190,8 @@ uv run ruff check modules/           # lint
 uv run ruff format modules/          # format
 uv run pyright                       # type-check
 just check                           # tout d'un coup (requiert just)
+just skill-sync-check                # verifier les copies Claude/Codex
+just skill-sync                      # regenerer les copies depuis skills/
 ```
 
 ### MCP Server (Node.js)
@@ -200,7 +204,9 @@ npm test                             # lancer les tests
 npm run lint                         # lint + typecheck
 ```
 
-## Skills Claude
+## Skills Claude/Codex
+
+Les skills sont maintenus dans `skills/`, puis synchronises vers `.claude/skills/` et `.agents/skills/`. La CI echoue si ces copies generees divergent de la source canonique.
 
 | Besoin | Skill |
 |--------|-------|

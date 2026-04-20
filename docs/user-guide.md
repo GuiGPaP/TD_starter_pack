@@ -23,7 +23,7 @@
 - [Comparaison d'operateurs](#comparaison-doperateurs)
 - [Catalogue de projets TD](#catalogue-de-projets-td)
 - [Compatibilite de version](#compatibilite-de-version)
-- [Skills Claude](#skills-claude)
+- [Skills Claude/Codex](#skills-claudecodex)
 - [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
 
@@ -340,19 +340,18 @@ Les resultats de recherche incluent le statut de compatibilite (compatible, depr
 
 ---
 
-## Skills Claude
+## Skills Claude/Codex
 
-Les skills sont des guides specialises charges automatiquement par Claude Code :
+Les skills sont maintenus dans `skills/`, puis synchronises vers `.claude/skills/` et `.agents/skills/` pour Claude Code et Codex. Lancer `just skill-sync` apres modification des fichiers canoniques.
 
 | Skill | Usage |
 |-------|-------|
+| `pretext` | Mesure et layout texte Web/JS avec `@chenglou/pretext` |
 | `td-guide` | Reseau TD, operateurs, layout, rendering, data conversion |
-| `td-glsl` | Pixel shaders, GLSL TOP, effets 2D, textures generatives |
-| `td-glsl-vertex` | Vertex shaders, GLSL MAT, materiaux 3D, deplacement |
-| `td-pops` | Compute shaders, particules, GLSL POP, SSBO |
-| `td-python` | TDFunctions, TDJSON, TDStoreTools, TDResources |
-| `td-lint` | Linting Python, ruff, qualite de code DAT |
-| `td-context` | Index projet, completion de code, contexte par node |
+| `td-glsl` | Shaders pixel, vertex et compute ; GLSL TOP/MAT/POP |
+| `td-python` | TDFunctions, TDJSON, TDStoreTools, TDResources, linting DAT, environnements Python |
+| `td-pretext` | Layout texte natif TD, atlas de fontes, evitement d'obstacles |
+| `td-sketch-ui` | Conversion de sketches et wireframes en UI Palette widgets |
 
 ---
 

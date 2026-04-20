@@ -32,16 +32,24 @@ test:
 sync-check:
     uv run python scripts/sync_modules.py --check
 
+# Check skill sync (skills/ → .agents/.claude)
+skill-sync-check:
+    uv run python scripts/sync_agent_skills.py --check
+
 # Sync modules root → submodule
 sync:
     uv run python scripts/sync_modules.py --sync
+
+# Sync skills/ → .agents/skills and .claude/skills
+skill-sync:
+    uv run python scripts/sync_agent_skills.py --sync
 
 # Cyclomatic complexity audit (full repo)
 complexity:
     uv run python scripts/complexity_report.py
 
 # All checks
-check: lint typecheck sync-check
+check: lint typecheck sync-check skill-sync-check
 
 # Install git hooks (requires lefthook)
 hooks:

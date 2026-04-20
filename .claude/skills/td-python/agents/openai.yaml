@@ -1,0 +1,6 @@
+interface:
+  display_name: "TD Python"
+  short_description: "TD Python utilities, DAT linting, ruff workflows"
+  default_prompt: "Use $td-python to lint and repair TouchDesigner Python DAT code."
+policy:
+  allow_implicit_invocation: true

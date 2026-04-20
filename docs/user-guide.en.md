@@ -14,7 +14,7 @@
 - [Operator comparison](#operator-comparison)
 - [TD Project Catalogue](#td-project-catalogue)
 - [Version compatibility](#version-compatibility)
-- [Claude Skills](#claude-skills)
+- [Agent Skills](#agent-skills)
 - [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
 
@@ -331,19 +331,18 @@ Search results include compatibility status (compatible, deprecated, unavailable
 
 ---
 
-## Claude Skills
+## Agent Skills
 
-Specialized guides loaded automatically by Claude Code:
+Specialized guides are maintained in `skills/` and synchronized into `.claude/skills/` and `.agents/skills/` for Claude Code and Codex. Run `just skill-sync` after editing canonical skill files.
 
 | Skill | Usage |
 |-------|-------|
+| `pretext` | Web/JS `@chenglou/pretext` text measurement and layout |
 | `td-guide` | TD network, operators, layout, rendering, data conversion |
-| `td-glsl` | Pixel shaders, GLSL TOP, 2D effects, generative textures |
-| `td-glsl-vertex` | Vertex shaders, GLSL MAT, 3D materials, displacement |
-| `td-pops` | Compute shaders, particles, GLSL POP, SSBO |
-| `td-python` | TDFunctions, TDJSON, TDStoreTools, TDResources |
-| `td-lint` | Python linting, ruff, DAT code quality |
-| `td-context` | Project index, code completion, per-node context |
+| `td-glsl` | Pixel, vertex, and compute shaders; GLSL TOP/MAT/POP |
+| `td-python` | TDFunctions, TDJSON, TDStoreTools, TDResources, DAT linting, Python envs |
+| `td-pretext` | Native TD text layout, font atlases, obstacle avoidance |
+| `td-sketch-ui` | Convert sketches and wireframes into Palette widget UIs |
 
 ---
 

@@ -153,7 +153,9 @@ modules/
   td_server/             # OpenAPI server (originally generated)
   utils/                 # result types, logging, serialization
   tests/                 # pytest unit + smoke tests (fake_td.py = fake TD graph)
-.claude/skills/          # Claude skills (td-guide, td-glsl, td-python, td-pretext, td-sketch-ui)
+skills/                  # canonical Claude/Codex skill source
+.agents/skills/          # synchronized Codex skills
+.claude/skills/          # synchronized Claude skills
 .mcp.example.json        # MCP config example (copy to .mcp.json)
 starter_pack.toe         # starter TouchDesigner project
 mcp_webserver_base.tox   # MCP web server component
@@ -176,7 +178,7 @@ To add a feature:
 3. **OpenAPI** — update the `openapi.yaml` spec, then sync derived layers (`generated_handlers.py`, `default_controller.py`)
 4. **Tests** — unit test the helper + smoke test the end-to-end workflow
 
-> When to update skills: whenever the MCP tool surface changes (new tool, modified parameters).
+> When to update skills: whenever the MCP tool surface changes (new tool, modified parameters). Edit `skills/`, then run `just skill-sync`.
 
 ## Development
 
@@ -189,6 +191,8 @@ uv run ruff check modules/           # lint
 uv run ruff format modules/          # format
 uv run pyright                       # type-check
 just check                           # all at once (requires just)
+just skill-sync-check                # verify Claude/Codex skill mirrors
+just skill-sync                      # regenerate skill mirrors from skills/
 ```
 
 ### MCP Server (Node.js)
@@ -201,7 +205,9 @@ npm test                             # run tests
 npm run lint                         # lint + typecheck
 ```
 
-## Claude Skills
+## Agent Skills
+
+Skills are maintained in `skills/` and mirrored to `.claude/skills/` and `.agents/skills/`. CI fails if those generated copies drift from the canonical source.
 
 | Need | Skill |
 |------|-------|
